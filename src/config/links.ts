@@ -5,7 +5,10 @@ export const LINKS = {
   siteName: 'Way of Wealth',
   quiz: 'https://money-beliefs-quiz.netlify.app',
   etsy: 'https://www.etsy.com/shop/WayofWealthStudio',
+  // Single MailerLite embedded form used for cheat sheet + newsletter opt-in (same audience capture for now).
+  // TODO: create a separate MailerLite form/group for Finance Fridays once launched — see MailerLite dashboard.
   cheatSheet: 'https://preview.mailerlite.io/forms/1977493/184455001091867806/share',
+  newsletter: 'https://preview.mailerlite.io/forms/1977493/184455001091867806/share',
   contactEmail: 'mailto:joel@thewayofwealth.shop',
   coaching: '/coaching',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
