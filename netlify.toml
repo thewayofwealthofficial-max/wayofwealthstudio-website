@@ -1,0 +1,16 @@
+# Netlify config for the Way of Wealth Astro site.
+# Astro build config lives in astro.config.mjs — this file adds the Netlify
+# Functions directory + the Fred approve route.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Route Fred's approve link to the function. Keeps the site pure-SSG
+# (Astro output stays in dist/) while giving us one dynamic endpoint.
+[[redirects]]
+  from = "/api/fred/approve"
+  to = "/.netlify/functions/fred-approve"
+  status = 200
+  force = true

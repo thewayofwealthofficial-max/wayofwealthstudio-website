@@ -1,0 +1,55 @@
+name: Fred Apply
+
+# Triggered by repository_dispatch (event_type: fred-apply) from the
+# Netlify function at /api/fred/approve. Carries the full proposal
+# in client_payload.proposal.
+# Applies the edit, commits as Fred Bot, runs a post-deploy canary,
+# auto-reverts if the canary fails.
+
+on:
+  repository_dispatch:
+    types: [fred-apply]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fred-apply-${{ github.event.client_payload.proposal.id }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run Fred apply
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
+        run: node scripts/fred-apply.mjs
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          node scripts/telegram-notify.mjs --emoji "❌" --title "Fred apply workflow FAILED" --body "Check the run logs:
+
+          $RUN_URL"
