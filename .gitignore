@@ -30,3 +30,6 @@ Thumbs.db
 
 # backups
 *.backup
+
+# One-time OAuth setup script — contains Google client secret, never commit
+scripts/gmail-auth-setup.mjs
