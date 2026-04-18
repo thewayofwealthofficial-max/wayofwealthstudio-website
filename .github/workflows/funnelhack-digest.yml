@@ -1,0 +1,58 @@
+name: Funnel-Hack Digest
+
+# Once-daily digest of new emails from competitors in Joel's funnel-hack inbox.
+#
+# v1 status: STUB. Gmail integration is not wired yet (see scripts/funnelhack-digest.mjs TODO).
+# Schedule is intentionally COMMENTED OUT — only workflow_dispatch active until Joel picks
+# a wiring option (OAuth refresh token, Zapier forwarder, or manual).
+#
+# When ready to enable, uncomment the cron line below.
+# Target slot: 08:47 UTC (09:47 UK BST / 08:47 GMT) — off-peak minute to dodge GitHub's
+# scheduled-workflow delay; digest lands during UK morning coffee.
+
+on:
+  # schedule:
+  #   - cron: '47 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: funnelhack-digest
+  cancel-in-progress: false
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build + send digest
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}  # add when wired
+        run: node scripts/funnelhack-digest.mjs
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          node scripts/telegram-notify.mjs --emoji "❌" --title "Funnel-hack digest FAILED" --body "Digest did not send. Check run logs:
+
+          $RUN_URL"
