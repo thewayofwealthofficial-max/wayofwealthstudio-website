@@ -62,7 +62,7 @@ jobs:
           QUEUED=$(grep -c "^| .* | 🔵 |" src/content/reddit-queue.md || echo "?")
           node scripts/telegram-notify.mjs --emoji "🔍" --title "Weekly queue topup" --body "+${COUNT:-0} new Jess questions added.
 
-Queue now: $QUEUED waiting."
+          Queue now: $QUEUED waiting."
 
       - name: Notify Telegram on failure
         if: failure()
