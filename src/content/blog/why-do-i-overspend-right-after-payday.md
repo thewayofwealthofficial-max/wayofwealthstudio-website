@@ -28,7 +28,7 @@ This isn't a character flaw. This is your brain trying to make an incredibly com
 
 Here's where it compounds. The days before payday feel *terrible*. Checking your balance triggers cortisol. Every small decision (can I afford this coffee?) carries emotional weight. You're in a state of scarcity, and scarcity doesn't just affect your wallet — it affects your cognitive bandwidth.
 
-Then payday hits. The *relief* is enormous. Kahneman and Tversky's research on the peak-end effect shows that we remember experiences primarily by their emotional peak and their end. The peak of your pay cycle isn't the middle — it's payday itself. That relief, that sense of abundance, that feeling of the weight lifting.
+Then payday hits. The *relief* is enormous. Kahneman and Tversky's research on the peak-end effect shows that we remember experiences primarily by their emotional peak and their end. The peak of your pay cycle isn't the middle — it's payday itself. That relief, that sense of everything finally being okay, that feeling of the weight lifting.
 
 Your brain wants to *reward* that feeling. It wants to commemorate the end of scarcity. And the fastest way to do that? Spend. Treat yourself. Prove that you're not in survival mode anymore.
 
