@@ -1,58 +1,31 @@
 #!/usr/bin/env node
-//
-// ╔═══════════════════════════════════════════════════════════════════════╗
-// ║ TODO — Gmail wiring pending                                           ║
-// ╠═══════════════════════════════════════════════════════════════════════╣
-// ║ This script is a STUB for v1. It emits a single Telegram message so   ║
-// ║ Joel sees the workflow is alive + scheduled correctly. Once a data    ║
-// ║ source is connected, replace the stub() function with a real fetch.   ║
-// ║                                                                       ║
-// ║ Options to wire Gmail (pick one, then remove this block):             ║
-// ║                                                                       ║
-// ║  (a) OAuth2 refresh token                                             ║
-// ║      - Create a Google Cloud project, enable Gmail API, generate an   ║
-// ║        OAuth client (type: desktop).                                  ║
-// ║      - Run a one-off script locally that performs the consent flow    ║
-// ║        and prints a refresh token.                                    ║
-// ║      - Store as GitHub secret GMAIL_REFRESH_TOKEN (+ CLIENT_ID /      ║
-// ║        CLIENT_SECRET).                                                ║
-// ║      - Add scripts/gmail-client.mjs helper that exchanges refresh     ║
-// ║        token → access token, then calls users.messages.list with      ║
-// ║        q=`label:funnel-hack newer_than:1d`.                           ║
-// ║                                                                       ║
-// ║  (b) Zapier / IFTTT forwarder                                         ║
-// ║      - Trigger: "New email matching search in Gmail" (label:funnel-   ║
-// ║        hack).                                                         ║
-// ║      - Action: POST the message body/subject to a Telegram channel    ║
-// ║        or to a tiny webhook bucket (e.g. webhook.site, or an Astro    ║
-// ║        API route on wayofwealthstudio.shop).                          ║
-// ║      - This script reads the bucket and summarises.                   ║
-// ║                                                                       ║
-// ║  (c) Manual — skip automation, Joel paste-forwards to Fred ad-hoc.    ║
-// ║                                                                       ║
-// ║ Recommended: (a). Cleanest, no third-party dependency. One-time       ║
-// ║ setup, then forget.                                                   ║
-// ╚═══════════════════════════════════════════════════════════════════════╝
-//
 // Once-daily digest of new emails from competitors in Joel's funnel-hack inbox.
-// Schedule is currently workflow_dispatch only (see funnelhack-digest.yml header).
+// Reads Gmail (label: Funnel-Hack, last 24h) → groups by sender → Telegrams summary.
 //
-// ENV VARS REQUIRED (v1 stub):
+// ENV VARS REQUIRED:
 //   TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID   (consumed by telegram-notify.mjs)
-// ENV VARS FUTURE (when Gmail wired):
-//   GMAIL_REFRESH_TOKEN, GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET
-//   ANTHROPIC_API_KEY   (for summarisation step)
+//   GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
+//
+// The Funnel-Hack label is applied in Gmail manually (or by a Gmail filter)
+// to any email from competitor signups. This script only reads; never modifies.
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { fetchDigest, parseSenderName } from './gmail-client.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
 const NOTIFY_SCRIPT = join(REPO_ROOT, 'scripts', 'telegram-notify.mjs');
 
-// ───────────────────────────────────────────────────────────────
-// Telegram helper (via existing script — do not re-implement)
+const GMAIL_CLIENT_ID = process.env.GMAIL_CLIENT_ID;
+const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
+const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
+
+if (!GMAIL_CLIENT_ID || !GMAIL_CLIENT_SECRET || !GMAIL_REFRESH_TOKEN) {
+  console.error('FATAL: missing GMAIL_* env vars. Check GitHub repo secrets.');
+  process.exit(1);
+}
 
 function notify({ emoji, title, body }) {
   const result = spawnSync(
@@ -66,47 +39,49 @@ function notify({ emoji, title, body }) {
   }
 }
 
-// ───────────────────────────────────────────────────────────────
-// Stub data source — replace with real Gmail fetch when wired
-
-async function stub() {
-  // Returns [] for now. When Gmail is wired, this function should return:
-  //   [{ from, subject, receivedAt, snippet, bodyText }, ...]
-  // filtered to the last 24h + label:funnel-hack.
-  return [];
-}
-
-// ───────────────────────────────────────────────────────────────
-// Main
-
 async function main() {
-  const messages = await stub();
+  const messages = await fetchDigest({
+    clientId: GMAIL_CLIENT_ID,
+    clientSecret: GMAIL_CLIENT_SECRET,
+    refreshToken: GMAIL_REFRESH_TOKEN,
+    query: 'label:Funnel-Hack newer_than:1d',
+  });
 
   if (messages.length === 0) {
     notify({
       emoji: '📮',
       title: 'Funnel-hack digest',
-      body: 'Stub ran OK. Gmail integration pending — see scripts/funnelhack-digest.mjs TODO block for the 3 wiring options.',
+      body: 'No new competitor emails in the last 24h.',
     });
     return;
   }
 
-  // Future: summarise + group by sender
+  // Group by sender name
   const bySender = new Map();
   for (const m of messages) {
-    const list = bySender.get(m.from) ?? [];
+    const name = parseSenderName(m.from);
+    const list = bySender.get(name) ?? [];
     list.push(m);
-    bySender.set(m.from, list);
+    bySender.set(name, list);
   }
 
   const lines = [];
-  lines.push(`${messages.length} new email(s) in the last 24h across ${bySender.size} sender(s).`);
+  lines.push(`${messages.length} new email${messages.length === 1 ? '' : 's'} across ${bySender.size} sender${bySender.size === 1 ? '' : 's'}:`);
   lines.push('');
-  for (const [sender, list] of bySender) {
+
+  // Show top 8 senders (keep digest compact)
+  const sorted = [...bySender.entries()].sort((a, b) => b[1].length - a[1].length);
+  for (const [sender, list] of sorted.slice(0, 8)) {
     lines.push(`• ${sender} — ${list.length}`);
+    // Show up to 3 subject lines per sender
     for (const m of list.slice(0, 3)) {
-      lines.push(`   - ${m.subject}`);
+      lines.push(`   · ${m.subject || '(no subject)'}`);
     }
+  }
+
+  if (sorted.length > 8) {
+    lines.push('');
+    lines.push(`+ ${sorted.length - 8} more sender(s) · open Gmail → label:Funnel-Hack`);
   }
 
   notify({
@@ -118,5 +93,11 @@ async function main() {
 
 main().catch((e) => {
   console.error('Fatal:', e);
+  // Send failure ping so Joel sees something went wrong
+  notify({
+    emoji: '❌',
+    title: 'Funnel-hack digest FAILED',
+    body: `${e.message}\n\nCheck workflow logs.`,
+  });
   process.exit(1);
 });
