@@ -116,12 +116,12 @@ FORMATTING (markdown):
 - Short paragraphs (2-4 sentences). Whitespace breathes.
 - One small bulleted list if it earns its place; never two.
 
-OUTPUT FORMAT — RESPOND WITH JSON ONLY, no preamble or commentary:
-{
-  "description": "<one sentence, max 165 characters, must hook Jess's emotion>",
-  "tags": ["3-5 lowercase tags, behavioral concept names primary"],
-  "body": "<markdown body, 1200-1500 words, no frontmatter, no h1 — start with a paragraph that validates the feeling>"
-}`;
+OUTPUT FORMAT — respond in exactly this shape, no preamble, no commentary:
+
+{"description": "<one sentence, max 165 characters, must hook Jess's emotion>", "tags": ["3-5","lowercase","tags"]}
+<<<BODY>>>
+<markdown body, 1200-1500 words, no frontmatter, no h1 — start with a paragraph that validates the feeling. Write any characters you need: quotes, apostrophes, code fences, dashes. Just end with the <<<END>>> sentinel on its own line.>
+<<<END>>>`;
 
 function buildUserPrompt(row) {
   return `Today's blog post.
@@ -164,19 +164,26 @@ async function callClaude(systemPrompt, userPrompt) {
   return text;
 }
 
-function parseClaudeJson(text) {
-  // Claude is reliable about JSON-only when system prompts say so, but tolerate code fences.
-  const cleaned = text
-    .trim()
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/```\s*$/, '')
-    .trim();
+function parseClaudeResponse(text) {
+  // Response format: one-line JSON with {description, tags}, then <<<BODY>>>...<<<END>>>.
+  // Splitting the body out of the JSON avoids parser breakage from quotes/newlines in prose.
+  const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  const bodyStart = cleaned.indexOf('<<<BODY>>>');
+  const bodyEnd = cleaned.lastIndexOf('<<<END>>>');
+  if (bodyStart < 0 || bodyEnd < 0 || bodyEnd <= bodyStart) {
+    console.error('Claude response missing body sentinels. Raw:\n', text);
+    throw new Error('Claude response missing <<<BODY>>>...<<<END>>> sentinels');
+  }
+  const jsonPart = cleaned.slice(0, bodyStart).trim();
+  const body = cleaned.slice(bodyStart + '<<<BODY>>>'.length, bodyEnd).trim();
+  let meta;
   try {
-    return JSON.parse(cleaned);
+    meta = JSON.parse(jsonPart);
   } catch (err) {
-    console.error('Claude returned non-JSON. Raw response:\n', text);
+    console.error('Metadata JSON parse failed. Raw JSON part:\n', jsonPart);
     throw err;
   }
+  return { description: meta.description, tags: meta.tags, body };
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -223,7 +230,7 @@ async function main() {
 
   console.log('Calling Claude...');
   const responseText = await callClaude(SYSTEM_PROMPT, buildUserPrompt(next));
-  const { description, tags, body } = parseClaudeJson(responseText);
+  const { description, tags, body } = parseClaudeResponse(responseText);
 
   if (!description || !body) throw new Error('Claude response missing description or body.');
 
