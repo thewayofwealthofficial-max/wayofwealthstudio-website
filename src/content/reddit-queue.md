@@ -25,7 +25,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 6 | ✅ | Why does my partner spend differently to me and how do we not fight about it? | Loss aversion asymmetry, money scripts (Klontz) | Behavioral basics | All segments |
 | 7 | ✅ | I have ADHD — why is every budgeting app I try useless after a week? | Novelty decay, dopamine-driven planning, friction design | ADHD & money | ADHD/Neurodivergent |
 | 8 | ✅ | Should I pay off debt or build savings first? (the actual answer) | Debt aversion, loss framing, behavioral debt snowball | Behavioral basics | All segments |
-| 9 | 🔵 | Why do I feel guilty buying things I can afford? | Money scripts, frugality identity, scarcity hangover | Spending & shame | Anxious Avoider, ADHD |
+| 9 | ✅ | Why do I feel guilty buying things I can afford? | Money scripts, frugality identity, scarcity hangover | Spending & shame | Anxious Avoider, ADHD |
 | 10 | 🔵 | How do I stop avoiding my financial admin (taxes, statements, bills)? | Avoidance loop, exposure desensitisation, micro-commitments | Anxiety & avoidance | Self-Employed Stresser |
 | 11 | 🔵 | Why is talking about money with my family so hard? | Money taboo, status threat, family money scripts | Behavioral basics | All segments |
 | 12 | 🔵 | How much should I have saved by 30/35/40? (and why the answer is wrong) | Social comparison, anchoring, status anxiety | Behavioral basics | All segments |
