@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 // Once-daily digest of new emails from competitors in Joel's funnel-hack inbox.
-// Reads Gmail (label: Funnel-Hack, last 24h) → groups by sender → Telegrams summary.
+// Reads Gmail (competitor sender list OR label:Funnel-Hack, last 24h)
+// → groups by sender → Telegrams summary.
+//
+// Primary match: `from:` any address in funnelhack-senders.mjs.
+// Secondary (supplementary) match: any email manually labeled Funnel-Hack.
+// This means the digest works without relying on a Gmail filter being configured.
 //
 // ENV VARS REQUIRED:
 //   TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID   (consumed by telegram-notify.mjs)
 //   GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
-//
-// The Funnel-Hack label is applied in Gmail manually (or by a Gmail filter)
-// to any email from competitor signups. This script only reads; never modifies.
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { fetchDigest, parseSenderName } from './gmail-client.mjs';
+import { buildFunnelhackQuery, COMPETITOR_SENDERS } from './funnelhack-senders.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
@@ -40,18 +43,22 @@ function notify({ emoji, title, body }) {
 }
 
 async function main() {
+  const query = buildFunnelhackQuery({ days: 1 });
+  console.log(`Query: ${query}`);
+  console.log(`Tracking ${COMPETITOR_SENDERS.length} competitor senders`);
+
   const messages = await fetchDigest({
     clientId: GMAIL_CLIENT_ID,
     clientSecret: GMAIL_CLIENT_SECRET,
     refreshToken: GMAIL_REFRESH_TOKEN,
-    query: 'label:Funnel-Hack newer_than:1d',
+    query,
   });
 
   if (messages.length === 0) {
     notify({
       emoji: '📮',
       title: 'Funnel-hack digest',
-      body: 'No new competitor emails in the last 24h.',
+      body: `No new competitor emails in the last 24h.\n\nTracking ${COMPETITOR_SENDERS.length} senders. If you expected emails, verify sender address in scripts/funnelhack-senders.mjs matches the actual "From:" address in Gmail.`,
     });
     return;
   }
@@ -81,7 +88,7 @@ async function main() {
 
   if (sorted.length > 8) {
     lines.push('');
-    lines.push(`+ ${sorted.length - 8} more sender(s) · open Gmail → label:Funnel-Hack`);
+    lines.push(`+ ${sorted.length - 8} more sender(s) · open Gmail to view all`);
   }
 
   notify({
