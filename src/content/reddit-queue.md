@@ -28,7 +28,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 9 | ✅ | Why do I feel guilty buying things I can afford? | Money scripts, frugality identity, scarcity hangover | Spending & shame | Anxious Avoider, ADHD |
 | 10 | ✅ | How do I stop avoiding my financial admin (taxes, statements, bills)? | Avoidance loop, exposure desensitisation, micro-commitments | Anxiety & avoidance | Self-Employed Stresser |
 | 11 | ✅ | Why is talking about money with my family so hard? | Money taboo, status threat, family money scripts | Behavioral basics | All segments |
-| 12 | 🔵 | How much should I have saved by 30/35/40? (and why the answer is wrong) | Social comparison, anchoring, status anxiety | Behavioral basics | All segments |
+| 12 | ✅ | How much should I have saved by 30/35/40? (and why the answer is wrong) | Social comparison, anchoring, status anxiety | Behavioral basics | All segments |
 | 13 | 🔵 | Why do I feel poor even though I earn well? | Hedonic treadmill, lifestyle creep, reference point bias | Behavioral basics | All segments |
 | 14 | 🔵 | Is it normal to cry over money? | Money shame, financial trauma, Window of Tolerance | Anxiety & avoidance | All segments |
 | 15 | 🔵 | Why do I keep buying things that "future me" will deal with? | Present bias, hyperbolic discounting, temporal self-discontinuity | Spending & shame | ADHD/Neurodivergent |
