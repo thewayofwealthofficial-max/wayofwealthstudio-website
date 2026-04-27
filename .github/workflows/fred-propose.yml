@@ -43,7 +43,7 @@ jobs:
           AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
           AIRTABLE_QUIZ_TABLE_ID: ${{ secrets.AIRTABLE_QUIZ_TABLE_ID }}
-          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY }}
+          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API }}
           FRED_SECRET: ${{ secrets.FRED_SECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/fred-propose.mjs
