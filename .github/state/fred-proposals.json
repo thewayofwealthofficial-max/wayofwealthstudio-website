@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-04-27T16:43:23.877Z",
+  "ttl_ms": 86400000,
+  "proposals": [
+    {
+      "id": "money-vigilance-subject-line-test",
+      "observation": "WoW - Money Vigilance has a 57.14% open rate on only 7 sends — meaningfully higher than Money Avoidance (40%) and Money Worship (37.5%). The sequence is under-trafficked relative to the others, suggesting either fewer people are being routed to it after the quiz, or its entry point is weaker. The open-rate signal is the strongest data point in the entire 24h window.",
+      "proposal": "Add a plain-text P.S. line to the bottom of the Money Avoidance and Money Worship welcome emails that surfaces the Vigilance framing as a mirror — e.g. 'If some of this doesn't quite fit, there's a version of this that looks like over-controlling rather than avoiding. That thread is here: [link to vigilance sequence entry].' This costs one sentence per file and routes warm readers toward the higher-performing sequence.",
+      "file": "src/content/emails/money-avoidance-welcome.md",
+      "current_text": "",
+      "new_text": "P.S. If this doesn't quite land — if your pattern looks more like holding on too tightly rather than looking away — there's a different thread worth reading. [Start the Money Vigilance sequence →]",
+      "impact": "Increase Vigilance sequence volume; potential open-rate lift across all three automations",
+      "risk": "low",
+      "signed_id": "c02ad240abc56efe.1777308203876",
+      "created_at": 1777308203876,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "quiz-zero-sessions-diagnosis-copy",
+      "observation": "The quiz shows 0 sessions and 0 starts over the 48h window. Traffic is not reaching the quiz at all — the funnel is broken at the top of the quiz page, not inside it. The three most recent blog posts (published 24–26 April) have no in-post CTA data visible, which means they are almost certainly not linking to the quiz. These posts are the freshest organic touchpoints Joel has.",
+      "proposal": "Add a single contextual inline CTA block to the most recent post ('Is it normal to cry over money?') immediately after the opening two paragraphs — before readers scroll away. The CTA should name the quiz in plain language tied to the post's emotional premise, not a generic 'take the quiz' button.",
+      "file": "src/content/posts/is-it-normal-to-cry-over-money.md",
+      "current_text": "",
+      "new_text": "\n> **The thing underneath the tears is usually a pattern — not a personality flaw.**\n> If you want to know what yours is, the Way of Wealth money-type quiz takes about four minutes. It won't tell you you're broken. It'll show you the story you've been running. [Find out your money pattern →](/quiz)\n",
+      "impact": "Drive first quiz sessions from highest-recency organic content; break the zero-session streak",
+      "risk": "low",
+      "signed_id": "970305bc4a8b1b29.1777308203876",
+      "created_at": 1777308203876,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "queue-next-post-icp-alignment",
+      "observation": "There are 7 posts queued but no titles or scheduling data are visible, meaning Joel cannot verify whether the next post to go live serves the ICP (ambitious 25-35 earners who earn well but don't build) or drifts toward a broader audience. The three published posts all target the emotional/identity layer well, but none explicitly addresses the 'earns well, doesn't build' tension — the specific gap that separates Joel's ICP from general money-anxiety audiences. Publishing into that gap would sharpen quiz traffic quality.",
+      "proposal": "Insert one targeted post into the front of the queue — or promote the nearest queued post that fits — with a title and opening that names the ICP's exact situation: earning well, nothing to show for it, and the quiet discomfort that creates. Draft a complete title + first paragraph as a new content file ready to schedule as the next publish.",
+      "file": "src/content/posts/you-earn-well-so-why-does-your-savings-account-say-otherwise.md",
+      "current_text": "",
+      "new_text": "---\ntitle: \"You earn well. So why does your savings account say otherwise?\"\npubDate: 2026-04-28\ndescription: \"The gap between a good income and a growing net worth isn't a maths problem. It's worth an honest look.\"\n---\n\nYou've got a salary most people would consider a success. Maybe you did too, at first. But the number in your savings account — or the absence of one — keeps pulling at you.\n\nThis isn't about not earning enough. You know that. It's about something quieter: the part of you that earns steadily and spends just as steadily, and hasn't quite looked at why.\n\nThat's not a character flaw. But it is worth turning toward.",
+      "impact": "Attract higher-intent ICP readers who self-identify as 'earns well, doesn't build'; improves quiz lead quality",
+      "risk": "low",
+      "signed_id": "1fd11be24758e8a9.1777308203876",
+      "created_at": 1777308203876,
+      "requires_manual": false,
+      "block_reason": null
+    }
+  ]
+}
