@@ -43,6 +43,9 @@ jobs:
         run: node scripts/generate-daily-post.mjs
 
       - name: Commit + push
+        env:
+          QUESTION: ${{ steps.generate.outputs.question }}
+          SLUG: ${{ steps.generate.outputs.slug }}
         run: |
           git config user.name "Way of Wealth Bot"
           git config user.email "bot@thewayofwealth.shop"
@@ -51,8 +54,6 @@ jobs:
             echo "No changes to commit (queue may be empty)."
             exit 0
           fi
-          QUESTION="${{ steps.generate.outputs.question }}"
-          SLUG="${{ steps.generate.outputs.slug }}"
           git commit -m "blog: ${QUESTION:-daily post}" -m "Auto-published from reddit-queue.md (slug: ${SLUG})."
           git push
 
@@ -61,9 +62,9 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          QUESTION: ${{ steps.generate.outputs.question }}
+          SLUG: ${{ steps.generate.outputs.slug }}
         run: |
-          QUESTION="${{ steps.generate.outputs.question }}"
-          SLUG="${{ steps.generate.outputs.slug }}"
           node scripts/telegram-notify.mjs --emoji "📝" --title "New blog post live" --body "$QUESTION
 
           https://thewayofwealth.shop/blog/$SLUG"
