@@ -15,10 +15,13 @@ const VSL_YOUTUBE_ID = '';
 
 <!-- HERO (credential strip merged in) -->
 <section class="hero">
+  <div class="hero-portrait">
+    <img src="/images/joel-hero.png" alt="Joel — founder of Way of Wealth, MSc Behavioural Economics, Level 4 Qualified Financial Planner" loading="eager" width="160" height="160" />
+  </div>
   <div class="hero-credential">MSc Behavioral Economics &nbsp;|&nbsp; Qualified Financial Planner (UK)</div>
   <p class="hero-tag">The Money Story Method</p>
   <h1>A 12-week programme for people who've <em>tried everything else.</em></h1>
-  <p class="hero-sub">1:1 behavioural coaching that goes deeper than budgets. For anyone who knows what they <em>should</em> be doing with money — and keeps hitting the same wall before they can.</p>
+  <p class="hero-sub">1:1 behavioural coaching that goes deeper than budgets. <em>This isn't manifestation work — it's behavioural economics applied to your finances.</em> For anyone who knows what they should be doing with money, and keeps hitting the same wall before they can.</p>
   <div class="hero-actions">
     <a href="#apply" class="btn-primary">Apply for the Founding Cohort</a>
     <a href="#programme" class="btn-ghost">See the Programme</a>
@@ -26,6 +29,11 @@ const VSL_YOUTUBE_ID = '';
   <div class="hero-foot">
     <span class="founding-tag">Founding cohort · {FOUNDING_SPOTS_REMAINING} spots remaining</span>
   </div>
+</section>
+
+<!-- BRIDGE LINE — between hero and cred-strip -->
+<section class="hero-bridge">
+  <p>I trained in finance. <em>Then I trained in behaviour.</em> Most coaches do one. Both is what actually works.</p>
 </section>
 
 <!-- CREDENTIAL STRIP — 3 icons -->
@@ -57,14 +65,13 @@ const VSL_YOUTUBE_ID = '';
   </div>
 </section>
 
-<!-- VSL (Video Sales Letter) — placeholder until recorded -->
-<section class="vsl">
-  <div class="vsl-inner reveal">
-    <span class="section-tag">Watch First</span>
-    <h2>The method, <em>in 4 minutes.</em></h2>
-    <p class="vsl-intro">If you'd rather hear it than read it — start here. The 4-phase arc, where it came from, and whether it's the right work for you.</p>
-
-    {VSL_YOUTUBE_ID ? (
+{/* VSL (Video Sales Letter) — only renders when VSL_YOUTUBE_ID is set. Set the constant in frontmatter when video is ready. */}
+{VSL_YOUTUBE_ID && (
+  <section class="vsl">
+    <div class="vsl-inner reveal">
+      <span class="section-tag">Watch First</span>
+      <h2>The method, <em>in 4 minutes.</em></h2>
+      <p class="vsl-intro">If you'd rather hear it than read it — start here. The 4-phase arc, where it came from, and whether it's the right work for you.</p>
       <div class="vsl-embed">
         <iframe
           src={`https://www.youtube-nocookie.com/embed/${VSL_YOUTUBE_ID}?rel=0`}
@@ -75,18 +82,9 @@ const VSL_YOUTUBE_ID = '';
           allowfullscreen>
         </iframe>
       </div>
-    ) : (
-      <div class="vsl-placeholder">
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="28" cy="28" r="27" stroke="#C4A265" stroke-width="1.5"/>
-          <polygon points="23,18 23,38 40,28" fill="#C4A265"/>
-        </svg>
-        <p class="vsl-placeholder-label">[ placeholder — VSL in production ]</p>
-        <p class="vsl-placeholder-sub">4-minute founder overview. Recording this week. When it's up, it plays here.</p>
-      </div>
-    )}
-  </div>
-</section>
+    </div>
+  </section>
+)}
 
 <!-- ICEBERG — redesigned with HTML labels for readability -->
 <section class="iceberg-section">
@@ -365,6 +363,50 @@ const VSL_YOUTUBE_ID = '';
   </div>
 </section>
 
+<!-- AFTER THE 12 WEEKS — outcome / future-pacing -->
+<section class="outcomes">
+  <div class="outcomes-inner">
+    <div class="reveal section-head">
+      <span class="section-tag">After the Twelve Weeks</span>
+      <h2>From financial avoidance<br /><em>to financial fluency.</em></h2>
+      <p class="outcomes-intro">Not a vague promise. Six concrete behavioural shifts that show up in the way you move through the world after the work.</p>
+    </div>
+    <div class="outcomes-grid reveal">
+      <div class="outcome">
+        <span class="outcome-num">01</span>
+        <h3>You open your banking app without flinching.</h3>
+        <p>The dread response that used to make you close the app is gone. Looking is no longer a trigger.</p>
+      </div>
+      <div class="outcome">
+        <span class="outcome-num">02</span>
+        <h3>You have one financial system you actually use.</h3>
+        <p>Not a stack of apps and abandoned spreadsheets. One coherent system, built around how you actually live — not who you wish you were.</p>
+      </div>
+      <div class="outcome">
+        <span class="outcome-num">03</span>
+        <h3>You've broken one identity-level money pattern.</h3>
+        <p>The script that's been running underneath your finances since childhood. Named, mapped, and replaced with one that fits the life you're building.</p>
+      </div>
+      <div class="outcome">
+        <span class="outcome-num">04</span>
+        <h3>You earn without shame. Spend without guilt.</h3>
+        <p>Money decisions stop being moral verdicts on whether you're a good person. They become operational — like any other adult skill.</p>
+      </div>
+      <div class="outcome">
+        <span class="outcome-num">05</span>
+        <h3>You have the conversations you've been avoiding.</h3>
+        <p>With a partner. With a parent. With yourself. The financial conversations that used to feel impossible become possible.</p>
+      </div>
+      <div class="outcome">
+        <span class="outcome-num">06</span>
+        <h3>You move from reactive to deliberate.</h3>
+        <p>Money stops happening to you. You stop reacting to bills, statements, and surprise expenses. You start choosing.</p>
+      </div>
+    </div>
+    <p class="outcomes-foot reveal">These aren't aspirational targets. They're the behavioural outcomes the method is engineered to produce. If they don't happen, the work isn't done.</p>
+  </div>
+</section>
+
 <!-- WHAT YOU GET -->
 <section class="whatyouget">
   <div class="whatyouget-inner">
@@ -485,7 +527,29 @@ const VSL_YOUTUBE_ID = '';
   </div>
 </section>
 
-<!-- Proof / testimonials section removed until real client quotes exist. Page stays polished for real traffic. -->
+<!-- IN-PROGRESS PROOF — honest scaffold using design-language until real cohort quotes land -->
+<section class="proof-progress">
+  <div class="proof-progress-inner reveal">
+    <span class="section-tag">Founding Cohort · In Progress</span>
+    <h2>The words clients use<br /><em>when the work lands.</em></h2>
+    <p class="proof-intro">Cohort 1 is in flight. Full case studies will sit here once clients complete the twelve weeks and have something honest to say. In the meantime, here are the words that come back over and over from coaching conversations — the language the work is engineered to produce.</p>
+    <ul class="proof-words">
+      <li>Non-judgemental</li>
+      <li>Shame-free</li>
+      <li>Safe to look</li>
+      <li>At your pace</li>
+      <li>Behaviour-first</li>
+      <li>Identity-level</li>
+      <li>Aligned with your values</li>
+      <li>Built around your actual life</li>
+      <li>Compassionate</li>
+      <li>Direct, but kind</li>
+      <li>Practical and psychological</li>
+      <li>Human</li>
+    </ul>
+    <p class="proof-foot">If you'd like to be the kind of voice that ends up here, the founding cohort is where it starts.</p>
+  </div>
+</section>
 
 
 <!-- PRICING -->
@@ -627,6 +691,16 @@ const VSL_YOUTUBE_ID = '';
         <p>Honest answer: the programme is non-refundable after Session 4. Phases 2, 3, and 4 only work because of what was built in Phase 1 — the work compounds. If something changes in your life that means you need to pause, see the "What if I need to pause?" question above. Refunds after Session 4 are limited to genuinely exceptional circumstances (medical, bereavement), handled case-by-case.</p>
       </details>
     </div>
+  </div>
+</section>
+
+<!-- QUIZ SOFT-OFF — gentle off-ramp for visitors not ready to apply -->
+<section class="quiz-band">
+  <div class="quiz-band-inner reveal">
+    <p class="quiz-band-eyebrow">Not ready to apply?</p>
+    <p class="quiz-band-headline">Start with the <em>Money Beliefs Quiz.</em></p>
+    <p class="quiz-band-sub">Two minutes. Maps your results against the academic research on money scripts. You'll get a personalised report that names what's running underneath your finances — no payment, no obligation.</p>
+    <a href={LINKS.quiz} class="quiz-band-cta">Take the Quiz →</a>
   </div>
 </section>
 
@@ -892,6 +966,51 @@ const VSL_YOUTUBE_ID = '';
     padding: 0.5rem 1.1rem;
     border: 1px solid rgba(196, 162, 101, 0.35);
     border-radius: 4px;
+  }
+
+  /* --- HERO PORTRAIT --- */
+  .hero-portrait {
+    position: relative;
+    z-index: 2;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--color-gold) 0%, rgba(196, 162, 101, 0.35) 100%);
+    margin-bottom: 1.75rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .hero-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    border: 3px solid var(--color-navy);
+  }
+  @media (max-width: 600px) {
+    .hero-portrait { width: 128px; height: 128px; }
+  }
+
+  /* --- HERO BRIDGE — single italic line between hero and cred-strip --- */
+  .hero-bridge {
+    background: var(--color-navy-deep);
+    padding: 1.75rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(196, 162, 101, 0.25);
+  }
+  .hero-bridge p {
+    font-family: var(--font-heading);
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    color: var(--color-cream);
+    line-height: 1.5;
+    max-width: 760px;
+    margin: 0 auto;
+    font-weight: 400;
+  }
+  .hero-bridge p em {
+    font-style: italic;
+    color: var(--color-gold);
   }
 
   /* --- CRED STRIP (3 icons) --- */
@@ -1526,6 +1645,86 @@ const VSL_YOUTUBE_ID = '';
   .phase li + li { border-top: 1px solid rgba(245, 240, 232, 0.06); }
 
   /* --- WHAT YOU GET --- */
+  /* --- OUTCOMES (after 12 weeks) --- */
+  .outcomes {
+    padding: 7rem 2rem;
+    background: var(--color-bg-white);
+    border-top: 1px solid var(--color-border-warm);
+  }
+  .outcomes-inner { max-width: 1100px; margin: 0 auto; }
+  .outcomes h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    color: var(--color-navy);
+    line-height: 1.1;
+    font-weight: 400;
+    margin: 1rem 0 1.4rem;
+  }
+  .outcomes h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
+  .outcomes-intro {
+    color: var(--color-charcoal);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 640px;
+    margin-bottom: 3.5rem;
+  }
+  .outcomes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.25rem;
+    margin-bottom: 3rem;
+  }
+  .outcome {
+    background: #fff;
+    border: 1px solid var(--color-border-warm);
+    border-left: 3px solid var(--color-gold);
+    padding: 1.75rem 1.85rem 1.85rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(28, 42, 58, 0.05);
+    transition: box-shadow 0.3s, transform 0.3s;
+  }
+  .outcome:hover {
+    box-shadow: 0 8px 24px rgba(28, 42, 58, 0.08);
+    transform: translateY(-2px);
+  }
+  .outcome-num {
+    font-family: var(--font-heading-sc);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    color: var(--color-gold);
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+  .outcome h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    color: var(--color-navy);
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+  .outcome p {
+    color: var(--color-charcoal);
+    font-size: 0.96rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+  .outcomes-foot {
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: var(--color-charcoal);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border-warm);
+  }
+  @media (max-width: 800px) {
+    .outcomes-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+  }
+
   .whatyouget { padding: 7rem 2rem; background: var(--color-bg-white); }
   .whatyouget-inner { max-width: 1100px; margin: 0 auto; }
   .whatyouget h2 {
@@ -1735,6 +1934,65 @@ const VSL_YOUTUBE_ID = '';
   /* Proof / testimonial / video styles removed with the section — restore when real client content lands. */
 
   /* --- PRICING --- */
+  /* --- IN-PROGRESS PROOF (founding cohort scaffold) --- */
+  .proof-progress {
+    padding: 7rem 2rem;
+    background: var(--color-bg-cool);
+    border-top: 1px solid var(--color-border-cool);
+    border-bottom: 1px solid var(--color-border-cool);
+  }
+  .proof-progress-inner {
+    max-width: 920px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .proof-progress h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    color: var(--color-navy);
+    line-height: 1.15;
+    font-weight: 400;
+    margin: 1rem 0 1.4rem;
+  }
+  .proof-progress h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
+  .proof-intro {
+    color: var(--color-charcoal);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 680px;
+    margin: 0 auto 2.5rem;
+  }
+  .proof-words {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0 auto 2.5rem;
+    max-width: 780px;
+  }
+  .proof-words li {
+    font-family: var(--font-heading-sc);
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    color: var(--color-navy);
+    background: #fff;
+    border: 1px solid var(--color-border-warm);
+    padding: 0.6rem 1.1rem;
+    border-radius: 30px;
+    box-shadow: 0 1px 3px rgba(28, 42, 58, 0.05);
+  }
+  .proof-foot {
+    font-family: var(--font-heading);
+    font-style: italic;
+    color: var(--color-charcoal);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
   .pricing { padding: 8rem 2rem; background: var(--color-cream); }
   .pricing-inner { max-width: 1100px; margin: 0 auto; }
   .pricing h2 {
@@ -2072,6 +2330,59 @@ const VSL_YOUTUBE_ID = '';
     font-size: 0.98rem;
     color: var(--color-charcoal);
     line-height: 1.8;
+  }
+
+  /* --- QUIZ SOFT-OFF BAND --- */
+  .quiz-band {
+    padding: 4.5rem 2rem;
+    background: var(--color-cream);
+    border-top: 1px solid var(--color-border-warm);
+    border-bottom: 1px solid var(--color-border-warm);
+  }
+  .quiz-band-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .quiz-band-eyebrow {
+    font-family: var(--font-heading-sc);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    color: var(--color-gold);
+    margin-bottom: 0.85rem;
+  }
+  .quiz-band-headline {
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    color: var(--color-navy);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .quiz-band-headline em { font-style: italic; color: var(--color-gold); }
+  .quiz-band-sub {
+    color: var(--color-charcoal);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 1.75rem;
+  }
+  .quiz-band-cta {
+    display: inline-block;
+    padding: 0.95rem 2.1rem;
+    background: var(--color-navy);
+    color: var(--color-cream);
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .quiz-band-cta:hover {
+    background: var(--color-navy-deep);
+    transform: translateY(-1px);
   }
 
   /* --- APPLY FORM --- */
