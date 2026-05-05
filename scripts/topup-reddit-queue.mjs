@@ -170,8 +170,30 @@ Pick the 5 best. JSON only.`;
 // ───────────────────────────────────────────────────────────────
 // Main
 
+// Threshold below which a "no-op" topup is treated as a failure — at or below
+// this many pending entries, the daily-blog-post workflow is at imminent risk
+// of running out, so we open an issue instead of silent-success.
+const QUEUE_CRITICAL_THRESHOLD = 3;
+
 async function main() {
   console.log(`[${new Date().toISOString()}] Starting weekly queue topup. Model: ${MODEL}`);
+
+  // Read the queue first so we know the pending count before doing anything.
+  // Lets us decide whether a 0-add outcome is acceptable (queue still has runway)
+  // or critical (queue is about to empty — must fail loud).
+  const queueRaw = await readFile(QUEUE_PATH, 'utf8');
+  const { lines, rows, lastRowIdx } = parseQueue(queueRaw);
+  const pendingBefore = rows.filter((r) => r.status.includes('🔵')).length;
+  console.log(`Pending queue items at start: ${pendingBefore}`);
+
+  const failIfCritical = (reason) => {
+    if (pendingBefore <= QUEUE_CRITICAL_THRESHOLD) {
+      throw new Error(
+        `${reason} — queue is critical (${pendingBefore} pending, threshold ${QUEUE_CRITICAL_THRESHOLD}). Manual replenishment required.`,
+      );
+    }
+    console.log(`${reason} — queue still has ${pendingBefore} pending, OK to skip this week.`);
+  };
 
   console.log('Fetching Reddit posts...');
   const allPosts = [];
@@ -194,19 +216,17 @@ async function main() {
   console.log(`Filtered to Jess-shaped questions: ${jessPosts.length}`);
 
   if (jessPosts.length === 0) {
-    console.log('No candidates passed the Jess filter. Exiting without changes.');
+    failIfCritical('No candidates passed the Jess filter');
     return;
   }
 
-  const queueRaw = await readFile(QUEUE_PATH, 'utf8');
-  const { lines, rows, lastRowIdx } = parseQueue(queueRaw);
   const existingQuestions = rows.map((r) => r.question);
   const nextNum = maxQueueNum(rows) + 1;
 
   console.log('Asking Claude to curate...');
   const { picks } = await callClaude(jessPosts, existingQuestions);
   if (!Array.isArray(picks) || picks.length === 0) {
-    console.log('Claude returned no picks. Exiting.');
+    failIfCritical('Claude returned no picks');
     return;
   }
   console.log(`Claude picked ${picks.length} questions.`);
