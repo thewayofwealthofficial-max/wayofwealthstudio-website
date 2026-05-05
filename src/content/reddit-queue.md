@@ -37,7 +37,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 18 | ✅ | Can I rebuild my career after burnout at 40? | sunk cost fallacy, planning fallacy | ADHD & money | ADHD/Neurodivergent, Self-Employed Stresser |
 | 19 | ✅ | Why do I feel like a failure at 25 with money? | social comparison, money scripts | Anxiety & avoidance | Anxious Avoider |
 | 20 | ✅ | Should I say no when family asks me for money I can't afford? | money scripts, loss aversion | Spending & shame | All segments |
-| 21 | 🔵 | Why do I always blow my bonus, tax refund, or windfall money? | windfall (house money) effect, mental accounting | Spending & shame | All segments |
+| 21 | ✅ | Why do I always blow my bonus, tax refund, or windfall money? | windfall (house money) effect, mental accounting | Spending & shame | All segments |
 | 22 | 🔵 | Why is doing my self-assessment the thing I dread most? | affective forecasting, avoidance amplification | Self-employed | Self-Employed Stresser |
 | 23 | 🔵 | Why is asking for a pay rise so terrifying when I know I deserve it? | anticipated regret, status quo bias, identity threat | Anxiety & avoidance | All segments |
 | 24 | 🔵 | How do I stop accumulating subscriptions I never use? | endowment effect, default bias, decision inertia | Spending & shame | ADHD/Neurodivergent, Anxious Avoider |
