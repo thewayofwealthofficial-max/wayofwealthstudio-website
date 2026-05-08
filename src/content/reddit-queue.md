@@ -40,7 +40,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 21 | ✅ | Why do I always blow my bonus, tax refund, or windfall money? | windfall (house money) effect, mental accounting | Spending & shame | All segments |
 | 22 | ✅ | Why is doing my self-assessment the thing I dread most? | affective forecasting, avoidance amplification | Self-employed | Self-Employed Stresser |
 | 23 | ✅ | Why is asking for a pay rise so terrifying when I know I deserve it? | anticipated regret, status quo bias, identity threat | Anxiety & avoidance | All segments |
-| 24 | 🔵 | How do I stop accumulating subscriptions I never use? | endowment effect, default bias, decision inertia | Spending & shame | ADHD/Neurodivergent, Anxious Avoider |
+| 24 | ✅ | How do I stop accumulating subscriptions I never use? | endowment effect, default bias, decision inertia | Spending & shame | ADHD/Neurodivergent, Anxious Avoider |
 | 25 | 🔵 | Should I save for my kids' future or my own retirement first? | identity money scripts, present-future tradeoff | Behavioral basics | All segments |
 | 26 | 🔵 | Why do I lie about money to my friends and then feel worse? | self-presentation, money scripts, shame loop | Anxiety & avoidance | Anxious Avoider, All segments |
 
