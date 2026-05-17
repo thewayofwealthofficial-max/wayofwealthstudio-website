@@ -27,17 +27,41 @@ const SUBREDDITS = [
   'ADHD',
 ];
 
-const USER_AGENT = 'thewayofwealth-queue-topup/1.1 (by /u/thewayofwealth; contact joel@thewayofwealth.shop)';
+const USER_AGENT = 'thewayofwealth-queue-topup/1.2 (by /u/thewayofwealth; contact joel@thewayofwealth.shop)';
 
 // ───────────────────────────────────────────────────────────────
 // Reddit fetch
-// Uses old.reddit.com because www.reddit.com aggressively rate-limits / IP-blocks
-// GitHub Actions runners. If old.reddit also returns empty, the next step is
-// proper OAuth via a script-type Reddit app (REDDIT_CLIENT_ID/_SECRET secrets).
+// Reddit blocks unauthenticated requests from GitHub Actions runner IPs
+// (HTTP 403 from both www.reddit.com and old.reddit.com). Real fix: OAuth
+// via a script-type Reddit app. Requires REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET
+// as repo secrets. If those are not set, we fall back to old.reddit.com
+// (which works locally but 403s on GHA — useful for local debugging only).
 
-async function fetchSubredditTop(subreddit, time = 'week', limit = 30) {
-  const url = `https://old.reddit.com/r/${subreddit}/top.json?t=${time}&limit=${limit}&raw_json=1`;
-  const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, 'Accept': 'application/json' } });
+async function getRedditAccessToken({ clientId, clientSecret }) {
+  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${basic}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': USER_AGENT,
+    },
+    body: 'grant_type=client_credentials',
+  });
+  if (!res.ok) {
+    throw new Error(`Reddit OAuth failed: ${res.status} ${await res.text()}`);
+  }
+  const { access_token } = await res.json();
+  if (!access_token) throw new Error('Reddit OAuth response missing access_token');
+  return access_token;
+}
+
+async function fetchSubredditTop(subreddit, time = 'week', limit = 30, accessToken = null) {
+  const base = accessToken ? 'https://oauth.reddit.com' : 'https://old.reddit.com';
+  const url = `${base}/r/${subreddit}/top.json?t=${time}&limit=${limit}&raw_json=1`;
+  const headers = { 'User-Agent': USER_AGENT, 'Accept': 'application/json' };
+  if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+  const res = await fetch(url, { headers });
   if (!res.ok) {
     console.warn(`r/${subreddit}: HTTP ${res.status} ${res.statusText} — skipping`);
     return [];
@@ -45,7 +69,6 @@ async function fetchSubredditTop(subreddit, time = 'week', limit = 30) {
   const data = await res.json();
   const children = data?.data?.children ?? [];
   if (children.length === 0) {
-    // Diagnose: log what Reddit actually returned so the next failure isn't a black box
     const preview = JSON.stringify(data).slice(0, 400);
     console.warn(`r/${subreddit}: HTTP 200 but 0 posts. Response preview: ${preview}`);
   }
@@ -204,10 +227,27 @@ async function main() {
     console.log(`${reason} — queue still has ${pendingBefore} pending, OK to skip this week.`);
   };
 
+  // Acquire OAuth token if Reddit app credentials are configured.
+  // Without OAuth, Reddit returns 403 from GHA runner IPs.
+  let accessToken = null;
+  if (process.env.REDDIT_CLIENT_ID && process.env.REDDIT_CLIENT_SECRET) {
+    try {
+      accessToken = await getRedditAccessToken({
+        clientId: process.env.REDDIT_CLIENT_ID,
+        clientSecret: process.env.REDDIT_CLIENT_SECRET,
+      });
+      console.log('Authenticated with Reddit OAuth (oauth.reddit.com)');
+    } catch (e) {
+      console.warn(`Reddit OAuth failed, falling back to old.reddit.com: ${e.message}`);
+    }
+  } else {
+    console.warn('REDDIT_CLIENT_ID/REDDIT_CLIENT_SECRET not set — using unauthenticated old.reddit.com (will 403 from GHA runners). Set those secrets to enable OAuth.');
+  }
+
   console.log('Fetching Reddit posts...');
   const allPosts = [];
   for (const sub of SUBREDDITS) {
-    const posts = await fetchSubredditTop(sub, 'week', 25);
+    const posts = await fetchSubredditTop(sub, 'week', 25, accessToken);
     console.log(`  r/${sub}: ${posts.length} posts`);
     allPosts.push(...posts.map((p) => ({
       subreddit: sub,
