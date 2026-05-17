@@ -27,20 +27,29 @@ const SUBREDDITS = [
   'ADHD',
 ];
 
-const USER_AGENT = 'thewayofwealth-queue-topup/1.0 (by /u/thewayofwealth)';
+const USER_AGENT = 'thewayofwealth-queue-topup/1.1 (by /u/thewayofwealth; contact joel@thewayofwealth.shop)';
 
 // ───────────────────────────────────────────────────────────────
 // Reddit fetch
+// Uses old.reddit.com because www.reddit.com aggressively rate-limits / IP-blocks
+// GitHub Actions runners. If old.reddit also returns empty, the next step is
+// proper OAuth via a script-type Reddit app (REDDIT_CLIENT_ID/_SECRET secrets).
 
 async function fetchSubredditTop(subreddit, time = 'week', limit = 30) {
-  const url = `https://www.reddit.com/r/${subreddit}/top.json?t=${time}&limit=${limit}`;
-  const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
+  const url = `https://old.reddit.com/r/${subreddit}/top.json?t=${time}&limit=${limit}&raw_json=1`;
+  const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, 'Accept': 'application/json' } });
   if (!res.ok) {
-    console.warn(`r/${subreddit}: ${res.status} ${res.statusText} — skipping`);
+    console.warn(`r/${subreddit}: HTTP ${res.status} ${res.statusText} — skipping`);
     return [];
   }
   const data = await res.json();
-  return (data?.data?.children ?? []).map((c) => c.data);
+  const children = data?.data?.children ?? [];
+  if (children.length === 0) {
+    // Diagnose: log what Reddit actually returned so the next failure isn't a black box
+    const preview = JSON.stringify(data).slice(0, 400);
+    console.warn(`r/${subreddit}: HTTP 200 but 0 posts. Response preview: ${preview}`);
+  }
+  return children.map((c) => c.data);
 }
 
 function looksLikeJessQuestion(post) {
