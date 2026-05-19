@@ -44,7 +44,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 25 | ✅ | Should I save for my kids' future or my own retirement first? | identity money scripts, present-future tradeoff | Behavioral basics | All segments |
 | 26 | ✅ | Why do I lie about money to my friends and then feel worse? | self-presentation, money scripts, shame loop | Anxiety & avoidance | Anxious Avoider, All segments |
 | 27 | ✅ | Why does even the smallest money task feel like deadlifting 500 pounds? | task initiation deficit, intention-action gap, executive dysfunction | Anxiety & avoidance | ADHD/Neurodivergent, All segments |
-| 28 | 🔵 | How do I forgive myself for the years of irresponsible spending I'm still paying for? | sunk cost fallacy, identity reframing, self-compassion vs self-criticism | Spending & shame | Anxious Avoider, All segments |
+| 28 | ✅ | How do I forgive myself for the years of irresponsible spending I'm still paying for? | sunk cost fallacy, identity reframing, self-compassion vs self-criticism | Spending & shame | Anxious Avoider, All segments |
 | 29 | 🔵 | Am I doing money "right"? Why am I so terrified I'm getting it wrong? | ambiguity aversion, social comparison, perfectionism trap | Behavioral basics | Anxious Avoider, All segments |
 | 30 | 🔵 | Why is buying something I can clearly afford triggering this much guilt and remorse? | anticipated regret, hedonic adaptation, scarcity hangover | Spending & shame | All segments, Anxious Avoider |
 | 31 | 🔵 | Why do I want a budget app that shows what I have LEFT — not what I've spent? | loss aversion, mental accounting, prospective vs retrospective framing | Budgeting that sticks | All segments |
