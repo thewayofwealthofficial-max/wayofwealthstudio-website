@@ -358,9 +358,32 @@ async function pullQueueAndPosts() {
 
 const SYSTEM_PROMPT = `You are Fred, an autonomous optimization assistant for Way of Wealth — Joel's UK behavioural-money-coaching business. Review the last 24 hours of data below. Identify the 3 highest-leverage actions Joel could take in the next 24 hours to improve conversion, reduce drop-offs, or publish better content.
 
-Voice rules (strict — banned words):
-abundance, manifest, money magnet, lucky, money blocks, release, rich life, first class, chill, chillpreneur, somatic, sacred, body check-in, holding space, un-shaming, hustle, grind, side hustle, boss babe.
-In-bounds: quiet awareness, turning toward, the story beneath the money, honest reckoning, the work underneath, the thing you won't look at, grounded, steady.
+Voice rules (synced with BRAND_BIBLE.md Part 0 §3 — May 2026; sync manually when bible updates because Fred runs in CI without access to the bible repo):
+
+Banned words (any appearance → reject the proposal):
+— Hype/hustle: hustle, grind, side hustle, boss babe, manifestation, manifest, abundance, abundance mindset, attract wealth, money magnet, passive income, "financial freedom" (as buzzword), toxic positivity, lucky, money blocks, release, rich life, first class, chill, chillpreneur.
+— Spiritual jargon: vibration, frequency, law of attraction, somatic, sacred, body check-in, holding space, un-shaming.
+— Empty action verbs: journey, breakthrough, unlock, heal your money story.
+— AI-slop tells (added May 2026 from Hormozi + Reddit r/ChatGPT lists): delve, unpack, signals, underscores, navigate complexities, ever-changing landscape, synergies, leverage (as buzzword), holistic, embarked, delved, invaluable, groundbreaking, relentless, tapestry, treasure trove, streamlined.
+— Regulatory: "Level 4" — never write. Credentials always "MSc Behavioural Economics | Qualified Financial Planner".
+
+Banned structural patterns:
+— No em dashes anywhere. Use commas, full stops, or line breaks.
+— No binary contrasts ("It's not X. It's Y." / "X doesn't matter. Y matters.").
+— No three-item filler lists with parallel structure.
+— No stacked fragments. No false agency ("Let it guide you").
+— No passive voice. No adverbs doing real work.
+— No "Moreover" / "Furthermore" paragraph starters (AI transition tell).
+— No "Bold Word: Colon: Explanation" bullet format (AI structure tell).
+— No "neat little bow" generic conclusions — closers that could apply to any company on Earth.
+— No diagnostic crutches ("Here's what's really happening", "The truth is", "Most people don't realise").
+
+The Sultanic test (apply to every sentence in proposed copy):
+Ask: "Could 1,000 other coaches write this exact sentence?" If YES → rewrite into the truth plane (sensory, specific, lived — something only Joel could write). Generic = trust state = AI slop, even without banned words. Lean on £150k story specifics, gym-bag moment, unopened tax-return tab.
+
+In-bounds (Fred-specific allowed register — these phrases are encouraged): quiet awareness, turning toward, the story beneath the money, honest reckoning, the work underneath, the thing you won't look at, grounded, steady.
+
+Two-pass audit: after drafting each proposal's NEW_TEXT, internally re-read against the banned-word + structural lists above. If a violation, rewrite ONLY that sentence. Don't cascade-rewrite. If a proposal cannot pass the audit, drop it and propose a different change instead — do not ship slop.
 
 ICP: ambitious self-development-focused earners 25-35 (gender-neutral) who earn well but don't build.
 
@@ -369,11 +392,45 @@ Each proposal must be:
 - Specific enough that the change can be described as a single file path + diff
 - Grounded in the DATA, not opinion
 
-Return JSON only, format:
-{"proposals": [{"id": "short-slug", "observation": "...", "proposal": "...", "file": "relative/path.ext", "current_text": "...", "new_text": "...", "impact": "short phrase", "risk": "low|medium|high"}, ...]}`;
+OUTPUT FORMAT — respond in exactly this shape, no preamble, no markdown fencing.
+Return a one-line JSON metadata envelope, then the four prose fields for each proposal wrapped in sentinels. The prose blocks can contain any characters — quotes, apostrophes, newlines, code fences — because they live outside the JSON.
+
+{"proposals":[{"id":"short-slug-1","file":"relative/path.ext","impact":"short phrase","risk":"low"},{"id":"short-slug-2","file":"...","impact":"...","risk":"medium"},{"id":"short-slug-3","file":"...","impact":"...","risk":"low"}]}
+<<<OBSERVATION 1>>>
+<data-grounded observation for proposal 1>
+<<<PROPOSAL 1>>>
+<what to change and why, for proposal 1>
+<<<CURRENT_TEXT 1>>>
+<exact current text that will be replaced — must appear verbatim in the target file. Leave blank line only if additive>
+<<<NEW_TEXT 1>>>
+<exact replacement text>
+<<<OBSERVATION 2>>>
+<...>
+<<<PROPOSAL 2>>>
+<...>
+<<<CURRENT_TEXT 2>>>
+<...>
+<<<NEW_TEXT 2>>>
+<...>
+<<<OBSERVATION 3>>>
+<...>
+<<<PROPOSAL 3>>>
+<...>
+<<<CURRENT_TEXT 3>>>
+<...>
+<<<NEW_TEXT 3>>>
+<...>
+<<<END>>>
+
+Rules:
+- id must be a short kebab-case slug, unique within the batch.
+- risk must be one of: low, medium, high.
+- Keep the JSON envelope on ONE line with no internal newlines.
+- Every sentinel must appear on its own line with no surrounding whitespace.
+- Do not emit any text after <<<END>>>.`;
 
 function buildUserPrompt(ctx) {
-  return `DATA FOLLOWS:\n\n${JSON.stringify(ctx, null, 2)}\n\nReturn JSON only — no preamble, no markdown fencing.`;
+  return `DATA FOLLOWS:\n\n${JSON.stringify(ctx, null, 2)}\n\nFollow the OUTPUT FORMAT from the system prompt exactly. One-line JSON envelope, then sentinel-wrapped prose, ending with <<<END>>>.`;
 }
 
 async function callClaude(systemPrompt, userPrompt) {
@@ -403,9 +460,67 @@ async function callClaude(systemPrompt, userPrompt) {
   return text;
 }
 
-function parseClaudeJson(text) {
+function parseClaudeResponse(text) {
+  // Response format: one-line JSON metadata envelope, then sentinel-wrapped
+  // prose for each proposal, terminated by <<<END>>>. Splitting the prose out
+  // of the JSON avoids parser breakage from quotes/newlines/em-dashes in
+  // observation/proposal/current_text/new_text fields.
   const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-  return JSON.parse(cleaned);
+
+  // Find the first sentinel — everything before it is the JSON envelope.
+  const firstSentinel = cleaned.search(/<<<(OBSERVATION|PROPOSAL|CURRENT_TEXT|NEW_TEXT)\s+\d+>>>/);
+  const endMarker = cleaned.lastIndexOf('<<<END>>>');
+  if (firstSentinel < 0 || endMarker < 0 || endMarker <= firstSentinel) {
+    console.error('Claude response missing sentinels. Raw:\n', text);
+    throw new Error('Claude response missing sentinel-wrapped prose (<<<FIELD N>>> ... <<<END>>>)');
+  }
+
+  const jsonPart = cleaned.slice(0, firstSentinel).trim();
+  const proseBody = cleaned.slice(firstSentinel, endMarker).trim();
+
+  let meta;
+  try {
+    meta = JSON.parse(jsonPart);
+  } catch (err) {
+    console.error('Metadata JSON parse failed. Raw JSON part:\n', jsonPart);
+    throw err;
+  }
+  if (!Array.isArray(meta.proposals)) {
+    throw new Error('Metadata JSON missing "proposals" array.');
+  }
+
+  // Slice prose into {field, idx, text} tuples by walking the sentinel regex.
+  const sentinelRe = /<<<(OBSERVATION|PROPOSAL|CURRENT_TEXT|NEW_TEXT)\s+(\d+)>>>/g;
+  const FIELD_MAP = {
+    OBSERVATION: 'observation',
+    PROPOSAL: 'proposal',
+    CURRENT_TEXT: 'current_text',
+    NEW_TEXT: 'new_text',
+  };
+  const prose = {};
+  const matches = [...proseBody.matchAll(sentinelRe)];
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i];
+    const next = matches[i + 1];
+    const start = m.index + m[0].length;
+    const stop = next ? next.index : proseBody.length;
+    const idx = Number(m[2]) - 1; // 1-indexed in prompt, 0-indexed in array
+    const field = FIELD_MAP[m[1]];
+    if (idx < 0 || !field) continue;
+    prose[idx] = prose[idx] ?? {};
+    prose[idx][field] = proseBody.slice(start, stop).trim();
+  }
+
+  // Merge prose into metadata proposals by index.
+  const merged = meta.proposals.map((p, i) => ({
+    ...p,
+    observation: prose[i]?.observation ?? '',
+    proposal: prose[i]?.proposal ?? p.proposal ?? '',
+    current_text: prose[i]?.current_text ?? '',
+    new_text: prose[i]?.new_text ?? '',
+  }));
+
+  return { proposals: merged };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -583,9 +698,9 @@ async function main() {
   const raw = await callClaude(SYSTEM_PROMPT, buildUserPrompt(context));
   let parsed;
   try {
-    parsed = parseClaudeJson(raw);
+    parsed = parseClaudeResponse(raw);
   } catch (err) {
-    throw new Error(`Claude returned non-JSON: ${raw.slice(0, 400)}`);
+    throw new Error(`Claude response parse failed: ${err.message}`);
   }
 
   const proposals = validateProposals(parsed.proposals ?? []);

@@ -12,6 +12,18 @@ export const LINKS = {
   contactEmail: 'mailto:joel@thewayofwealth.shop',
   coaching: '/coaching',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
+  // Lead-magnet funnel pages
+  budgetTracker: '/budget-tracker',
+  budgetTrackerThanks: '/thanks/budget-tracker',
+  // DM Sorcery post-booking confirmation (Calendly redirect target)
+  booked: '/booked',
+  // Lead-magnet form endpoint (Netlify function — see netlify/functions/lead-magnet-subscribe.js)
+  leadMagnetApi: '/api/lead-magnet/subscribe',
+  // Google Drive direct-download URL for the Budget Tracker PDF.
+  // Replace <FILE_ID> with the real Drive file ID once Joel uploads.
+  // Format: https://drive.google.com/uc?export=download&id=<FILE_ID>
+  // Note: file MUST be shared as "Anyone with the link" → Viewer.
+  budgetTrackerDownload: 'https://drive.google.com/uc?export=download&id=REPLACE_WITH_FILE_ID',
   // Legacy gmail kept intentionally for competitor funnel-hacking signups only.
   // Do NOT use for customer-facing contact or lead routing.
   funnelHackInbox: 'thewayofwealth.official@gmail.com',

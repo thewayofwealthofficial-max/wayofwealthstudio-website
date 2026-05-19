@@ -1,0 +1,447 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LINKS } from '../config/links';
+
+const title = "You're booked — Way of Wealth";
+const description = "Your discovery call is confirmed. Here's what to do before we talk, and what to expect on the call.";
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/booked`} noindex={true}>
+
+<section class="bk-hero">
+  <div class="bk-hero-inner reveal">
+    <p class="bk-tag">Confirmed</p>
+    <h1 class="bk-h1">
+      You're booked.<br />
+      <em id="bk-time-line">See you on the call.</em>
+    </h1>
+    <p class="bk-sub">
+      You'll get a calendar invite in your inbox within a couple of minutes. It includes the Zoom link.
+      If you don't see it, check spam — and add <strong>joel@thewayofwealth.shop</strong> to your contacts.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · TWO THINGS TO DO BEFORE THE CALL
+============================================================ -->
+<section class="bk-prep">
+  <div class="bk-prep-inner reveal">
+    <p class="bk-eyebrow">Two things to do before we talk</p>
+    <h2 class="bk-h2">
+      A little prep<br /><em>makes the call far more useful.</em>
+    </h2>
+
+    <ol class="bk-steps">
+      <li>
+        <span class="bk-step-num">01</span>
+        <div class="bk-step-body">
+          <h3>Take the Money Beliefs Quiz (5 minutes)</h3>
+          <p>
+            Built on the Klontz Money Scripts — a peer-reviewed framework from behavioural finance.
+            It tells us which of four money patterns is running the show for you. We'll look at your results together on the call.
+          </p>
+          <a href={LINKS.quiz} class="bk-step-cta" target="_blank" rel="noopener">
+            Take the quiz →
+          </a>
+        </div>
+      </li>
+      <li>
+        <span class="bk-step-num">02</span>
+        <div class="bk-step-body">
+          <h3>Sit with one question</h3>
+          <p class="bk-question">
+            <em>"What's the one money pattern I most want to break — and why haven't I been able to break it yet?"</em>
+          </p>
+          <p>
+            You don't need an answer written down. Just let it sit at the back of your mind between now and the call.
+            The good answers usually surface in the shower, not at the desk.
+          </p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · WHAT TO EXPECT ON THE CALL
+============================================================ -->
+<section class="bk-expect">
+  <div class="bk-expect-inner reveal">
+    <p class="bk-eyebrow">What the call actually is</p>
+    <h2 class="bk-h2">
+      Thirty minutes.<br /><em>No pitch script. No card needed.</em>
+    </h2>
+
+    <div class="bk-expect-grid">
+      <div class="bk-expect-card">
+        <h3>What we'll cover</h3>
+        <ul>
+          <li>Your quiz results — what they actually mean</li>
+          <li>The specific money pattern you want to break</li>
+          <li>What's underneath it (almost always not what you'd guess)</li>
+          <li>Whether the Money Story Method is the right fit — honest read, either way</li>
+        </ul>
+      </div>
+      <div class="bk-expect-card">
+        <h3>What it isn't</h3>
+        <ul>
+          <li>A pressured sales call</li>
+          <li>A free coaching session in disguise</li>
+          <li>A pitch you have to sit through</li>
+          <li>Anything that requires a payment decision on the call</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="bk-expect-footer">
+      If it's not a fit, I'll say so and point you at what is.
+      If it is a fit, I'll explain the programme and you decide in your own time.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · WHO YOU'RE TALKING TO
+============================================================ -->
+<section class="bk-who">
+  <div class="bk-who-inner reveal">
+    <p class="bk-eyebrow">Who you're talking to</p>
+    <h2 class="bk-h2 bk-h2-tight">
+      Joel.<br /><em>The short version.</em>
+    </h2>
+    <p class="bk-who-body">
+      MSc Behavioural Economics. Qualified Financial Planner.
+      Lost £150,000 investing badly in 2021 — which is exactly why I now coach the behaviour and not the spreadsheet.
+      The Money Story Method is twelve weeks of one-to-one coaching built for people whose money never quite stays still.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     5 · NEED TO RESCHEDULE
+============================================================ -->
+<section class="bk-resched">
+  <div class="bk-resched-inner reveal">
+    <p class="bk-resched-note">
+      Need to reschedule or cancel? Use the link in your calendar invite —
+      or email <a href={LINKS.contactEmail}>joel@thewayofwealth.shop</a> and we'll sort it.
+    </p>
+  </div>
+</section>
+
+</Layout>
+
+<script is:inline>
+  // Personalise the H1 italic line if Calendly passes invitee data via query string.
+  // Calendly typically supports: ?invitee_full_name=...&event_start_time=...&invitee_email=...
+  (function () {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const name = (params.get('invitee_full_name') || params.get('name') || '').trim().slice(0, 60);
+      const start = params.get('event_start_time') || params.get('start_time') || '';
+      const el = document.getElementById('bk-time-line');
+      if (!el) return;
+
+      let timeStr = '';
+      if (start) {
+        const d = new Date(start);
+        if (!isNaN(d.getTime())) {
+          const day = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+          const time = d.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true });
+          timeStr = `${day} at ${time}`;
+        }
+      }
+
+      if (name && timeStr) {
+        el.textContent = `${name} — see you ${timeStr}.`;
+      } else if (timeStr) {
+        el.textContent = `See you ${timeStr}.`;
+      } else if (name) {
+        el.textContent = `See you on the call, ${name}.`;
+      }
+    } catch (e) { /* fail silently — fallback copy already in HTML */ }
+  })();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
+
+.bk-hero, .bk-prep, .bk-expect, .bk-who, .bk-resched { padding: 7rem 1.5rem; position: relative; }
+.bk-hero { padding: 9rem 1.5rem 6rem; }
+.bk-resched { padding: 3.5rem 1.5rem; }
+
+.bk-hero, .bk-hero *,
+.bk-prep, .bk-prep *,
+.bk-expect, .bk-expect *,
+.bk-who, .bk-who *,
+.bk-resched, .bk-resched * {
+  font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.bk-h1, .bk-h2, .bk-steps h3, .bk-expect-card h3 {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+}
+.bk-h1 em, .bk-h2 em {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+  font-weight: 500;
+}
+
+/* ----- 1 · HERO ----- */
+.bk-hero {
+  background: var(--color-bg-white);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.bk-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%),
+    radial-gradient(circle at 20% 90%, rgba(28,42,58,0.04), transparent 55%);
+  pointer-events: none;
+}
+.bk-hero-inner { max-width: 760px; margin: 0 auto; position: relative; }
+.bk-tag {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-cream);
+  background: var(--color-gold);
+  border-radius: 999px;
+  padding: 6px 24px;
+  display: inline-block;
+  margin: 0 0 1.6rem;
+  text-transform: uppercase;
+}
+.bk-h1 {
+  font-size: clamp(2.2rem, 4.6vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-navy);
+  margin: 0 0 1.4rem;
+  letter-spacing: -0.018em;
+}
+.bk-h1 em {
+  color: var(--color-gold);
+  font-weight: 500;
+  font-style: italic;
+  display: block;
+  margin-top: 0.4rem;
+}
+.bk-sub {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-slate);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+.bk-sub strong { color: var(--color-navy); font-weight: 600; }
+
+/* ----- 2 · PREP STEPS ----- */
+.bk-prep {
+  background: var(--color-cream);
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.bk-prep-inner { max-width: 860px; margin: 0 auto; }
+.bk-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin: 0 0 1.4rem;
+  text-align: center;
+}
+.bk-h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-navy);
+  text-align: center;
+  margin: 0 0 3.4rem;
+  letter-spacing: -0.015em;
+}
+.bk-h2 em {
+  color: var(--color-gold);
+  font-weight: 500;
+  font-style: italic;
+}
+.bk-h2-tight { margin-bottom: 2rem; }
+
+.bk-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+.bk-steps li {
+  background: #fff;
+  border: 1px solid var(--color-border-warm);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 6px;
+  padding: 2rem 2rem 1.8rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.6rem;
+  align-items: start;
+}
+.bk-step-num {
+  font-family: 'Fraunces', serif !important;
+  font-size: 2.6rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-gold);
+  line-height: 1;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+}
+.bk-step-body { min-width: 0; }
+.bk-steps h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-navy);
+  margin: 0 0 0.7rem;
+  font-variation-settings: "opsz" 60, "SOFT" 50, "WONK" 0;
+}
+.bk-steps p {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-slate);
+  margin: 0 0 1rem;
+}
+.bk-question {
+  font-size: 17px !important;
+  color: var(--color-charcoal) !important;
+  border-left: 2px solid var(--color-gold);
+  padding-left: 1rem;
+  margin: 0.4rem 0 1rem !important;
+}
+.bk-question em {
+  font-family: 'Fraunces', serif !important;
+  font-style: italic;
+  font-weight: 500;
+  font-variation-settings: "opsz" 60, "SOFT" 0, "WONK" 0;
+}
+.bk-step-cta {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  background: var(--color-navy);
+  color: var(--color-cream);
+  border: 1px solid var(--color-navy);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 0.4rem;
+}
+.bk-step-cta:hover {
+  background: var(--color-navy-deep);
+  transform: translateY(-1px);
+}
+@media (max-width: 600px) {
+  .bk-steps li { grid-template-columns: 1fr; gap: 0.8rem; padding: 1.6rem; }
+  .bk-step-num { font-size: 2rem; }
+}
+
+/* ----- 3 · EXPECT ----- */
+.bk-expect {
+  background: var(--color-bg-white);
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.bk-expect-inner { max-width: 920px; margin: 0 auto; }
+.bk-expect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.4rem;
+}
+.bk-expect-card {
+  background: var(--color-cream);
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  padding: 1.8rem 1.8rem 1.6rem;
+}
+.bk-expect-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  margin: 0 0 1rem;
+  font-variation-settings: "opsz" 60, "SOFT" 50, "WONK" 0;
+}
+.bk-expect-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.bk-expect-card li {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--color-slate);
+  padding-left: 1.2rem;
+  position: relative;
+}
+.bk-expect-card li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--color-gold);
+}
+.bk-expect-footer {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-charcoal);
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  font-style: italic;
+}
+@media (max-width: 700px) {
+  .bk-expect-grid { grid-template-columns: 1fr; }
+}
+
+/* ----- 4 · WHO ----- */
+.bk-who {
+  background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-bg-cool) 100%);
+  text-align: center;
+}
+.bk-who-inner { max-width: 720px; margin: 0 auto; position: relative; }
+.bk-who-body {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-charcoal);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ----- 5 · RESCHEDULE ----- */
+.bk-resched {
+  background: var(--color-bg-white);
+  text-align: center;
+}
+.bk-resched-inner { max-width: 640px; margin: 0 auto; }
+.bk-resched-note {
+  font-size: 14px;
+  color: var(--color-slate);
+  margin: 0;
+  line-height: 1.5;
+}
+.bk-resched-note a {
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-gold);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .bk-hero { padding: 7rem 1.2rem 4.5rem; }
+  .bk-prep, .bk-expect, .bk-who { padding: 5rem 1.2rem; }
+}
+</style>

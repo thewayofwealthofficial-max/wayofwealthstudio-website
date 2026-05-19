@@ -1,0 +1,617 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LINKS } from '../config/links';
+
+const title = "The Behavioural Budget Tracker — Free Download | Way of Wealth";
+const description = "A budget tracker for people who've quit every other one. Built on behavioural science, not willpower. Free download. Joel Ezekiel · MSc Behavioural Economics · Level 4 Qualified Financial Planner.";
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/budget-tracker`}>
+
+<!-- ============================================================
+     1 · HERO + FORM (single focus)
+============================================================ -->
+<section class="lm-hero">
+  <div class="lm-hero-inner reveal">
+    <p class="lm-tagline">Free download · No credit card · Just an email</p>
+    <h1 class="lm-h1">
+      A budget tracker for people who've<br />
+      <em>quit every other one.</em>
+    </h1>
+    <p class="lm-sub">
+      Built on behavioural science, not willpower. It assumes you'll skip a week. It gives you a way back in.
+    </p>
+
+    <form id="lm-form" class="lm-form" data-magnet="budget-tracker" data-download={LINKS.budgetTrackerDownload} data-after={LINKS.coaching}>
+      <div class="lm-form-row">
+        <label class="lm-label" for="lm-email">Your email</label>
+        <input id="lm-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        <p class="lm-field-error" id="lm-email-error" aria-live="polite"></p>
+      </div>
+      <div class="lm-form-row">
+        <label class="lm-label" for="lm-name">First name <span class="lm-optional">(optional)</span></label>
+        <input id="lm-name" name="name" type="text" autocomplete="given-name" placeholder="Jess" />
+      </div>
+      <!-- honeypot -->
+      <div class="lm-honeypot" aria-hidden="true">
+        <label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <button id="lm-submit" type="submit" class="lm-submit" disabled>Enter your email to download →</button>
+      <p class="lm-reassure">
+        Click the button and the tracker downloads instantly. You'll get a short series of emails about why budgets stop working — unsubscribe whenever.
+      </p>
+      <div id="lm-status" class="lm-status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · WHAT'S INSIDE
+============================================================ -->
+<section class="lm-inside">
+  <div class="lm-inside-inner reveal">
+    <p class="lm-eyebrow">What's inside</p>
+    <h2 class="lm-h2">
+      Six pages. <em>Designed for the way you actually spend.</em>
+    </h2>
+    <ul class="lm-features">
+      <li>
+        <span class="lm-num">01</span>
+        <h3>A weekly tracker that survives you skipping a week</h3>
+        <p>Most budget apps punish a missed day with red flags and shame. This one assumes you'll miss a day. The "back-in" prompt resets cleanly without making you feel like you failed.</p>
+      </li>
+      <li>
+        <span class="lm-num">02</span>
+        <h3>The four-script diagnostic on the first page</h3>
+        <p>Money Avoidance. Money Vigilance. Money Worship. Money Status. Klontz's peer-reviewed framework. Two minutes — you'll know which one's running you before you start the tracker.</p>
+      </li>
+      <li>
+        <span class="lm-num">03</span>
+        <h3>Default-effect setup, not willpower</h3>
+        <p>One page on automatic transfers — the behavioural-economics move that does ninety percent of the work for you. Set it up once. Don't think about it again.</p>
+      </li>
+      <li>
+        <span class="lm-num">04</span>
+        <h3>The "guilt budget"</h3>
+        <p>A line item for the things you spend on out of guilt or shame. Most people have one and don't know it. Naming it shrinks it.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · WHY THIS · MINI BIO
+============================================================ -->
+<section class="lm-bio">
+  <div class="lm-bio-inner reveal">
+    <p class="lm-bio-q">"It's not a discipline problem. It's a script problem."</p>
+    <p class="lm-bio-text">
+      I'm Joel. I work with people who've optimised every area of their lives except this one. I built this tracker after watching a hundred clients try YNAB, Monzo, Notion templates, and feel worse afterward. The tracker is free. The work behind it is the same work I do in twelve-week one-to-one coaching.
+    </p>
+    <p class="lm-bio-creds">
+      MSc Behavioural Economics · Level 4 Qualified Financial Planner (UK) · Ex St. James's Place
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     4 · FORM AGAIN (footer-ish)
+============================================================ -->
+<section class="lm-final">
+  <div class="lm-final-inner reveal">
+    <h2 class="lm-final-h2">Ready for the tracker?</h2>
+    <a href="#lm-form" class="lm-final-cta" data-scroll-form>Get the free download ↑</a>
+  </div>
+</section>
+
+</Layout>
+
+<script is:inline>
+  (function () {
+    const form = document.getElementById('lm-form');
+    const status = document.getElementById('lm-status');
+    const emailInput = document.getElementById('lm-email');
+    const submitBtn = document.getElementById('lm-submit');
+    const errorEl = document.getElementById('lm-email-error');
+    if (!form || !status || !emailInput || !submitBtn) return;
+
+    const downloadUrl = form.dataset.download || '';
+    const afterUrl = form.dataset.after || '/coaching';
+
+    // ---------- Email validation ----------
+    // Top disposable / temp / role-based domains. Not exhaustive — MailerLite
+    // will catch the rest server-side. Goal: stop obvious junk before submit.
+    const BAD_DOMAINS = new Set([
+      'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'guerrillamail.biz',
+      '10minutemail.com', '10minutemail.net', 'tempmail.com', 'temp-mail.org',
+      'yopmail.com', 'throwaway.email', 'maildrop.cc', 'getnada.com', 'sharklasers.com',
+      'mintemail.com', 'mohmal.com', 'fakeinbox.com', 'trashmail.com', 'mailcatch.com',
+      'spamgourmet.com', 'dispostable.com', 'tempinbox.com', 'mailnesia.com',
+      'discard.email', 'spambog.com', 'tempmailo.com', 'emailondeck.com',
+      'example.com', 'test.com', 'asdf.com', 'a.com', 'b.com',
+    ]);
+    const COMMON_TYPOS = {
+      'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gnail.com': 'gmail.com',
+      'gmaill.com': 'gmail.com', 'gmail.co': 'gmail.com',
+      'hotmal.com': 'hotmail.com', 'hotnail.com': 'hotmail.com',
+      'yaho.com': 'yahoo.com', 'yhaoo.com': 'yahoo.com',
+      'outlok.com': 'outlook.com', 'outloo.com': 'outlook.com',
+    };
+
+    function validateEmail(raw) {
+      if (!raw || typeof raw !== 'string') return { ok: false };
+      const email = raw.trim().toLowerCase();
+      // Format: something@something.something
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { ok: false, message: '' }; // silent until user finishes typing
+      }
+      if (email.length > 254) return { ok: false, message: 'That email is too long.' };
+      const domain = email.split('@')[1];
+      if (!domain || domain.length < 4) return { ok: false, message: 'That domain looks off.' };
+      // Block obvious junk + role-based + disposable
+      if (BAD_DOMAINS.has(domain)) {
+        return { ok: false, message: "I can't send a tracker to a temp/disposable address. Use your real email." };
+      }
+      // Catch tlds like "@gmail" with no dot
+      if (!domain.includes('.')) return { ok: false, message: 'That domain is missing the .com / .co.uk / etc.' };
+      // Common typo suggestion (advisory only — still allow submission)
+      const typoFix = COMMON_TYPOS[domain];
+      if (typoFix) return { ok: true, suggestion: email.replace(domain, typoFix) };
+      return { ok: true };
+    }
+
+    function setError(msg) {
+      if (errorEl) errorEl.textContent = msg || '';
+      errorEl?.classList.toggle('lm-field-error-shown', !!msg);
+    }
+
+    function refreshButtonState() {
+      const result = validateEmail(emailInput.value);
+      if (result.ok) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send me the tracker →';
+        if (result.suggestion) {
+          setError(`Did you mean ${result.suggestion}? — click to use`);
+          errorEl.dataset.suggestion = result.suggestion;
+          errorEl.classList.add('lm-field-error-suggestion');
+        } else {
+          setError('');
+          errorEl?.classList.remove('lm-field-error-suggestion');
+          delete errorEl?.dataset.suggestion;
+        }
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enter your email to download →';
+        // Only show the error if the user has finished typing something
+        if (emailInput.value.trim().length > 4 && result.message) setError(result.message);
+        else setError('');
+        errorEl?.classList.remove('lm-field-error-suggestion');
+      }
+    }
+
+    emailInput.addEventListener('input', refreshButtonState);
+    emailInput.addEventListener('blur', refreshButtonState);
+
+    // Click the suggestion line to apply it
+    errorEl?.addEventListener('click', () => {
+      const sug = errorEl.dataset.suggestion;
+      if (sug) {
+        emailInput.value = sug;
+        refreshButtonState();
+        emailInput.focus();
+      }
+    });
+
+    // Smooth scroll the secondary CTA back to the form
+    document.querySelectorAll('[data-scroll-form]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        emailInput.focus();
+      });
+    });
+
+    // ---------- Submit: subscribe → trigger download → redirect ----------
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const result = validateEmail(emailInput.value);
+      if (!result.ok) {
+        setError(result.message || 'Please enter a valid email.');
+        emailInput.focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      const originalLabel = submitBtn.textContent;
+      submitBtn.textContent = 'Sending…';
+      status.className = 'lm-status loading';
+      status.textContent = 'Verifying your email…';
+
+      const fd = new FormData(form);
+      const payload = {
+        email: emailInput.value.trim().toLowerCase(),
+        name: fd.get('name') || null,
+        magnet: form.dataset.magnet || 'budget-tracker',
+        honeypot: fd.get('website') || null,
+      };
+
+      let subscribeOk = false;
+      try {
+        const res = await fetch('/api/lead-magnet/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          subscribeOk = true;
+        } else {
+          status.className = 'lm-status error';
+          status.textContent = data.error || 'That email did not pass verification. Try a different one.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+          return;
+        }
+      } catch {
+        status.className = 'lm-status error';
+        status.textContent = 'Network error. Try again, or email joel@thewayofwealth.shop directly.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+        return;
+      }
+
+      if (!subscribeOk) return;
+
+      // Subscribed. Now trigger the Google Drive download in a hidden iframe
+      // (works around the popup blocker — feels instant to the user).
+      status.className = 'lm-status loading';
+      status.textContent = 'Tracker downloading… redirecting you in a second.';
+
+      try {
+        if (downloadUrl && !downloadUrl.includes('REPLACE_WITH_FILE_ID')) {
+          const dl = document.createElement('iframe');
+          dl.style.display = 'none';
+          dl.src = downloadUrl;
+          document.body.appendChild(dl);
+        } else {
+          // No real Drive URL set yet — fall back to email delivery, no inline download.
+          status.textContent = 'Sent to your inbox. Redirecting…';
+        }
+      } catch (_) { /* ignore — redirect anyway */ }
+
+      // Give the browser ~1.4s to start the download, then redirect to /coaching.
+      const params = new URLSearchParams();
+      if (payload.name) params.set('n', payload.name);
+      params.set('from', 'budget-tracker');
+      const dest = afterUrl + (params.toString() ? '?' + params.toString() : '');
+      setTimeout(() => { window.location.href = dest; }, 1400);
+    });
+  })();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
+
+/* ----- Section base ----- */
+.lm-hero, .lm-inside, .lm-bio, .lm-final {
+  padding: 7rem 1.5rem;
+  position: relative;
+}
+.lm-hero { padding: 10rem 1.5rem 6rem; }
+
+/* ----- Font system (Fraunces display + Inter Tight body, mirrors /coaching) ----- */
+.lm-hero, .lm-hero *,
+.lm-inside, .lm-inside *,
+.lm-bio, .lm-bio *,
+.lm-final, .lm-final * {
+  font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.lm-h1, .lm-h2, .lm-final-h2, .lm-features h3 {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+}
+/* Italic gold accent — sharper serifs, lighter weight (was reading bubbly + thick) */
+.lm-h1 em, .lm-h2 em, .lm-bio-q {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+  font-weight: 500;
+}
+
+/* ----- 1 · HERO ----- */
+.lm-hero {
+  background: var(--color-bg-white);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-warm);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lm-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%),
+    radial-gradient(circle at 20% 90%, rgba(28,42,58,0.04), transparent 55%);
+  pointer-events: none;
+}
+.lm-hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  width: 100%;
+}
+.lm-tagline {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-navy);
+  background: #fff;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 999px;
+  padding: 6px 24px;
+  display: inline-block;
+  margin: 0 0 2rem;
+}
+.lm-h1 {
+  font-size: clamp(2.4rem, 5.4vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1.0;
+  color: var(--color-navy);
+  margin: 0 0 1.4rem;
+  letter-spacing: -0.018em;
+}
+.lm-h1 em {
+  color: var(--color-gold);
+  font-weight: 500;
+  font-style: italic;
+  display: block;
+  margin-top: 0.4rem;
+}
+.lm-sub {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-slate);
+  max-width: 560px;
+  margin: 0 auto 2.6rem;
+}
+
+/* ----- FORM ----- */
+.lm-form {
+  background: #fff;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 8px;
+  padding: 2rem 2rem 1.6rem;
+  box-shadow: 0 14px 40px rgba(28,42,58,0.08);
+  text-align: left;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.lm-form-row { margin-bottom: 1rem; }
+.lm-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.005em;
+}
+.lm-optional {
+  font-weight: 400;
+  color: var(--color-slate);
+  font-size: 12px;
+}
+.lm-form input[type=email],
+.lm-form input[type=text] {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-navy);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border-warm);
+  border-radius: 6px;
+  background: var(--color-bg-white);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.lm-form input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(196,162,101,0.20);
+}
+.lm-honeypot { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+.lm-submit {
+  width: 100%;
+  padding: 1rem 1.4rem;
+  background: var(--color-navy);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s, opacity 0.2s;
+  margin-top: 0.5rem;
+}
+.lm-submit:hover:not(:disabled) {
+  background: var(--color-navy-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(28,42,58,0.25);
+}
+.lm-submit:disabled {
+  background: var(--color-slate);
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+/* Inline email validation message under the email field */
+.lm-field-error {
+  font-size: 13px;
+  color: #B0413E;
+  margin: 0.5rem 0 0;
+  min-height: 1.1rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.lm-field-error.lm-field-error-shown { display: block; }
+.lm-field-error.lm-field-error-suggestion {
+  color: var(--color-gold);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lm-field-error.lm-field-error-suggestion:hover { color: var(--color-gold-hover); }
+.lm-reassure {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-slate);
+  text-align: center;
+  margin: 1rem 0 0;
+  line-height: 1.45;
+}
+.lm-status {
+  margin-top: 0.8rem;
+  min-height: 1.2rem;
+  font-size: 14px;
+  text-align: center;
+}
+.lm-status.loading { color: var(--color-slate); }
+.lm-status.error { color: #B0413E; }
+
+/* ----- 2 · WHAT'S INSIDE ----- */
+.lm-inside {
+  background: var(--color-cream);
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.lm-inside-inner { max-width: 880px; margin: 0 auto; }
+.lm-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin: 0 0 1.4rem;
+  text-align: center;
+}
+.lm-h2 {
+  font-size: clamp(2rem, 4.4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-navy);
+  text-align: center;
+  margin: 0 0 3.6rem;
+  letter-spacing: -0.015em;
+}
+.lm-h2 em {
+  color: var(--color-gold);
+  font-weight: 700;
+  font-style: italic;
+}
+.lm-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.6rem 2.4rem;
+}
+.lm-features li { display: flex; flex-direction: column; }
+.lm-features .lm-num {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--color-gold);
+  margin-bottom: 0.7rem;
+}
+.lm-features h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: var(--color-navy);
+  margin: 0 0 0.7rem;
+  font-variation-settings: "opsz" 60, "SOFT" 50, "WONK" 0;
+}
+.lm-features p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-slate);
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .lm-features { grid-template-columns: 1fr; gap: 2.2rem; }
+}
+
+/* ----- 3 · WHY THIS · MINI BIO ----- */
+.lm-bio {
+  background: var(--color-bg-white);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.lm-bio-inner { max-width: 720px; margin: 0 auto; }
+.lm-bio-q {
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-gold);
+  line-height: 1.3;
+  margin: 0 0 2rem;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+}
+.lm-bio-text {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-charcoal);
+  max-width: 640px;
+  margin: 0 auto 1.4rem;
+}
+.lm-bio-creds {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-slate);
+  margin: 0;
+}
+
+/* ----- 4 · FINAL ----- */
+.lm-final {
+  background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-bg-cool) 100%);
+  text-align: center;
+  border-top: 1px solid var(--color-border-warm);
+  padding: 5rem 1.5rem;
+}
+.lm-final-inner { max-width: 600px; margin: 0 auto; }
+.lm-final-h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  font-weight: 700;
+  color: var(--color-navy);
+  margin: 0 0 1.6rem;
+  letter-spacing: -0.012em;
+}
+.lm-final-cta {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--color-gold);
+  color: var(--color-navy);
+  border: 1px solid var(--color-gold);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.lm-final-cta:hover {
+  background: var(--color-gold-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(196,162,101,0.30);
+}
+
+@media (max-width: 760px) {
+  .lm-hero { padding: 7rem 1.2rem 4.5rem; min-height: auto; }
+  .lm-inside, .lm-bio, .lm-final { padding: 5rem 1.2rem; }
+  .lm-form { padding: 1.6rem 1.4rem 1.4rem; }
+}
+</style>

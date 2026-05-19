@@ -1,0 +1,328 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { LINKS } from '../../config/links';
+
+const title = "Your Behavioural Budget Tracker — Way of Wealth";
+const description = "Your free budget tracker is on its way. While you're here — read what comes next.";
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/thanks/budget-tracker`}>
+
+<section class="thx-hero">
+  <div class="thx-hero-inner reveal">
+    <p class="thx-tag">Got it</p>
+    <h1 class="thx-h1">
+      Your tracker is in your inbox.<br />
+      <em id="thx-name-line">Now — the part most people skip.</em>
+    </h1>
+    <p class="thx-sub">
+      The PDF takes about a minute to land. While you wait, here's what happens next.
+    </p>
+
+    <div class="thx-download-row">
+      <a href="/lead-magnets/budget-tracker.pdf" class="thx-download" download>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.6rem;"><path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+        Download tracker now (PDF)
+      </a>
+      <p class="thx-download-note">If the email is slow, grab it directly here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     2 · WHAT HAPPENS NEXT (the email sequence preview)
+============================================================ -->
+<section class="thx-next">
+  <div class="thx-next-inner reveal">
+    <p class="thx-eyebrow">What lands in your inbox over the next eleven days</p>
+    <h2 class="thx-h2">
+      A short series of emails<br /><em>about why budgets stop working.</em>
+    </h2>
+
+    <ol class="thx-emails">
+      <li>
+        <span class="thx-email-day">Day 0</span>
+        <h3>The tracker, plus the question most people don't ask</h3>
+        <p>What if the issue isn't the budget — it's the script underneath?</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 1</span>
+        <h3>"I'm sitting on it. I just don't know what to do."</h3>
+        <p>The first sentence almost every coaching client says. Why it isn't a knowledge gap.</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 2</span>
+        <h3>The behavioural-economics iceberg</h3>
+        <p>Behaviour is the visible 10%. The four money scripts are running underneath. Klontz, peer-reviewed.</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 4</span>
+        <h3>Whose pattern are you actually running?</h3>
+        <p>Almost always a parent's. Often older than that.</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 6</span>
+        <h3>The bridge — the one most coaches don't draw</h3>
+        <p>The same skill you use on your training, your therapy, your work — pointed at money.</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 8</span>
+        <h3>What changes in twelve weeks</h3>
+        <p>The shift, in the words of clients who've done the work.</p>
+      </li>
+      <li>
+        <span class="thx-email-day">Day 11</span>
+        <h3>If you want the full version</h3>
+        <p>A free 20-minute call. No pitch script. We figure out together whether one-to-one coaching is the right move.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================
+     3 · COACHING OFFER (warm cross-sell)
+============================================================ -->
+<section class="thx-coach">
+  <div class="thx-coach-inner reveal">
+    <p class="thx-eyebrow">Or — if you've already read enough</p>
+    <h2 class="thx-h2 thx-h2-coach">
+      You can skip the emails<br />
+      <em>and book the call now.</em>
+    </h2>
+    <p class="thx-coach-body">
+      The Money Story Method is twelve weeks, one-to-one. £997 founding-cohort rate. The first call is free, twenty minutes, and genuinely a two-way conversation. If it's not the right fit, I'll tell you and point you at what is.
+    </p>
+    <a href={LINKS.coaching} class="thx-coach-cta">See the full programme →</a>
+  </div>
+</section>
+
+</Layout>
+
+<script is:inline>
+  // Personalise the H1 italic line if name passed via ?n=
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const name = (params.get('n') || '').trim().slice(0, 40);
+    if (name) {
+      const el = document.getElementById('thx-name-line');
+      if (el) el.textContent = `Now — the part most people skip, ${name}.`;
+    }
+  })();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
+
+.thx-hero, .thx-next, .thx-coach { padding: 7rem 1.5rem; position: relative; }
+.thx-hero { padding: 9rem 1.5rem 6rem; }
+
+.thx-hero, .thx-hero *,
+.thx-next, .thx-next *,
+.thx-coach, .thx-coach * {
+  font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.thx-h1, .thx-h2, .thx-emails h3 {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+}
+/* Italic gold accent — sharper, lighter (was reading bubbly + thick) */
+.thx-h1 em, .thx-h2 em {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
+  font-weight: 500;
+}
+
+/* ----- 1 · HERO ----- */
+.thx-hero {
+  background: var(--color-bg-white);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.thx-hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%),
+    radial-gradient(circle at 20% 90%, rgba(28,42,58,0.04), transparent 55%);
+  pointer-events: none;
+}
+.thx-hero-inner { max-width: 760px; margin: 0 auto; position: relative; }
+.thx-tag {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-cream);
+  background: var(--color-gold);
+  border-radius: 999px;
+  padding: 6px 24px;
+  display: inline-block;
+  margin: 0 0 1.6rem;
+  text-transform: uppercase;
+}
+.thx-h1 {
+  font-size: clamp(2.2rem, 4.6vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-navy);
+  margin: 0 0 1.4rem;
+  letter-spacing: -0.018em;
+}
+.thx-h1 em {
+  color: var(--color-gold);
+  font-weight: 500;
+  font-style: italic;
+  display: block;
+  margin-top: 0.4rem;
+}
+.thx-sub {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-slate);
+  max-width: 540px;
+  margin: 0 auto 2.4rem;
+  line-height: 1.5;
+}
+
+.thx-download-row { margin-top: 1.5rem; }
+.thx-download {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--color-navy);
+  color: var(--color-cream);
+  border: 1px solid var(--color-navy);
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+.thx-download:hover {
+  background: var(--color-navy-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(28,42,58,0.25);
+}
+.thx-download-note {
+  font-size: 13px;
+  color: var(--color-slate);
+  margin: 1rem 0 0;
+  font-style: italic;
+}
+
+/* ----- 2 · WHAT HAPPENS NEXT ----- */
+.thx-next {
+  background: var(--color-cream);
+  border-bottom: 1px solid var(--color-border-warm);
+}
+.thx-next-inner { max-width: 880px; margin: 0 auto; }
+.thx-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin: 0 0 1.4rem;
+  text-align: center;
+}
+.thx-h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--color-navy);
+  text-align: center;
+  margin: 0 0 3.4rem;
+  letter-spacing: -0.015em;
+}
+.thx-h2 em {
+  color: var(--color-gold);
+  font-weight: 500;
+  font-style: italic;
+}
+.thx-h2-coach { margin-bottom: 2rem; }
+.thx-emails {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2rem;
+}
+.thx-emails li {
+  background: #fff;
+  border: 1px solid var(--color-border-warm);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 6px;
+  padding: 1.6rem 1.6rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+}
+.thx-email-day {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+.thx-emails h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-navy);
+  margin: 0 0 0.6rem;
+  font-variation-settings: "opsz" 60, "SOFT" 50, "WONK" 0;
+}
+.thx-emails p {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-slate);
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .thx-emails { grid-template-columns: 1fr; }
+}
+
+/* ----- 3 · COACHING CTA ----- */
+.thx-coach {
+  background: linear-gradient(180deg, var(--color-bg-white) 0%, var(--color-bg-cool) 100%);
+  text-align: center;
+}
+.thx-coach::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(196,162,101,0.10), transparent 60%);
+  pointer-events: none;
+}
+.thx-coach-inner { max-width: 720px; margin: 0 auto; position: relative; }
+.thx-coach-body {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-charcoal);
+  max-width: 600px;
+  margin: 0 auto 2.4rem;
+}
+.thx-coach-cta {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--color-gold);
+  color: var(--color-navy);
+  border: 1px solid var(--color-gold);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.thx-coach-cta:hover {
+  background: var(--color-gold-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(196,162,101,0.30);
+}
+
+@media (max-width: 760px) {
+  .thx-hero { padding: 7rem 1.2rem 4.5rem; }
+  .thx-next, .thx-coach { padding: 5rem 1.2rem; }
+}
+</style>

@@ -14,3 +14,11 @@
   to = "/.netlify/functions/fred-approve"
   status = 200
   force = true
+
+# Lead-magnet email-capture endpoint. POST { email, name, magnet, honeypot }.
+# Adds to the matching MailerLite group (per MAGNET_GROUP_MAP in the function).
+[[redirects]]
+  from = "/api/lead-magnet/subscribe"
+  to = "/.netlify/functions/lead-magnet-subscribe"
+  status = 200
+  force = true
