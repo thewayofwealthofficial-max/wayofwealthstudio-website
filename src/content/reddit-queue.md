@@ -47,7 +47,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 28 | ✅ | How do I forgive myself for the years of irresponsible spending I'm still paying for? | sunk cost fallacy, identity reframing, self-compassion vs self-criticism | Spending & shame | Anxious Avoider, All segments |
 | 29 | ✅ | Am I doing money "right"? Why am I so terrified I'm getting it wrong? | ambiguity aversion, social comparison, perfectionism trap | Behavioral basics | Anxious Avoider, All segments |
 | 30 | ✅ | Why is buying something I can clearly afford triggering this much guilt and remorse? | anticipated regret, hedonic adaptation, scarcity hangover | Spending & shame | All segments, Anxious Avoider |
-| 31 | 🔵 | Why do I want a budget app that shows what I have LEFT — not what I've spent? | loss aversion, mental accounting, prospective vs retrospective framing | Budgeting that sticks | All segments |
+| 31 | ✅ | Why do I want a budget app that shows what I have LEFT — not what I've spent? | loss aversion, mental accounting, prospective vs retrospective framing | Budgeting that sticks | All segments |
 | 32 | 🔵 | How do I stop spiralling at work after I make one small mistake? | rumination loop, shame-fuelled paralysis, action-bias antidote | Anxiety & avoidance | Anxious Avoider, ADHD/Neurodivergent |
 | 33 | 🔵 | Why do I keep dropping every hobby, goal, and budget the moment the novelty wears off? | novelty decay, identity vs activity, planning fallacy | Budgeting that sticks | ADHD/Neurodivergent, All segments |
 | 34 | 🔵 | How do I budget when I'm secretly worried about losing my income? | planning under uncertainty, scarcity mindset, base-rate buffering | Self-employed | All segments, Self-Employed Stresser |
