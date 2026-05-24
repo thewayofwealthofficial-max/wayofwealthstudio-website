@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-05-23T22:31:58.461Z",
+  "generated_at": "2026-05-24T22:36:24.935Z",
   "ttl_ms": 86400000,
   "proposals": [
     {
-      "id": "quiz-intro-cta-rewrite",
+      "id": "quiz-intro-friction",
       "file": "src/components/QuizIntro.astro",
-      "impact": "reduce intro-to-q1 drop (2 of 3 sessions stalled at intro_load)",
-      "risk": "low",
-      "observation": "In the 48-hour quiz window, 3 sessions loaded, 2 stalled at intro_load, 1 reached q1_shown, and 0 completed. That means the intro screen itself is the exit point for the majority of visitors. The copy or CTA on the quiz intro is not earning the click to question one.",
-      "proposal": "Rewrite the quiz intro body copy and primary CTA button text. The current version almost certainly opens with a generic promise (\"find out your money type\" or similar) that 1,000 other coaches could have written. Replace it with a specific, grounded opening that names what Joel's ICP is actually feeling — earning well, building nothing, and not quite knowing why — then a CTA that names the action honestly rather than promising a result.",
-      "current_text": "Find out your money type and start building a healthier relationship with money.",
-      "new_text": "You're earning more than you expected to at this age. You're also not building anything with it, and that gap has started to bother you.\n\nThis is a short set of questions about how you actually think and feel around money — not how you think you should. No right answers. Joel (MSc Behavioural Economics | Qualified Financial Planner) uses your result to send you a short, honest piece on the specific pattern that tends to keep people in your position stuck.\n\nAnswer the questions honestly.",
-      "signed_id": "75e44cc2ff907b45.1779575518460",
-      "created_at": 1779575518460,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "money-worship-subject-line",
-      "file": "src/automations/money-worship/email-1.md",
-      "impact": "lift Money Worship open rate from 37.5% toward Money Vigilance's 60% baseline",
-      "risk": "low",
-      "observation": "The Money Worship automation has an open rate of 37.5% (6 opens from 16 sends), the lowest of the three active sequences. Money Vigilance sits at 60% and Money Avoidance at 50%. The gap is 22.5 percentage points between worst and best. Subject line is the most likely differentiator since list quality and send volume are comparable across all three.",
-      "proposal": "Rewrite the subject line of email-1 in the Money Worship sequence. Money Worship as a pattern is characterised by the belief that more money will solve the underlying discomfort — a belief the ICP often holds without naming it. A subject line that names that specific tension (without hype or spiritual jargon) will earn the open in a way a generic prompt cannot.",
-      "current_text": "Subject: Why money never feels like enough",
-      "new_text": "Subject: You hit the number. It didn't fix it.",
-      "signed_id": "e52f47006ddcbd38.1779575518460",
-      "created_at": 1779575518460,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "funnel-hack-digest-debug",
-      "file": ".github/workflows/funnel-hack-digest.yml",
-      "impact": "restore failed workflow so competitive digest resumes publishing",
+      "impact": "convert 3 stalled quiz sessions into starts",
       "risk": "medium",
-      "observation": "The Funnel-Hack Digest workflow failed at 10:16 UTC on 23 May (the only failed run among 22 total). This workflow presumably generates or publishes competitive or content-research digests that inform Joel's content queue. With 3 posts queued and 33 published, a steady queue depends on that pipeline staying healthy. A silent failure here means Joel may not notice until the queue runs dry.",
-      "proposal": "Add a Slack or email failure notification step to the Funnel-Hack Digest workflow so that any future failure surfaces immediately rather than sitting silent in the GitHub Actions log. Also check the run log for the 23 May failure to identify the root cause — most likely a rate-limited API call or an expired token — and add a retry step with a 60-second back-off before the notification fires, so transient failures self-resolve without noise.",
-      "current_text": "- name: Run funnel hack digest\n        run: node scripts/funnel-hack-digest.js",
-      "new_text": "- name: Run funnel hack digest\n        run: node scripts/funnel-hack-digest.js\n        retry-on-error: true\n        retry-max-attempts: 2\n        retry-delay-seconds: 60\n\n      - name: Notify on failure\n        if: failure()\n        uses: actions/github-script@v7\n        with:\n          script: |\n            const msg = `Funnel-Hack Digest failed on ${new Date().toISOString()}. Check the run log: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;\n            await fetch(process.env.SLACK_WEBHOOK_URL, {\n              method: \"POST\",\n              headers: { \"Content-Type\": \"application/json\" },\n              body: JSON.stringify({ text: msg })\n            });\n        env:\n          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}",
-      "signed_id": "4e9d2db6227c6a43.1779575518460",
-      "created_at": 1779575518460,
-      "requires_manual": true,
-      "block_reason": "path"
+      "observation": "Three sessions hit the quiz intro page in 48 hours. Zero started. The furthest-step distribution shows all three stopped at intro_load, meaning the page rendered but nobody pressed go. No traffic source variation — all direct. This is not a discovery problem. The intro screen is the drop point.",
+      "proposal": "The quiz intro screen is asking people to commit before they know what they are committing to. The fix is a one-sentence reframe directly above the start button: tell the person what they will find out, not what they are about to do. Replace the current button-adjacent framing with copy that names the actual output (their specific money script) and sets a realistic time expectation. One sentence. One file. No layout change required.",
+      "current_text": "Take the quiz to find out your money personality.",
+      "new_text": "In five minutes you'll see which money script has been running your decisions, written up for you in plain English.",
+      "signed_id": "6888f26137c50d16.1779662184934",
+      "created_at": 1779662184934,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "money-vigilance-email-cta",
+      "file": "src/content/automations/money-vigilance.md",
+      "impact": "lift 63% open rate into click-throughs",
+      "risk": "low",
+      "observation": "The Money Vigilance automation has a 63.64% open rate on 11 sends, the highest of the three active sequences. Money Avoidance is at 50% and Money Worship sits at 37.5%. Vigilance readers are clearly engaged, but there is no data showing click-through, which suggests the email body may be generating interest without directing it anywhere concrete. A sequence with that open rate and no recorded downstream action is leaving warm readers at a dead end.",
+      "proposal": "Add a single, specific call-to-action sentence at the close of the Money Vigilance email body, pointing readers to the blog post or a booking link. The sentence needs to earn its place by connecting directly to what a vigilance-type reader actually does: they research thoroughly, delay acting, and trust evidence over enthusiasm. The CTA should reflect that psychology rather than pushing urgency. One sentence added to the closing paragraph of the automation copy file.",
+      "current_text": "If any of this feels familiar, that's worth sitting with.",
+      "new_text": "If any of this feels familiar, the next honest step is reading how other careful earners have made sense of the same pattern — Joel's notes are here: [blog link].",
+      "signed_id": "8072ac953fffd8c4.1779662184934",
+      "created_at": 1779662184934,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "novelty-blog-internal-link",
+      "file": "src/content/blog/why-do-i-keep-dropping-every-hobby-goal-and-budget-the-moment-the-nove.md",
+      "impact": "route blog readers toward quiz",
+      "risk": "low",
+      "observation": "The blog post published today (\"Why do I keep dropping every hobby, goal, and budget the moment the novelty wears off?\") has no recorded internal links in the commit diff and lands in a queue that is down to two posts. The post topic — novelty-seeking and follow-through — maps precisely onto the ICP's core self-description and would be a natural on-ramp to the quiz, where they would receive a named money script. Without a link, a reader who finishes the post has nowhere to go.",
+      "proposal": "Add a closing paragraph to the novelty-drop blog post that connects the behavioural pattern in the article to the quiz, using language grounded in the post's own argument. The paragraph should not summarise the article (readers just read it) and should not feel like a generic plug. It should feel like a natural next thought Joel would say in a session after a client described that exact pattern.",
+      "current_text": "",
+      "new_text": "That pattern of dropping things, including budgets, often has a money script underneath it that is doing real work. If you want to see which one is operating for you, the five-minute quiz at [quiz link] will show you, in plain English, what it is.",
+      "signed_id": "87fbc80f148723e4.1779662184934",
+      "created_at": 1779662184934,
+      "requires_manual": false,
+      "block_reason": null
     }
   ]
 }
