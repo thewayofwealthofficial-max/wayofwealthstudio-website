@@ -51,6 +51,18 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 32 | ✅ | How do I stop spiralling at work after I make one small mistake? | rumination loop, shame-fuelled paralysis, action-bias antidote | Anxiety & avoidance | Anxious Avoider, ADHD/Neurodivergent |
 | 33 | ✅ | Why do I keep dropping every hobby, goal, and budget the moment the novelty wears off? | novelty decay, identity vs activity, planning fallacy | Budgeting that sticks | ADHD/Neurodivergent, All segments |
 | 34 | ✅ | How do I budget when I'm secretly worried about losing my income? | planning under uncertainty, scarcity mindset, base-rate buffering | Self-employed | All segments, Self-Employed Stresser |
+| 35 | 🔵 | Why do I freeze when I've got too many money decisions to make at once? | choice overload, analysis paralysis | Anxiety & avoidance | ADHD/Neurodivergent, Anxious Avoider |
+| 36 | 🔵 | Why does sorting my finances feel impossible when everything else is already overwhelming? | scarcity bandwidth tax, cognitive load | Anxiety & avoidance | All segments, Anxious Avoider |
+| 37 | 🔵 | Why do I feel guilty charging what I'm actually worth? | money–self-worth fusion, anchoring | Self-employed | Self-Employed Stresser |
+| 38 | 🔵 | Why do I splurge in a good month and panic in a bad one? | income volatility, affect heuristic, mental accounting | Self-employed | Self-Employed Stresser |
+| 39 | 🔵 | Why am I too scared to invest even though I know I should? | myopic loss aversion, ambiguity aversion | Behavioral basics | Anxious Avoider, All segments |
+| 40 | 🔵 | Why do I always assume the worst about my financial future? | catastrophising, probability neglect | Anxiety & avoidance | Anxious Avoider |
+| 41 | 🔵 | Why do I feel like I need to earn more before I'm allowed to relax? | arrival fallacy, goalpost shifting | Behavioral basics | All segments |
+| 42 | 🔵 | Is it too late to fix my finances in my 40s? | fresh start effect, sunk cost reframing | Behavioral basics | All segments, Self-Employed Stresser |
+| 43 | 🔵 | Why do I trust random advice online more than my own money judgement? | authority bias, self-efficacy erosion | Behavioral basics | All segments |
+| 44 | 🔵 | Why do I feel like everyone my age has money figured out except me? | pluralistic ignorance, spotlight effect | Behavioral basics | All segments |
+| 45 | 🔵 | Why do I avoid setting money goals because I'm scared I'll fail them again? | learned helplessness, self-handicapping | Budgeting that sticks | Anxious Avoider, ADHD/Neurodivergent |
+| 46 | 🔵 | Why do I keep buying courses and planners hoping THIS one finally fixes everything? | hope-buying, action bias as avoidance | Spending & shame | ADHD/Neurodivergent, All segments |
 
 ---
 
