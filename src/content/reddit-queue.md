@@ -54,7 +54,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 35 | ✅ | Why do I freeze when I've got too many money decisions to make at once? | choice overload, analysis paralysis | Anxiety & avoidance | ADHD/Neurodivergent, Anxious Avoider |
 | 36 | ✅ | Why does sorting my finances feel impossible when everything else is already overwhelming? | scarcity bandwidth tax, cognitive load | Anxiety & avoidance | All segments, Anxious Avoider |
 | 37 | ✅ | Why do I feel guilty charging what I'm actually worth? | money–self-worth fusion, anchoring | Self-employed | Self-Employed Stresser |
-| 38 | 🔵 | Why do I splurge in a good month and panic in a bad one? | income volatility, affect heuristic, mental accounting | Self-employed | Self-Employed Stresser |
+| 38 | ✅ | Why do I splurge in a good month and panic in a bad one? | income volatility, affect heuristic, mental accounting | Self-employed | Self-Employed Stresser |
 | 39 | 🔵 | Why am I too scared to invest even though I know I should? | myopic loss aversion, ambiguity aversion | Behavioral basics | Anxious Avoider, All segments |
 | 40 | 🔵 | Why do I always assume the worst about my financial future? | catastrophising, probability neglect | Anxiety & avoidance | Anxious Avoider |
 | 41 | 🔵 | Why do I feel like I need to earn more before I'm allowed to relax? | arrival fallacy, goalpost shifting | Behavioral basics | All segments |
