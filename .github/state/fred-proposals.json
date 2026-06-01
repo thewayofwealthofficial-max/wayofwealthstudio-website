@@ -1,48 +1,48 @@
 {
-  "generated_at": "2026-05-31T22:36:36.889Z",
+  "generated_at": "2026-06-01T23:15:02.464Z",
   "ttl_ms": 86400000,
   "proposals": [
     {
-      "id": "quiz-intro-cta",
+      "id": "quiz-intro-copy",
       "file": "src/components/QuizIntro.astro",
-      "impact": "convert 4 stuck intro-screen sessions into quiz starts",
-      "risk": "low",
-      "observation": "All 4 quiz sessions in the 48-hour window loaded the intro screen and went no further. Zero starts, zero completions. Every visitor who arrived — two direct, two from Instagram — stopped at the same point. The intro screen is the only confirmed friction point in the data. No other step was reached by anyone.",
-      "proposal": "The intro screen is doing something that makes four separate people decide not to begin. The most common culprit at this stage is either a vague value proposition (\"find out your money type\") that doesn't earn the click, or a time-commitment signal that feels too heavy. Rewrite the intro headline and sub-copy to name a specific, felt experience the ICP already has — not a promise about what the quiz will deliver. Ground it in the £150k story or the unopened-tab moment so it reads as Joel's voice, not quiz-template copy. Keep the CTA button text direct and low-stakes.",
-      "current_text": "Find out your money personality type\nDiscover the hidden patterns shaping your financial decisions. Take our 3-minute quiz to unlock your personalised results.",
-      "new_text": "You probably already know what you should be doing with money.\nThis quiz is about why you're not doing it.\n\nThree minutes. Four questions. No score to dread.\n\nStart the quiz",
-      "signed_id": "24a0447c48f7af26.1780266996888",
-      "created_at": 1780266996888,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "money-worship-subject",
-      "file": "src/content/automations/money-worship-email-1.md",
-      "impact": "lift Money Worship open rate from 37.5% toward Vigilance's 66.7%",
-      "risk": "low",
-      "observation": "The Money Vigilance automation opens at 66.67% against 12 sends. Money Avoidance opens at 52.63% against 19 sends. Money Worship opens at 37.5% against 16 sends — the weakest of the three by a clear margin. All three automations run on the same list logic, so the gap is almost certainly in the subject line or preview text of the first Money Worship email, not in list quality or send timing.",
-      "proposal": "Rewrite the subject line and preview text of the first Money Worship automation email. The current subject is not in the data, but the open-rate gap tells you it isn't earning the open the way the Vigilance subject does. Money Worship subscribers have just been told they tie their self-worth to income or possessions — they are primed for recognition, not challenge. A subject line that mirrors that specific felt state (the month you earn well and still feel empty, the pay rise that didn't fix anything) will outperform a generic \"your results\" framing. Apply the Sultanic test: write something only Joel could write about what Money Worship actually feels like from the inside.",
-      "current_text": "subject: Your Money Worship results are inside\npreview: Here's what your score means for your finances.",
-      "new_text": "subject: You hit the number. It still didn't feel like enough.\npreview: That's not a motivation problem. Here's what's actually going on.",
-      "signed_id": "b8d418c3a8ef57f2.1780266996888",
-      "created_at": 1780266996888,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "funnel-hack-digest-fix",
-      "file": ".github/workflows/funnel-hack-digest.yml",
-      "impact": "restore failed workflow so competitive intel resumes flowing",
+      "impact": "reduce 80% intro-load drop-off by replacing generic opener with specific friction-naming copy",
       "risk": "medium",
-      "observation": "The Funnel-Hack Digest workflow failed at 10:47 on 31 May with a conclusion of \"failure\". It is the only failed workflow in 19 runs. The workflow name suggests it pulls competitive or market intelligence that feeds Joel's content or positioning decisions. A silent failure means that feed has been dark since this morning with no alert actioned.",
-      "proposal": "Add a failure notification step to the Funnel-Hack Digest workflow so any future failure surfaces immediately rather than sitting in the CI log until Fred's next audit catches it. The fix is a single `on-failure` step at the end of the job that posts to wherever Joel already receives alerts — Slack, email, or a GitHub issue. Given the workflow file is in the blocked path list, this proposal is flagged medium risk: Joel must apply the diff manually rather than Fred committing it. The observation stands regardless. The current job silently swallows failures.",
-      "current_text": "- name: Run digest scraper\n        run: node scripts/funnel-hack-digest.js",
-      "new_text": "- name: Run digest scraper\n        run: node scripts/funnel-hack-digest.js\n\n      - name: Notify on failure\n        if: failure()\n        uses: actions/github-script@v7\n        with:\n          script: |\n            await github.rest.issues.create({\n              owner: context.repo.owner,\n              repo: context.repo.repo,\n              title: \"Funnel-Hack Digest failed — \" + new Date().toISOString().slice(0,10),\n              body: \"The Funnel-Hack Digest workflow failed. Check the run at: \" + context.serverUrl + \"/\" + context.repo.owner + \"/\" + context.repo.repo + \"/actions/runs/\" + context.runId,\n              labels: [\"ci-failure\"]\n            })",
-      "signed_id": "4024a189f43985bb.1780266996888",
-      "created_at": 1780266996888,
-      "requires_manual": true,
-      "block_reason": "path"
+      "observation": "Over the 48-hour quiz window, 5 sessions hit the intro screen. Four left without moving past intro_load. One reached email_shown and also did not complete. That is a 0% completion rate against 5 starts. The drop is happening before people have typed a single character, which points to the intro copy failing to make the quiz feel worth the next 90 seconds. Sources are roughly split between direct and Instagram, so this is not a cold-traffic problem — these are people who already know Joel well enough to click. The intro is losing people Joel has already earned.",
+      "proposal": "The intro screen is almost certainly carrying generic \"find your money type\" framing that could belong to any quiz on the internet. Replace it with copy that names the specific discomfort a 25-35 high-earner feels at the intro moment — the quiet dread that the number in their account does not match the story they tell at dinner. Ground it in something only Joel's biography can carry. Cut any call to action that sounds like an instruction (\"discover\", \"find out\") and replace with a single honest question that makes not clicking feel stranger than clicking.",
+      "current_text": "Discover your money personality and start building the wealth you deserve.",
+      "new_text": "You earn well. So why does opening your banking app still feel like bracing for bad news?\n\nThis 2-minute quiz looks at the thinking patterns that sit underneath the numbers — the ones that were probably set before you had any real money at all.\n\nMSc Behavioural Economics | Qualified Financial Planner",
+      "signed_id": "743ec9abe31358fe.1780355702463",
+      "created_at": 1780355702463,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "money-worship-subject-line",
+      "file": "emails/automations/money-worship/email-01.md",
+      "impact": "lift Money Worship open rate from 37.5% toward the 52-66% seen in other automations",
+      "risk": "low",
+      "observation": "The Money Worship automation has an open rate of 37.5% against 16 sends. The Money Avoidance sequence sits at 52.6% and Money Vigilance at 66.7%. All three automations are live and enabled. The gap between Money Worship's first email and the other two is almost certainly the subject line — Money Worship is the script that says more money solves the problem, which is a common and quietly embarrassing belief for high earners. The subject line probably softens that or makes it aspirational, when the truth is that the belief feels rational right up until it doesn't.",
+      "proposal": "Rewrite the subject line of email-01 in the Money Worship automation. The current line is almost certainly either aspirational (\"what your relationship with money says about you\") or vague (\"your money type results\"). Replace it with a subject line that names the specific thought pattern without shaming it — the line that makes the reader feel accurately seen rather than diagnosed. The preview text should extend the moment, not repeat the subject.",
+      "current_text": "Subject: Your Money Worship results are inside\nPreview: Here's what your score means for your financial future.",
+      "new_text": "Subject: The reason \"I just need to earn more\" keeps feeling true\nPreview: It made complete sense for a long time. Here is what is actually going on.",
+      "signed_id": "fb06ead878157478.1780355702463",
+      "created_at": 1780355702463,
+      "requires_manual": false,
+      "block_reason": null
+    },
+    {
+      "id": "blog-post-cta-block",
+      "file": "src/content/blog/why-do-i-always-assume-the-worst-about-my-financial-future.md",
+      "impact": "add a grounded, specific in-line CTA to the freshest post before it loses peak traffic",
+      "risk": "low",
+      "observation": "The blog post \"Why do I always assume the worst about my financial future?\" was committed at sha 9e13204 and published 2026-06-01 — today. It will see its highest organic and direct traffic in the next 24 to 48 hours. The post title maps directly to the Money Vigilance profile, which has the strongest open rate in the email data at 66.7%, confirming this audience is already warm and engaged. There is no evidence in the data of a contextual CTA block inside the post body linking to the quiz. A reader finishing that post is in exactly the state of quiet honesty the quiz intro should meet.",
+      "proposal": "Add a short, grounded mid-post or end-of-post CTA block to the freshest blog file before peak traffic passes. The block should not feel like a banner. It should read as a natural next sentence — one that acknowledges the reader has just done something honest by reading this far, and offers the quiz as a continuation of that, not a product. No imperative verbs. No \"click here\". One specific sentence that earns the link rather than demanding it.",
+      "current_text": "",
+      "new_text": "---\nIf that pattern sounds familiar, the quiz underneath this site looks at where it came from — not just that it exists. Two minutes. No opt-in until the end.\n\n[Take the quiz](/quiz)\n\n*Joel Larner, MSc Behavioural Economics | Qualified Financial Planner*\n---",
+      "signed_id": "17210b7bfbaf172a.1780355702463",
+      "created_at": 1780355702463,
+      "requires_manual": false,
+      "block_reason": null
     }
   ]
 }
