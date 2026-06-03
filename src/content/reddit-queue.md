@@ -58,7 +58,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 39 | ✅ | Why am I too scared to invest even though I know I should? | myopic loss aversion, ambiguity aversion | Behavioral basics | Anxious Avoider, All segments |
 | 40 | ✅ | Why do I always assume the worst about my financial future? | catastrophising, probability neglect | Anxiety & avoidance | Anxious Avoider |
 | 41 | ✅ | Why do I feel like I need to earn more before I'm allowed to relax? | arrival fallacy, goalpost shifting | Behavioral basics | All segments |
-| 42 | 🔵 | Is it too late to fix my finances in my 40s? | fresh start effect, sunk cost reframing | Behavioral basics | All segments, Self-Employed Stresser |
+| 42 | ✅ | Is it too late to fix my finances in my 40s? | fresh start effect, sunk cost reframing | Behavioral basics | All segments, Self-Employed Stresser |
 | 43 | 🔵 | Why do I trust random advice online more than my own money judgement? | authority bias, self-efficacy erosion | Behavioral basics | All segments |
 | 44 | 🔵 | Why do I feel like everyone my age has money figured out except me? | pluralistic ignorance, spotlight effect | Behavioral basics | All segments |
 | 45 | 🔵 | Why do I avoid setting money goals because I'm scared I'll fail them again? | learned helplessness, self-handicapping | Budgeting that sticks | Anxious Avoider, ADHD/Neurodivergent |
