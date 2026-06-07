@@ -62,7 +62,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 43 | ✅ | Why do I trust random advice online more than my own money judgement? | authority bias, self-efficacy erosion | Behavioral basics | All segments |
 | 44 | ✅ | Why do I feel like everyone my age has money figured out except me? | pluralistic ignorance, spotlight effect | Behavioral basics | All segments |
 | 45 | ✅ | Why do I avoid setting money goals because I'm scared I'll fail them again? | learned helplessness, self-handicapping | Budgeting that sticks | Anxious Avoider, ADHD/Neurodivergent |
-| 46 | 🔵 | Why do I keep buying courses and planners hoping THIS one finally fixes everything? | hope-buying, action bias as avoidance | Spending & shame | ADHD/Neurodivergent, All segments |
+| 46 | ✅ | Why do I keep buying courses and planners hoping THIS one finally fixes everything? | hope-buying, action bias as avoidance | Spending & shame | ADHD/Neurodivergent, All segments |
 
 ---
 
