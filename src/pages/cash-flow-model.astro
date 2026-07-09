@@ -1,0 +1,598 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LINKS } from '../config/links';
+
+const title = "Your Cash Flow Model — Free | Way of Wealth";
+const description = "Answer 10 questions and see where your money really goes — and where it leaves you by the age you want to stop. Built on the same engine as our coaching. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/cash-flow-model`}>
+
+<section class="cf-wrap">
+  <!-- INTRO -->
+  <div class="cf-card cf-intro" id="cf-intro">
+    <p class="cf-eyebrow">Free · 10 questions · about 3 minutes</p>
+    <h1 class="cf-h1">See where your money really goes — and whether it gets you <em>where you want to be</em>.</h1>
+    <ul class="cf-points">
+      <li>Your monthly split, tax pot included</li>
+      <li>A projection to the age you want to stop</li>
+      <li>Whether you hit your goals — and the monthly gap if not</li>
+    </ul>
+    <div class="cf-introrow">
+      <button class="cf-btn cf-btn-primary" id="cf-start">Map my cash flow →</button>
+      <span class="cf-conf">🔒 Your figures never leave this page. We can’t see them.</span>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="cf-card cf-flow" id="cf-flow">
+    <div class="cf-progress">
+      <span class="cf-count" id="cf-count">Question 1 of 10</span>
+      <div class="cf-track"><div class="cf-fill" id="cf-fill"></div></div>
+    </div>
+    <div id="cf-steps"></div>
+    <div class="cf-nav">
+      <button class="cf-btn cf-btn-ghost" id="cf-back">Back</button>
+      <div class="cf-spacer"></div>
+      <button class="cf-btn cf-btn-primary" id="cf-next">Next →</button>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="cf-card cf-report" id="cf-report">
+    <div class="cf-rhead">
+      <p class="cf-kick">Your cash flow</p>
+      <h2 class="cf-verdict" id="cf-verdict"></h2>
+      <p class="cf-vsub" id="cf-vsub"></p>
+    </div>
+
+    <div class="cf-tiles" id="cf-tiles"></div>
+
+    <div class="cf-section">
+      <h3 class="cf-h3">Where your money goes each month</h3>
+      <p class="cf-sublabel">Every pound that comes in, and the job it’s doing — before anything’s left over.</p>
+      <div class="cf-stackbar" id="cf-stackbar"></div>
+      <div class="cf-alloc" id="cf-alloc"></div>
+    </div>
+
+    <div class="cf-section">
+      <h3 class="cf-h3" id="cf-chart-title">The road ahead</h3>
+      <p class="cf-sublabel">Same income, same habits. Grey is autopilot — spare cash spent. Gold is what happens when every spare pound is given a job. The dashed line is the pot that funds the retirement you described.</p>
+      <div class="cf-chartwrap"><canvas id="cf-chart" aria-label="Net worth projection"></canvas></div>
+      <div class="cf-legend">
+        <span class="cf-li"><span class="cf-sw" style="background:var(--color-gold)"></span>Every spare £ given a job</span>
+        <span class="cf-li"><span class="cf-sw" style="background:var(--color-slate)"></span>Autopilot</span>
+        <span class="cf-li"><span class="cf-sw cf-dash"></span>Retirement target</span>
+        <span class="cf-li" id="cf-legshort" style="display:none"><span class="cf-sw" style="background:#B23A48"></span>Running dry</span>
+      </div>
+      <div class="cf-callouts" id="cf-callouts"></div>
+    </div>
+
+    <!-- EMAIL GATE -->
+    <div class="cf-gate">
+      <h3 class="cf-gate-h">Get your full report — then let’s fix it</h3>
+      <p class="cf-gate-p">Pop your email in for the designed PDF: charts, your year-by-year table, and the first leak to plug. Then we’ll take you through to book a free call.</p>
+      <form class="cf-gaterow" id="cf-form" data-magnet="cashflow-model">
+        <input type="email" id="cf-email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" />
+        <button type="submit" class="cf-btn cf-btn-primary" id="cf-gate-btn">Get my report</button>
+      </form>
+      <p class="cf-conf cf-conf-center">🔒 We only ever see your email — never your numbers.</p>
+      <p class="cf-status" id="cf-status" aria-live="polite"></p>
+
+      <div class="cf-testis">
+        <p class="cf-tk">People who were exactly where you are</p>
+        <div class="cf-testgrid">
+          <div class="cf-testcard">
+            <div class="cf-testvid"><span class="cf-play">▶</span></div>
+            <div class="cf-tbody"><p class="cf-tquote">“Now money’s a tool — I’m in control of it, not the other way round.”</p><p class="cf-tname">— Josh, yacht chef</p></div>
+          </div>
+          <div class="cf-testcard">
+            <div class="cf-testvid"><span class="cf-play">▶</span></div>
+            <div class="cf-tbody"><p class="cf-tquote">“It’s like therapy, but focused on money. I’m so much less anxious now.”</p><p class="cf-tname">— Shambhavi, master’s student</p></div>
+          </div>
+          <div class="cf-testcard">
+            <div class="cf-testvid"><span class="cf-play">▶</span></div>
+            <div class="cf-tbody"><p class="cf-tquote">From avoiding money to using it as a tool for freedom — now planning his own studio.</p><p class="cf-tname">— Alon, personal trainer</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cf-footnote">
+      <b>This is an educational estimate, not financial advice.</b> Projections assume income rises ~2%/yr, costs ~2.5%/yr, cash grows 4%, investments 7% and pensions 5%, with your monthly saving invested. The retirement target assumes you’d draw about 4% of your pot a year — a rule of thumb, not a guarantee. Real life won’t follow a straight line.
+      <div class="cf-cred"><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+  import { projectYears, findTimeToGoal, requiredMonthlySurplusToHitGoal } from '../lib/cashflow/projections';
+  import { DEFAULT_ASSUMPTIONS, DEFAULT_PERSON_ID } from '../lib/cashflow/types';
+
+  const NOW_Y = new Date().getFullYear();
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- questions ---------- */
+  const STEPS = [
+    { title: "In a normal month, how much comes in?", hint: "Everything that lands — invoices, wages, sales. Before anything goes out.", fields: [{ key: "income", type: "money", value: 4200, per: "before tax and costs" }] },
+    { title: "How much do you set aside for tax?", hint: "Self-employed? A 20–30% pot keeps the taxman off your back. Employed and taxed at source? Set this to 0.", chips: [0, 20, 25, 30], fields: [{ key: "taxPct", type: "pct", value: 20 }] },
+    { title: "What does it cost to run your work each month?", hint: "Tools, software, materials, travel, that subscription you forgot about.", fields: [{ key: "business", type: "money", value: 450, per: "per month" }] },
+    { title: "What are your essential bills each month?", hint: "Rent or mortgage, utilities, food, transport, insurance — the ones that aren’t optional.", fields: [{ key: "essentials", type: "money", value: 1500, per: "per month" }] },
+    { title: "Any debt repayments each month?", hint: "Cards, loans, finance, buy-now-pay-later. If none, leave it at 0.", fields: [{ key: "debt", type: "money", value: 300, per: "per month" }] },
+    { title: "How much do you want to put away each month?", hint: "What you’d like to save or invest — the intention, not the leftover.", fields: [{ key: "savings", type: "money", value: 300, per: "per month" }] },
+    { title: "Roughly what goes on everything else?", hint: "Eating out, fun, the nice-to-haves, the odd treat. Be honest — this is where it hides.", fields: [{ key: "lifestyle", type: "money", value: 600, per: "per month" }] },
+    { title: "What have you already built up?", hint: "Rough, rounded figures are fine. This is your starting point — leave any at 0 if it’s empty.", fields: [
+      { key: "cash", type: "money", value: 5000, mlabel: "Cash savings", msub: "instant-access, current account" },
+      { key: "investments", type: "money", value: 8000, mlabel: "Investments", msub: "ISAs, stocks, funds" },
+      { key: "pension", type: "money", value: 15000, mlabel: "Pension pot", msub: "all pensions combined" } ] },
+    { title: "When do you want the choice to stop?", hint: "Not a beach and a cocktail — just the age you’d like work to become optional, and the yearly income you’d want by then.", fields: [
+      { key: "ageNow", type: "num", value: 32, mlabel: "Your age now", w: "age" },
+      { key: "retireAge", type: "num", value: 60, mlabel: "Target age", w: "age" },
+      { key: "desiredIncome", type: "money", value: 30000, mlabel: "Income you’d want", msub: "per year, in today’s money" } ] },
+    { title: "Any nearer-term target?", hint: "A number that would change how you feel — a house deposit, a real safety net, your first £100k — and the year you’d love to hit it.", fields: [
+      { key: "targetAmount", type: "money", value: 100000, mlabel: "Target amount" },
+      { key: "targetYear", type: "num", value: NOW_Y + 8, mlabel: "By which year", w: "age" } ] }
+  ];
+
+  const TOTAL = STEPS.length;
+  const state = { i: 0, rendered: false };
+  const answers = {};
+  STEPS.forEach(s => s.fields.forEach(f => { answers[f.key] = f.value; }));
+
+  const $ = id => document.getElementById(id);
+  const intro = $('cf-intro'), flow = $('cf-flow'), report = $('cf-report');
+  const stepsEl = $('cf-steps'), pFill = $('cf-fill'), pCount = $('cf-count');
+  const nextBtn = $('cf-next'), backBtn = $('cf-back');
+
+  function fieldHtml(f) {
+    let cls = 'cf-field', affix = '';
+    if (f.type === 'pct') { cls += ' pct'; affix = '<span class="cf-suffix">%</span>'; }
+    else if (f.type === 'money') { affix = '<span class="cf-prefix">£</span>'; }
+    else { cls += ' plain'; }
+    if (f.w === 'age') cls += ' age';
+    const step = f.type === 'money' ? '10' : '1';
+    return `<div class="${cls}">${affix}<input type="number" inputmode="${f.type === 'money' ? 'decimal' : 'numeric'}" min="0" step="${step}" value="${f.value}" data-key="${f.key}" /></div>`;
+  }
+
+  STEPS.forEach((s, idx) => {
+    const step = document.createElement('div');
+    step.className = 'cf-qstep';
+    let body;
+    if (s.fields.length === 1) {
+      const f = s.fields[0];
+      const per = f.per ? `<div class="cf-per">${f.per}</div>` : '';
+      const chips = s.chips ? `<div class="cf-chips">${s.chips.map(c => `<button type="button" class="cf-chip" data-val="${c}">${c === 0 ? 'None' : c + '%'}</button>`).join('')}</div>` : '';
+      body = fieldHtml(f) + per + chips;
+    } else {
+      body = `<div class="cf-fieldset">${s.fields.map(f => {
+        const sub = f.msub ? `<span class="cf-msub">${f.msub}</span>` : '';
+        return `<div class="cf-mini"><div class="cf-mlabel">${f.mlabel}${sub}</div>${fieldHtml(f)}</div>`;
+      }).join('')}</div>`;
+    }
+    step.innerHTML = `<div class="cf-qnum">Step ${idx + 1}</div><h2 class="cf-qh">${s.title}</h2><p class="cf-hint">${s.hint}</p>${body}`;
+    stepsEl.appendChild(step);
+
+    step.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => {
+        const v = parseFloat(input.value);
+        answers[input.dataset.key] = isNaN(v) ? 0 : Math.max(0, v);
+        if (s.chips) syncChips(step, answers[input.dataset.key]);
+      });
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nextBtn.click(); } });
+    });
+    if (s.chips) {
+      const inp = step.querySelector('input');
+      step.querySelectorAll('.cf-chip').forEach(chip => chip.addEventListener('click', () => {
+        const v = parseFloat(chip.dataset.val);
+        answers[inp.dataset.key] = v; inp.value = v; syncChips(step, v);
+      }));
+    }
+  });
+
+  function syncChips(step, val) {
+    step.querySelectorAll('.cf-chip').forEach(chip => chip.classList.toggle('on', parseFloat(chip.dataset.val) === val));
+  }
+
+  function showStep(i) {
+    const kids = stepsEl.children;
+    for (let k = 0; k < kids.length; k++) kids[k].classList.toggle('show', k === i);
+    pFill.style.width = ((i + 1) / TOTAL * 100) + '%';
+    pCount.textContent = `Question ${i + 1} of ${TOTAL}`;
+    backBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
+    nextBtn.textContent = (i === TOTAL - 1) ? 'See my cash flow →' : 'Next →';
+    const inp = kids[i].querySelector('input');
+    if (inp) setTimeout(() => { inp.focus(); inp.select(); }, 60);
+  }
+
+  $('cf-start').addEventListener('click', () => {
+    intro.style.display = 'none'; flow.classList.add('active');
+    state.i = 0; showStep(0); flow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  nextBtn.addEventListener('click', () => { if (state.i < TOTAL - 1) { state.i++; showStep(state.i); } else finish(); });
+  backBtn.addEventListener('click', () => { if (state.i > 0) { state.i--; showStep(state.i); } });
+
+  // Email gate → build the PDF in the browser (numbers never leave the device).
+  // MailerLite capture + booking redirect wire in around this in Steps 3–4.
+  $('cf-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('cf-email');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.style.borderColor = '#B23A48'; return; }
+    if (!proj) return;
+    const btn = $('cf-gate-btn'), orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Building your report…'; $('cf-status').textContent = '';
+    try {
+      const { generateReport } = await import('../lib/cashflow/report-pdf.js');
+      const chart = { url: canvas.toDataURL('image/png'), ratio: canvas.height / canvas.width };
+      generateReport(answers, proj, snap, chart);
+      $('cf-status').textContent = 'Your report has downloaded. (Email capture + booking redirect wire up next.)';
+    } catch (err) {
+      console.error(err);
+      $('cf-status').textContent = 'Sorry — the report failed to build. Please try again.';
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+
+  /* ---------- money helpers ---------- */
+  const gbp0 = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+  const money = n => gbp0.format(Math.round(n));
+  function moneyK(n) {
+    const a = Math.abs(n), s = n < 0 ? '-' : '';
+    if (a >= 1e6) return s + '£' + (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'm';
+    if (a >= 1000) return s + '£' + (a / 1000).toFixed(a >= 1e5 ? 0 : 1) + 'k';
+    return money(n);
+  }
+
+  /* ---------- REAL ENGINE adapter ---------- */
+  // Build a CashflowPlanData from the 10 answers and run the portal's projectYears.
+  // investLeftover=true routes each year's spare surplus into investments (the
+  // "given a job" line); false leaves it unallocated = spent (autopilot).
+  function buildPlan(a, horizon, investLeftover) {
+    const tax = a.income * a.taxPct / 100;
+    return {
+      people: [{ id: DEFAULT_PERSON_ID, name: 'You', currentAge: a.ageNow }],
+      income: [{ id: 'inc', label: 'Income', amount: a.income, frequency: 'monthly', isGross: false }],
+      expenses: [
+        { id: 'tax', category: 'essentials', label: 'Tax set-aside', amount: tax, priority: 1 },
+        { id: 'biz', category: 'essentials', label: 'Cost of working', amount: a.business, priority: 1 },
+        { id: 'ess', category: 'essentials', label: 'Essential bills', amount: a.essentials, priority: 1 },
+        { id: 'debt', category: 'essentials', label: 'Debt repayments', amount: a.debt, priority: 1 },
+        { id: 'life', category: 'discretionary', label: 'Lifestyle', amount: a.lifestyle, priority: 3 },
+      ],
+      debts: [],
+      savings: [
+        { id: 'cash', label: 'Cash savings', kind: 'cash', current: a.cash, monthlyAmount: 0, wrapper: 'cash_taxed', ownerId: DEFAULT_PERSON_ID },
+        { id: 'investments', label: 'Investments', kind: 'stocks', current: a.investments, monthlyAmount: a.savings, wrapper: 'isa', ownerId: DEFAULT_PERSON_ID },
+        { id: 'pension', label: 'Pension', kind: 'pension', current: a.pension, monthlyAmount: 0, wrapper: 'isa', ownerId: DEFAULT_PERSON_ID },
+      ],
+      interventions: [],
+      surplusDestinations: investLeftover ? [{ id: 'sd', target: { kind: 'bucket', bucketId: 'investments' } }] : [],
+      contextNote: '', coachPrepNotes: '',
+      assumptions: { ...DEFAULT_ASSUMPTIONS, horizonYears: horizon, region: 'UK' },
+    };
+  }
+
+  function snapshot(a) {
+    const tax = a.income * a.taxPct / 100;
+    const out = tax + a.business + a.essentials + a.debt + a.lifestyle;
+    const afterOut = a.income - out;
+    const affSave = Math.max(0, Math.min(a.savings, afterOut));
+    return { tax, out, afterOut, affSave, gap: afterOut - a.savings };
+  }
+
+  let proj, snap;
+
+  function compute() {
+    const a = answers;
+    snap = snapshot(a);
+    const yearsToRet = Math.max(1, Math.round(a.retireAge - a.ageNow));
+    const goalYears = Math.max(1, Math.round(a.targetYear - NOW_Y));
+    const horizon = Math.min(30, Math.max(10, yearsToRet, goalYears));
+    const asm = { ...DEFAULT_ASSUMPTIONS, horizonYears: horizon, region: 'UK' };
+
+    const planAuto = buildPlan(a, horizon, false);
+    const planJob = buildPlan(a, horizon, true);
+    const rowsAuto = projectYears(planAuto, asm); // index 0 = today, 1..horizon
+    const rowsJob = projectYears(planJob, asm);
+
+    const auto = rowsAuto.slice(1).map(r => r.netWorth);   // years 1..horizon
+    const job = rowsJob.slice(1).map(r => r.netWorth);
+    let firstShortfall = null;
+    for (let i = 1; i < rowsAuto.length; i++) { if ((rowsAuto[i].shortfall || 0) > 0) { firstShortfall = i; break; } }
+
+    const retIdx = Math.min(yearsToRet, horizon) - 1;
+    const goalIdx = Math.min(goalYears, horizon) - 1;
+    const potNeeded = a.desiredIncome * 25;
+
+    // real goal analytics
+    const ttg = findTimeToGoal(rowsAuto, a.targetAmount);
+    let hitYear = null;
+    if (ttg) hitYear = ttg.alreadyHit ? NOW_Y : (ttg.outOfHorizon ? null : NOW_Y + Math.round(ttg.yearsFromNow));
+    let reqExtra = null, reqUnreachable = false;
+    if (a.targetAmount > 0) {
+      const req = requiredMonthlySurplusToHitGoal(planAuto, asm, a.targetAmount, goalYears, { bucketId: 'investments' });
+      if (req) {
+        if (req.alreadyOnTrack) reqExtra = 0;
+        else if (req.unreachable) reqUnreachable = true;
+        else reqExtra = req.extraMonthly;
+      }
+    }
+
+    proj = {
+      auto, job, horizon, yearsToRet, retIdx, goalIdx, potNeeded,
+      potAtRetAuto: auto[retIdx], potAtRetJob: job[retIdx],
+      startNW: rowsAuto[0].netWorth, firstShortfall, hitYear, reqExtra, reqUnreachable,
+      retGap: potNeeded - auto[retIdx],
+    };
+  }
+
+  function finish() {
+    flow.classList.remove('active'); report.classList.add('active');
+    compute(); renderVerdict(); renderTiles(); renderAlloc(); renderCallouts();
+    state.rendered = true; drawChart();
+    report.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderVerdict() {
+    const a = answers, v = $('cf-verdict'), sub = $('cf-vsub');
+    $('cf-chart-title').textContent = 'From now to age ' + Math.round(a.retireAge);
+    if (proj.retGap > proj.potNeeded * 0.05) {
+      v.innerHTML = `On this path you reach <span class="hl">${moneyK(proj.potAtRetAuto)}</span> by ${Math.round(a.retireAge)} — the life you described needs <span class="hl">${moneyK(proj.potNeeded)}</span>.`;
+      sub.innerHTML = `That’s a ${money(proj.retGap)} gap. The good news: most of it closes with habits, not a bigger income. The gold line is how far you get when every spare pound has a job.`;
+    } else {
+      v.innerHTML = `You’re on track to reach ${Math.round(a.retireAge)} with about <span class="pos">${moneyK(proj.potAtRetAuto)}</span> behind you.`;
+      sub.innerHTML = `That funds roughly ${money(a.desiredIncome)} a year on the 4% rule of thumb. Keep the leak plugged and the gold line is your headroom.`;
+    }
+  }
+
+  const tile = (l, val, note, cls) => `<div class="cf-tile ${cls || ''}"><div class="cf-t-label">${l}</div><div class="cf-t-val">${val}</div><div class="cf-t-note">${note}</div></div>`;
+  function renderTiles() {
+    const a = answers;
+    const spareLabel = snap.gap < -1 ? 'Short each month' : 'Spare each month';
+    const spareVal = snap.gap < -1 ? money(-snap.gap) : money(Math.max(0, snap.gap));
+    $('cf-tiles').innerHTML =
+      tile(spareLabel, spareVal, snap.gap < -1 ? 'more out than in' : 'with no job to do', snap.gap < -1 ? 'bad' : 'accent') +
+      tile('Saved so far', moneyK(proj.startNW), 'cash, investments &amp; pension', '') +
+      tile('At ' + Math.round(a.retireAge) + ' · autopilot', moneyK(proj.potAtRetAuto), 'you wanted ' + moneyK(proj.potNeeded), proj.retGap > proj.potNeeded * 0.05 ? 'bad' : '') +
+      tile('At ' + Math.round(a.retireAge) + ' · with a job', moneyK(proj.potAtRetJob), 'every spare £ invested', 'accent');
+    if (!reduced) countUp(document.querySelectorAll('.cf-t-val'));
+  }
+
+  function renderAlloc() {
+    const a = answers;
+    const rows = [
+      { name: 'Tax pot', val: snap.tax, color: 'var(--color-navy)' },
+      { name: 'Cost of working', val: a.business, color: '#6E7C8C' },
+      { name: 'Essential bills', val: a.essentials, color: '#8A97A6' },
+      { name: 'Debt', val: a.debt, color: '#B23A48' },
+      { name: 'Lifestyle', val: a.lifestyle, color: '#C9A46A' },
+      { name: 'Saving', val: snap.affSave, color: 'var(--color-gold)' },
+    ];
+    if (snap.gap >= 50) rows.push({ name: 'Slips away', val: snap.gap, color: '#3F7A55' });
+    const max = a.income || 1;
+    $('cf-stackbar').innerHTML = rows.map(r => `<span title="${r.name}" style="width:${r.val / max * 100}%;background:${r.color}"></span>`).join('');
+    const wrap = $('cf-alloc');
+    wrap.innerHTML = rows.map(r => `<div class="cf-allocrow"><div class="cf-a-name"><span class="cf-dot" style="background:${r.color}"></span>${r.name}</div><div class="cf-a-track"><div class="cf-a-bar" style="width:0%;background:${r.color}" data-w="${r.val / max * 100}"></div></div><div class="cf-a-val">${money(r.val)}</div></div>`).join('');
+    requestAnimationFrame(() => wrap.querySelectorAll('.cf-a-bar').forEach(b => { b.style.width = b.dataset.w + '%'; }));
+  }
+
+  function co(kind, title, body) {
+    return `<div class="cf-co ${kind}"><div class="cf-co-t">${title}</div><div class="cf-co-b">${body}</div></div>`;
+  }
+  function renderCallouts() {
+    const a = answers, out = [];
+    if (a.targetAmount > 0) {
+      if (proj.reqExtra === 0 && proj.hitYear && proj.hitYear <= a.targetYear) {
+        out.push(co('win', `Your ${money(a.targetAmount)} goal: on track`, `On your current path you cross it around ${proj.hitYear} — ${proj.hitYear < a.targetYear ? (a.targetYear - proj.hitYear) + ' year(s) early.' : 'right on time.'}`));
+      } else if (proj.reqUnreachable) {
+        out.push(co('warn', `Your ${money(a.targetAmount)} goal by ${a.targetYear} is a stretch`, `Even investing hard, this path doesn’t get there by then. Worth a proper look at the income or the timeline.`));
+      } else if (proj.reqExtra != null) {
+        out.push(co('warn', `Your ${money(a.targetAmount)} goal needs about ${money(proj.reqExtra)}/month more`, `${proj.hitYear ? 'On today’s habits you’d hit it around ' + proj.hitYear + '. ' : ''}Finding ${money(proj.reqExtra)} a month gets you there by ${a.targetYear}.`));
+      }
+    }
+    if (proj.firstShortfall) {
+      $('cf-legshort').style.display = 'inline-flex';
+      out.push(co('warn', `You run dry around ${NOW_Y + proj.firstShortfall}`, `On the autopilot line, spending more than comes in empties the buffer. That’s the year the maths stops holding — long before it feels like a crisis.`));
+    }
+    if (snap.gap >= 50) {
+      const end = proj.job[proj.horizon - 1] - proj.auto[proj.horizon - 1];
+      out.push(co('gold', `Your ${money(snap.gap)}/month leak is the whole game`, `It feels like nothing month to month. Given a job, it’s worth about ${moneyK(end)} more by ${NOW_Y + proj.horizon}. Same income — different habit.`));
+    }
+    $('cf-callouts').innerHTML = out.join('');
+  }
+
+  function countUp(nodes) {
+    nodes.forEach(node => {
+      const text = node.textContent, m = text.match(/-?[\d,]+(\.\d+)?/);
+      if (!m) return;
+      const raw = m[0], numeric = parseFloat(raw.replace(/,/g, ''));
+      const dec = (raw.split('.')[1] || '').length, comma = /,/.test(raw);
+      const prefix = text.slice(0, m.index), suffix = text.slice(m.index + raw.length);
+      const start = performance.now(), dur = 760;
+      const fmt = v => { let f = v.toFixed(dec); if (comma || dec === 0) { const p = f.split('.'); p[0] = parseInt(p[0], 10).toLocaleString('en-GB'); f = p.join('.'); } return f; };
+      const tick = now => { const pr = Math.min(1, (now - start) / dur), e = 1 - Math.pow(1 - pr, 3); node.textContent = prefix + fmt(numeric * e) + suffix; if (pr < 1) requestAnimationFrame(tick); else node.textContent = text; };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ---------- chart ---------- */
+  const canvas = $('cf-chart');
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function hexA(v, a) {
+    if (v[0] === '#') { let h = v.slice(1); if (h.length === 3) h = h.split('').map(c => c + c).join(''); return `rgba(${parseInt(h.slice(0, 2), 16)},${parseInt(h.slice(2, 4), 16)},${parseInt(h.slice(4, 6), 16)},${a})`; }
+    return v;
+  }
+  function drawChart() {
+    const ctx = canvas.getContext('2d'), dpr = window.devicePixelRatio || 1;
+    const cssW = canvas.clientWidth || 760, cssH = Math.max(270, Math.min(370, cssW * 0.46));
+    canvas.width = cssW * dpr; canvas.height = cssH * dpr; canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cssW, cssH);
+    const padL = 56, padR = 18, padT = 22, padB = 34, W = cssW - padL - padR, H = cssH - padT - padB, n = proj.horizon;
+    const vals = proj.auto.concat(proj.job).concat([0, proj.potNeeded]);
+    let maxV = Math.max(...vals), minV = Math.min(...vals);
+    if (maxV === minV) maxV = minV + 1;
+    maxV += (maxV - minV) * 0.10; if (minV < 0) minV -= (maxV - minV) * 0.04;
+    const navy = cssVar('--color-navy'), slate = cssVar('--color-slate'), gold = cssVar('--color-gold');
+    const line = 'rgba(28,42,58,0.12)', paper = cssVar('--color-bg-white'), bad = '#B23A48';
+    const X = i => padL + (n <= 1 ? 0 : (i / (n - 1)) * W);
+    const Y = v => padT + (1 - (v - minV) / (maxV - minV)) * H;
+    ctx.font = '11px Inter, sans-serif'; ctx.textBaseline = 'middle';
+    for (let g = 0; g <= 4; g++) { const val = minV + (maxV - minV) * (g / 4), yy = Y(val); ctx.strokeStyle = line; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL + W, yy); ctx.stroke(); ctx.fillStyle = slate; ctx.textAlign = 'right'; ctx.fillText(moneyK(val), padL - 10, yy); }
+    const stepX = n > 16 ? 5 : (n > 8 ? 2 : 1);
+    ctx.textAlign = 'center'; ctx.fillStyle = slate;
+    for (let i = 0; i < n; i++) { if (i % stepX === 0 || i === n - 1) ctx.fillText("’" + String(NOW_Y + i + 1).slice(2), X(i), padT + H + 18); }
+    if (proj.potNeeded > 0 && proj.potNeeded <= maxV) {
+      ctx.strokeStyle = gold; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(padL, Y(proj.potNeeded)); ctx.lineTo(padL + W, Y(proj.potNeeded)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = gold; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.font = '600 11px Inter, sans-serif'; ctx.fillText('retire on ' + money(answers.desiredIncome) + '/yr', padL + 4, Y(proj.potNeeded) - 4);
+    }
+    const rX = X(Math.min(proj.retIdx, n - 1)); ctx.strokeStyle = slate; ctx.globalAlpha = .45; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(rX, padT); ctx.lineTo(rX, padT + H); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    const plot = (series, color, width, fill) => {
+      if (fill) { const gr = ctx.createLinearGradient(0, padT, 0, padT + H); gr.addColorStop(0, hexA(color, .20)); gr.addColorStop(1, hexA(color, 0)); ctx.beginPath(); ctx.moveTo(X(0), Y(series[0])); for (let i = 0; i < n; i++) ctx.lineTo(X(i), Y(series[i])); ctx.lineTo(X(n - 1), Y(minV)); ctx.lineTo(X(0), Y(minV)); ctx.closePath(); ctx.fillStyle = gr; ctx.fill(); }
+      ctx.beginPath(); for (let j = 0; j < n; j++) { const px = X(j), py = Y(series[j]); j === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); } ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(X(n - 1), Y(series[n - 1]), width + 1.5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); ctx.strokeStyle = paper; ctx.lineWidth = 2; ctx.stroke();
+    };
+    plot(proj.auto, slate, 2, false);
+    plot(proj.job, gold, 3, true);
+    ctx.font = '600 13px Inter, sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.fillStyle = navy; ctx.fillText(moneyK(proj.job[n - 1]), padL + W - 4, Y(proj.job[n - 1]) - 9);
+  }
+  let rT; window.addEventListener('resize', () => { if (!state.rendered) return; clearTimeout(rT); rT = setTimeout(drawChart, 120); });
+</script>
+
+<style>
+  .cf-wrap { max-width: 900px; margin: 0 auto; padding: 8rem 1.25rem 6rem; }
+  .cf-card { background: #fff; border: 1px solid var(--color-border-warm); border-radius: 16px; box-shadow: 0 12px 32px rgba(28,42,58,0.08); }
+
+  .cf-eyebrow { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-gold); font-weight: 600; margin-bottom: 1rem; }
+  .cf-intro { padding: 3rem 2.75rem; }
+  .cf-h1 { font-family: var(--font-heading); font-weight: 700; font-size: clamp(1.9rem, 4.6vw, 2.9rem); line-height: 1.08; color: var(--color-navy); margin: 0; }
+  .cf-h1 em { font-style: italic; color: var(--color-gold); }
+  .cf-points { list-style: none; padding: 0; margin: 1.8rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .cf-points li { font-family: var(--font-ui); font-size: 14px; color: var(--color-slate); position: relative; padding-left: 1.4rem; }
+  .cf-points li::before { content: "✓"; position: absolute; left: 0; color: var(--color-gold); font-weight: 700; }
+  .cf-introrow { display: flex; flex-wrap: wrap; gap: 1rem 1.6rem; align-items: center; margin-top: 2rem; }
+
+  .cf-btn { font-family: var(--font-ui); font-size: 15px; font-weight: 600; border-radius: 8px; padding: 0.85rem 1.6rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+  .cf-btn-primary { background: var(--color-gold); color: var(--color-navy); }
+  .cf-btn-primary:hover { background: var(--color-gold-hover); transform: translateY(-1px); }
+  .cf-btn-ghost { background: transparent; color: var(--color-slate); border-color: var(--color-border-warm); }
+  .cf-btn-ghost:hover { color: var(--color-navy); border-color: var(--color-gold); }
+  .cf-conf { font-family: var(--font-ui); font-size: 12.5px; color: var(--color-slate); }
+  .cf-conf-center { text-align: center; display: block; margin-top: 1rem; }
+
+  /* flow */
+  .cf-flow { padding: 2rem 2.75rem 2.4rem; display: none; margin-top: 1.5rem; }
+  .cf-flow.active { display: block; }
+  .cf-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .cf-count { font-family: var(--font-ui); font-size: 12.5px; color: var(--color-slate); white-space: nowrap; }
+  .cf-track { flex: 1; height: 6px; border-radius: 99px; background: var(--color-bg-cool); overflow: hidden; }
+  .cf-fill { height: 100%; width: 10%; background: var(--color-gold); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+  .cf-qstep { display: none; }
+  .cf-qstep.show { display: block; animation: cfRise 0.35s ease both; }
+  @keyframes cfRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .cf-qstep.show { animation: none; } .cf-fill { transition: none; } }
+  .cf-qnum { font-family: var(--font-ui); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-gold); font-weight: 700; }
+  .cf-qh { font-family: var(--font-heading); font-weight: 700; font-size: clamp(1.35rem, 3.2vw, 1.9rem); line-height: 1.14; color: var(--color-navy); margin: 0.7rem 0 0.5rem; }
+  .cf-hint { font-family: var(--font-ui); color: var(--color-slate); font-size: 15px; margin: 0 0 1.5rem; max-width: 56ch; }
+
+  .cf-field { position: relative; max-width: 340px; }
+  .cf-prefix, .cf-suffix { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--font-heading); font-size: 24px; color: var(--color-slate); pointer-events: none; }
+  .cf-prefix { left: 1rem; } .cf-suffix { right: 1rem; }
+  .cf-field input { width: 100%; font-family: var(--font-heading); font-size: 28px; font-weight: 700; color: var(--color-navy); background: var(--color-bg-white); border: 1.5px solid var(--color-border-warm); border-radius: 10px; padding: 0.9rem 1rem 0.9rem 2.3rem; outline: none; transition: border-color 0.15s, box-shadow 0.15s; -moz-appearance: textfield; }
+  .cf-field.pct input { padding-left: 1rem; padding-right: 2.6rem; }
+  .cf-field.plain input { padding-left: 1rem; }
+  .cf-field input::-webkit-outer-spin-button, .cf-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .cf-field input:focus { border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,162,101,0.2); }
+  .cf-per { font-family: var(--font-ui); font-size: 13px; color: var(--color-slate); margin-top: 0.6rem; }
+  .cf-fieldset { display: flex; flex-direction: column; gap: 1rem; max-width: 480px; }
+  .cf-mini { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; }
+  .cf-mlabel { font-family: var(--font-ui); font-size: 14.5px; color: var(--color-navy); }
+  .cf-msub { display: block; font-size: 12px; color: var(--color-slate); margin-top: 2px; }
+  .cf-mini .cf-field { max-width: 170px; }
+  .cf-mini .cf-field.age { max-width: 108px; }
+  .cf-mini .cf-field input { font-size: 20px; padding: 0.7rem 0.9rem 0.7rem 2rem; }
+  .cf-mini .cf-field.plain input { padding-left: 0.9rem; }
+  .cf-mini .cf-prefix { font-size: 17px; left: 0.8rem; }
+
+  .cf-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .cf-chip { font-family: var(--font-ui); font-size: 13.5px; color: var(--color-slate); cursor: pointer; background: transparent; border: 1px solid var(--color-border-warm); border-radius: 99px; padding: 0.45rem 0.9rem; transition: all 0.13s; }
+  .cf-chip:hover { border-color: var(--color-gold); color: var(--color-navy); }
+  .cf-chip.on { background: var(--color-navy); color: var(--color-cream); border-color: var(--color-navy); }
+  .cf-nav { display: flex; align-items: center; gap: 0.8rem; margin-top: 2.2rem; }
+  .cf-spacer { flex: 1; }
+
+  /* report */
+  .cf-report { display: none; margin-top: 1.5rem; overflow: hidden; }
+  .cf-report.active { display: block; animation: cfRise 0.4s ease both; }
+  .cf-rhead { padding: 2.4rem 2.75rem 1.9rem; border-bottom: 1px solid var(--color-border-warm); }
+  .cf-kick { font-family: var(--font-ui); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--color-gold); margin: 0; }
+  .cf-verdict { font-family: var(--font-heading); font-weight: 700; font-size: clamp(1.5rem, 3.6vw, 2.25rem); line-height: 1.14; color: var(--color-navy); margin: 0.6rem 0 0; }
+  .cf-verdict .hl { color: var(--color-gold); } .cf-verdict .pos { color: #3F7A55; }
+  .cf-vsub { font-family: var(--font-ui); color: var(--color-slate); font-size: 16px; margin: 0.9rem 0 0; max-width: 64ch; }
+
+  .cf-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--color-border-warm); border-bottom: 1px solid var(--color-border-warm); }
+  .cf-tile { background: #fff; padding: 1.3rem 1.3rem; }
+  .cf-t-label { font-family: var(--font-ui); font-size: 12.5px; color: var(--color-slate); }
+  .cf-t-val { font-family: var(--font-heading); font-weight: 700; font-size: clamp(1.35rem, 2.9vw, 1.8rem); color: var(--color-navy); margin-top: 0.5rem; font-variant-numeric: tabular-nums; }
+  .cf-t-note { font-family: var(--font-ui); font-size: 12px; color: var(--color-slate); margin-top: 0.35rem; }
+  .cf-tile.accent .cf-t-val { color: #9F7C34; } .cf-tile.bad .cf-t-val { color: #B23A48; }
+
+  .cf-section { padding: 2rem 2.75rem; border-bottom: 1px solid var(--color-border-warm); }
+  .cf-h3 { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; color: var(--color-navy); margin: 0; }
+  .cf-sublabel { font-family: var(--font-ui); font-size: 13.5px; color: var(--color-slate); margin: 0.5rem 0 1.4rem; max-width: 66ch; }
+  .cf-stackbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; margin-bottom: 1.4rem; border: 1px solid var(--color-border-warm); }
+  .cf-stackbar span { height: 100%; }
+  .cf-alloc { display: flex; flex-direction: column; gap: 0.8rem; }
+  .cf-allocrow { display: grid; grid-template-columns: 168px 1fr auto; align-items: center; gap: 1rem; }
+  .cf-a-name { font-family: var(--font-ui); font-size: 14px; color: var(--color-navy); display: flex; align-items: center; gap: 0.55rem; }
+  .cf-a-track { height: 15px; background: var(--color-bg-cool); border-radius: 5px; overflow: hidden; }
+  .cf-a-bar { height: 100%; border-radius: 5px; transition: width 0.7s cubic-bezier(.4,0,.2,1); }
+  .cf-a-val { font-family: var(--font-ui); font-size: 14px; font-weight: 600; color: var(--color-navy); min-width: 66px; text-align: right; font-variant-numeric: tabular-nums; }
+  .cf-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  @media (prefers-reduced-motion: reduce) { .cf-a-bar { transition: none; } }
+
+  .cf-chartwrap { width: 100%; } canvas { display: block; width: 100%; height: auto; }
+  .cf-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin-top: 1.1rem; }
+  .cf-li { font-family: var(--font-ui); display: inline-flex; align-items: center; gap: 0.55rem; font-size: 13.5px; color: var(--color-slate); }
+  .cf-sw { width: 22px; height: 4px; border-radius: 2px; } .cf-sw.cf-dash { background: repeating-linear-gradient(90deg, var(--color-gold) 0 5px, transparent 5px 9px); height: 3px; }
+  .cf-callouts { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.6rem; }
+  .cf-co { padding: 1.1rem 1.25rem; border-radius: 10px; }
+  .cf-co.warn { background: rgba(178,58,72,0.08); border: 1px solid rgba(178,58,72,0.26); }
+  .cf-co.win { background: rgba(63,122,85,0.08); border: 1px solid rgba(63,122,85,0.26); }
+  .cf-co.gold { background: rgba(196,162,101,0.12); border: 1px solid rgba(196,162,101,0.3); }
+  .cf-co-t { font-family: var(--font-ui); font-weight: 700; font-size: 15px; color: var(--color-navy); }
+  .cf-co-b { font-family: var(--font-ui); font-size: 14px; color: var(--color-slate); margin-top: 0.25rem; }
+
+  /* gate */
+  .cf-gate { padding: 2.4rem 2.75rem; text-align: center; }
+  .cf-gate-h { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; color: var(--color-navy); }
+  .cf-gate-p { font-family: var(--font-ui); font-size: 15px; color: var(--color-slate); max-width: 48ch; margin: 0.7rem auto 0; }
+  .cf-gaterow { display: flex; gap: 0.6rem; max-width: 460px; margin: 1.5rem auto 0; }
+  .cf-gaterow input { flex: 1; font-family: var(--font-ui); font-size: 15px; color: var(--color-navy); background: var(--color-bg-white); border: 1.5px solid var(--color-border-warm); border-radius: 8px; padding: 0.8rem 1rem; outline: none; }
+  .cf-gaterow input:focus { border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,162,101,0.2); }
+  .cf-status { font-family: var(--font-ui); font-size: 13px; color: var(--color-slate); margin-top: 0.8rem; min-height: 1rem; }
+
+  .cf-testis { border-top: 1px solid var(--color-border-warm); margin-top: 2rem; padding-top: 1.9rem; }
+  .cf-tk { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-slate); font-weight: 700; }
+  .cf-testgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-top: 1.1rem; text-align: left; }
+  .cf-testcard { border: 1px solid var(--color-border-warm); border-radius: 12px; overflow: hidden; background: var(--color-bg-white); }
+  .cf-testvid { aspect-ratio: 16 / 10; background: linear-gradient(140deg, #1C2A3A, #2C3F53); display: grid; place-items: center; }
+  .cf-play { width: 42px; height: 42px; border-radius: 50%; background: rgba(245,240,232,0.94); display: grid; place-items: center; color: var(--color-navy); font-size: 14px; }
+  .cf-tbody { padding: 0.9rem 1rem; }
+  .cf-tquote { font-family: var(--font-ui); font-size: 13.5px; color: var(--color-navy); margin: 0; line-height: 1.45; }
+  .cf-tname { font-family: var(--font-ui); font-size: 12px; color: var(--color-slate); margin: 0.55rem 0 0; }
+
+  .cf-footnote { padding: 1.6rem 2.75rem 2rem; font-family: var(--font-ui); font-size: 12px; color: var(--color-slate); line-height: 1.6; }
+  .cf-footnote b { color: var(--color-navy); }
+  .cf-cred { margin-top: 0.7rem; }
+
+  @media (max-width: 760px) {
+    .cf-wrap { padding-top: 6rem; }
+    .cf-intro, .cf-flow, .cf-rhead, .cf-section, .cf-gate, .cf-footnote { padding-left: 1.4rem; padding-right: 1.4rem; }
+    .cf-tiles { grid-template-columns: repeat(2, 1fr); }
+    .cf-allocrow { grid-template-columns: 110px 1fr auto; gap: 0.7rem; }
+    .cf-testgrid { grid-template-columns: 1fr; }
+    .cf-gaterow { flex-direction: column; }
+  }
+</style>
+
+</Layout>
