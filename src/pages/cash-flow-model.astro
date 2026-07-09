@@ -238,7 +238,8 @@ const description = "Answer 10 questions and see where your money really goes �
       const { generateReport } = await import('../lib/cashflow/report-pdf.js');
       const chart = { url: canvas.toDataURL('image/png'), ratio: canvas.height / canvas.width };
       generateReport(answers, proj, snap, chart);
-      $('cf-status').textContent = 'Your report has downloaded. (Booking redirect wires up next.)';
+      $('cf-status').textContent = 'Your report has downloaded — taking you through to book your call…';
+      setTimeout(() => { window.location.href = '/cash-flow-booking'; }, 1400);
     } catch (err) {
       console.error(err);
       $('cf-status').textContent = 'Sorry — the report failed to build. Please try again.';
