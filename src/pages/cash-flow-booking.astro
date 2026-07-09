@@ -56,8 +56,8 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
 
     <div class="cfb-grid">
       <div class="cfb-card">
-        <video class="cfb-vid-el" controls preload="none" playsinline poster="/testimonials/sam-value.jpg" src="/testimonials/sam-value.mp4"></video>
-        <div class="cfb-cbody"><p class="cfb-quote">Started naming his spending triggers — and getting real value out of every session.</p><p class="cfb-name">— Sam, retail manager</p></div>
+        <video class="cfb-vid-el" controls preload="none" playsinline poster="/testimonials/josh-pedestal.jpg" src="/testimonials/josh-pedestal.mp4"></video>
+        <div class="cfb-cbody"><p class="cfb-quote">“You’ve taken money off the pedestal — now it’s a tool I’m in control of, not the other way round.”</p><p class="cfb-name">— Josh, yacht chef</p></div>
       </div>
       <div class="cfb-card">
         <video class="cfb-vid-el" controls preload="none" playsinline poster="/testimonials/alon-opportunity.jpg" src="/testimonials/alon-opportunity.mp4"></video>
@@ -90,27 +90,36 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
 
 <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
-<script is:inline>
-  // Deliver the report that was built on the tool page and stashed on-device.
-  (function () {
-    var data = sessionStorage.getItem('cf_report_pdf');
-    if (!data) return;
-    var bar = document.getElementById('cfb-report'), btn = document.getElementById('cfb-dl');
-    if (!bar || !btn) return;
+<script>
+  // Rebuild the report here from the stashed answers (on-device) and deliver it.
+  // The booking page gets the first look; the button is always available.
+  import { computeProjection, renderChart } from '../lib/cashflow/run.js';
+  import { generateReport } from '../lib/cashflow/report-pdf.js';
+
+  const bar = document.getElementById('cfb-report');
+  const btn = document.getElementById('cfb-dl');
+  let built = null;
+
+  function build() {
+    if (built) return built;
+    let answers = null;
+    try { answers = JSON.parse(sessionStorage.getItem('cf_answers') || 'null'); } catch (_) {}
+    if (!answers) return null;
+    const { proj, snap } = computeProjection(answers);
+    const canvas = document.createElement('canvas');
+    const url = renderChart(canvas, proj, answers, { width: 820 });
+    built = generateReport(answers, proj, snap, { url, ratio: canvas.height / canvas.width });
+    return built;
+  }
+
+  if (bar && btn && build()) {
     bar.style.display = 'flex';
-    function dl() {
-      var a = document.createElement('a');
-      a.href = data; a.download = 'way-of-wealth-cash-flow-model.pdf';
-      document.body.appendChild(a); a.click(); a.remove();
-    }
+    const dl = () => { const doc = build(); if (doc) doc.save('way-of-wealth-cash-flow-model.pdf'); };
     btn.addEventListener('click', dl);
-    // Auto-deliver a short while after they land, so the booking page gets the
-    // first look. The button above is always available. Change DELAY_MS to taste.
-    var DELAY_MS = 10000;
     if (sessionStorage.getItem('cf_report_delivered') !== '1') {
-      setTimeout(function () { dl(); sessionStorage.setItem('cf_report_delivered', '1'); }, DELAY_MS);
+      setTimeout(() => { dl(); sessionStorage.setItem('cf_report_delivered', '1'); }, 10000);
     }
-  })();
+  }
 </script>
 
 <style>

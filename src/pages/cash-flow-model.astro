@@ -233,22 +233,13 @@ const description = "Answer 10 questions and see where your money really goes �
       });
     } catch (_) { /* ignore — still deliver the report */ }
 
-    // 2. Build the PDF and stash it on-device (sessionStorage — never sent
-    //    anywhere), then go straight to the booking page where it's delivered.
-    //    Keeps the download from pulling people away before they land on the call.
-    try {
-      const { generateReport } = await import('../lib/cashflow/report-pdf.js');
-      const chart = { url: canvas.toDataURL('image/png'), ratio: canvas.height / canvas.width };
-      const doc = generateReport(answers, proj, snap, chart);
-      try { sessionStorage.setItem('cf_report_pdf', doc.output('datauristring')); sessionStorage.removeItem('cf_report_delivered'); } catch (_) {}
-      $('cf-status').textContent = 'Taking you through to book your call — your report will be waiting there…';
-      setTimeout(() => { window.location.href = '/cash-flow-booking'; }, 900);
-    } catch (err) {
-      console.error(err);
-      $('cf-status').textContent = 'Sorry — the report failed to build. Please try again.';
-    } finally {
-      btn.disabled = false; btn.textContent = orig;
-    }
+    // 2. Stash the answers on-device (tiny — never sent anywhere) so the booking
+    //    page can rebuild the report there. Then go straight to booking, so the
+    //    download never pulls people out of the funnel before they land.
+    try { sessionStorage.setItem('cf_answers', JSON.stringify(answers)); sessionStorage.removeItem('cf_report_delivered'); } catch (_) {}
+    $('cf-status').textContent = 'Taking you through to book your call — your report will be waiting there…';
+    setTimeout(() => { window.location.href = '/cash-flow-booking'; }, 700);
+    btn.disabled = false; btn.textContent = orig;
   });
 
   /* ---------- money helpers ---------- */
