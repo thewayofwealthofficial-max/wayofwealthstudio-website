@@ -83,7 +83,7 @@ const description = "Answer 10 questions and see where your money really goes �
         <p class="cf-tk">People who were exactly where you are</p>
         <div class="cf-testgrid">
           <div class="cf-testcard">
-            <div class="cf-testvid"><span class="cf-play">▶</span></div>
+            <video class="cf-testvid-el" controls preload="none" playsinline poster="/testimonials/josh-pedestal.jpg" src="/testimonials/josh-pedestal.mp4"></video>
             <div class="cf-tbody"><p class="cf-tquote">“Now money’s a tool — I’m in control of it, not the other way round.”</p><p class="cf-tname">— Josh, yacht chef</p></div>
           </div>
           <div class="cf-testcard">
@@ -592,6 +592,7 @@ const description = "Answer 10 questions and see where your money really goes �
   .cf-testcard { border: 1px solid var(--color-border-warm); border-radius: 12px; overflow: hidden; background: var(--color-bg-white); }
   .cf-testvid { aspect-ratio: 16 / 10; background: linear-gradient(140deg, #1C2A3A, #2C3F53); display: grid; place-items: center; }
   .cf-play { width: 42px; height: 42px; border-radius: 50%; background: rgba(245,240,232,0.94); display: grid; place-items: center; color: var(--color-navy); font-size: 14px; }
+  .cf-testvid-el { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: #1C2A3A; }
   .cf-tbody { padding: 0.9rem 1rem; }
   .cf-tquote { font-family: var(--font-ui); font-size: 13.5px; color: var(--color-navy); margin: 0; line-height: 1.45; }
   .cf-tname { font-family: var(--font-ui); font-size: 12px; color: var(--color-slate); margin: 0.55rem 0 0; }

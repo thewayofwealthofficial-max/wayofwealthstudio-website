@@ -41,14 +41,17 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
     <p class="cfb-eyebrow cfb-center">Don’t take my word for it</p>
     <h2 class="cfb-th">People who were exactly where you are</h2>
 
-    <blockquote class="cfb-feature">
-      “Book that first call with Joel. Just do it — one call is all it takes.”
-      <cite>— Josh, yacht chef · came in stuck in debt, left debt-free and on a five-year plan</cite>
-    </blockquote>
+    <div class="cfb-feature-wrap">
+      <video class="cfb-feature-vid" controls preload="none" playsinline poster="/testimonials/josh-book-the-call.jpg" src="/testimonials/josh-book-the-call.mp4"></video>
+      <blockquote class="cfb-feature">
+        “Book that first call with Joel. Just do it — one call is all it takes.”
+        <cite>— Josh, yacht chef · came in stuck in debt, left debt-free and on a five-year plan</cite>
+      </blockquote>
+    </div>
 
     <div class="cfb-grid">
       <div class="cfb-card">
-        <div class="cfb-vid"><span class="cfb-play">▶</span></div>
+        <video class="cfb-vid-el" controls preload="none" playsinline poster="/testimonials/josh-pedestal.jpg" src="/testimonials/josh-pedestal.mp4"></video>
         <div class="cfb-cbody"><p class="cfb-quote">“You’ve taken money off the pedestal and put me back on it. Now it’s a tool — I’m in control of it, not the other way round.”</p><p class="cfb-name">— Josh, yacht chef</p></div>
       </div>
       <div class="cfb-card">
@@ -98,6 +101,10 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
   .cfb-th { font-family: var(--font-heading); font-size: clamp(1.5rem, 3.4vw, 2rem); font-weight: 700; color: var(--color-navy); text-align: center; margin: 0.5rem 0 0; }
   .cfb-feature { font-family: var(--font-heading); font-style: italic; font-size: clamp(1.3rem, 3vw, 1.7rem); line-height: 1.32; color: var(--color-navy); text-align: center; max-width: 42ch; margin: 1.8rem auto 0; }
   .cfb-feature cite { display: block; font-family: var(--font-ui); font-style: normal; font-size: 13px; color: var(--color-slate); margin-top: 1rem; }
+  .cfb-feature-wrap { max-width: 560px; margin: 1.8rem auto 0; }
+  .cfb-feature-vid { width: 100%; border-radius: 14px; display: block; background: #1C2A3A; box-shadow: 0 12px 32px rgba(28,42,58,0.14); }
+  .cfb-feature-wrap .cfb-feature { margin-top: 1.2rem; }
+  .cfb-vid-el { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: #1C2A3A; }
   .cfb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.8rem; }
   .cfb-card { background: #fff; border: 1px solid var(--color-border-warm); border-radius: 14px; overflow: hidden; box-shadow: 0 6px 18px rgba(28,42,58,0.06); }
   .cfb-vid { aspect-ratio: 16 / 10; background: linear-gradient(140deg, #1C2A3A, #2C3F53); display: grid; place-items: center; }
