@@ -72,6 +72,7 @@ const description = "Answer 10 questions and see where your money really goes �
       <h3 class="cf-gate-h">Get your full report — then let’s fix it</h3>
       <p class="cf-gate-p">Pop your email in for the designed PDF: charts, your year-by-year table, and the first leak to plug. Then we’ll take you through to book a free call.</p>
       <form class="cf-gaterow" id="cf-form" data-magnet="cashflow-model">
+        <input type="text" id="cf-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;height:0;width:0;" />
         <input type="email" id="cf-email" placeholder="you@email.com" aria-label="Email address" autocomplete="email" />
         <button type="submit" class="cf-btn cf-btn-primary" id="cf-gate-btn">Get my report</button>
       </form>
@@ -211,20 +212,33 @@ const description = "Answer 10 questions and see where your money really goes �
   nextBtn.addEventListener('click', () => { if (state.i < TOTAL - 1) { state.i++; showStep(state.i); } else finish(); });
   backBtn.addEventListener('click', () => { if (state.i > 0) { state.i--; showStep(state.i); } });
 
-  // Email gate → build the PDF in the browser (numbers never leave the device).
-  // MailerLite capture + booking redirect wire in around this in Steps 3–4.
+  // Email gate → capture the lead in MailerLite, then build the PDF in the
+  // browser (numbers never leave the device). Capture is best-effort: a backend
+  // hiccup never blocks the user's report. Booking redirect wires in at Step 4.
   $('cf-form').addEventListener('submit', async e => {
     e.preventDefault();
     const email = $('cf-email');
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.style.borderColor = '#B23A48'; return; }
+    const val = (email.value || '').trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) { email.focus(); email.style.borderColor = '#B23A48'; return; }
     if (!proj) return;
     const btn = $('cf-gate-btn'), orig = btn.textContent;
     btn.disabled = true; btn.textContent = 'Building your report…'; $('cf-status').textContent = '';
+
+    // 1. Capture the lead (best-effort — don't block the report on it).
+    try {
+      await fetch('/api/lead-magnet/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: val, magnet: 'cashflow-model', honeypot: $('cf-hp').value || null }),
+      });
+    } catch (_) { /* ignore — still deliver the report */ }
+
+    // 2. Build + download the PDF.
     try {
       const { generateReport } = await import('../lib/cashflow/report-pdf.js');
       const chart = { url: canvas.toDataURL('image/png'), ratio: canvas.height / canvas.width };
       generateReport(answers, proj, snap, chart);
-      $('cf-status').textContent = 'Your report has downloaded. (Email capture + booking redirect wire up next.)';
+      $('cf-status').textContent = 'Your report has downloaded. (Booking redirect wires up next.)';
     } catch (err) {
       console.error(err);
       $('cf-status').textContent = 'Sorry — the report failed to build. Please try again.';
