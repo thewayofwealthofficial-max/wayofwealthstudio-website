@@ -87,11 +87,11 @@ const description = "Answer 10 questions and see where your money really goes �
             <div class="cf-tbody"><p class="cf-tquote">“Now money’s a tool — I’m in control of it, not the other way round.”</p><p class="cf-tname">— Josh, yacht chef</p></div>
           </div>
           <div class="cf-testcard">
-            <div class="cf-testvid"><span class="cf-play">▶</span></div>
-            <div class="cf-tbody"><p class="cf-tquote">“It’s like therapy, but focused on money. I’m so much less anxious now.”</p><p class="cf-tname">— Shambhavi, master’s student</p></div>
+            <video class="cf-testvid-el" controls preload="none" playsinline poster="/testimonials/shambhavi-worth.jpg" src="/testimonials/shambhavi-worth.mp4"></video>
+            <div class="cf-tbody"><p class="cf-tquote">Calmer about money — and no longer settling for less than she’s worth.</p><p class="cf-tname">— Shambhavi, master’s student</p></div>
           </div>
           <div class="cf-testcard">
-            <div class="cf-testvid"><span class="cf-play">▶</span></div>
+            <video class="cf-testvid-el" controls preload="none" playsinline poster="/testimonials/alon-opportunity.jpg" src="/testimonials/alon-opportunity.mp4"></video>
             <div class="cf-tbody"><p class="cf-tquote">From avoiding money to using it as a tool for freedom — now planning his own studio.</p><p class="cf-tname">— Alon, personal trainer</p></div>
           </div>
         </div>
@@ -473,7 +473,7 @@ const description = "Answer 10 questions and see where your money really goes �
   let rT; window.addEventListener('resize', () => { if (!state.rendered) return; clearTimeout(rT); rT = setTimeout(drawChart, 120); });
 </script>
 
-<style>
+<style is:global>
   .cf-wrap { max-width: 900px; margin: 0 auto; padding: 8rem 1.25rem 6rem; }
   .cf-card { background: #fff; border: 1px solid var(--color-border-warm); border-radius: 16px; box-shadow: 0 12px 32px rgba(28,42,58,0.08); }
 
