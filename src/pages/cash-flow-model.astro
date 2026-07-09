@@ -233,13 +233,16 @@ const description = "Answer 10 questions and see where your money really goes �
       });
     } catch (_) { /* ignore — still deliver the report */ }
 
-    // 2. Build + download the PDF.
+    // 2. Build the PDF and stash it on-device (sessionStorage — never sent
+    //    anywhere), then go straight to the booking page where it's delivered.
+    //    Keeps the download from pulling people away before they land on the call.
     try {
       const { generateReport } = await import('../lib/cashflow/report-pdf.js');
       const chart = { url: canvas.toDataURL('image/png'), ratio: canvas.height / canvas.width };
-      generateReport(answers, proj, snap, chart);
-      $('cf-status').textContent = 'Your report has downloaded — taking you through to book your call…';
-      setTimeout(() => { window.location.href = '/cash-flow-booking'; }, 1400);
+      const doc = generateReport(answers, proj, snap, chart);
+      try { sessionStorage.setItem('cf_report_pdf', doc.output('datauristring')); sessionStorage.removeItem('cf_report_delivered'); } catch (_) {}
+      $('cf-status').textContent = 'Taking you through to book your call — your report will be waiting there…';
+      setTimeout(() => { window.location.href = '/cash-flow-booking'; }, 900);
     } catch (err) {
       console.error(err);
       $('cf-status').textContent = 'Sorry — the report failed to build. Please try again.';

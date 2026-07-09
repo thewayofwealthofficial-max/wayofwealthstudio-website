@@ -240,5 +240,5 @@ export function generateReport(a, proj, snap, chart) {
   doc.text(wrap('This report is an educational estimate, not regulated financial advice. Projections assume income rises ~2%/yr, costs ~2.5%/yr, cash grows 4%, investments 7% and pensions 5%, with your monthly saving invested. The retirement target assumes a ~4% annual drawdown — a rule of thumb, not a guarantee. Your real path will vary.', CW), M, y);
   footer(4);
 
-  doc.save('way-of-wealth-cash-flow-model.pdf');
+  return doc; // caller decides: .save() to download now, or .output('datauristring') to stash
 }

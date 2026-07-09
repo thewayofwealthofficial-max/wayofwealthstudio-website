@@ -13,7 +13,12 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
 <section class="cfb-wrap">
   <div class="cfb-confirm">
     <span class="cfb-tick">✓</span>
-    <div>Your report’s <b>downloaded</b> — have a read. Then let’s do the bit a PDF can’t.</div>
+    <div>Nice work. Your report’s ready just below — then let’s do the bit a PDF can’t.</div>
+  </div>
+
+  <div class="cfb-report" id="cfb-report" style="display:none">
+    <span class="cfb-report-txt">📄 <b>Your Cash Flow Model report</b> is ready.</span>
+    <button class="cfb-report-btn" id="cfb-dl" type="button">Download report</button>
   </div>
 
   <div class="cfb-hero">
@@ -73,12 +78,39 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/20min';
 
 <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
+<script is:inline>
+  // Deliver the report that was built on the tool page and stashed on-device.
+  (function () {
+    var data = sessionStorage.getItem('cf_report_pdf');
+    if (!data) return;
+    var bar = document.getElementById('cfb-report'), btn = document.getElementById('cfb-dl');
+    if (!bar || !btn) return;
+    bar.style.display = 'flex';
+    function dl() {
+      var a = document.createElement('a');
+      a.href = data; a.download = 'way-of-wealth-cash-flow-model.pdf';
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    btn.addEventListener('click', dl);
+    // Auto-deliver a short while after they land, so the booking page gets the
+    // first look. The button above is always available. Change DELAY_MS to taste.
+    var DELAY_MS = 10000;
+    if (sessionStorage.getItem('cf_report_delivered') !== '1') {
+      setTimeout(function () { dl(); sessionStorage.setItem('cf_report_delivered', '1'); }, DELAY_MS);
+    }
+  })();
+</script>
+
 <style>
   .cfb-wrap { max-width: 980px; margin: 0 auto; padding: 8rem 1.25rem 6rem; }
   .cfb-eyebrow { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-gold); font-weight: 600; }
   .cfb-center { text-align: center; display: block; }
 
   .cfb-confirm { display: flex; align-items: center; gap: 0.8rem; background: rgba(63,122,85,0.09); border: 1px solid rgba(63,122,85,0.3); border-radius: 12px; padding: 1rem 1.2rem; font-family: var(--font-ui); font-size: 15px; color: var(--color-charcoal); }
+  .cfb-report { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 0.8rem; background: #fff; border: 1px solid var(--color-gold); border-radius: 12px; padding: 0.9rem 1.2rem; }
+  .cfb-report-txt { font-family: var(--font-ui); font-size: 14.5px; color: var(--color-navy); }
+  .cfb-report-btn { font-family: var(--font-ui); font-size: 14px; font-weight: 600; background: var(--color-navy); color: var(--color-cream); border: none; border-radius: 8px; padding: 0.6rem 1.2rem; cursor: pointer; transition: background 0.2s; }
+  .cfb-report-btn:hover { background: var(--color-navy-deep); }
   .cfb-confirm b { color: var(--color-navy); }
   .cfb-tick { width: 26px; height: 26px; border-radius: 50%; background: #3F7A55; color: #fff; display: grid; place-items: center; flex: none; font-size: 14px; }
 
