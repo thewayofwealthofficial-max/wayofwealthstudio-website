@@ -17,6 +17,7 @@ const ML_API = 'https://connect.mailerlite.com/api/subscribers';
 // Map magnet keys → env var that holds the MailerLite group ID for that magnet.
 const MAGNET_GROUP_MAP = {
   'budget-tracker': 'MAILERLITE_GROUP_BUDGET_TRACKER',
+  'cashflow-model': 'MAILERLITE_GROUP_CASHFLOW_MODEL',
   // Add more as we ship them, e.g. 'mindset-workbook': 'MAILERLITE_GROUP_MINDSET_WORKBOOK'
 };
 
