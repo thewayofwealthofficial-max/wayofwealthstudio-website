@@ -1,0 +1,187 @@
+---
+// Distraction-free landing layout for lead-magnet / conversion pages.
+// Same <head>, fonts, SEO and design tokens as Layout.astro — but NO site nav and
+// NO footer links. One goal per page, no exits. Use for the cash-flow tool, its
+// booking page, and any other single-goal magnet page.
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  canonical?: string;
+  articleSchema?: Record<string, unknown>;
+  bodyClass?: string;
+  noindex?: boolean;
+}
+
+const { title, description, ogImage, canonical, articleSchema, bodyClass, noindex } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display+SC:wght@400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <SEO
+    title={title}
+    description={description}
+    ogImage={ogImage}
+    canonical={canonical}
+    articleSchema={articleSchema}
+    noindex={noindex}
+  />
+</head>
+<body class={bodyClass}>
+
+<!-- LANDING: logo only, no nav links — one goal per page, no exits. -->
+<header class="lp-header">
+  <a href="/" class="nav-logo" aria-label="Way of Wealth">Way of <em>Wealth</em></a>
+</header>
+
+<main>
+  <slot />
+</main>
+
+<!-- Minimal footer: credential + copyright only. No links out. -->
+<footer class="lp-footer">
+  <div class="lp-footer-cred">MSc Behavioural Economics&nbsp;|&nbsp;Qualified Financial Planner</div>
+  <div class="lp-footer-copy">© 2026 Way of Wealth</div>
+</footer>
+
+<script is:inline>
+  // Reveal-on-scroll (shared behaviour; harmless if a page has no .reveal elements).
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+
+</body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --color-navy: #1C2A3A;
+    --color-navy-deep: #141F2B;
+    --color-cream: #F5F0E8;
+    --color-charcoal: #2D2D2D;
+    --color-slate: #4F5C6B;
+    --color-gold: #C4A265;
+    --color-gold-hover: #D4B275;
+    --color-gold-subtle: #E8D5B0;
+    --color-bg-white: #FAFAF7;
+    --color-bg-cool: #E8ECF0;
+    --color-border-warm: #B8AB94;
+    --color-border-cool: #A8B0BD;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-heading-sc: 'Playfair Display SC', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+    --font-ui: 'Inter', -apple-system, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    background: var(--color-bg-white);
+    color: var(--color-charcoal);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+
+  /* Shared buttons (kept so pages relying on them render identically) */
+  .btn-primary {
+    padding: 1rem 2.25rem;
+    background: var(--color-gold);
+    color: var(--color-navy);
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--color-gold-hover); transform: translateY(-1px); }
+
+  .btn-ghost {
+    padding: 1rem 2.25rem;
+    background: transparent;
+    color: var(--color-cream);
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border: 1px solid rgba(245, 240, 232, 0.55);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--color-gold); color: var(--color-gold); }
+
+  /* Scroll reveals */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* --- LANDING header: logo only, no exits --- */
+  .lp-header {
+    padding: 1.1rem 2rem;
+    display: flex;
+    justify-content: center;
+    background: var(--color-navy);
+    border-bottom: 1px solid rgba(196, 162, 101, 0.28);
+  }
+  .lp-header .nav-logo {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: var(--color-cream);
+    text-decoration: none;
+  }
+  .lp-header .nav-logo em { font-style: italic; color: var(--color-gold); font-weight: 400; }
+
+  /* --- LANDING footer: credential + copy only, no links --- */
+  .lp-footer {
+    padding: 2.25rem 2rem;
+    background: var(--color-navy-deep);
+    border-top: 1px solid rgba(196, 162, 101, 0.35);
+    text-align: center;
+  }
+  .lp-footer-cred {
+    font-family: var(--font-heading-sc);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: rgba(245, 240, 232, 0.8);
+  }
+  .lp-footer-copy {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    color: rgba(245, 240, 232, 0.6);
+    margin-top: 0.6rem;
+  }
+
+  @media (max-width: 768px) {
+    .lp-header { padding: 1rem 1.25rem; }
+  }
+</style>
