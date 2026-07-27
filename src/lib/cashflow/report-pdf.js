@@ -226,7 +226,11 @@ export function generateReport(a, proj, snap, chart) {
   // gold button (clickable → Calendly)
   const bx = M + 22, by = y + ch - 44, bw = 168, bh = 30;
   fill(GOLD); doc.roundedRect(bx, by, bw, bh, 6, 6, 'F');
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); ink(NAVY); doc.text('Book your free call  →', bx + bw / 2, by + 20, { align: 'center' });
+  // Centre the label manually — jsPDF's { align: 'center' } mangles glyphs on this
+  // build (renders as "&B&o&o&k&…"), so compute x from the measured text width instead.
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); ink(NAVY);
+  const btnLabel = 'Book your free call  ->';
+  doc.text(btnLabel, bx + (bw - doc.getTextWidth(btnLabel)) / 2, by + 20);
   doc.link(bx, by, bw, bh, { url: CALENDLY });
 
   // credential + disclaimer
