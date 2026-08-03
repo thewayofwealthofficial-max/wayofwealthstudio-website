@@ -4,6 +4,8 @@
 //   MAILERLITE_API_TOKEN              — from MailerLite → Integrations → API
 //   MAILERLITE_GROUP_BUDGET_TRACKER   — group ID for the Budget Tracker magnet
 //   (Add MAILERLITE_GROUP_<MAGNET_NAME> for each future magnet.)
+//   SLACK_WEBHOOK_URL                 — same incoming webhook the diagnostic uses.
+//                                       Optional: if unset, Slack pings skip quietly.
 //
 // Flow:
 //   1. Validate payload (email + magnet key + honeypot)
@@ -11,6 +13,8 @@
 //   3. POST to https://connect.mailerlite.com/api/subscribers
 //      with the email, optional name, group ID, and source field
 //   4. Return { ok: true } so the frontend redirects to /thanks/<magnet>
+
+const { notifyLeadCaptured, notifyCaptureFailed } = require('./lib/slack');
 
 const ML_API = 'https://connect.mailerlite.com/api/subscribers';
 
@@ -79,6 +83,12 @@ exports.handler = async (event) => {
   const groupId = process.env[envVarName];
 
   if (!apiToken || !groupId) {
+    await notifyCaptureFailed({
+      email: v.email,
+      magnet: magnetKey,
+      reason: 'Email setup missing',
+      detail: !apiToken ? 'MAILERLITE_API_TOKEN not set' : `${envVarName} not set`,
+    });
     return {
       statusCode: 503,
       body: JSON.stringify({
@@ -111,6 +121,7 @@ exports.handler = async (event) => {
 
     // MailerLite returns 200/201 for new + existing subscribers (idempotent add to group)
     if (res.status === 200 || res.status === 201) {
+      await notifyLeadCaptured({ email: v.email, name: subBody.fields.name, magnet: magnetKey });
       return { statusCode: 200, body: JSON.stringify({ ok: true }) };
     }
 
@@ -118,18 +129,21 @@ exports.handler = async (event) => {
     if (res.status === 422) {
       const body = await res.json().catch(() => ({}));
       const msg = body?.message || 'That email looks invalid. Try another?';
+      await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'MailerLite rejected the email (422)', detail: msg });
       return { statusCode: 400, body: JSON.stringify({ error: msg }) };
     }
 
     // Anything else — log + return generic error
     const text = await res.text().catch(() => '');
     console.error('[lead-magnet-subscribe] MailerLite error', res.status, text);
+    await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: `MailerLite error ${res.status}`, detail: text });
     return {
       statusCode: 502,
       body: JSON.stringify({ error: 'Email service failed. Email joel@thewayofwealth.shop and I will send the tracker directly.' }),
     };
   } catch (err) {
     console.error('[lead-magnet-subscribe] fetch failed', err);
+    await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Network error talking to MailerLite', detail: err.message });
     return {
       statusCode: 502,
       body: JSON.stringify({ error: 'Network error talking to email service. Try again or email joel@thewayofwealth.shop.' }),
