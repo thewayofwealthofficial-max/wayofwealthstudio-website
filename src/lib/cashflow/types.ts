@@ -1,4 +1,10 @@
 /**
+ * GENERATED FILE — DO NOT EDIT BY HAND.
+ *
+ * Copied from the coaching portal by scripts/sync-cashflow-engine.mjs.
+ * Change the portal, run `npm run sync:engine`, commit the result.
+ */
+/**
  * A per-year step in a line's monthly amount. `fromYear` is a 1-indexed
  * projection year (year 1 = the first year after "today"); `amount` is the
  * monthly figure that applies from that year until the next step (or the end
@@ -152,6 +158,29 @@ export const ASSET_KIND_LABELS: Record<AssetKind, string> = {
  */
 export type TaxWrapper = "isa" | "gia" | "cash_taxed" | "none";
 
+/**
+ * The three buckets Voyant sorts accounts into for its Liquidation Order and
+ * Savings Order settings (spec §2.5). Cash sits outside them — it is already
+ * liquid — and property is never in contention until everything else is gone.
+ */
+export type TaxCategory = "taxable" | "tax_deferred" | "tax_free";
+
+export const TAX_CATEGORY_LABELS: Record<TaxCategory, string> = {
+  taxable: "Taxable (unwrapped savings & investments)",
+  tax_deferred: "Tax deferred (pensions)",
+  tax_free: "Tax free (ISAs)",
+};
+
+/** Voyant's documented default: taxable first, then tax deferred, then tax free. */
+export const DEFAULT_LIQUIDATION_ORDER: TaxCategory[] = ["taxable", "tax_deferred", "tax_free"];
+
+/** Which category a pot falls into for ordering purposes. */
+export function taxCategoryOf(b: { kind?: AssetKind; wrapper?: TaxWrapper }): TaxCategory {
+  if (b.kind === "pension") return "tax_deferred";
+  if (b.wrapper === "isa") return "tax_free";
+  return "taxable";
+}
+
 export const TAX_WRAPPER_LABELS: Record<TaxWrapper, string> = {
   isa: "ISA / sheltered (tax-free)",
   gia: "GIA — taxed (dividends)",
@@ -173,6 +202,55 @@ export type SavingsAllocation = {
    *  per-person dividend/savings allowances). Undefined = first/only person, or
    *  "joint" for a shared pot (taxed against the first person). */
   ownerId?: string;
+  /**
+   * May the projector sell this pot down on its own to cover an overspend?
+   * Mirrors Voyant's Withdrawal Limits / property Liquidation setting.
+   * - "when_needed" → yes, in liquidation order (the default for cash,
+   *   stocks and pensions)
+   * - "never"       → ring-fenced. The projector reports a shortfall instead.
+   * Property defaults to "never": Voyant refuses the "when needed" option for a
+   * primary residence, and a home cannot be sold off a slice at a time.
+   */
+  liquidation?: "when_needed" | "never";
+  /**
+   * A pension that has already been crystallised — the tax-free cash has been
+   * taken and the rest sits in drawdown. Voyant models these as a separate
+   * account type (spec §2.11). Withdrawals from a crystallised pot are fully
+   * taxable as income; an uncrystallised one still has 25% tax-free in it.
+   */
+  crystallised?: boolean;
+  /**
+   * Planned withdrawal — Voyant's **Draw Down Strategy** (spec §2.7). Money
+   * comes out every year from `startYear`, whether the plan needs it or not.
+   * This is how retirement income is actually modelled: "draw £24,000 a year
+   * from the SIPP from 60". Distinct from a withdrawal LIMIT, which only
+   * restricts what the engine may take when a year falls short.
+   */
+  drawdown?: {
+    /** A fixed annual sum, or a percentage of the pot's value each year. */
+    mode: "amount" | "percent";
+    /** £ per year when mode is "amount"; % of the balance when "percent". */
+    value: number;
+    /** Grow a fixed amount with inflation. Ignored for percentage drawdowns. */
+    indexed?: boolean;
+    /** 1-indexed projection year the drawdown starts. Default 1. */
+    startYear?: number;
+    endYear?: number;
+  };
+  /**
+   * Withdrawal limit — Voyant's **Withdrawal Limits** (spec §2.7). Restricts
+   * what the engine may take from this pot ad hoc to cover a shortfall.
+   * - "maximum" (default) → take whatever is needed
+   * - "none"              → never touch it
+   * - "capped"            → at most `capPerYear` a year
+   * `allowFromYear` ring-fences the pot until that year, which is how "nothing
+   * comes out of the children's fund until university" is modelled.
+   */
+  withdrawalLimit?: {
+    mode: "maximum" | "none" | "capped";
+    capPerYear?: number;
+    allowFromYear?: number;
+  };
   /**
    * Optional contribution window. The bucket's monthlyAmount applies only in
    * projection years where startYear <= y <= endYear (both inclusive,
@@ -204,6 +282,8 @@ export type InterventionType =
   | "downsize"
   | "remortgage"
   | "death"
+  | "crystallise_pension"
+  | "buy_annuity"
   | "asset_crash";
 
 /**
@@ -261,6 +341,27 @@ export type Intervention = {
   amount?: number;
   // For lump sums: which bucket id (or "any" for first cash)
   bucketId?: string;
+  /**
+   * Which pot pays for this event — a house deposit, a lump sum out, a
+   * purchase. Voyant calls this the Expense Payment Source (spec §2.1).
+   * Undefined = use the normal funding order: the payer's default cash
+   * account first, then liquid assets in liquidation order.
+   */
+  paymentSourceBucketId?: string;
+  /**
+   * Voyant's "Only Allow Preferred Source to Pay Expense". When true and the
+   * named pot cannot cover it, the gap becomes a SHORTFALL rather than being
+   * quietly funded from somewhere else. Use sparingly — it is a test, not a
+   * default (spec §2.1).
+   */
+  paymentSourceOnly?: boolean;
+  /**
+   * Whose event this is. Voyant funds an expense from its owner's accounts
+   * before reaching for anyone else's (spec §2.1), so a couple's plan doesn't
+   * raid one partner's ISA while the other has cash sitting idle. Undefined =
+   * the first/only person.
+   */
+  ownerId?: string;
   // For buy_house:
   deposit?: number;
   mortgageMonthly?: number;
@@ -292,6 +393,18 @@ export type Intervention = {
   /** Lump sum paid out by life cover on death (to cash). If omitted, the sum
    *  of the plan's term-life policy sums-assured is used. */
   lifeCoverPayout?: number;
+  // For crystallise_pension / buy_annuity:
+  /** Which pension pot. Falls back to the first uncrystallised pension. */
+  pensionBucketId?: string;
+  /** crystallise_pension: how much of the pot to crystallise. Default: all of
+   *  it. 25% is paid out as tax-free cash; the remaining 75% moves into a
+   *  drawdown pot whose future withdrawals are fully taxable. */
+  crystalliseAmount?: number;
+  /** buy_annuity: how much of the pot buys the annuity. Default: all of it. */
+  annuityAmount?: number;
+  /** buy_annuity: the annuity rate — annual income as a % of the purchase
+   *  price. A £100,000 pot at 6% pays £6,000 a year for life, taxed as income. */
+  annuityRatePct?: number;
   // For asset_crash:
   crashPct?: number; // % drop applied to target asset class (default 30)
   targetKind?: "stocks" | "property" | "all"; // which asset class crashes
@@ -458,6 +571,38 @@ export type ProjectionAssumptions = {
   ukAllowances?: UKTaxAllowances;
   // US federal income tax + FICA configuration (2024 defaults, single filer)
   usTax?: USTaxAssumptions;
+  /**
+   * The order pots are sold down in when a year falls short (spec §2.5).
+   * Defaults to Voyant's own: taxable first, then tax deferred, then tax free —
+   * spend the taxed money and leave the shelters alone as long as possible.
+   * Cash is always drawn before any of these; property always last.
+   */
+  liquidationOrder?: TaxCategory[];
+  /**
+   * The order pots are FILLED in when several planned contributions compete for
+   * money that won't stretch to all of them (spec §2.4). Leave unset and every
+   * contribution scales back by the same fraction, which is what the engine has
+   * always done. Set it and earlier categories are funded in full first.
+   */
+  savingsOrder?: TaxCategory[];
+  /**
+   * Voyant's "Transfer Excess Income / Credits to Savings" (spec §2.3).
+   * OFF by default, matching Voyant and matching the behavioural point: money
+   * with no job is assumed spent, not quietly saved. Turn it on and any surplus
+   * left after the destination list is banked as ready cash instead.
+   */
+  transferExcessToSavings?: boolean;
+  /**
+   * Sweep spare ready cash into the surplus destination list at year end
+   * (spec §2.2). ON by default: lump sums — an inheritance, house proceeds, a
+   * life cover pay-out — land in ready cash, and without a sweep they would sit
+   * there earning cash rates forever.
+   *
+   * Deviation from Voyant, deliberate: Voyant keeps a separate sweep list per
+   * cash account. We reuse `surplusDestinations` so the coach sets ONE priority
+   * list that governs both this year's surplus and any cash sitting spare.
+   */
+  sweepSpareCash?: boolean;
   // Legacy field; kept for back-compat with existing rows
   savingsGrowthPct?: number;
 };
@@ -502,11 +647,23 @@ export type YearProjection = {
   /** Total intended bucket contributions for the year (in-window, pre
    *  tax-relief). What the plan TRIED to put away this year. */
   plannedContributions?: number;
+  /** The client's cash that actually went into savings this year, after the
+   *  affordability scale-back AND after any contribution limits. Voyant shows
+   *  planned and actual as two separate columns — see spec §2.4. Cash that a
+   *  limit turned away is NOT lost: it stays in annualSurplus. */
+  actualContributions?: number;
   /** Portion of plannedContributions that drove the year into deficit — i.e.
    *  if contributions had been this much lower, the year would have broken
    *  even. This is the "you tried to save more than this year could afford"
    *  signal that powers the per-year affordability note. */
   unaffordableContribution?: number;
+  /** Taken out this year by planned withdrawals (drawdown strategies), gross.
+   *  These happen whether the year needs the money or not — unlike assetsDrawn,
+   *  which is the engine plugging a gap. Voyant colours the two differently. */
+  plannedWithdrawals?: number;
+  /** Tax charged on this year's planned withdrawals (pension income tax, CGT
+   *  on unwrapped gains). Already netted off the cash they produced. */
+  plannedWithdrawalTax?: number;
   /** In a deficit year, how much was pulled from liquid savings to cover the
    *  overspend (drains net worth). */
   assetsDrawn?: number;
@@ -549,10 +706,21 @@ export type YearProjection = {
     id: string;
     label: string;
     kind: AssetKind;
+    /** Balance at the START of the year, BEFORE any life event fired. This is
+     *  what makes an event's spending visible instead of silently missing. */
     openingBalance: number;
+    /** Money this pot paid out to fund a life event (a house deposit, a lump
+     *  sum out). Always positive; it is subtracted. */
+    eventPaidOut?: number;
+    /** Money a life event put into this pot (a lump sum in, released equity). */
+    eventPaidIn?: number;
+    /** Taken out by this pot's planned withdrawal (drawdown strategy), gross of
+     *  any tax on the way out. Voyant shows these separately from the ad hoc
+     *  withdrawals the engine takes to plug a gap. */
+    plannedWithdrawn?: number;
     contributions: number; // net annual scheduled contribution that landed (post tax-relief)
     surplusAdded?: number; // extra surplus routed here this year (directed + cascade)
-    growth: number; // closing - opening - contributions - surplusAdded
+    growth: number; // closing - opening - contributions - surplusAdded - event flows
     closingBalance: number;
   }>;
   debtDeltas?: Array<{
@@ -561,6 +729,9 @@ export type YearProjection = {
     openingBalance: number;
     interestPaid: number;
     principalPaid: number;
+    /** Cash actually handed over on this debt during the year. Less than 12 ×
+     *  the monthly payment in the year the debt clears. */
+    paymentsMade?: number;
     surplusOverpaid?: number; // extra principal paid from surplus this year
     closingBalance: number;
   }>;

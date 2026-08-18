@@ -1,3 +1,9 @@
+/**
+ * GENERATED FILE — DO NOT EDIT BY HAND.
+ *
+ * Copied from the coaching portal by scripts/sync-cashflow-engine.mjs.
+ * Change the portal, run `npm run sync:engine`, commit the result.
+ */
 import type { USTaxAssumptions } from "./types";
 import { DEFAULT_US_TAX_SINGLE } from "./types";
 

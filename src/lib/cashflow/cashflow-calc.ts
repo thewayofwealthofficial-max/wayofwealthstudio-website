@@ -1,3 +1,9 @@
+/**
+ * GENERATED FILE — DO NOT EDIT BY HAND.
+ *
+ * Copied from the coaching portal by scripts/sync-cashflow-engine.mjs.
+ * Change the portal, run `npm run sync:engine`, commit the result.
+ */
 import type { CashflowPlanData } from "./types";
 
 export function totalIncome(plan: CashflowPlanData): number {
