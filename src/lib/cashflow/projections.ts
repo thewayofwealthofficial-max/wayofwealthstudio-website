@@ -188,6 +188,9 @@ export function projectYears(
     ownerId: string;
     liquidation?: "when_needed" | "never";
     crystallised?: boolean;
+    /** Capital gains base cost. Contributions raise it; growth does not; a
+     *  withdrawal consumes it pro rata. Only used on unwrapped (GIA) pots. */
+    costBasis: number;
     drawdown?: SavingsAllocation["drawdown"];
     withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
   };
@@ -226,6 +229,24 @@ export function projectYears(
   // liquid and needs no selling. Then the three tax categories in whatever
   // order the plan sets, defaulting to Voyant's: taxable, tax deferred, tax
   // free. Property is always last; a home is not a cash machine.
+  /**
+   * Take money out of a pot, consuming its base cost pro rata. Selling a
+   * quarter of a holding realises a quarter of the gain and uses up a quarter
+   * of what it cost — that is what makes the CGT figure honest.
+   */
+  const takeFromPot = (b: { balance: number; costBasis: number }, gross: number) => {
+    if (gross <= 0 || b.balance <= 0) return;
+    const share = Math.min(1, gross / b.balance);
+    b.costBasis = Math.max(0, b.costBasis * (1 - share));
+    b.balance -= gross;
+  };
+  /** Put money into a pot. Money paid in adds to what the pot cost. */
+  const putInPot = (b: { balance: number; costBasis: number }, amount: number) => {
+    if (amount <= 0) return;
+    b.balance += amount;
+    b.costBasis += amount;
+  };
+
   const liquidationOrder = assumptions.liquidationOrder ?? DEFAULT_LIQUIDATION_ORDER;
   const liquidationTier = (b: { kind: AssetKind; wrapper?: TaxWrapper }): number => {
     if (b.kind === "cash") return 0;
@@ -253,6 +274,7 @@ export function projectYears(
     baseMonthly: 0,
     deltaFromInterventions: 0,
     ownerId: p.id,
+    costBasis: 0,
   }));
 
   const readyCashIds = new Set(defaultCashBuckets.map((b) => b.id));
@@ -292,6 +314,9 @@ export function projectYears(
       ownerId: resolvePersonId(s.ownerId, people),
       liquidation: s.liquidation,
       crystallised: s.crystallised,
+      // No purchase value recorded → assume it cost what it is worth today, so
+      // nothing is treated as an unrealised gain the client never made.
+      costBasis: s.purchaseValue ?? s.current ?? 0,
       drawdown: s.drawdown,
       withdrawalLimit: s.withdrawalLimit,
     })),
@@ -331,11 +356,21 @@ export function projectYears(
   // Per-line expense state so each line can carry its own step schedule.
   // `expenseInterventionDelta` accumulates expense_change / buy_house
   // adjustments (and inflates each year, matching the old scalar behaviour).
-  type ExpenseState = { base: number; amount: number; steps?: import("./types").AmountStep[] };
+  type ExpenseState = {
+    label: string;
+    base: number;
+    amount: number;
+    steps?: import("./types").AmountStep[];
+    paymentSourceBucketId?: string;
+    paymentSourceOnly?: boolean;
+  };
   let expenseLines: ExpenseState[] = (plan.expenses || []).map((e) => ({
+    label: e.label,
     base: e.amount || 0,
     amount: e.amount || 0,
     steps: e.steps,
+    paymentSourceBucketId: e.paymentSourceBucketId,
+    paymentSourceOnly: e.paymentSourceOnly,
   }));
   let expenseInterventionDelta = 0;
   let monthlyExpenses = startingMonthlyExpenses;
@@ -474,7 +509,7 @@ export function projectYears(
       const take = (b: BucketState) => {
         if (need <= 0 || b.balance <= 0) return;
         const got = Math.min(b.balance, need);
-        b.balance -= got;
+        takeFromPot(b, got);
         need -= got;
         eventPaidOut[b.id] = (eventPaidOut[b.id] || 0) + got;
         from.push({ id: b.id, label: b.label, amount: got });
@@ -516,7 +551,7 @@ export function projectYears(
         (bucketId ? buckets.find((b) => b.id === bucketId) : undefined) ??
         buckets.find((b) => b.id === defaultCashId(ownerId ?? people[0].id));
       if (!target) return;
-      target.balance += amount;
+      putInPot(target, amount);
       eventPaidIn[target.id] = (eventPaidIn[target.id] || 0) + amount;
     };
 
@@ -572,7 +607,13 @@ export function projectYears(
         },
         buckets,
         addBucket: (b) => {
-          buckets = [...buckets, b];
+          buckets = [...buckets, { ...b, costBasis: b.costBasis ?? b.balance }];
+          // A pot created by an event starts at zero and is funded by the
+          // event. Recording the stake keeps it out of the growth column.
+          if (b.balance > 0) {
+            openingBalances.set(b.id, 0);
+            eventPaidIn[b.id] = (eventPaidIn[b.id] || 0) + b.balance;
+          }
         },
         addDebt: (d) => {
           debtState = [...debtState, d];
@@ -607,6 +648,13 @@ export function projectYears(
             ownerId: o?.ownerId ?? resolvePersonId(iv.ownerId, people),
           }),
         receive: (amount, bucketId) => receiveFromEvent(amount, bucketId),
+        writeDown: (bucketId, amount) => {
+          const b = buckets.find((x) => x.id === bucketId);
+          if (!b || amount <= 0) return;
+          const hit = Math.min(b.balance, amount);
+          b.balance -= hit;
+          eventPaidOut[bucketId] = (eventPaidOut[bucketId] || 0) + hit;
+        },
         reportUnfunded: (amount) => {
           unfundedEventSpend += amount;
         },
@@ -704,6 +752,19 @@ export function projectYears(
       if (region !== "UK" || !ukAllow) return 0;
       return Math.max(0, ukAllow.cgtAnnualExempt - (cgtUsedByPerson[ownerId] || 0));
     };
+    /**
+     * The share of a withdrawal from this pot that is taxable gain. Derived
+     * from what the pot actually cost, so a GIA bought at £50,000 and now worth
+     * £200,000 is 75% gain — not the flat 50% the engine used to assume for
+     * every pot regardless of history.
+     */
+    const gainFractionOf = (b: BucketState): number => {
+      if (!ukAllow) return 0;
+      if (b.balance <= 0) return 0;
+      if (!Number.isFinite(b.costBasis)) return ukAllow.giaGainFraction;
+      return Math.min(1, Math.max(0, 1 - b.costBasis / b.balance));
+    };
+
     /** Tax on taking `gross` out of this pot, plus the allowance it uses up. */
     const withdrawalTax = (
       b: BucketState,
@@ -723,7 +784,7 @@ export function projectYears(
         };
       }
       if (b.wrapper === "gia" && ukAllow) {
-        const gain = gross * ukAllow.giaGainFraction;
+        const gain = gross * gainFractionOf(b);
         const covered = Math.min(gain, unusedCGT(b.ownerId));
         return {
           tax: (gain - covered) * (cgtRatePctFor(b.ownerId) / 100),
@@ -754,7 +815,7 @@ export function projectYears(
       }
       if (b.wrapper === "gia" && ukAllow) {
         const room = unusedCGT(b.ownerId);
-        const f = ukAllow.giaGainFraction;
+        const f = gainFractionOf(b);
         const rate = cgtRatePctFor(b.ownerId) / 100;
         if (rate <= 0 || f <= 0) return net;
         if (net <= room / f) return net; // exemption covers the gain
@@ -789,12 +850,55 @@ export function projectYears(
       const tax = withdrawalTax(b, gross);
       commitAllowance(b, tax);
       const net = gross - tax.tax;
-      b.balance -= gross;
+      takeFromPot(b, gross);
       plannedWithdrawnByBucket[b.id] = (plannedWithdrawnByBucket[b.id] || 0) + gross;
       plannedWithdrawalsGross += gross;
       plannedWithdrawalCash += net;
       plannedWithdrawalTax += gross - net;
     }
+    // ---- Expense payment sources (Voyant's Expense Payment Source, §2.1) ----
+    // "School fees come out of the Junior ISA." The named pot is the FIRST stop,
+    // ahead of income. Treated as a planned withdrawal because that is what it
+    // is — money leaving a pot deliberately, taxed on the way out — so it shows
+    // in the same column and the books balance the same way.
+    let sourceOnlyUnfunded = 0;
+    for (const e of expenseLines) {
+      if (!e.paymentSourceBucketId) continue;
+      const annualCost = Math.max(0, e.amount) * 12 * expenseSurvivorFactor;
+      if (annualCost <= 0) continue;
+      const pot = buckets.find((b) => b.id === e.paymentSourceBucketId);
+      if (!pot) continue; // pot deleted — fall through to normal funding
+      // A withdrawal LIMIT restricts what the engine may help itself to when a
+      // year falls short. It does NOT restrict a payment the coach has
+      // deliberately directed — same as a drawdown strategy, which limits also
+      // don't touch (spec §2.7). Only the balance and pension access age apply.
+      const reachable =
+        pot.kind === "pension" && !pensionAccessible(pot) ? 0 : Math.max(0, pot.balance);
+      const maxNet = reachable > 0 ? reachable - withdrawalTax(pot, reachable).tax : 0;
+      const takeNet = Math.min(maxNet, annualCost);
+      if (takeNet > 0) {
+        const gross = takeNet >= maxNet ? reachable : grossForNet(pot, takeNet);
+        const t = withdrawalTax(pot, gross);
+        commitAllowance(pot, t);
+        takeFromPot(pot, gross);
+        plannedWithdrawnByBucket[pot.id] = (plannedWithdrawnByBucket[pot.id] || 0) + gross;
+        plannedWithdrawalsGross += gross;
+        plannedWithdrawalCash += gross - t.tax;
+        plannedWithdrawalTax += t.tax;
+        events.push(`${e.label || "Expense"} paid from ${pot.label}: ${money(gross - t.tax)}`);
+      }
+      const stillNeeded = annualCost - takeNet;
+      if (stillNeeded > 0.01 && e.paymentSourceOnly) {
+        // Deliberate: "only this pot may pay" means the gap is a shortfall, not
+        // something to quietly fund from elsewhere. That is the whole point.
+        sourceOnlyUnfunded += stillNeeded;
+        events.push(
+          `${e.label || "Expense"}: ${money(stillNeeded)} unfunded — ${pot.label} is the only allowed source`
+        );
+      }
+    }
+    if (sourceOnlyUnfunded > 0) unfundedEventSpend += sourceOnlyUnfunded;
+
     if (plannedWithdrawalsGross > 0) {
       events.push(
         `Planned withdrawals: ${money(plannedWithdrawalsGross)}${plannedWithdrawalTax > 0 ? ` (${money(plannedWithdrawalTax)} tax)` : ""}`
@@ -897,6 +1001,8 @@ export function projectYears(
       }
       actualContributions += cashContribution;
       const grown = (b.balance + yearContribution) * (1 + classGrowth(b.kind));
+      // Growth is never base cost — only money actually paid in is.
+      const nextCostBasis = b.costBasis + yearContribution;
       bucketDeltas.push({
         id: b.id,
         label: b.label,
@@ -910,7 +1016,7 @@ export function projectYears(
         growth: grown - opening + paidOut - paidIn + plannedOut - yearContribution,
         closingBalance: grown,
       });
-      return { ...b, balance: grown };
+      return { ...b, balance: grown, costBasis: nextCostBasis };
     });
     if (pensionCapped) {
       events.push(
@@ -958,7 +1064,7 @@ export function projectYears(
           b.balance -= share;
           const d = bucketDeltas.find((x) => x.id === b.id);
           if (d) {
-            d.growth -= share;
+            d.investmentTax = (d.investmentTax || 0) + share;
             d.closingBalance -= share;
           }
         }
@@ -1057,7 +1163,7 @@ export function projectYears(
     // 3. Apply allocations to balances and the year-detail deltas.
     for (const [bid, amt] of Object.entries(allocToBucket)) {
       const target = bucketById.get(bid);
-      if (target) target.balance += amt;
+      if (target) putInPot(target, amt);
       const d = bucketDeltas.find((x) => x.id === bid);
       if (d) {
         d.surplusAdded = (d.surplusAdded || 0) + amt;
@@ -1120,7 +1226,7 @@ export function projectYears(
         const t = withdrawalTax(b, gross);
         commitAllowance(b, t);
         const tax = t.tax;
-        b.balance -= gross;
+        takeFromPot(b, gross);
         need -= gross - tax; // what actually reached the client's pocket
         assetsDrawn += gross;
         decumulationTaxPaid += tax;
@@ -1164,8 +1270,8 @@ export function projectYears(
             }
             const move = Math.min(cash.balance, room);
             if (move <= 0) continue;
-            cash.balance -= move;
-            target.balance += move;
+            takeFromPot(cash, move);
+            putInPot(target, move);
             if (target.kind === "pension") {
               pensionUsedByPerson[target.ownerId] =
                 (pensionUsedByPerson[target.ownerId] || 0) + move;
@@ -1186,7 +1292,7 @@ export function projectYears(
             if (!debt || debt.balance <= 0) continue;
             const move = Math.min(cash.balance, debt.balance, dest.capPerYear ?? Infinity);
             if (move <= 0) continue;
-            cash.balance -= move;
+            takeFromPot(cash, move);
             debt.balance -= move;
             sweptToWork += move;
             const dFrom = bucketDeltas.find((x) => x.id === cash.id);
@@ -1325,6 +1431,7 @@ type InterventionContext = {
     deltaFromInterventions: number;
     ownerId: string;
     crystallised?: boolean;
+    costBasis?: number;
   }) => void;
   /** Start a new income stream mid-plan — an annuity, say. Level by default. */
   addIncome: (line: {
@@ -1352,6 +1459,12 @@ type InterventionContext = {
   ) => { funded: number; short: number; from: Array<{ id: string; label: string; amount: number }> };
   /** Put money this event produced into a pot, or the payer's ready cash. */
   receive: (amount: number, bucketId?: string) => void;
+  /**
+   * Record a fall in a pot's value that is NOT money going anywhere — a market
+   * crash. Recorded rather than assigned, so it shows in the year detail
+   * instead of being absorbed into the growth column.
+   */
+  writeDown: (bucketId: string, amount: number) => void;
   /** Tell the year that this much event spending could not be funded. */
   reportUnfunded: (amount: number) => void;
   /**
@@ -1460,18 +1573,46 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
         ctx.debts.find((d) => d.id === iv.mortgageDebtId && d.balance > 0) ??
         ctx.debts.find((d) => /mortgage/i.test(d.name) && d.balance > 0);
       const mortgagePayoff = mortgage ? mortgage.balance : 0;
-      const newVal = iv.propertyValue ?? 0;
-      const released = Math.max(0, saleValue - mortgagePayoff - newVal);
+      const wanted = iv.propertyValue ?? 0;
 
-      prop.balance = newVal; // 0 = sold up; >0 = traded down to a cheaper home
-      if (mortgage) {
-        mortgage.balance = 0; // cleared from sale proceeds (payment auto-stops)
-      }
+      // The sale can only clear as much mortgage as it raises. Negative equity
+      // does NOT vanish on sale — the balance that survives is still owed.
+      const payoff = Math.min(mortgagePayoff, saleValue);
+      const proceeds = saleValue - payoff;
+      if (mortgage) mortgage.balance = mortgagePayoff - payoff;
+
+      // Moving somewhere dearer than the sale releases has to be paid for.
+      // Whatever cannot be funded simply is not bought: the plan buys the house
+      // it can afford rather than conjuring the difference. Before this, the
+      // balance was assigned outright and the invented money hid inside the
+      // year-detail "growth" column.
+      const topUp = Math.max(0, wanted - proceeds);
+      const fundedTopUp = topUp > 0 ? ctx.spend(topUp).funded : 0;
+      const actualValue = Math.min(wanted, proceeds + fundedTopUp);
+      const released = Math.max(0, proceeds - actualValue);
+      const couldNotAfford = wanted - actualValue;
+
+      // The sale and the purchase are two real movements. Recording both keeps
+      // the property's growth column honest.
+      ctx.writeDown(prop.id, saleValue);
+      if (actualValue > 0) ctx.receive(actualValue, prop.id);
       ctx.receive(released);
-      if (newVal <= 0 && (iv.newRentMonthly || 0) > 0) {
+      if (actualValue <= 0 && (iv.newRentMonthly || 0) > 0) {
         ctx.setMonthlyExpenses(ctx.getMonthlyExpenses() + (iv.newRentMonthly || 0));
       }
-      return `${iv.label || "Downsize"}: sold ${money(saleValue)}${mortgagePayoff > 0 ? `, cleared ${money(mortgagePayoff)} mortgage` : ""}, released ${money(released)}${newVal > 0 ? ` into a ${money(newVal)} home` : " (now renting)"}`;
+
+      const parts = [`sold ${money(saleValue)}`];
+      if (payoff > 0) parts.push(`cleared ${money(payoff)} mortgage`);
+      if (mortgage && mortgage.balance > 0) {
+        parts.push(`${money(mortgage.balance)} of mortgage still owed`);
+      }
+      if (actualValue > 0) parts.push(`into a ${money(actualValue)} home`);
+      else parts.push("now renting");
+      if (released > 0) parts.push(`released ${money(released)}`);
+      if (couldNotAfford > 0.01) {
+        parts.push(`${money(couldNotAfford)} of the move was unaffordable`);
+      }
+      return `${iv.label || "Downsize"}: ${parts.join(", ")}`;
     }
     case "remortgage": {
       const mortgage =
@@ -1510,7 +1651,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       if (amount <= 0) return `${iv.label || "Crystallise"}: nothing to crystallise`;
       const taxFreeCash = amount * 0.25;
       const intoDrawdown = amount - taxFreeCash;
-      pot.balance -= amount;
+      ctx.writeDown(pot.id, amount); // recorded, so it isn't absorbed by growth
       ctx.receive(taxFreeCash); // PCLS is a lump sum — it lands as ready cash
       ctx.addBucket({
         id: `drawdown_${iv.id}`,
@@ -1539,7 +1680,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       if (spend <= 0 || ratePct <= 0) {
         return `${iv.label || "Annuity"}: set an amount and an annuity rate`;
       }
-      pot.balance -= spend;
+      ctx.writeDown(pot.id, spend); // recorded, not silently assigned
       const annualIncome = spend * (ratePct / 100);
       ctx.addIncome({
         label: iv.label || "Annuity",
@@ -1556,7 +1697,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       const factor = 1 - crashPct / 100;
       ctx.buckets.forEach((b) => {
         if (target === "all" || b.kind === target) {
-          b.balance = Math.max(0, b.balance * factor);
+          ctx.writeDown(b.id, b.balance * (1 - factor));
         }
       });
       const targetLabel = target === "all" ? "All assets" : target === "stocks" ? "Stocks" : "Property";

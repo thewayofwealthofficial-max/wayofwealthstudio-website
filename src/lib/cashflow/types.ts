@@ -109,6 +109,25 @@ export type ExpenseLine = {
   /** Optional per-year step schedule. When present, overrides inflation-growth
    *  — see AmountStep. `amount` above is the value before the first step. */
   steps?: AmountStep[];
+  /**
+   * Whose expense this is. Voyant funds an expense from its owner's accounts
+   * before reaching for anyone else's (spec §2.1). Undefined = household.
+   */
+  personId?: string;
+  /**
+   * Pay this expense from a named pot — Voyant's Expense Payment Source
+   * (spec §2.1). "School fees come out of the Junior ISA." The pot is the FIRST
+   * stop, ahead of income, so the money genuinely leaves that pot each year.
+   * Undefined = funded the normal way, out of income and then the usual order.
+   */
+  paymentSourceBucketId?: string;
+  /**
+   * Voyant's "Only Allow Preferred Source to Pay Expense". When the named pot
+   * runs dry the gap becomes a SHORTFALL rather than being quietly covered from
+   * elsewhere — that is the point of it: a test of whether that pot is enough.
+   * Voyant warns this can create artificial shortfalls, so use it sparingly.
+   */
+  paymentSourceOnly?: boolean;
 };
 
 /** Default funding priority for an expense — explicit override wins, else
@@ -219,6 +238,14 @@ export type SavingsAllocation = {
    * taxable as income; an uncrystallised one still has 25% tax-free in it.
    */
   crystallised?: boolean;
+  /**
+   * What this pot COST — its capital gains base cost. Voyant calls it Purchase
+   * Value (spec §2.14). Only meaningful on unwrapped pots (`wrapper: "gia"`),
+   * where the taxable gain on a withdrawal is the part above what was paid.
+   * Undefined = assume it cost what it is worth today, i.e. no gain banked yet.
+   * Contributions add to it; growth does not.
+   */
+  purchaseValue?: number;
   /**
    * Planned withdrawal — Voyant's **Draw Down Strategy** (spec §2.7). Money
    * comes out every year from `startYear`, whether the plan needs it or not.
@@ -510,8 +537,9 @@ export type UKTaxAllowances = {
   cgtAnnualExempt: number; // £3,000
   cgtBasicPct: number; // 18
   cgtHigherPct: number; // 24
-  /** Assumed fraction of a GIA withdrawal that is taxable gain (vs returned
-   *  capital) — we don't track cost basis, so this is a pragmatic proxy. */
+  /** Fallback fraction of a GIA withdrawal treated as taxable gain, used ONLY
+   *  when a pot has no `purchaseValue` and no contribution history to derive a
+   *  real base cost from. Real cost basis is tracked when it can be. */
   giaGainFraction: number; // 0.5
   /** Age a pension can first be accessed (UK: 55, rising to 57). Pots aren't
    *  drawn for income before the owner reaches this age. */
@@ -553,6 +581,12 @@ export type ProjectionAssumptions = {
   stocksStdDevPct?: number;
   pensionStdDevPct?: number;
   propertyStdDevPct?: number;
+  /**
+   * 4×4 correlation matrix for [cash, stocks, pension, property], used by Monte
+   * Carlo so the classes fall together in a bad year (spec §2.13). Omit to use
+   * DEFAULT_ASSET_CORRELATION.
+   */
+  assetCorrelation?: number[][];
   // Pension/retirement-account contribution tax-relief uplift (%).
   // UK: default 25 (basic rate at-source relief). US: typically 0 since pre-tax
   // 401(k) reduces taxable income directly via the gross-income flow.
@@ -719,6 +753,10 @@ export type YearProjection = {
      *  withdrawals the engine takes to plug a gap. */
     plannedWithdrawn?: number;
     contributions: number; // net annual scheduled contribution that landed (post tax-relief)
+    /** Tax taken straight out of this pot on its own income — dividends on a
+     *  GIA, interest on taxed cash. Kept apart from `growth` so growth means
+     *  growth and can be checked against the assumed rate. */
+    investmentTax?: number;
     surplusAdded?: number; // extra surplus routed here this year (directed + cascade)
     growth: number; // closing - opening - contributions - surplusAdded - event flows
     closingBalance: number;
