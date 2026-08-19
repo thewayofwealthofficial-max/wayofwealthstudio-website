@@ -188,6 +188,13 @@ export function projectYears(
     ownerId: string;
     liquidation?: "when_needed" | "never";
     crystallised?: boolean;
+    /**
+     * Set when a pension is inherited. Age 75 is the dividing line under
+     * current UK rules: die BEFORE 75 and the beneficiary draws it tax free;
+     * die at 75 or over and every pound is taxed at the beneficiary's marginal
+     * rate, with no 25% tax-free slice.
+     */
+    inherited?: "tax_free" | "taxable";
     /** Capital gains base cost. Contributions raise it; growth does not; a
      *  withdrawal consumes it pro rata. Only used on unwrapped (GIA) pots. */
     costBasis: number;
@@ -574,8 +581,25 @@ export function projectYears(
         deceasedFrom[pid] = y;
         const deceasedName = people.find((p) => p.id === pid)?.name || "Partner";
         const survivorId = people.find((p) => p.id !== pid)?.id ?? pid;
-        // The deceased's pots pass to the survivor.
-        buckets = buckets.map((b) => (b.ownerId === pid ? { ...b, ownerId: survivorId } : b));
+        // The deceased's pots pass to the survivor. For PENSIONS the age at
+        // death sets how the survivor is taxed on them from here on (see
+        // `inherited` on BucketState).
+        const ageAtDeath = (people.find((p) => p.id === pid)?.currentAge ?? plan.retirement?.currentAge);
+        const diedAt75OrOver = ageAtDeath !== undefined ? ageAtDeath + y >= 75 : false;
+        buckets = buckets.map((b) =>
+          b.ownerId === pid
+            ? {
+                ...b,
+                ownerId: survivorId,
+                inherited:
+                  b.kind === "pension"
+                    ? diedAt75OrOver
+                      ? ("taxable" as const)
+                      : ("tax_free" as const)
+                    : b.inherited,
+              }
+            : b
+        );
         // Life cover pays out to cash (explicit amount, else sum of term-life).
         const payout =
           iv.lifeCoverPayout ??
@@ -731,7 +755,10 @@ export function projectYears(
       const band = ukMarginalBand(grossByPerson[ownerId] || 0, ukTaxCfg);
       return band === "basic" ? ukAllow.cgtBasicPct : ukAllow.cgtHigherPct;
     };
-    const pensionAccessible = (b: BucketState): boolean => canAccessPension(b.ownerId, y);
+    const pensionAccessible = (b: BucketState): boolean =>
+      // An inherited pension has no minimum age for the beneficiary — the
+      // access age applies to your OWN pot, not one left to you.
+      b.inherited !== undefined || canAccessPension(b.ownerId, y);
     // ---- Tax on money coming OUT of a pot ----------------------------------
     // Allowances are per person per year and are consumed as the year goes on,
     // so these track what each person has used so far. Without them a retiree
@@ -772,10 +799,13 @@ export function projectYears(
     ): { tax: number; paUsed: number; cgtUsed: number } => {
       if (region !== "UK" || gross <= 0) return { tax: 0, paUsed: 0, cgtUsed: 0 };
       if (b.kind === "pension") {
+        // Inherited before the holder turned 75 → the beneficiary pays nothing.
+        if (b.inherited === "tax_free") return { tax: 0, paUsed: 0, cgtUsed: 0 };
         // An uncrystallised pot pays out 25% tax free (UFPLS). A crystallised
-        // one has already had its tax-free cash, so all of it is income.
+        // one has already had its tax-free cash, so all of it is income. An
+        // inherited-after-75 pot is fully taxable with no tax-free slice.
         // Either way, unused Personal Allowance covers the taxable part first.
-        const taxable = gross * (b.crystallised ? 1 : 0.75);
+        const taxable = gross * (b.crystallised || b.inherited === "taxable" ? 1 : 0.75);
         const covered = Math.min(taxable, unusedPA(b.ownerId));
         return {
           tax: (taxable - covered) * (incomeRatePctFor(b.ownerId) / 100),
@@ -806,9 +836,10 @@ export function projectYears(
     const grossForNet = (b: BucketState, net: number): number => {
       if (region !== "UK" || net <= 0) return net;
       if (b.kind === "pension") {
+        if (b.inherited === "tax_free") return net; // nothing to gross up for
         const room = unusedPA(b.ownerId);
         const rate = incomeRatePctFor(b.ownerId) / 100;
-        const taxableFraction = b.crystallised ? 1 : 0.75;
+        const taxableFraction = b.crystallised || b.inherited === "taxable" ? 1 : 0.75;
         if (rate <= 0) return net;
         if (net <= room / taxableFraction) return net; // allowance covers it
         return (net - room * rate) / (1 - taxableFraction * rate);
