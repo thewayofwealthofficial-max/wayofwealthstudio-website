@@ -904,6 +904,15 @@ export type CashflowPlanData = {
     /** Annual essentials cost the surviving family would still face. */
     annualEssentialsForFamily?: number;
   };
+  /** Estate-planning settings for the inheritance tax insight. */
+  estate?: {
+    /** Is the home passing to children or grandchildren? Needed for the
+     *  residence nil-rate band. Defaults to false — assuming it applies would
+     *  understate the tax, which is the wrong way to be wrong. */
+    homeToDirectDescendants?: boolean;
+    /** Share of the estate left to charity (%). 10 or more cuts the rate to 36%. */
+    charityPct?: number;
+  };
   contextNote: string;
   coachPrepNotes: string;
   assumptions?: ProjectionAssumptions;
