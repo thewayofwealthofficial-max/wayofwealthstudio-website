@@ -411,8 +411,10 @@ const LEAKS = [
     const short = gap > 0;
     const extraNeeded = short && keepRate > 0 ? Math.ceil(gap / keepRate) : 0;
 
-    // The runway pot target: three months of running costs.
-    const runwayTarget = run * 3;
+    // The runway pot target: three months of EVERYTHING it costs to keep going —
+    // the business running costs plus what their life costs. Tax is deliberately
+    // left out: if the money stops coming in, so does the tax on it.
+    const runwayTarget = (run + life) * 3;
     const monthsToTarget = runway > 0 && runwayTarget > 0 ? Math.ceil(runwayTarget / runway) : 0;
 
     // Break even: the money in where what is left exactly covers the pay.
@@ -509,9 +511,10 @@ const LEAKS = [
           + ' sat in the pot. Nothing is going in yet, so this one does not fill.';
       } else {
         target.textContent = 'Target: ' + state.cur + fmt(c.runwayTarget)
-          + ' sat in the pot, which is three months of running costs. At '
-          + state.cur + fmt(c.runway) + ' a month you are there in '
-          + c.monthsToTarget + (c.monthsToTarget === 1 ? ' month.' : ' months.');
+          + ' sat in the pot. That is three months of everything — what your life costs '
+          + 'plus what the business costs. At ' + state.cur + fmt(c.runway)
+          + ' a month you are there in ' + c.monthsToTarget
+          + (c.monthsToTarget === 1 ? ' month.' : ' months.');
       }
 
       // Short: name the gap, then name the bigger number it actually takes to close it.
@@ -720,7 +723,8 @@ const LEAKS = [
       '1. Tax Pot, Not Mine:     ' + cur + fmt(c.tax) + '/mo (' + pct(state.taxPct) + ' sweep)',
       '2. Operating Buffer:      ' + cur + fmt(c.run) + '/mo (' + pct(state.runPct) + ')',
       '3. My Safe Pay:           ' + cur + fmt(c.payMonth) + '/mo (' + cur + fmt(c.payWeek) + '/wk)',
-      '4. Runway Pot:            ' + cur + fmt(c.runway) + '/mo (target ' + cur + fmt(c.runwayTarget) + ')',
+      '4. Runway Pot:            ' + cur + fmt(c.runway) + '/mo (target ' + cur + fmt(c.runwayTarget)
+        + ', 3 months of everything)',
       '',
       'Break even at:            ' + cur + fmt(c.breakEven) + '/mo coming in',
     ];
