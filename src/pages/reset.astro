@@ -1,0 +1,1136 @@
+---
+import Layout from '../layouts/LandingLayout.astro';
+import { LINKS } from '../config/links';
+
+const title = "The 10-Minute Cash Reset — Free | Way of Wealth";
+const description = "Put your money behind walls. See what's tax, what runs the business, and what you actually get paid this week. Free. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
+
+// ⛔ The ONE thing that stays locked: no cost figures in here.
+// Nobody measured a "typical" price for these, so putting one on screen invents a
+// number (TEACHING_SCOPE.md §5.4). The user types what their own statement says.
+// A number they found is a number they believe.
+const LEAKS = [
+  { id: 'adobe',     name: 'Adobe CC Duplicate App Licences',           cat: 'Software', note: 'Paying for individual apps on top of an all-apps plan.' },
+  { id: 'cloud',     name: 'Stacked Unused Cloud Storage',              cat: 'Storage',  note: 'Three different cloud tiers backing up the same files.' },
+  { id: 'tools',     name: 'Dormant Project Management Seats',          cat: 'Software', note: 'Annual seat tiers still billing for finished client projects.' },
+  { id: 'assets',    name: 'Commercial Audio & Stock Asset Licences',   cat: 'Storage',  note: 'Multiple asset platforms renewed on auto-pilot.' },
+  { id: 'ai',        name: 'Redundant AI & Writing Subscriptions',      cat: 'Software', note: 'Overlapping tools doing one job. You kept the new one and never cancelled the old one.' },
+  { id: 'domain',    name: 'Abandoned Domains & Auto-Hosting Renewals', cat: 'Storage',  note: 'Parked side projects billing monthly.' },
+  { id: 'invoicing', name: 'Zombie Accounting & Invoicing Add-ons',     cat: 'Software', note: 'Legacy portal features from a setup you moved off ages ago.' },
+  { id: 'delivery',  name: 'Evening Delivery App Markups',              cat: 'Evening',  note: 'At 9pm you take the easiest route, and the easiest route is the app that already has your card.' },
+  { id: 'gym',       name: 'Unattended Fitness & Streaming Passes',     cat: 'Evening',  note: 'Active memberships not used in 60+ days.' },
+  { id: 'transit',   name: 'Peak-Hour Ride-Hailing Surcharges',         cat: 'Evening',  note: 'Rushed bookings driven by scheduling friction.' },
+];
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/reset`} bodyClass="rs-dark">
+
+<section class="rs-wrap">
+
+  <!-- ============================================================
+       1 · HERO
+  ============================================================ -->
+  <header class="rs-hero reveal">
+    <p class="rs-badge">⬥ The Cashflow Shield</p>
+    <h1 class="rs-h1">
+      The 10-Minute <em>Cash Reset.</em>
+    </h1>
+    <p class="rs-sub">
+      Stop guessing what you can afford to spend. Move your gross invoice money into automated
+      pipes, so your tax is handled the day it lands and you know your exact Friday pay.
+    </p>
+    <p class="rs-conf">🔒 Free. Your figures never leave this page, and we can’t see them. One email opens the rest.</p>
+  </header>
+
+  <!-- ============================================================
+       2 · WHAT LANDS
+  ============================================================ -->
+  <div class="rs-card reveal">
+    <p class="rs-step">Step one</p>
+    <h2 class="rs-h2">Average monthly invoicing.</h2>
+    <p class="rs-help">Gross. Everything that lands. Invoices, Stripe, retainers, day rates. Before a penny goes out.</p>
+
+    <div class="rs-currency" role="group" aria-label="Currency">
+      <button type="button" class="rs-chip is-on" data-cur="£">£</button>
+      <button type="button" class="rs-chip" data-cur="$">$</button>
+      <button type="button" class="rs-chip" data-cur="€">€</button>
+      <button type="button" class="rs-chip" data-cur="C$">C$</button>
+      <button type="button" class="rs-chip" data-cur="R">R</button>
+      <button type="button" class="rs-chip" data-cur="₪">₪</button>
+    </div>
+
+    <p class="rs-bigfig">
+      <span class="rs-cur">£</span><span id="rs-rev-out">6,000</span><span class="rs-per">a month</span>
+    </p>
+
+    <label class="rs-sr" for="rs-rev">Money in each month</label>
+    <input id="rs-rev" type="range" min="1000" max="20000" step="250" value="6000" />
+    <div class="rs-scale"><span>1,000</span><span>10,000</span><span>20,000</span></div>
+  </div>
+
+
+  <!-- ============================================================
+       3 · THE TWO NUMBERS THAT AREN'T OURS TO GIVE
+  ============================================================ -->
+  <div class="rs-card reveal">
+    <p class="rs-step">Step two</p>
+    <h2 class="rs-h2">Your three numbers.</h2>
+    <p class="rs-help">
+      I can’t set your tax rate and I won’t pretend to. It moves with your jurisdiction, your
+      structure, and whether you’re VAT registered. <b>Your accountant has that number. Put theirs
+      in here.</b> Same with your operating costs. Nobody knows what your work costs except you.
+    </p>
+
+    <div class="rs-two">
+      <div class="rs-field">
+        <label class="rs-label" for="rs-tax">Tax sweep, as a share of gross</label>
+        <div class="rs-pctbox">
+          <input id="rs-tax" type="number" min="0" max="60" step="0.5" inputmode="decimal" placeholder="–" />
+          <span class="rs-suffix">%</span>
+        </div>
+        <div class="rs-chips" data-for="rs-tax">
+          <button type="button" class="rs-chip rs-chip-sm" data-val="0">0</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="20">20</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="25">25</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="30">30</button>
+        </div>
+        <p class="rs-micro">Already taxed at source? Put 0.</p>
+      </div>
+
+      <div class="rs-field">
+        <label class="rs-label" for="rs-run">Operating buffer, as a share of gross</label>
+        <div class="rs-pctbox">
+          <input id="rs-run" type="number" min="0" max="40" step="0.5" inputmode="decimal" placeholder="–" />
+          <span class="rs-suffix">%</span>
+        </div>
+        <div class="rs-chips" data-for="rs-run">
+          <button type="button" class="rs-chip rs-chip-sm" data-val="0">0</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="5">5</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="10">10</button>
+          <button type="button" class="rs-chip rs-chip-sm" data-val="15">15</button>
+        </div>
+        <p class="rs-micro">Software, equipment, hosting, travel, project tools.</p>
+      </div>
+    </div>
+
+    <div class="rs-life">
+      <label class="rs-label" for="rs-life">What your life costs each month</label>
+      <p class="rs-help rs-life-help">
+        Rent or mortgage, food, bills, travel, the basics. <b>The number you can’t go below.</b>
+        Not what you’d like to spend. What it costs to keep your life running.
+      </p>
+      <div class="rs-moneybox">
+        <span class="rs-cur">£</span>
+        <input id="rs-life" type="number" min="0" step="50" inputmode="decimal" placeholder="–" />
+        <span class="rs-suffix rs-suffix-per">a month</span>
+      </div>
+      <p class="rs-micro">This sets your pay. You take the lower of this and what’s left.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       2b · THE GATE — sits after ALL THREE numbers
+       They fill in what comes in, the two sweep rates and what their life costs.
+       Then the gate. Nothing past it renders until an email is given, so the pots,
+       the three months and the leak audit are all behind it. Remembered per browser.
+  ============================================================ -->
+  <form class="rs-card rs-unlock reveal" id="rs-unlock" novalidate>
+    <p class="rs-unlock-k">That is everything I need.</p>
+    <p class="rs-unlock-n">
+      Put your email in and the rest of this page opens up underneath: your four pots, your
+      safe monthly pay, the same pay across a big month and a slow one, and the leak audit.
+      It opens right here, straight away. Nothing to wait for.
+    </p>
+    <div class="rs-unlock-row">
+      <label class="rs-sr" for="rs-email">Your email</label>
+      <input id="rs-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
+      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Show me my pots →</button>
+    </div>
+    <!-- honeypot: bots fill this, humans never see it -->
+    <div class="rs-honeypot" aria-hidden="true">
+      <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
+    <p class="rs-micro">Free. No spam, and you can unsubscribe any time.</p>
+  </form>
+
+  <div id="rs-locked" hidden>
+  <!-- ============================================================
+       4 · THE FOUR WALLS  (the one gold-edged moment on the page)
+  ============================================================ -->
+  <div class="rs-walls reveal" id="rs-walls">
+    <p class="rs-step rs-step-light">Step three</p>
+    <h2 class="rs-h2 rs-h2-light">Your 4 clean buckets.</h2>
+    <p class="rs-help rs-help-light">It’s just data. Split it the minute the invoice lands, and nothing has to be decided at 9pm.</p>
+
+    <div class="rs-gate" id="rs-gate">
+      <p>Fill in step two and your buckets appear.</p>
+    </div>
+
+    <div class="rs-wallbody" id="rs-wallbody" hidden>
+      <div class="rs-inline">
+        <span class="rs-inline-k">Gross in</span>
+        <span class="rs-inline-v"><span class="rs-cur">£</span><span id="rs-w-in">0</span> <span class="rs-inline-per">a month</span></span>
+      </div>
+
+      <div class="rs-grid">
+        <div class="rs-pot rs-pot-alert">
+          <p class="rs-pot-k">⚠ Pot 1 · Tax Pot, Not Mine <span class="rs-pot-pct" id="rs-w-taxpct">0%</span></p>
+          <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-tax">0</span><span class="rs-pot-per">/mo</span></p>
+          <p class="rs-pot-n">Swept the day the invoice lands. You never look at it, you never touch it. It was never yours.</p>
+        </div>
+
+        <div class="rs-pot">
+          <p class="rs-pot-k">Pot 2 · Operating Buffer <span class="rs-pot-pct" id="rs-w-runpct">0%</span></p>
+          <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-run">0</span><span class="rs-pot-per">/mo</span></p>
+          <p class="rs-pot-n">Adobe, gear upgrades, cloud tiers, project software. This is why a renewal stops ambushing you.</p>
+        </div>
+
+        <div class="rs-pot rs-pot-lead">
+          <p class="rs-pot-k">✦ Pot 3 · Your Safe Pay</p>
+          <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-pay">0</span><span class="rs-pot-per">/mo</span></p>
+          <p class="rs-pot-sub">That is <span class="rs-cur">£</span><span id="rs-w-payweek">0</span> a week if you would rather pay yourself on a Friday.</p>
+          <p class="rs-pot-n">The same figure after an £8k month or a £2k one. That is the entire point.</p>
+        </div>
+
+        <div class="rs-pot">
+          <p class="rs-pot-k">Pot 4 · Runway Pot</p>
+          <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-buf">0</span><span class="rs-pot-per">/mo</span></p>
+          <p class="rs-pot-n">What is left once you have been paid. This is the money that lets a strong month pay for a dead one.</p>
+          <p class="rs-pot-target" id="rs-w-target"></p>
+        </div>
+      </div>
+
+      <!-- Only shows when what is left will not cover the life. The extra needed is
+           bigger than the gap, because tax and running costs come out of the extra too. -->
+      <div class="rs-short" id="rs-short" hidden>
+        <p class="rs-short-k">⚠ What is left does not cover your life.</p>
+        <p class="rs-short-n" id="rs-short-n"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       4b · THREE MONTHS, ONE PAY PACKET
+       The pay does not move. The last column is the runway pot filling up in a
+       big month and being drawn on in a slow one. That is what the pots buy.
+  ============================================================ -->
+  <div class="rs-card reveal">
+    <p class="rs-step">Step four</p>
+    <h2 class="rs-h2">The same pay, three different months.</h2>
+    <p class="rs-help">
+      This is the whole point of the pots. <b>Your pay does not move.</b> The runway pot takes the
+      hit in a slow month and gets topped back up in a big one.
+    </p>
+
+    <div class="rs-monthsgate" id="rs-months-gate">
+      <p>Fill in step two and the three months appear.</p>
+    </div>
+
+    <div class="rs-tablewrap" id="rs-months-body" hidden>
+      <table class="rs-table">
+        <thead>
+          <tr>
+            <th scope="col">Month</th>
+            <th scope="col">Money in</th>
+            <th scope="col">Tax</th>
+            <th scope="col">Running</th>
+            <th scope="col">Your pay</th>
+            <th scope="col">Runway pot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">A big month <span class="rs-tnote">half again on your usual</span></th>
+            <td data-label="Money in"><span class="rs-cur">£</span><span id="rs-big-in">0</span></td>
+            <td data-label="Tax"><span class="rs-cur">£</span><span id="rs-big-tax">0</span></td>
+            <td data-label="Running"><span class="rs-cur">£</span><span id="rs-big-run">0</span></td>
+            <td class="rs-tpay" data-label="Your pay"><span class="rs-cur">£</span><span id="rs-big-pay">0</span></td>
+            <td data-label="Runway pot" id="rs-big-delta">—</td>
+          </tr>
+          <tr>
+            <th scope="row">A slow month <span class="rs-tnote">two fifths off your usual</span></th>
+            <td data-label="Money in"><span class="rs-cur">£</span><span id="rs-slow-in">0</span></td>
+            <td data-label="Tax"><span class="rs-cur">£</span><span id="rs-slow-tax">0</span></td>
+            <td data-label="Running"><span class="rs-cur">£</span><span id="rs-slow-run">0</span></td>
+            <td class="rs-tpay" data-label="Your pay"><span class="rs-cur">£</span><span id="rs-slow-pay">0</span></td>
+            <td data-label="Runway pot" id="rs-slow-delta">—</td>
+          </tr>
+          <tr>
+            <th scope="row">Break even <span class="rs-tnote">the least you need in</span></th>
+            <td data-label="Money in"><span class="rs-cur">£</span><span id="rs-even-in">0</span></td>
+            <td data-label="Tax"><span class="rs-cur">£</span><span id="rs-even-tax">0</span></td>
+            <td data-label="Running"><span class="rs-cur">£</span><span id="rs-even-run">0</span></td>
+            <td class="rs-tpay" data-label="Your pay"><span class="rs-cur">£</span><span id="rs-even-pay">0</span></td>
+            <td data-label="Runway pot" id="rs-even-delta">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="rs-micro">The big and slow months are worked out from the figure you set in step one.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       5 · THE LEAK LIST
+  ============================================================ -->
+  <div class="rs-card reveal">
+    <p class="rs-step">Step five · Live statement leak audit</p>
+    <h2 class="rs-h2">Check off what you are leaking.</h2>
+    <p class="rs-help">
+      Open your last 90 days of statements. Tick every line you find and type <b>what it actually
+      costs you</b>, straight off the statement. We don’t pre-fill these, because a number you found
+      yourself is a number you believe. This is not working harder. It is fixing broken pipes.
+    </p>
+
+    <ul class="rs-leaks">
+      {LEAKS.map((l) => (
+        <li class="rs-leak" data-id={l.id}>
+          <label class="rs-leak-main">
+            <input type="checkbox" class="rs-leak-tick" data-id={l.id} />
+            <span class="rs-leak-txt">
+              <span class="rs-leak-name">{l.name} <span class="rs-cat">{l.cat}</span></span>
+              <span class="rs-leak-note">{l.note}</span>
+            </span>
+          </label>
+          <div class="rs-leak-amt">
+            <span class="rs-cur">£</span>
+            <input type="number" class="rs-leak-in" data-id={l.id} min="0" step="1" inputmode="decimal" placeholder="0" aria-label={`Monthly cost of: ${l.name}`} disabled />
+            <span class="rs-leak-per">/mo</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <div class="rs-leaktotal">
+      <div>
+        <p class="rs-leaktotal-k">Recoverable cash</p>
+        <p class="rs-leaktotal-n" id="rs-leak-note">Tick a line above and put the real figure in.</p>
+      </div>
+      <p class="rs-leaktotal-v" id="rs-leak-figure">
+        <span class="rs-cur">£</span><span id="rs-leak-yr">0</span><span class="rs-leaktotal-per">a year</span>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       6 · TAKE IT WITH YOU
+  ============================================================ -->
+  <div class="rs-card reveal">
+    <p class="rs-step">Last bit</p>
+    <h2 class="rs-h2">Want me to set this up with you, live?</h2>
+    <p class="rs-help">
+      Copy your breakdown so you’ve got your own numbers, then watch the two minute explainer. If
+      it lands, book a call from that page and bring the figures with you. <b>20 minutes, no pitch.</b>
+    </p>
+    <div class="rs-actions">
+      <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer">
+        Watch this next, then book →
+      </a>
+      <button type="button" class="rs-btn rs-btn-ghost" id="rs-copy">Copy my breakdown</button>
+    </div>
+    <p class="rs-micro" id="rs-copied" aria-live="polite"></p>
+  </div>
+
+  </div><!-- /#rs-locked -->
+
+  <!-- ============================================================
+       7 · SCOPE — outside the gate on purpose, it is always visible
+  ============================================================ -->
+  <p class="rs-scope reveal">
+    <b>This is an educational tool, not financial advice.</b> It does the arithmetic on the figures
+    you typed and nothing else. Joel is a planner, not an adviser, so nothing here tells you what to
+    do with your money, how much to hold for tax, or where to put anything. Your accountant gives
+    you your tax number.
+    <span class="rs-scope-cred">Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner</span>
+  </p>
+
+</section>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const WEEKS_PER_MONTH = 52 / 12; // 4.3333…
+
+  // The URL this tool is served from. Appears in the copied breakdown, so it has to match
+  // where it actually goes live. The domain is .shop, not .com. One line to change.
+  const TOOL_URL = 'thewayofwealth.shop/reset';
+
+  const state = {
+    cur: '£',
+    revenue: 6000,
+    taxPct: null,   // null means "they haven't told us yet". 0 is a real answer, so it can't be the empty value.
+    runPct: null,
+    lifeCosts: null, // same rule: null is "not told us", 0 would be a real (if odd) answer.
+    leaks: {},      // id -> { on, amt }
+    unlocked: false, // set once they have given an email (or did on a previous visit)
+  };
+
+  // Remember the unlock so a refresh doesn't ask twice. Private browsing and blocked
+  // site data both throw here, in which case they simply get asked again.
+  // Versioned on purpose. Bump the suffix whenever the gate moves, so an unlock
+  // earned against an older design cannot silently open a newer one.
+  const UNLOCK_KEY = 'wow_reset_unlocked_v3';
+  try {
+    state.unlocked = localStorage.getItem(UNLOCK_KEY) === '1';
+    localStorage.removeItem('wow_reset_unlocked');    // retired key from the first gate
+    localStorage.removeItem('wow_reset_unlocked_v2'); // retired when the gate moved below step two
+  } catch (err) {
+    state.unlocked = false;
+  }
+
+  const fmt = (n) => Math.round(n).toLocaleString('en-GB');
+
+  /* ---------- the arithmetic ----------
+     The rounded pots are subtracted from the money in, so the four numbers on
+     screen always add back up to it. Joel does arithmetic out loud, so it has to
+     reconcile when someone checks it on a calculator. */
+  function calc() {
+    const rev = state.revenue;
+    const taxPct = state.taxPct ?? 0;
+    const runPct = state.runPct ?? 0;
+
+    const tax = Math.round(rev * (taxPct / 100));
+    const run = Math.round(rev * (runPct / 100));
+    const left = Math.max(0, rev - tax - run);
+
+    // Your pay is the LOWER of what is left and what your life costs. Never more
+    // than the business can carry, never more than the life needs. Everything above
+    // it is runway, not a pay rise.
+    const life = state.lifeCosts ?? 0;
+    const payMonth = Math.min(left, life);
+    const runway = Math.max(0, left - payMonth);
+    const payWeek = Math.round(payMonth / WEEKS_PER_MONTH);
+
+    // keepRate is the share of every extra pound that survives tax and running costs.
+    // Guarded because someone can type percentages that add up past 100.
+    const keepRate = 1 - (taxPct / 100) - (runPct / 100);
+
+    // Short: what is left will not cover the life. The extra needed to close it is
+    // BIGGER than the gap, because tax and running costs come out of the extra too.
+    const gap = Math.max(0, life - left);
+    const short = gap > 0;
+    const extraNeeded = short && keepRate > 0 ? Math.ceil(gap / keepRate) : 0;
+
+    // The runway pot target: three months of running costs.
+    const runwayTarget = run * 3;
+    const monthsToTarget = runway > 0 && runwayTarget > 0 ? Math.ceil(runwayTarget / runway) : 0;
+
+    // Break even: the money in where what is left exactly covers the pay.
+    const breakEven = keepRate > 0 ? Math.ceil(payMonth / keepRate) : 0;
+
+    return {
+      rev, tax, run, left, life, payMonth, runway, payWeek,
+      keepRate, gap, short, extraNeeded, runwayTarget, monthsToTarget, breakEven,
+    };
+  }
+
+  /* ---------- one month, at any level of money in ----------
+     Used by the three-month table. Same sweep rates, different money in. */
+  function monthRow(moneyIn) {
+    const inn = Math.max(0, Math.round(moneyIn));
+    const tax = Math.round(inn * ((state.taxPct ?? 0) / 100));
+    const run = Math.round(inn * ((state.runPct ?? 0) / 100));
+    return { inn, tax, run, left: Math.max(0, inn - tax - run) };
+  }
+
+  function leakTotals() {
+    let month = 0;
+    let ticked = 0;
+    for (const id in state.leaks) {
+      const l = state.leaks[id];
+      if (l && l.on) { ticked++; month += l.amt || 0; }
+    }
+    return { month, year: month * 12, ticked };
+  }
+
+  /* ---------- painting ---------- */
+  function paintCurrency() {
+    document.querySelectorAll('.rs-cur').forEach((el) => { el.textContent = state.cur; });
+  }
+
+  /* ---------- the three months ----------
+     The pay is identical on all three rows. The last column is the runway pot
+     filling up or being drawn on, which is the only thing that moves. */
+  function paintMonths(c) {
+    const rows = { big: monthRow(c.rev * 1.5), slow: monthRow(c.rev * 0.6), even: monthRow(c.breakEven) };
+
+    for (const key in rows) {
+      const r = rows[key];
+      $('rs-' + key + '-in').textContent = fmt(r.inn);
+      $('rs-' + key + '-tax').textContent = fmt(r.tax);
+      $('rs-' + key + '-run').textContent = fmt(r.run);
+      $('rs-' + key + '-pay').textContent = fmt(c.payMonth);
+
+      // The break-even row is level by definition, so never let a rounding penny
+      // show up there as a movement.
+      const delta = key === 'even' ? 0 : r.left - c.payMonth;
+      const cell = $('rs-' + key + '-delta');
+      if (delta === 0) {
+        cell.textContent = 'nothing moves';
+        cell.className = 'rs-tflat';
+      } else if (delta > 0) {
+        cell.textContent = '+' + state.cur + fmt(delta) + ' in';
+        cell.className = 'rs-tin';
+      } else {
+        cell.textContent = '\u2212' + state.cur + fmt(Math.abs(delta)) + ' out';
+        cell.className = 'rs-tout';
+      }
+    }
+  }
+
+  function paint() {
+    const c = calc();
+    // Every pot depends on all three numbers now, so all three have to be in.
+    const ready = state.taxPct !== null && state.lifeCosts !== null;
+
+    $('rs-rev-out').textContent = fmt(c.rev);
+
+    $('rs-gate').hidden = ready;
+    $('rs-wallbody').hidden = !ready;
+    $('rs-months-gate').hidden = ready;
+    $('rs-months-body').hidden = !ready;
+
+    if (ready) {
+      $('rs-w-in').textContent = fmt(c.rev);
+      $('rs-w-tax').textContent = fmt(c.tax);
+      $('rs-w-run').textContent = fmt(c.run);
+      $('rs-w-pay').textContent = fmt(c.payMonth);
+      $('rs-w-payweek').textContent = fmt(c.payWeek);
+      $('rs-w-buf').textContent = fmt(c.runway);
+      $('rs-w-taxpct').textContent = (state.taxPct ?? 0) + '%';
+      $('rs-w-runpct').textContent = (state.runPct ?? 0) + '%';
+
+      // The runway target, and how long it takes to get there at this rate.
+      const target = $('rs-w-target');
+      if (c.runwayTarget <= 0) {
+        target.textContent = '';
+      } else if (c.runway <= 0) {
+        target.textContent = 'Target: ' + state.cur + fmt(c.runwayTarget)
+          + ' sat in the pot. Nothing is going in yet, so this one does not fill.';
+      } else {
+        target.textContent = 'Target: ' + state.cur + fmt(c.runwayTarget)
+          + ' sat in the pot, which is three months of running costs. At '
+          + state.cur + fmt(c.runway) + ' a month you are there in '
+          + c.monthsToTarget + (c.monthsToTarget === 1 ? ' month.' : ' months.');
+      }
+
+      // Short: name the gap, then name the bigger number it actually takes to close it.
+      $('rs-short').hidden = !c.short;
+      if (c.short) {
+        $('rs-short-n').textContent = c.extraNeeded > 0
+          ? 'What is left is ' + state.cur + fmt(c.left) + ' and your life costs '
+            + state.cur + fmt(c.life) + '. That is a gap of ' + state.cur + fmt(c.gap)
+            + ' a month. To close it you need to bring in ' + state.cur + fmt(c.extraNeeded)
+            + ' more, not ' + state.cur + fmt(c.gap)
+            + ', because tax and running costs come out of the extra too.'
+          : 'Your tax and running costs use up everything that comes in, so there is nothing '
+            + 'left to pay yourself from. Check those two percentages.';
+      }
+
+      paintMonths(c);
+    }
+
+    const lt = leakTotals();
+    $('rs-leak-yr').textContent = fmt(lt.year);
+    $('rs-leak-note').textContent = lt.month > 0
+      ? state.cur + fmt(lt.month) + ' a month you’re already paying and not using.'
+      : 'Tick something above and put the real figure in.';
+  }
+
+  /* ---------- the gate ----------
+     Everything past step one is hidden until an email is given. Hidden rather than
+     blurred: there is no point rendering figures nobody is meant to read yet. */
+  function paintGate() {
+    $('rs-unlock').hidden = state.unlocked;
+    $('rs-locked').hidden = !state.unlocked;
+  }
+
+  /* ---------- currency ---------- */
+  document.querySelectorAll('[data-cur]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-cur]').forEach((b) => b.classList.remove('is-on'));
+      btn.classList.add('is-on');
+      state.cur = btn.getAttribute('data-cur') || '£';
+      paintCurrency();
+      paint();
+    });
+  });
+
+  /* ---------- money in ---------- */
+  $('rs-rev').addEventListener('input', (e) => {
+    state.revenue = Number(e.target.value);
+    paint();
+  });
+
+  /* ---------- the two percentages ----------
+     Empty stays empty. We never put a tax figure in front of them. */
+  function bindPct(inputId, key, max) {
+    const input = $(inputId);
+    const chips = document.querySelectorAll('.rs-chips[data-for="' + inputId + '"] .rs-chip');
+
+    input.addEventListener('input', () => {
+      const raw = input.value.trim();
+      chips.forEach((c) => c.classList.remove('is-on'));
+      if (raw === '') { state[key] = null; paint(); return; }
+      const v = Number(raw);
+      if (!isFinite(v)) { state[key] = null; paint(); return; }
+      state[key] = Math.min(max, Math.max(0, v));
+      paint();
+    });
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const v = Number(chip.getAttribute('data-val'));
+        input.value = String(v);
+        state[key] = v;
+        chips.forEach((c) => c.classList.remove('is-on'));
+        chip.classList.add('is-on');
+        paint();
+      });
+    });
+  }
+  bindPct('rs-tax', 'taxPct', 60);
+  bindPct('rs-run', 'runPct', 40);
+
+  /* ---------- what your life costs ----------
+     Same rule as the percentages: empty stays empty, we never put a figure in front
+     of them. Their pay comes out of this, so it has to be their own number. */
+  $('rs-life').addEventListener('input', () => {
+    const raw = $('rs-life').value.trim();
+    if (raw === '') { state.lifeCosts = null; paint(); return; }
+    const v = Number(raw);
+    state.lifeCosts = isFinite(v) ? Math.max(0, v) : null;
+    paint();
+  });
+
+  /* ---------- leaks ---------- */
+  document.querySelectorAll('.rs-leak-tick').forEach((tick) => {
+    tick.addEventListener('change', () => {
+      const id = tick.getAttribute('data-id');
+      const amtEl = document.querySelector('.rs-leak-in[data-id="' + id + '"]');
+      const row = document.querySelector('.rs-leak[data-id="' + id + '"]');
+      const on = tick.checked;
+
+      if (!state.leaks[id]) state.leaks[id] = { on: false, amt: 0 };
+      state.leaks[id].on = on;
+
+      amtEl.disabled = !on;
+      row.classList.toggle('is-on', on);
+      if (on) amtEl.focus();
+      paint();
+    });
+  });
+
+  document.querySelectorAll('.rs-leak-in').forEach((amtEl) => {
+    amtEl.addEventListener('input', () => {
+      const id = amtEl.getAttribute('data-id');
+      const v = Math.max(0, Number(amtEl.value) || 0);
+      if (!state.leaks[id]) state.leaks[id] = { on: true, amt: 0 };
+      state.leaks[id].amt = v;
+      paint();
+    });
+  });
+
+  /* ---------- unlock the year figure ----------
+     Mirrors the server list in netlify/functions/lead-magnet-subscribe.js. This is a
+     courtesy check so people get told before a round trip; the function is the real one. */
+  const BAD_DOMAINS = new Set([
+    'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'guerrillamail.biz',
+    '10minutemail.com', '10minutemail.net', 'tempmail.com', 'temp-mail.org',
+    'yopmail.com', 'throwaway.email', 'maildrop.cc', 'getnada.com', 'sharklasers.com',
+    'mintemail.com', 'mohmal.com', 'fakeinbox.com', 'trashmail.com', 'mailcatch.com',
+    'spamgourmet.com', 'dispostable.com', 'tempinbox.com', 'mailnesia.com',
+    'discard.email', 'spambog.com', 'tempmailo.com', 'emailondeck.com',
+    'example.com', 'test.com', 'asdf.com', 'a.com', 'b.com',
+  ]);
+
+  function checkEmail(raw) {
+    const email = (raw || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, msg: 'That email does not look right.' };
+    if (email.length > 254) return { ok: false, msg: 'That email is too long.' };
+    const domain = email.split('@')[1];
+    if (BAD_DOMAINS.has(domain)) return { ok: false, msg: 'Use a real address, not a temporary one.' };
+    return { ok: true, email };
+  }
+
+  function unlock(scroll) {
+    state.unlocked = true;
+    try { localStorage.setItem(UNLOCK_KEY, '1'); } catch (err) { /* nothing to do */ }
+    paintGate();
+    paint();
+    if (scroll) {
+      // Send them straight into step two so the page doesn't just silently grow.
+      $('rs-locked').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  $('rs-unlock').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = $('rs-unlock-btn');
+    const errEl = $('rs-unlock-err');
+    const input = $('rs-email');
+
+    const v = checkEmail(input.value);
+    if (!v.ok) { errEl.textContent = v.msg; input.focus(); return; }
+
+    errEl.textContent = '';
+    btn.disabled = true;
+    const label = btn.textContent;
+    btn.textContent = 'One second…';
+
+    try {
+      const res = await fetch('/api/lead-magnet/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: v.email,
+          magnet: 'cash-reset',
+          honeypot: form.querySelector('[name="website"]').value || null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        unlock(true);
+        return;
+      }
+      // Say what actually went wrong rather than unlocking on a failure.
+      errEl.textContent = data.error || 'That did not go through. Try again in a moment.';
+    } catch (err) {
+      errEl.textContent = 'No connection. Check your signal and try again.';
+    }
+
+    btn.disabled = false;
+    btn.textContent = label;
+  });
+
+  /* ---------- copy ---------- */
+  $('rs-copy').addEventListener('click', async () => {
+    const c = calc();
+    const lt = leakTotals();
+    const cur = state.cur;
+    const pct = (v) => (v === null ? 'not set' : v + '%');
+
+    const lines = [
+      '--- MY CASH RESET BREAKDOWN ---',
+      '',
+      'Money in:                 ' + cur + fmt(c.rev) + '/mo',
+      'What my life costs:       ' + cur + fmt(c.life) + '/mo',
+      '',
+      '1. Tax Pot, Not Mine:     ' + cur + fmt(c.tax) + '/mo (' + pct(state.taxPct) + ' sweep)',
+      '2. Operating Buffer:      ' + cur + fmt(c.run) + '/mo (' + pct(state.runPct) + ')',
+      '3. My Safe Pay:           ' + cur + fmt(c.payMonth) + '/mo (' + cur + fmt(c.payWeek) + '/wk)',
+      '4. Runway Pot:            ' + cur + fmt(c.runway) + '/mo (target ' + cur + fmt(c.runwayTarget) + ')',
+      '',
+      'Break even at:            ' + cur + fmt(c.breakEven) + '/mo coming in',
+    ];
+
+    if (c.short) {
+      lines.push(
+        '',
+        'SHORT by ' + cur + fmt(c.gap) + '/mo. Need ' + cur + fmt(c.extraNeeded)
+          + '/mo more coming in to close it.'
+      );
+    }
+
+    lines.push(
+      '',
+      'Leaks found:              ' + cur + fmt(lt.month) + '/mo · ' + cur + fmt(lt.year) + '/yr ('
+        + lt.ticked + ' lines)',
+      '',
+      'Ran via ' + TOOL_URL
+    );
+
+    const text = lines.join('\n');
+
+    const note = $('rs-copied');
+    try {
+      await navigator.clipboard.writeText(text);
+      note.textContent = '✓ Copied. Paste it straight into the DM.';
+    } catch (err) {
+      // Some in-app browsers block the clipboard. Say so rather than failing quietly.
+      note.textContent = 'Your browser blocked the copy. Screenshot this page and send that instead.';
+    }
+  });
+
+  paintGate();
+  paintCurrency();
+  paint();
+</script>
+
+<style is:global>
+  /* ============================================================
+     THE 10-MINUTE CASH RESET · /reset
+     Dark, to match the Money Story Diagnostic at discover.thewayofwealth.shop
+     (src/styles.css, the .lp block). Same ground, same panels, same gold as the
+     single accent, same Fraunces + Inter pairing. One brand, two tools.
+  ============================================================ */
+
+  /* The page owns its own ground. Scoped to this page's body class so the two
+     other pages on this layout are untouched. */
+  body.rs-dark {
+    background: #0b1119;
+    color: var(--d-text);
+  }
+  body.rs-dark main {
+    background: radial-gradient(115% 60% at 78% -6%, #16212e 0%, #0b1119 55%, #070c12 100%);
+  }
+  /* Header and footer come from the shared layout in a lighter navy. Pull them
+     into this page's darker tone so it reads as one piece. */
+  body.rs-dark .lp-header { background: #0a1017; }
+  body.rs-dark .lp-footer { background: #070c12; }
+
+  .rs-wrap {
+    --d-bg: #0b1119;
+    --d-panel: #131d29;
+    --d-panel-2: #0e1721;
+    --d-inset: #0d151f;
+    --d-line: #26323f;
+    --d-text: #F5F0E8;
+    --d-mute: #9AA7B4;
+    --d-gold: #C4A265;
+    --d-on-gold: #14202c;
+    --d-display: 'Fraunces', Georgia, serif;
+
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 4.5rem 1.25rem 5rem;
+    color: var(--d-text);
+  }
+
+  /* The gate depends on the hidden attribute actually hiding things. Any stray
+     display rule would silently defeat it, so make it unbeatable. */
+  .rs-wrap [hidden] { display: none !important; }
+
+  .rs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* --- hero --- */
+  .rs-hero { margin-bottom: 2.5rem; }
+  .rs-badge {
+    display: inline-block; font-family: var(--font-ui); font-size: 11.5px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--d-gold);
+    background: rgba(196, 162, 101, 0.12); border: 1px solid rgba(196, 162, 101, 0.3);
+    border-radius: 999px; padding: 0.4rem 0.9rem; margin-bottom: 1.4rem;
+  }
+  .rs-h1 {
+    font-family: var(--d-display); font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -0.015em;
+    color: #fff; margin: 0; text-wrap: balance;
+  }
+  .rs-h1 em { font-style: italic; color: var(--d-gold); }
+  .rs-sub {
+    font-family: var(--font-ui); font-size: clamp(0.98rem, 1.5vw, 1.08rem);
+    color: var(--d-mute); margin-top: 1.3rem; max-width: 46ch; line-height: 1.6;
+  }
+  .rs-conf { font-family: var(--font-ui); font-size: 12.5px; color: var(--d-mute); margin-top: 1.5rem; }
+
+  /* --- cards --- */
+  .rs-card {
+    background: var(--d-panel);
+    border: 1px solid var(--d-line);
+    border-radius: 16px;
+    padding: 2.2rem 2.2rem 2.4rem;
+    margin-bottom: 1.1rem;
+  }
+  .rs-step {
+    font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--d-gold);
+    margin-bottom: 0.8rem;
+  }
+  .rs-step-light { color: var(--d-gold); }
+  .rs-h2 {
+    font-family: var(--d-display); font-weight: 600;
+    font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.15; letter-spacing: -0.01em;
+    color: #fff; margin: 0;
+  }
+  .rs-h2-light { color: #fff; }
+  .rs-help { font-family: var(--font-ui); font-size: 0.95rem; color: var(--d-mute); margin-top: 0.9rem; max-width: 56ch; line-height: 1.65; }
+  .rs-help b { color: var(--d-text); font-weight: 600; }
+  .rs-help-light { color: var(--d-mute); }
+  .rs-micro { font-family: var(--font-ui); font-size: 12px; color: var(--d-mute); margin-top: 0.6rem; }
+  .rs-micro-light { color: var(--d-mute); }
+  .rs-label {
+    display: block; font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); margin-bottom: 0.7rem;
+  }
+
+  /* --- chips --- */
+  .rs-chip {
+    font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+    padding: 0.5rem 0.95rem; border-radius: 999px; cursor: pointer;
+    background: #182430; color: var(--d-mute);
+    border: 1px solid var(--d-line); transition: all 0.18s;
+  }
+  .rs-chip:hover { border-color: var(--d-gold); color: var(--d-text); }
+  .rs-chip:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 2px; }
+  .rs-chip.is-on { background: var(--d-gold); border-color: var(--d-gold); color: var(--d-on-gold); }
+  .rs-chip-sm { padding: 0.4rem 0.8rem; font-size: 12.5px; }
+  .rs-currency { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.6rem; }
+  .rs-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+
+  /* --- big figure --- */
+  .rs-bigfig {
+    font-family: var(--font-ui); font-variant-numeric: tabular-nums;
+    font-size: clamp(2.1rem, 6vw, 2.9rem); font-weight: 600; color: #fff;
+    margin: 1.5rem 0 1.1rem; line-height: 1;
+  }
+  .rs-cur { color: var(--d-gold); }
+  .rs-per { font-family: var(--font-ui); font-size: 0.85rem; font-weight: 400; color: var(--d-mute); margin-left: 0.6rem; }
+
+  /* --- range inputs --- */
+  .rs-wrap input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; border-radius: 999px;
+    background: var(--d-line); outline: none; cursor: pointer;
+  }
+  .rs-wrap input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--d-gold); border: 3px solid #0d151f;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); cursor: pointer;
+  }
+  .rs-wrap input[type="range"]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--d-gold); border: 3px solid #0d151f;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); cursor: pointer;
+  }
+  .rs-wrap input[type="range"]:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 4px; }
+  .rs-scale { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 11.5px; color: var(--d-mute); margin-top: 0.7rem; }
+
+  /* --- number boxes --- */
+  .rs-two { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-top: 1.9rem; }
+  .rs-pctbox, .rs-moneybox {
+    display: flex; align-items: center; gap: 0.4rem;
+    border: 1px solid var(--d-line); border-radius: 11px;
+    padding: 0.15rem 0.9rem; background: var(--d-inset);
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .rs-pctbox:focus-within, .rs-moneybox:focus-within {
+    border-color: var(--d-gold); box-shadow: 0 0 0 3px rgba(196, 162, 101, 0.16);
+  }
+  .rs-pctbox input, .rs-moneybox input {
+    font-family: var(--font-ui); font-variant-numeric: tabular-nums;
+    font-size: 1.5rem; font-weight: 600; color: #fff;
+    border: none; background: transparent; outline: none; width: 100%; padding: 0.6rem 0;
+  }
+  .rs-pctbox input::placeholder, .rs-moneybox input::placeholder { color: #5d6b79; }
+  .rs-pctbox input::-webkit-outer-spin-button, .rs-pctbox input::-webkit-inner-spin-button,
+  .rs-moneybox input::-webkit-outer-spin-button, .rs-moneybox input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .rs-pctbox input[type=number], .rs-moneybox input[type=number] { -moz-appearance: textfield; }
+  .rs-suffix { font-family: var(--font-ui); font-size: 1.05rem; color: var(--d-gold); font-weight: 600; }
+
+  /* --- what your life costs --- */
+  .rs-life { margin-top: 2rem; padding-top: 1.9rem; border-top: 1px solid var(--d-line); }
+  .rs-life-help { margin-top: 0.55rem; }
+  .rs-moneybox { max-width: 21rem; margin-top: 1.15rem; }
+  .rs-moneybox .rs-cur { font-family: var(--font-ui); font-size: 1.3rem; font-weight: 600; }
+  .rs-suffix-per { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 400; color: var(--d-mute); white-space: nowrap; }
+
+  /* --- the four pots · the one gold-edged moment on the page --- */
+  .rs-walls {
+    background: var(--d-panel-2);
+    border: 1px solid rgba(196, 162, 101, 0.42);
+    border-radius: 16px;
+    padding: 2.2rem 2.2rem 2.4rem; margin-bottom: 1.1rem;
+    box-shadow: 0 0 60px rgba(196, 162, 101, 0.05);
+  }
+  .rs-gate { padding: 2rem 0 0.8rem; }
+  .rs-gate p { font-family: var(--font-ui); font-size: 0.96rem; color: var(--d-mute); }
+
+  .rs-inline { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 1.4rem 0 1.3rem; border-bottom: 1px solid var(--d-line); }
+  .rs-inline-k { font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); }
+  .rs-inline-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 600; color: #fff; }
+  .rs-inline-per { font-family: var(--font-ui); font-size: 0.78rem; font-weight: 400; color: var(--d-mute); }
+
+  .rs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-top: 1.5rem; }
+  .rs-pot { background: var(--d-panel); border: 1px solid var(--d-line); border-radius: 14px; padding: 1.3rem 1.35rem 1.4rem; }
+  .rs-pot-lead { border-color: rgba(196, 162, 101, 0.55); background: rgba(196, 162, 101, 0.07); }
+  /* Pot 1 reads as "hands off", not as an error. The tax pot is doing its job,
+     and shame is not a lever (TEACHING_SCOPE.md §5.2). */
+  .rs-pot-alert .rs-pot-k { color: #E8D5B0; }
+  .rs-pot-k { font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; color: var(--d-text); }
+  .rs-pot-pct { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--d-mute); margin-left: 0.35rem; }
+  .rs-pot-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.75rem; font-weight: 600; color: #fff; margin-top: 0.5rem; line-height: 1.1; }
+  .rs-pot-lead .rs-pot-v { color: var(--d-gold); }
+  .rs-pot-per { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 400; color: var(--d-mute); margin-left: 0.45rem; }
+  .rs-pot-n { font-family: var(--font-ui); font-size: 0.83rem; line-height: 1.6; color: var(--d-mute); margin-top: 0.6rem; }
+  .rs-pot-sub { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 0.78rem; color: var(--d-mute); margin-top: 0.4rem; }
+  .rs-pot-sub .rs-cur { color: #E8D5B0; }
+  .rs-pot-target {
+    font-family: var(--font-ui); font-size: 0.78rem; line-height: 1.55;
+    color: #E8D5B0; margin-top: 0.75rem; padding-top: 0.7rem;
+    border-top: 1px solid rgba(196, 162, 101, 0.24);
+  }
+  .rs-pot-target:empty { display: none; }
+
+  /* --- short: what is left will not cover the life ---
+     Gold, not red. They are already worried; shame is not a lever. */
+  .rs-short {
+    margin-top: 1.4rem; padding: 1.3rem 1.4rem;
+    background: rgba(196, 162, 101, 0.1);
+    border: 1px solid rgba(196, 162, 101, 0.45); border-radius: 14px;
+  }
+  .rs-short-k { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--d-gold); }
+  .rs-short-n { font-family: var(--font-ui); font-size: 0.88rem; line-height: 1.65; color: var(--d-text); margin-top: 0.45rem; max-width: 58ch; }
+
+  /* --- the three months --- */
+  .rs-monthsgate { padding: 1.6rem 0 0.3rem; }
+  .rs-monthsgate p { font-family: var(--font-ui); font-size: 0.95rem; color: var(--d-mute); }
+  /* The table scrolls inside its own box so the page body never scrolls sideways. */
+  .rs-tablewrap { overflow-x: auto; margin-top: 1.8rem; -webkit-overflow-scrolling: touch; }
+  .rs-table { width: 100%; border-collapse: collapse; min-width: 33rem; }
+  .rs-table th, .rs-table td {
+    text-align: right; padding: 0.85rem 0.7rem;
+    font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 13.5px;
+  }
+  .rs-table thead th {
+    font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--d-mute); font-weight: 600; border-bottom: 1px solid var(--d-line);
+  }
+  .rs-table thead th:first-child, .rs-table tbody th { text-align: left; }
+  .rs-table tbody th { font-weight: 600; color: var(--d-text); white-space: nowrap; }
+  .rs-table tbody tr { border-bottom: 1px solid var(--d-line); }
+  .rs-table tbody tr:last-child { border-bottom: none; }
+  .rs-table td { color: var(--d-mute); }
+  .rs-tnote { display: block; font-family: var(--font-ui); font-size: 11px; font-weight: 400; color: var(--d-mute); margin-top: 0.2rem; }
+  .rs-tpay { background: rgba(196, 162, 101, 0.1); color: #fff; font-weight: 600; }
+  .rs-tin { color: #7FB59A; font-weight: 600; white-space: nowrap; }
+  .rs-tout { color: #E2857A; font-weight: 600; white-space: nowrap; }
+  .rs-tflat { color: var(--d-mute); white-space: nowrap; }
+
+  /* --- leaks --- */
+  .rs-leaks { list-style: none; padding: 0; margin: 1.8rem 0 0; }
+  .rs-leak {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    padding: 0.95rem 1rem; border: 1px solid var(--d-line); border-radius: 12px;
+    margin-bottom: 0.55rem; background: var(--d-inset); transition: all 0.18s;
+  }
+  .rs-leak.is-on { border-color: rgba(196, 162, 101, 0.55); background: rgba(196, 162, 101, 0.08); }
+  .rs-leak-main { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; flex: 1; }
+  .rs-leak-tick { width: 18px; height: 18px; margin-top: 0.15rem; accent-color: var(--d-gold); cursor: pointer; flex-shrink: 0; }
+  .rs-leak-txt { display: block; }
+  .rs-leak-name { display: block; font-family: var(--font-ui); font-size: 13.5px; font-weight: 600; color: var(--d-text); }
+  .rs-cat { font-family: var(--font-ui); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--d-mute); border: 1px solid var(--d-line); border-radius: 999px; padding: 0.12rem 0.45rem; margin-left: 0.4rem; }
+  .rs-leak-note { display: block; font-family: var(--font-ui); font-size: 0.82rem; line-height: 1.55; color: var(--d-mute); margin-top: 0.25rem; max-width: 46ch; }
+  .rs-leak-amt { display: flex; align-items: center; gap: 0.15rem; flex-shrink: 0; }
+  .rs-leak-in {
+    font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 600;
+    color: #fff; width: 4.6rem; text-align: right;
+    border: 1px solid var(--d-line); border-radius: 9px; padding: 0.45rem 0.55rem;
+    background: #0a1119; outline: none; transition: border-color 0.18s;
+  }
+  .rs-leak-in:focus { border-color: var(--d-gold); }
+  .rs-leak-in:disabled { opacity: 0.35; cursor: not-allowed; }
+  .rs-leak-in::-webkit-outer-spin-button, .rs-leak-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .rs-leak-in[type=number] { -moz-appearance: textfield; }
+  .rs-leak-per { font-family: var(--font-ui); font-size: 11.5px; color: var(--d-mute); }
+
+  .rs-leaktotal {
+    display: flex; justify-content: space-between; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+    margin-top: 1.6rem; padding-top: 1.5rem; border-top: 1px solid var(--d-line);
+  }
+  .rs-leaktotal-k { font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); }
+  .rs-leaktotal-n { font-family: var(--font-ui); font-size: 0.88rem; color: var(--d-mute); margin-top: 0.3rem; }
+  .rs-leaktotal-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: clamp(1.7rem, 4.5vw, 2.2rem); font-weight: 600; color: #fff; }
+  .rs-leaktotal-per { font-family: var(--font-ui); font-size: 0.78rem; font-weight: 400; color: var(--d-mute); margin-left: 0.45rem; }
+
+  /* --- the unlock gate ---
+     Sits after all three numbers. Nothing past it renders until an email is given,
+     so it gets the strongest treatment on the page. */
+  .rs-unlock {
+    display: block;
+    background: var(--d-panel);
+    border: 1px solid rgba(196, 162, 101, 0.45);
+    box-shadow: 0 0 70px rgba(196, 162, 101, 0.06);
+  }
+  .rs-unlock-k { font-family: var(--d-display); font-weight: 600; font-size: 1.25rem; color: #fff; }
+  .rs-unlock-n { font-family: var(--font-ui); font-size: 0.92rem; line-height: 1.6; color: var(--d-mute); margin-top: 0.6rem; max-width: 52ch; }
+  .rs-unlock-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
+  .rs-unlock-row input {
+    flex: 1 1 15rem; min-width: 0;
+    font-family: var(--font-ui); font-size: 15px; color: #fff;
+    border: 1px solid var(--d-line); border-radius: 11px;
+    padding: 0.95rem 1rem; background: var(--d-inset); outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .rs-unlock-row input::placeholder { color: #5d6b79; }
+  .rs-unlock-row input:focus { border-color: var(--d-gold); box-shadow: 0 0 0 3px rgba(196, 162, 101, 0.16); }
+  .rs-unlock-row .rs-btn { flex: 0 0 auto; }
+  .rs-unlock-row .rs-btn:disabled { opacity: 0.6; cursor: wait; }
+  .rs-unlock-err:not(:empty) {
+    font-family: var(--font-ui); font-size: 12.5px; color: #E2857A;
+    margin-top: 0.7rem;
+  }
+  .rs-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* --- actions --- */
+  .rs-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.6rem; }
+  .rs-btn {
+    font-family: var(--font-ui); font-size: 15px; font-weight: 700;
+    border-radius: 11px; padding: 0.95rem 1.6rem; cursor: pointer;
+    border: 1px solid transparent; text-decoration: none; display: inline-block;
+    transition: filter 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  }
+  .rs-btn:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 3px; }
+  .rs-btn-primary { background: var(--d-gold); color: var(--d-on-gold); }
+  .rs-btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .rs-btn-ghost { background: transparent; color: var(--d-text); border-color: var(--d-line); }
+  .rs-btn-ghost:hover { border-color: var(--d-gold); }
+
+  /* --- scope --- */
+  .rs-scope { font-family: var(--font-ui); font-size: 12px; line-height: 1.75; color: var(--d-mute); margin-top: 2.5rem; max-width: 64ch; }
+  .rs-scope b { color: var(--d-text); }
+  .rs-scope-cred { display: block; font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.9rem; color: var(--d-mute); }
+
+  /* Somebody asked their machine for less movement. Honour it. */
+  @media (prefers-reduced-motion: reduce) {
+    .rs-wrap *, .rs-wrap *::before, .rs-wrap *::after {
+      animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+    }
+    .rs-btn-primary:hover { transform: none; }
+  }
+
+  /* --- responsive --- */
+  @media (max-width: 700px) {
+    .rs-wrap { padding: 3rem 1rem 4rem; }
+    .rs-card, .rs-walls { padding: 1.7rem 1.35rem 1.9rem; border-radius: 14px; }
+    .rs-two { grid-template-columns: 1fr; gap: 1.4rem; }
+    .rs-grid { grid-template-columns: 1fr; }
+    .rs-moneybox { max-width: none; }
+
+    /* The table stops being a table. Sideways scrolling hid the two columns that
+       matter, and most people open this from Instagram on a phone. */
+    .rs-tablewrap { overflow-x: visible; }
+    .rs-table { min-width: 0; display: block; }
+    .rs-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .rs-table tbody, .rs-table tr, .rs-table tbody th, .rs-table td { display: block; }
+    .rs-table tbody tr {
+      border: 1px solid var(--d-line); border-radius: 12px;
+      padding: 1.05rem 1.1rem 0.75rem; margin-bottom: 0.7rem;
+    }
+    .rs-table tbody th { font-size: 15px; padding: 0 0 0.75rem; }
+    .rs-table tbody td {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 0;
+      padding: 0.42rem 0; text-align: right;
+    }
+    /* Keep the currency symbol stuck to its number, not stranded mid-row. */
+    .rs-table tbody td .rs-cur { margin-left: auto; }
+    .rs-table tbody td::before {
+      content: attr(data-label); text-align: left; white-space: nowrap;
+      font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--d-mute); font-weight: 600;
+    }
+    .rs-tpay {
+      background: none; font-size: 15px;
+      margin-top: 0.45rem; padding-top: 0.75rem !important;
+      border-top: 1px solid var(--d-line);
+    }
+    .rs-leak { flex-direction: column; align-items: stretch; gap: 0.7rem; }
+    .rs-leak-amt { justify-content: flex-end; }
+    .rs-actions .rs-btn { width: 100%; text-align: center; }
+    .rs-unlock-row .rs-btn { width: 100%; text-align: center; }
+  }
+</style>
+
+</Layout>

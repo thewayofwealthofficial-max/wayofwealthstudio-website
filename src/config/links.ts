@@ -15,6 +15,17 @@ export const LINKS = {
   // Lead-magnet funnel pages
   budgetTracker: '/budget-tracker',
   budgetTrackerThanks: '/thanks/budget-tracker',
+  // The Cashflow Shield / 10-Minute Cash Reset. Free. Email gate sits after the
+  // three numbers; the pots, the three months and the leak audit are behind it.
+  reset: '/reset',
+  // The VSL funnel. This is the one backend funnel: VSL page -> Calendly discovery call
+  // -> calendly-webhook -> MailerLite booked state -> prep sequence. Lives on the
+  // diagnostic site (discover.thewayofwealth.shop), NOT this one.
+  vsl: 'https://discover.thewayofwealth.shop/vsl',
+  // Instagram DM deep link for the RESET trigger word.
+  // NOTE: ig.me does NOT support a prefilled ?text= message — Instagram ignores it and
+  // opens an empty thread. That is why /reset copies to the clipboard instead.
+  instagramDm: 'https://ig.me/m/theway.ofwealth',
   // DM Sorcery post-booking confirmation (Calendly redirect target)
   booked: '/booked',
   // Lead-magnet form endpoint (Netlify function — see netlify/functions/lead-magnet-subscribe.js)

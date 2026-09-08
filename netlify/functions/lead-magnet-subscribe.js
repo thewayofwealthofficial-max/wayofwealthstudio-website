@@ -22,6 +22,8 @@ const ML_API = 'https://connect.mailerlite.com/api/subscribers';
 const MAGNET_GROUP_MAP = {
   'budget-tracker': 'MAILERLITE_GROUP_BUDGET_TRACKER',
   'cashflow-model': 'MAILERLITE_GROUP_CASHFLOW_MODEL',
+  // The Cashflow Shield at /reset. Gates the annual leak figure only.
+  'cash-reset': 'MAILERLITE_GROUP_CASH_RESET',
   // Add more as we ship them, e.g. 'mindset-workbook': 'MAILERLITE_GROUP_MINDSET_WORKBOOK'
 };
 
