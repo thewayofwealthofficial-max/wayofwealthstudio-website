@@ -2,8 +2,8 @@
 import Layout from '../layouts/LandingLayout.astro';
 import { LINKS } from '../config/links';
 
-const title = "The Steady Pay Calculator — Free | Way of Wealth";
-const description = "Three numbers. See what's tax, what runs your work, and what you actually get paid every week — no matter how the month went. Free. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
+const title = "The Money Reset Tool — Free | Way of Wealth";
+const description = "Find out where your money is actually going in under 3 minutes. See the exact numbers to cover your taxes, pay your work bills, and know what's yours to keep. Free. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
 ---
 <Layout title={title} description={description} canonical={`${LINKS.siteUrl}/reset`} bodyClass="rs-dark">
 
@@ -15,25 +15,26 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   <header class="rs-hero reveal">
     <p class="rs-badge">⬥ The Cashflow Shield</p>
     <h1 class="rs-h1">
-      The <em>Steady Pay</em> Calculator.
+      The Money <em>Reset</em> Tool.
     </h1>
     <p class="rs-sub">
-      Three numbers. See what's tax, what runs your work, and what you actually get paid
-      every week — no matter how the month went.
+      Find out where your money is actually going in under 3 minutes.
+    </p>
+    <p class="rs-sub rs-context">
+      Stop doing mental math every time you open your banking app. See the exact numbers to
+      cover your taxes, pay your work bills, and know what’s yours to keep.
     </p>
     <p class="rs-conf">🔒 Free. Your figures never leave this page, and we can’t see them. One email opens the rest.</p>
   </header>
 
   <!-- ============================================================
-       2 · YOUR NUMBERS — one card, four figures.
-       Gross, running cost and tax all arrive pre-filled with a sensible default,
-       so the only thing anyone has to actually type is what their life costs —
-       and that number decides their pay, so it can't be guessed for them.
+       2 · YOUR NUMBERS — three quick inputs, all pre-filled with a
+       sensible default. No life-cost figure to type: the pay formula
+       is a flat share of what's left, not a cap against living costs.
   ============================================================ -->
   <div class="rs-card reveal">
     <p class="rs-step">Step one</p>
     <h2 class="rs-h2">Your numbers.</h2>
-    <p class="rs-help">Three defaults you can leave as they are, and one you'll need to type.</p>
 
     <!-- Gross inflow -->
     <div class="rs-currency" role="group" aria-label="Currency">
@@ -46,7 +47,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     </div>
 
     <label class="rs-label" for="rs-rev">Roughly what hits your business account each month?</label>
-    <p class="rs-help rs-help-tight">All client payments, Stripe, studio passes, retainers, and workshop revenue.</p>
+    <p class="rs-help rs-help-tight">All client payments, Stripe, workshop revenue, and class passes before anything goes out.</p>
 
     <p class="rs-bigfig">
       <span class="rs-cur">£</span><span id="rs-rev-out">5,000</span><span class="rs-per">a month</span>
@@ -55,10 +56,10 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     <input id="rs-rev" type="range" min="1000" max="20000" step="250" value="5000" />
     <div class="rs-scale"><span>1,000</span><span>10,000</span><span>20,000</span></div>
 
-    <!-- Running costs -->
+    <!-- Work costs -->
     <div class="rs-block">
-      <label class="rs-label" for="rs-run-chips">Roughly what does your work cost to run?</label>
-      <p class="rs-help rs-help-tight">Room hire, booking tools, insurance, props, and travel.</p>
+      <label class="rs-label" for="rs-run-chips">Roughly what does your work cost to run each month?</label>
+      <p class="rs-help rs-help-tight">Room hire, studio space, booking apps, insurance, props, and travel.</p>
       <div class="rs-chips" id="rs-run-chips">
         <button type="button" class="rs-chip" data-val="250">£250</button>
         <button type="button" class="rs-chip is-on" data-val="500">£500</button>
@@ -75,48 +76,33 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
 
     <!-- Tax reserve -->
     <div class="rs-block">
-      <label class="rs-label" for="rs-tax-chips">How much do you want set aside for tax?</label>
-      <p class="rs-help rs-help-tight">If unsure, 20% is the standard baseline reserve.</p>
+      <label class="rs-label" for="rs-tax-chips">How much do you want to set aside for taxes?</label>
+      <p class="rs-help rs-help-tight">If you're unsure, 20% is the safe baseline for self-employed income.</p>
       <div class="rs-chips" id="rs-tax-chips">
-        <button type="button" class="rs-chip is-on" data-val="20">20% <span class="rs-rec">Recommended</span></button>
+        <button type="button" class="rs-chip is-on" data-val="20">20% <span class="rs-rec">Safe Standard</span></button>
         <button type="button" class="rs-chip" data-val="25">25%</button>
         <button type="button" class="rs-chip" data-val="30">30%</button>
       </div>
     </div>
 
-    <!-- What your life costs -->
-    <div class="rs-block">
-      <label class="rs-label" for="rs-life">What your life costs each month</label>
-      <p class="rs-help rs-help-tight">
-        Rent or mortgage, food, bills, travel, the basics. <b>The number you can’t go below.</b>
-      </p>
-      <div class="rs-moneybox">
-        <span class="rs-cur">£</span>
-        <input id="rs-life" type="number" min="0" step="50" inputmode="decimal" placeholder="–" />
-        <span class="rs-suffix rs-suffix-per">a month</span>
-      </div>
-      <p class="rs-micro">This sets your pay. You take the lower of this and what’s left.</p>
-    </div>
-
-    <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reveal My Steady Pay →</button>
-    <p class="rs-reveal-err" id="rs-reveal-err" aria-live="polite"></p>
+    <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reset My Numbers in 3 Minutes →</button>
   </div>
 
   <!-- ============================================================
-       2b · THE GATE — hidden until "Reveal My Steady Pay" is clicked.
+       2b · THE GATE — hidden until "Reset My Numbers" is clicked.
        Nothing past it renders until an email is given. Remembered per browser.
   ============================================================ -->
   <form class="rs-card rs-unlock reveal" id="rs-unlock" hidden novalidate>
     <p class="rs-unlock-k">Where should we send your breakdown?</p>
     <p class="rs-unlock-n">
-      Enter your first name and best email to instantly unlock your personal pay calculation.
+      Enter your first name and email to unlock your exact numbers and keep a copy for your records.
     </p>
     <div class="rs-unlock-row">
       <label class="rs-sr" for="rs-name">First name</label>
       <input id="rs-name" type="text" autocomplete="given-name" placeholder="First name" />
       <label class="rs-sr" for="rs-email">Your email</label>
       <input id="rs-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
-      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Show My Breakdown</button>
+      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Unlock My Results →</button>
     </div>
     <!-- honeypot: bots fill this, humans never see it -->
     <div class="rs-honeypot" aria-hidden="true">
@@ -128,7 +114,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
 
   <div id="rs-locked" hidden>
   <!-- ============================================================
-       3 · YOUR STEADY PAY  (the one gold-edged moment on the page)
+       3 · WHAT'S YOURS TO KEEP  (the one gold-edged moment on the page)
   ============================================================ -->
   <div class="rs-walls reveal" id="rs-walls">
     <div class="rs-inline">
@@ -137,37 +123,30 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     </div>
 
     <div class="rs-hero-out">
-      <p class="rs-hero-out-k">Your Steady Pay</p>
+      <p class="rs-hero-out-k">What's Yours to Keep</p>
       <p class="rs-hero-out-v"><span class="rs-cur">£</span><span id="rs-w-payweek">0</span><span class="rs-per">/ week</span></p>
       <p class="rs-hero-out-sub">(or <span class="rs-cur">£</span><span id="rs-w-pay">0</span> / month on the 1st)</p>
+      <p class="rs-hero-out-context">A consistent, guilt-free salary that stays the same whether you had a big launch or a quiet month.</p>
     </div>
 
     <div class="rs-grid">
       <div class="rs-pot rs-pot-alert">
         <p class="rs-pot-k">🏛️ Taxes (Untouchable) <span class="rs-pot-pct" id="rs-w-taxpct">0%</span></p>
         <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-tax">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">HMRC/Taxes covered the moment cash lands. Zero surprise bills.</p>
+        <p class="rs-pot-n">Swept the day money lands. HMRC is handled with zero dread.</p>
       </div>
 
       <div class="rs-pot">
-        <p class="rs-pot-k">🏢 Studio & Work Bills</p>
+        <p class="rs-pot-k">🏢 Work & Studio Bills</p>
         <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-run">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">Room hire, software, and overhead ring-fenced.</p>
+        <p class="rs-pot-n">Room hire, booking tools, and business overhead ring-fenced.</p>
       </div>
 
       <div class="rs-pot">
         <p class="rs-pot-k">🛡️ Slow-Month Buffer</p>
         <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-buf">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">Accumulates automatically to protect your weekly pay when you take time off or have a quiet season.</p>
-        <p class="rs-pot-target" id="rs-w-target"></p>
+        <p class="rs-pot-n">Builds up automatically during strong months to protect your paycheck when you take time off.</p>
       </div>
-    </div>
-
-    <!-- Only shows when what is left will not cover the life. The extra needed is
-         bigger than the gap, because tax comes out of the extra too. -->
-    <div class="rs-short" id="rs-short" hidden>
-      <p class="rs-short-k">⚠ What is left does not cover your life.</p>
-      <p class="rs-short-n" id="rs-short-n"></p>
     </div>
   </div>
 
@@ -176,14 +155,14 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   ============================================================ -->
   <div class="rs-card reveal">
     <p class="rs-step">Last bit</p>
-    <h2 class="rs-h2">Want this automated in your actual bank accounts?</h2>
+    <h2 class="rs-h2">Want this set up in your actual bank accounts?</h2>
     <p class="rs-help">
-      Stop doing mental math at 9pm. We can set up the physical sub-accounts and automated
-      transfers in your bank so your salary and taxes run on complete autopilot.
+      Stop guessing what you can spend at 9pm. We can install these exact sub-accounts and
+      automated transfers directly into your accounts so it runs on complete autopilot.
     </p>
     <div class="rs-actions">
       <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer">
-        Book a Free 15-Minute Bank Setup Call →
+        Book a 15-Minute Bank Setup Call →
       </a>
       <button type="button" class="rs-btn rs-btn-ghost" id="rs-copy">Copy my breakdown</button>
     </div>
@@ -207,7 +186,6 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
 
 <script>
   const $ = (id) => document.getElementById(id);
-  const WEEKS_PER_MONTH = 52 / 12; // 4.3333…
 
   // The URL this tool is served from. Appears in the copied breakdown, so it has to match
   // where it actually goes live. The domain is .shop, not .com. One line to change.
@@ -216,22 +194,16 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   const state = {
     cur: '£',
     revenue: 5000,
-    runAmt: 500,     // running costs, a flat amount now — not a share of revenue
-    taxPct: 20,      // defaults to the recommended 20%
-    lifeCosts: null, // null means "they haven't told us yet". 0 is a real answer, so it can't be the empty value.
+    runAmt: 500, // work costs, a flat amount — not a share of revenue
+    taxPct: 20,  // defaults to the safe-standard 20%
     unlocked: false, // set once they have given an email (or did on a previous visit)
   };
 
   // Remember the unlock so a refresh doesn't ask twice. Private browsing and blocked
   // site data both throw here, in which case they simply get asked again.
-  // Versioned on purpose. Bump the suffix whenever the gate moves, so an unlock
-  // earned against an older design cannot silently open a newer one.
   const UNLOCK_KEY = 'wow_reset_unlocked_v4';
   try {
     state.unlocked = localStorage.getItem(UNLOCK_KEY) === '1';
-    localStorage.removeItem('wow_reset_unlocked');    // retired key from the first gate
-    localStorage.removeItem('wow_reset_unlocked_v2'); // retired when the gate moved below step two
-    localStorage.removeItem('wow_reset_unlocked_v3'); // retired with the five-step layout
   } catch (err) {
     state.unlocked = false;
   }
@@ -239,46 +211,23 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   const fmt = (n) => Math.round(n).toLocaleString('en-GB');
 
   /* ---------- the arithmetic ----------
-     The rounded pots are subtracted from the money in, so the numbers on screen
-     always add back up to it. Joel does arithmetic out loud, so it has to
-     reconcile when someone checks it on a calculator. */
+     Pay is a flat 70% of what's left after tax and work costs. The buffer is
+     the other 30%, so pay + buffer always equals what's left — nothing hides
+     between the two, which matters when Joel is doing this out loud on a call. */
   function calc() {
     const rev = state.revenue;
     const taxPct = state.taxPct ?? 0;
 
     const tax = Math.round(rev * (taxPct / 100));
     const run = state.runAmt;
-    const left = Math.max(0, rev - tax - run);
+    const net = Math.max(0, rev - tax - run);
 
-    // Your pay is the LOWER of what is left and what your life costs. Never more
-    // than the business can carry, never more than the life needs. Everything above
-    // it is buffer, not a pay rise.
-    const life = state.lifeCosts ?? 0;
-    const payMonth = Math.min(left, life);
-    const runway = Math.max(0, left - payMonth);
-    const payWeek = Math.round(payMonth / WEEKS_PER_MONTH);
+    const payMonthRaw = net * 0.70;
+    const payMonth = Math.round(payMonthRaw);
+    const payWeek = Math.round((payMonthRaw * 12) / 52);
+    const buffer = Math.round(net - payMonthRaw);
 
-    // keepRate is the share of every extra pound that survives tax. Running costs
-    // are a flat monthly figure now, not a share of revenue, so they don't eat
-    // into a marginal pound the way tax does.
-    const keepRate = 1 - (taxPct / 100);
-
-    // Short: what is left will not cover the life. The extra needed to close it is
-    // BIGGER than the gap, because tax comes out of the extra too.
-    const gap = Math.max(0, life - left);
-    const short = gap > 0;
-    const extraNeeded = short && keepRate > 0 ? Math.ceil(gap / keepRate) : 0;
-
-    // The buffer pot target: three months of EVERYTHING it costs to keep going —
-    // the running costs plus what their life costs. Tax is deliberately left out:
-    // if the money stops coming in, so does the tax on it.
-    const runwayTarget = (run + life) * 3;
-    const monthsToTarget = runway > 0 && runwayTarget > 0 ? Math.ceil(runwayTarget / runway) : 0;
-
-    return {
-      rev, tax, run, left, life, payMonth, runway, payWeek,
-      keepRate, gap, short, extraNeeded, runwayTarget, monthsToTarget,
-    };
+    return { rev, tax, run, net, payMonth, payWeek, buffer };
   }
 
   /* ---------- painting ---------- */
@@ -298,39 +247,11 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     $('rs-w-run').textContent = fmt(c.run);
     $('rs-w-pay').textContent = fmt(c.payMonth);
     $('rs-w-payweek').textContent = fmt(c.payWeek);
-    $('rs-w-buf').textContent = fmt(c.runway);
-
-    // The buffer target, and how long it takes to get there at this rate.
-    const target = $('rs-w-target');
-    if (c.runwayTarget <= 0) {
-      target.textContent = '';
-    } else if (c.runway <= 0) {
-      target.textContent = 'Target: ' + state.cur + fmt(c.runwayTarget)
-        + ' sat in the pot. Nothing is going in yet, so this one does not fill.';
-    } else {
-      target.textContent = 'Target: ' + state.cur + fmt(c.runwayTarget)
-        + ' sat in the pot. That is three months of everything — what your life costs '
-        + 'plus what the work costs. At ' + state.cur + fmt(c.runway)
-        + ' a month you are there in ' + c.monthsToTarget
-        + (c.monthsToTarget === 1 ? ' month.' : ' months.');
-    }
-
-    // Short: name the gap, then name the bigger number it actually takes to close it.
-    $('rs-short').hidden = !c.short;
-    if (c.short) {
-      $('rs-short-n').textContent = c.extraNeeded > 0
-        ? 'What is left is ' + state.cur + fmt(c.left) + ' and your life costs '
-          + state.cur + fmt(c.life) + '. That is a gap of ' + state.cur + fmt(c.gap)
-          + ' a month. To close it you need to bring in ' + state.cur + fmt(c.extraNeeded)
-          + ' more, not ' + state.cur + fmt(c.gap)
-          + ', because tax comes out of the extra too — your running costs don’t move with a bit more income.'
-        : 'Your tax and running costs use up everything that comes in, so there is nothing '
-          + 'left to pay yourself from. Check those two numbers.';
-    }
+    $('rs-w-buf').textContent = fmt(c.buffer);
   }
 
   /* ---------- the gate ----------
-     The unlock form stays hidden until "Reveal My Steady Pay" is clicked. Once
+     The unlock form stays hidden until "Reset My Numbers" is clicked. Once
      unlocked (this visit or a past one), the results render straight away. */
   function paintGate() {
     $('rs-locked').hidden = !state.unlocked;
@@ -353,7 +274,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     paint();
   });
 
-  /* ---------- running costs ---------- */
+  /* ---------- work costs ---------- */
   const runChips = document.querySelectorAll('#rs-run-chips .rs-chip');
   const runCustomBox = $('rs-run-custom-box');
   const runCustomInput = $('rs-run-custom');
@@ -391,26 +312,8 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     });
   });
 
-  /* ---------- what your life costs ----------
-     Empty stays empty. We never put a figure in front of them. Their pay comes
-     out of this, so it has to be their own number. */
-  $('rs-life').addEventListener('input', () => {
-    const raw = $('rs-life').value.trim();
-    if (raw === '') { state.lifeCosts = null; paint(); return; }
-    const v = Number(raw);
-    state.lifeCosts = isFinite(v) ? Math.max(0, v) : null;
-    paint();
-  });
-
   /* ---------- reveal ---------- */
   $('rs-reveal-btn').addEventListener('click', () => {
-    if (state.lifeCosts === null) {
-      $('rs-reveal-err').textContent = 'Fill in what your life costs each month first — your pay depends on it.';
-      $('rs-life').focus();
-      return;
-    }
-    $('rs-reveal-err').textContent = '';
-
     if (state.unlocked) {
       paint();
       $('rs-locked').hidden = false;
@@ -504,27 +407,17 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     const cur = state.cur;
 
     const lines = [
-      '--- MY STEADY PAY BREAKDOWN ---',
+      '--- MY MONEY RESET BREAKDOWN ---',
       '',
       'Money in:                 ' + cur + fmt(c.rev) + '/mo',
-      'What my life costs:       ' + cur + fmt(c.life) + '/mo',
       '',
       'Taxes (untouchable):      ' + cur + fmt(c.tax) + '/mo (' + (state.taxPct ?? 0) + '% sweep)',
-      'Studio & work bills:      ' + cur + fmt(c.run) + '/mo',
-      'My steady pay:            ' + cur + fmt(c.payMonth) + '/mo (' + cur + fmt(c.payWeek) + '/wk)',
-      'Slow-month buffer:        ' + cur + fmt(c.runway) + '/mo (target ' + cur + fmt(c.runwayTarget)
-        + ', 3 months of everything)',
+      'Work & studio bills:      ' + cur + fmt(c.run) + '/mo',
+      'What’s mine to keep:      ' + cur + fmt(c.payMonth) + '/mo (' + cur + fmt(c.payWeek) + '/wk)',
+      'Slow-month buffer:        ' + cur + fmt(c.buffer) + '/mo',
+      '',
+      'Ran via ' + TOOL_URL,
     ];
-
-    if (c.short) {
-      lines.push(
-        '',
-        'SHORT by ' + cur + fmt(c.gap) + '/mo. Need ' + cur + fmt(c.extraNeeded)
-          + '/mo more coming in to close it.'
-      );
-    }
-
-    lines.push('', 'Ran via ' + TOOL_URL);
 
     const text = lines.join('\n');
 
@@ -545,7 +438,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
 
 <style is:global>
   /* ============================================================
-     THE STEADY PAY CALCULATOR · /reset
+     THE MONEY RESET TOOL · /reset
      Dark, to match the Money Story Diagnostic at discover.thewayofwealth.shop
      (src/styles.css, the .lp block). Same ground, same panels, same gold as the
      single accent, same Fraunces + Inter pairing. One brand, two tools.
@@ -607,6 +500,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
     font-family: var(--font-ui); font-size: clamp(0.98rem, 1.5vw, 1.08rem);
     color: var(--d-mute); margin-top: 1.3rem; max-width: 46ch; line-height: 1.6;
   }
+  .rs-context { margin-top: 0.8rem; }
   .rs-conf { font-family: var(--font-ui); font-size: 12.5px; color: var(--d-mute); margin-top: 1.5rem; }
 
   /* --- cards --- */
@@ -647,7 +541,6 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   .rs-chip:hover { border-color: var(--d-gold); color: var(--d-text); }
   .rs-chip:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 2px; }
   .rs-chip.is-on { background: var(--d-gold); border-color: var(--d-gold); color: var(--d-on-gold); }
-  .rs-chip-sm { padding: 0.4rem 0.8rem; font-size: 12.5px; }
   .rs-currency { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.6rem; }
   .rs-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
   .rs-rec { font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; margin-left: 0.35rem; }
@@ -700,8 +593,6 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   .rs-moneybox input::placeholder { color: #5d6b79; }
   .rs-moneybox input::-webkit-outer-spin-button, .rs-moneybox input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .rs-moneybox input[type=number] { -moz-appearance: textfield; }
-  .rs-moneybox .rs-cur { font-family: var(--font-ui); font-size: 1.3rem; font-weight: 600; }
-  .rs-suffix { font-family: var(--font-ui); font-size: 1.05rem; color: var(--d-gold); font-weight: 600; }
   .rs-suffix-per { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 400; color: var(--d-mute); white-space: nowrap; }
   .rs-run-custom-box { margin-top: 0.7rem; }
 
@@ -711,11 +602,8 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
 
   /* --- reveal button --- */
   .rs-reveal-btn { margin-top: 2.2rem; width: 100%; text-align: center; }
-  .rs-reveal-err:not(:empty) {
-    font-family: var(--font-ui); font-size: 12.5px; color: #E2857A; margin-top: 0.7rem;
-  }
 
-  /* --- your steady pay · the one gold-edged moment on the page --- */
+  /* --- what's yours to keep · the one gold-edged moment on the page --- */
   .rs-walls {
     background: var(--d-panel-2);
     border: 1px solid rgba(196, 162, 101, 0.42);
@@ -734,6 +622,7 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   .rs-hero-out-v { font-family: var(--d-display); font-variant-numeric: tabular-nums; font-size: clamp(2.6rem, 8vw, 3.6rem); font-weight: 600; color: #fff; margin-top: 0.6rem; line-height: 1; }
   .rs-hero-out-sub { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 0.92rem; color: var(--d-mute); margin-top: 0.7rem; }
   .rs-hero-out-sub .rs-cur { color: var(--d-mute); }
+  .rs-hero-out-context { font-family: var(--font-ui); font-size: 0.85rem; color: var(--d-mute); margin: 0.9rem auto 0; max-width: 40ch; line-height: 1.6; }
 
   .rs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
   .rs-pot { background: var(--d-panel); border: 1px solid var(--d-line); border-radius: 14px; padding: 1.3rem 1.35rem 1.4rem; }
@@ -745,25 +634,9 @@ const description = "Three numbers. See what's tax, what runs your work, and wha
   .rs-pot-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.75rem; font-weight: 600; color: #fff; margin-top: 0.5rem; line-height: 1.1; }
   .rs-pot-per { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 400; color: var(--d-mute); margin-left: 0.45rem; }
   .rs-pot-n { font-family: var(--font-ui); font-size: 0.83rem; line-height: 1.6; color: var(--d-mute); margin-top: 0.6rem; }
-  .rs-pot-target {
-    font-family: var(--font-ui); font-size: 0.78rem; line-height: 1.55;
-    color: #E8D5B0; margin-top: 0.75rem; padding-top: 0.7rem;
-    border-top: 1px solid rgba(196, 162, 101, 0.24);
-  }
-  .rs-pot-target:empty { display: none; }
-
-  /* --- short: what is left will not cover the life ---
-     Gold, not red. They are already worried; shame is not a lever. */
-  .rs-short {
-    margin-top: 1.4rem; padding: 1.3rem 1.4rem;
-    background: rgba(196, 162, 101, 0.1);
-    border: 1px solid rgba(196, 162, 101, 0.45); border-radius: 14px;
-  }
-  .rs-short-k { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--d-gold); }
-  .rs-short-n { font-family: var(--font-ui); font-size: 0.88rem; line-height: 1.65; color: var(--d-text); margin-top: 0.45rem; max-width: 58ch; }
 
   /* --- the unlock gate ---
-     Hidden until "Reveal My Steady Pay" is clicked, then it gets the strongest
+     Hidden until "Reset My Numbers" is clicked, then it gets the strongest
      treatment on the page — nothing past it renders until an email is given. */
   .rs-unlock {
     display: block;
