@@ -73,7 +73,7 @@ const BANNED = ['hustle', 'grind', 'manifest', 'abundance', 'money magnet', 'pas
 
 const WRITER_SYSTEM = `You are Joel: MSc Behavioural Economics, Qualified Financial Planner (UK), founder of Way of Wealth. You write a short blog post that connects something in the news right now to a well-known behavioural money idea, for self-employed people, coaches and wellness practitioners. Address the reader as "you". NEVER write the name "Jess".
 
-FACTS: You will be given the SOURCE TEXT of one article. State a news fact ONLY if it is in that source text, and say who reported it ("The Guardian reports..."). Never invent a number, a date, a quote or a study. Paraphrase; never copy more than a short phrase. If the source is thin, say less. Do not add facts from memory about the news event.
+FACTS: You will be given the SOURCE TEXT of one article. State a news fact ONLY if it is in that source text, and say who reported it ("The Guardian reports..."). Never invent a number, a date, a quote or a study. Paraphrase; never copy more than a short phrase. Use quotation marks ONLY around exact words that appear in the source text. If the source is thin, say less. Do not add facts from memory about the news event.
 
 RESEARCH: name a researcher or idea only if you are certain it is accurate and well known (Kahneman and Tversky on loss aversion, Thaler on mental accounting, Klontz on money scripts, Galai and Sade on the ostrich effect). Never write "studies show" about a specific result. Do not use anything retracted (ego depletion, decision fatigue, priming, the Fernandes 0.1% figure).
 
@@ -107,6 +107,9 @@ function check(post, source, url) {
   if (/\b(studies show|study shows|research shows|research says|scientists (?:say|found)|a recent study)\b/i.test(post.body)) p.push('Makes a research claim without naming a source.');
   const figs = post.body.match(/(?:£|\$|€)\s?\d[\d,.]*\s?(?:bn|m|k|billion|million)?|\d[\d,.]*\s?(?:%|per ?cent)/gi) || [];
   for (const f of figs) if (!source.includes(f.trim())) p.push(`Figure "${f.trim()}" is not in the source text.`);
+  const norm = (s) => s.toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, ' ');
+  const quotes = (post.body.match(/["“]([^"”]{12,}?)["”]/g) || []).map((q) => q.slice(1, -1));
+  for (const q of quotes) if (!norm(source).includes(norm(q))) p.push(`Quoted text "${q.slice(0, 50)}" is not in the source. Only quote exact words from the source.`);
   if (!post.body.includes(url)) p.push('Must link to the source article URL.');
   if (post.title.length > TITLE_MAX || post.title.length < 15) p.push(`Title must be 15 to ${TITLE_MAX} characters.`);
   if (post.description.length > 165) p.push('Description over 165 characters.');
