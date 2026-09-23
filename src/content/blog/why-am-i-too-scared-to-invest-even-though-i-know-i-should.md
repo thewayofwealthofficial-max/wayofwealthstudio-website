@@ -2,7 +2,7 @@
 title: "Why am I too scared to invest even though I know I should?"
 description: "You know investing makes sense. So why does opening that app feel impossible? The answer is in your brain, not your willpower."
 pubDate: 2026-05-31
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "investing", "anxiety", "loss aversion", "money psychology"]
 redditQuestion: "Why am I too scared to invest even though I know I should?"
 readingTime: "5 min read"

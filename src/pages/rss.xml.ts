@@ -9,7 +9,7 @@ export async function GET(context: APIContext) {
 
   return rss({
     title: 'Way of Wealth — Blog',
-    description: 'Honest, research-based notes on the behavioral side of money. By Joel — MSc Behavioral Economics, Qualified Financial Planner.',
+    description: 'Honest, research-based notes on the behavioural side of money. By Joel — MSc Behavioural Economics, Qualified Financial Planner.',
     site: context.site ?? LINKS.siteUrl,
     items: posts.map((post) => ({
       title: post.data.title,

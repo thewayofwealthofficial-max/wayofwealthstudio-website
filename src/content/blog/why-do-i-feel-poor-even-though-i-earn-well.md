@@ -2,7 +2,7 @@
 title: "Why do I feel poor even though I earn well?"
 description: "You earn more than ever but still feel broke. It's not a money problem — it's a brain problem. Here's the science behind why."
 pubDate: 2026-04-25
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioral basics", "lifestyle creep", "hedonic treadmill", "money mindset", "budgeting"]
 redditQuestion: "Why do I feel poor even though I earn well?"
 readingTime: "6 min read"

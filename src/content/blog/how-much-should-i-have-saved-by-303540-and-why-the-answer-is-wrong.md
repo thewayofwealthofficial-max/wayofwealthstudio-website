@@ -2,7 +2,7 @@
 title: "How much should I have saved by 30/35/40? (and why the answer is wrong)"
 description: "The savings benchmarks everyone quotes are making you feel behind — here's why those numbers are wrong, and what actually matters instead."
 pubDate: 2026-04-24
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioral basics", "savings", "money anxiety", "financial planning", "anchoring"]
 redditQuestion: "How much should I have saved by 30/35/40? (and why the answer is wrong)"
 readingTime: "6 min read"

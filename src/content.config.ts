@@ -15,7 +15,7 @@ const blog = defineCollection({
       'ADHD & money',
       'Self-employed',
       'Budgeting that sticks',
-      'Behavioral basics',
+      'Behavioural basics',
     ]),
     redditSource: z.string().url().optional(),
     redditQuestion: z.string().optional(),

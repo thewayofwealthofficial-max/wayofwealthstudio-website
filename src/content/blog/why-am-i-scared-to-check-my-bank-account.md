@@ -16,7 +16,7 @@ It's called the **ostrich effect**, and it explains more about why smart, capabl
 
 ## What the ostrich effect actually is
 
-Behavioral economists Dan Galai and Orly Sade coined the term in 2006, after they noticed something strange about investors. When the markets were down, people checked their portfolios *less* often, not more. The information was the same — the price was the price. But the act of looking *felt* worse when the news was likely to be bad. So they didn't look.
+Behavioural economists Dan Galai and Orly Sade coined the term in 2006, after they noticed something strange about investors. When the markets were down, people checked their portfolios *less* often, not more. The information was the same — the price was the price. But the act of looking *felt* worse when the news was likely to be bad. So they didn't look.
 
 You'd think it would work the other way round. If something might be wrong, you'd want to know about it. That's the rational response. But the brain doesn't operate on rational lines — it operates on emotional ones. And emotionally, **not knowing feels safer than knowing-and-having-to-do-something.**
 

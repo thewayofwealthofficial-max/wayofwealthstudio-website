@@ -2,7 +2,7 @@
 title: "Am I doing money \"right\"? Why am I so terrified I'm getting it wrong?"
 description: "That dread you feel around money decisions? It has a name — and it's not a character flaw. Here's what's actually going on in your brain."
 pubDate: 2026-05-20
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "money anxiety", "ambiguity aversion", "financial confidence", "anxious avoider"]
 redditQuestion: "Am I doing money \"right\"? Why am I so terrified I'm getting it wrong?"
 readingTime: "6 min read"
