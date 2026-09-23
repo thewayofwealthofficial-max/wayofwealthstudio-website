@@ -1,35 +1,32 @@
-// Lead-magnet form handler. Adds subscriber to a MailerLite group.
+// Signup + lead-magnet form handler.
 //
-// Env vars required (Netlify → Site settings → Environment variables):
-//   MAILERLITE_API_TOKEN              — from MailerLite → Integrations → API
-//   MAILERLITE_GROUP_BUDGET_TRACKER   — group ID for the Budget Tracker magnet
-//   (Add MAILERLITE_GROUP_<MAGNET_NAME> for each future magnet.)
-//   SLACK_WEBHOOK_URL                 — same incoming webhook the diagnostic uses.
-//                                       Optional: if unset, Slack pings skip quietly.
+// Every signup is saved to RESEND (the main email list, audience "General").
+// While MailerLite is still in use for old sequences, it is ALSO saved there (a second copy).
+// If either one succeeds the visitor sees success; Joel is pinged on Slack if both fail.
 //
-// Flow:
-//   1. Validate payload (email + magnet key + honeypot)
-//   2. Resolve MailerLite group ID from MAGNET_GROUP_MAP
-//   3. POST to https://connect.mailerlite.com/api/subscribers
-//      with the email, optional name, group ID, and source field
-//   4. Return { ok: true } so the frontend redirects to /thanks/<magnet>
+// Env vars (Netlify site settings):
+//   RESEND_API_KEY                    Resend key, used for the email list only
+//   RESEND_AUDIENCE_ID                optional, defaults to the "General" audience
+//   MAILERLITE_API_TOKEN              optional second copy while MailerLite still runs sequences
+//   MAILERLITE_GROUP_<MAGNET>         optional group id per magnet (see MAGNET_GROUP_MAP)
+//   SLACK_WEBHOOK_URL                 optional, Slack pings skip quietly if unset
+//
+// Rules: nobody who has unsubscribed is ever re-subscribed by a form.
 
 const { notifyLeadCaptured, notifyCaptureFailed } = require('./lib/slack');
 
 const ML_API = 'https://connect.mailerlite.com/api/subscribers';
+const RESEND_API = 'https://api.resend.com';
+const DEFAULT_AUDIENCE = 'ed40086b-fccc-4755-8744-72085ceac3e7'; // "General"
 
-// Map magnet keys → env var that holds the MailerLite group ID for that magnet.
 const MAGNET_GROUP_MAP = {
+  'finance-fridays': 'MAILERLITE_GROUP_FINANCE_FRIDAYS',
   'budget-tracker': 'MAILERLITE_GROUP_BUDGET_TRACKER',
   'cashflow-model': 'MAILERLITE_GROUP_CASHFLOW_MODEL',
   // The Cashflow Shield at /reset. Gates the annual leak figure only.
   'cash-reset': 'MAILERLITE_GROUP_CASH_RESET',
-  // Add more as we ship them, e.g. 'mindset-workbook': 'MAILERLITE_GROUP_MINDSET_WORKBOOK'
 };
 
-// Disposable / temp / obvious-junk domains. Mirrors the client-side list.
-// MailerLite catches the rest server-side via bounce checks — this just
-// stops the worst offenders before we make the API call.
 const BAD_DOMAINS = new Set([
   'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'guerrillamail.biz',
   '10minutemail.com', '10minutemail.net', 'tempmail.com', 'temp-mail.org',
@@ -51,6 +48,52 @@ function validateEmail(s) {
   return { ok: true, email };
 }
 
+async function addToResend({ email, name }) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return { ok: false, skipped: true, detail: 'RESEND_API_KEY not set' };
+  const audience = process.env.RESEND_AUDIENCE_ID || DEFAULT_AUDIENCE;
+  const headers = { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
+  try {
+    // Never re-subscribe someone who opted out.
+    const found = await fetch(`${RESEND_API}/audiences/${audience}/contacts/${encodeURIComponent(email)}`, { headers });
+    if (found.ok) {
+      const c = await found.json().catch(() => ({}));
+      if (c && c.unsubscribed) return { ok: true, note: 'previously unsubscribed, left as is' };
+      return { ok: true, note: 'already on the list' };
+    }
+    const res = await fetch(`${RESEND_API}/audiences/${audience}/contacts`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false }),
+    });
+    if (res.ok) return { ok: true };
+    const text = await res.text().catch(() => '');
+    return { ok: false, detail: `Resend ${res.status} ${text.slice(0, 160)}` };
+  } catch (e) {
+    return { ok: false, detail: 'Resend request failed: ' + e.message };
+  }
+}
+
+async function addToMailerLite({ email, name, magnetKey }) {
+  const token = process.env.MAILERLITE_API_TOKEN;
+  const groupId = process.env[MAGNET_GROUP_MAP[magnetKey]];
+  if (!token || !groupId) return { ok: false, skipped: true, detail: 'MailerLite not configured for this magnet' };
+  const body = { email, groups: [groupId], fields: { source: `lead-magnet:${magnetKey}` } };
+  if (name) body.fields.name = String(name).trim().slice(0, 80);
+  try {
+    const res = await fetch(ML_API, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (res.status === 200 || res.status === 201) return { ok: true };
+    const text = await res.text().catch(() => '');
+    return { ok: false, detail: `MailerLite ${res.status} ${text.slice(0, 160)}` };
+  } catch (e) {
+    return { ok: false, detail: 'MailerLite request failed: ' + e.message };
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
@@ -65,90 +108,33 @@ exports.handler = async (event) => {
 
   const { email, name, magnet, honeypot } = payload;
 
-  // Honeypot — if filled, silently drop (return 200 so bot thinks it worked)
-  if (honeypot) {
+  // Honeypot: if filled, silently drop (return 200 so the bot thinks it worked)
+  if (honeypot) return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+
+  const v = validateEmail(email);
+  if (!v.ok) return { statusCode: 400, body: JSON.stringify({ error: v.error }) };
+
+  const magnetKey = (magnet || '').toString();
+  if (!MAGNET_GROUP_MAP[magnetKey]) return { statusCode: 400, body: JSON.stringify({ error: 'Unknown magnet.' }) };
+
+  const cleanName = name && typeof name === 'string' ? name.trim().slice(0, 80) : '';
+  const [resend, mailerlite] = await Promise.all([
+    addToResend({ email: v.email, name: cleanName }),
+    addToMailerLite({ email: v.email, name: cleanName, magnetKey }),
+  ]);
+
+  if (resend.ok || mailerlite.ok) {
+    if (!resend.ok && !resend.skipped) {
+      await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Saved to MailerLite but NOT to Resend', detail: resend.detail });
+    }
+    await notifyLeadCaptured({ email: v.email, name: cleanName, magnet: magnetKey });
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 
-  const v = validateEmail(email);
-  if (!v.ok) {
-    return { statusCode: 400, body: JSON.stringify({ error: v.error }) };
-  }
-
-  const magnetKey = (magnet || '').toString();
-  const envVarName = MAGNET_GROUP_MAP[magnetKey];
-  if (!envVarName) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Unknown magnet.' }) };
-  }
-
-  const apiToken = process.env.MAILERLITE_API_TOKEN;
-  const groupId = process.env[envVarName];
-
-  if (!apiToken || !groupId) {
-    await notifyCaptureFailed({
-      email: v.email,
-      magnet: magnetKey,
-      reason: 'Email setup missing',
-      detail: !apiToken ? 'MAILERLITE_API_TOKEN not set' : `${envVarName} not set`,
-    });
-    return {
-      statusCode: 503,
-      body: JSON.stringify({
-        error: "I'm finalising the email setup. Please email joel@thewayofwealth.shop and I'll send the tracker directly.",
-      }),
-    };
-  }
-
-  const subBody = {
-    email: v.email,
-    groups: [groupId],
-    fields: {
-      source: `lead-magnet:${magnetKey}`,
-    },
+  console.error('[lead-magnet-subscribe] both saves failed', resend.detail, mailerlite.detail);
+  await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Could not save the signup anywhere', detail: `${resend.detail} | ${mailerlite.detail}` });
+  return {
+    statusCode: 503,
+    body: JSON.stringify({ error: "Something went wrong on my side. Please email joel@thewayofwealth.shop and I'll add you by hand." }),
   };
-  if (name && typeof name === 'string') {
-    subBody.fields.name = name.trim().slice(0, 80);
-  }
-
-  try {
-    const res = await fetch(ML_API, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiToken}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(subBody),
-    });
-
-    // MailerLite returns 200/201 for new + existing subscribers (idempotent add to group)
-    if (res.status === 200 || res.status === 201) {
-      await notifyLeadCaptured({ email: v.email, name: subBody.fields.name, magnet: magnetKey });
-      return { statusCode: 200, body: JSON.stringify({ ok: true }) };
-    }
-
-    // 422 = validation issue, e.g. bouncing email. Treat as user error.
-    if (res.status === 422) {
-      const body = await res.json().catch(() => ({}));
-      const msg = body?.message || 'That email looks invalid. Try another?';
-      await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'MailerLite rejected the email (422)', detail: msg });
-      return { statusCode: 400, body: JSON.stringify({ error: msg }) };
-    }
-
-    // Anything else — log + return generic error
-    const text = await res.text().catch(() => '');
-    console.error('[lead-magnet-subscribe] MailerLite error', res.status, text);
-    await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: `MailerLite error ${res.status}`, detail: text });
-    return {
-      statusCode: 502,
-      body: JSON.stringify({ error: 'Email service failed. Email joel@thewayofwealth.shop and I will send the tracker directly.' }),
-    };
-  } catch (err) {
-    console.error('[lead-magnet-subscribe] fetch failed', err);
-    await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Network error talking to MailerLite', detail: err.message });
-    return {
-      statusCode: 502,
-      body: JSON.stringify({ error: 'Network error talking to email service. Try again or email joel@thewayofwealth.shop.' }),
-    };
-  }
 };

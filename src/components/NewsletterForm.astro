@@ -1,0 +1,62 @@
+---
+import { LINKS } from '../config/links';
+---
+<form class="nl-form" data-endpoint={LINKS.leadMagnetApi} novalidate>
+  <div class="nl-row">
+    <label class="nl-sr" for="nl-email">Your email</label>
+    <input id="nl-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+    <button type="submit" class="btn-primary btn-primary-lg nl-btn">Join Finance Fridays</button>
+  </div>
+  <div class="nl-hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+  <p class="nl-msg" role="status" aria-live="polite"></p>
+</form>
+
+<script is:inline>
+  document.querySelectorAll('.nl-form').forEach(function (form) {
+    if (form.dataset.bound) return;
+    form.dataset.bound = '1';
+    var msg = form.querySelector('.nl-msg');
+    var btn = form.querySelector('.nl-btn');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var email = form.querySelector('input[name="email"]').value.trim();
+      var hp = form.querySelector('input[name="website"]').value;
+      if (!email) { msg.textContent = 'Please add your email.'; msg.className = 'nl-msg nl-err'; return; }
+      btn.disabled = true; msg.className = 'nl-msg'; msg.textContent = 'Adding you...';
+      try {
+        var res = await fetch(form.dataset.endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, magnet: 'finance-fridays', honeypot: hp })
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (res.ok) {
+          form.querySelector('.nl-row').style.display = 'none';
+          msg.className = 'nl-msg nl-ok';
+          msg.textContent = "You're on the list. The next Finance Fridays email will land in your inbox.";
+        } else {
+          msg.className = 'nl-msg nl-err';
+          msg.textContent = data.error || 'Something went wrong. Please try again, or email joel@thewayofwealth.shop.';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        msg.className = 'nl-msg nl-err';
+        msg.textContent = 'Could not connect. Please try again in a moment.';
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .nl-form { max-width: 520px; margin: 0 auto; }
+  .nl-row { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+  .nl-row input[type="email"] { flex: 1 1 250px; min-width: 0; padding: 1rem 1.1rem; font-family: var(--font-ui); font-size: 1rem; border: 1px solid rgba(196, 162, 101, 0.6); border-radius: 6px; background: rgba(245, 240, 232, 0.96); color: var(--color-charcoal); }
+  .nl-row input[type="email"]:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196, 162, 101, 0.25); }
+  .nl-btn:disabled { opacity: 0.6; cursor: default; }
+  .nl-hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+  .nl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .nl-msg { min-height: 1.4rem; margin: 1rem 0 0; font-family: var(--font-ui); font-size: 0.95rem; color: rgba(245, 240, 232, 0.85); text-align: center; }
+  .nl-ok { color: var(--color-gold-subtle); font-size: 1.05rem; }
+  .nl-err { color: #F0A9A4; }
+</style>

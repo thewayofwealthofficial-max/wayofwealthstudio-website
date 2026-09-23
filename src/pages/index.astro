@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 import { getCollection } from 'astro:content';
+import NewsletterForm from '../components/NewsletterForm.astro';
 
 const title = "Way of Wealth | Behavioural money coaching for people who've tried everything else";
 const description = "Behavioural money coaching for self-employed people who earn well and still feel like they keep none of it. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
@@ -54,7 +55,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       <p class="hm-card-sub">Stop the tax panic and the 2am balance checks. Build a money system that runs even when you're tired.</p>
       <div class="hm-actions">
         <a href={LINKS.coaching} class="btn-primary">See The Money Story Method</a>
-        <a href={LINKS.newsletter} target="_blank" rel="noopener" class="hm-ghost">Join Finance Fridays</a>
+        <a href="#start" class="hm-ghost">Join Finance Fridays</a>
       </div>
       <p class="hm-creds-line">MSc Behavioural Economics &nbsp;|&nbsp; Qualified Financial Planner</p>
     </div>
@@ -104,7 +105,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       <div class="hm-help-top"><span>Free · weekly</span></div>
       <h3>Finance Fridays</h3>
       <p><b>READ</b> honest, research-based notes on money and behaviour. One email a week, one-click unsubscribe any time.</p>
-      <a href={LINKS.newsletter} target="_blank" rel="noopener" class="hm-card-btn">Join for free</a>
+      <a href="#start" class="hm-card-btn">Join for free</a>
     </article>
   </div>
 </section>
@@ -199,7 +200,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   <div class="cta-inner reveal">
     <h2>Not ready for coaching yet?<br />Start where it's <em>quiet.</em></h2>
     <p>Finance Fridays is one email a week on money and how we behave with it. Honest, and based on the research. There's no upsell in every issue.</p>
-    <a href={LINKS.newsletter} target="_blank" rel="noopener" class="btn-primary btn-primary-lg">Join Finance Fridays</a>
+    <NewsletterForm />
     <div class="cta-reassure">One email a week. Unsubscribe any time. No webinar, no catch.</div>
   </div>
 </section>
