@@ -3,8 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 import { getCollection } from 'astro:content';
 
-const title = "Way of Wealth — Behavioural money coaching for people who've tried everything else";
-const description = "Behavioural economics-led coaching, workbooks, and a free quiz for people who've tried budgets, apps, and spreadsheets — and still feel stuck. MSc Behavioural Economics | Qualified Financial Planner.";
+const title = "Way of Wealth | Behavioural money coaching for people who've tried everything else";
+const description = "Behavioural money coaching for self-employed people who earn well and still feel like they keep none of it. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
 const canonical = LINKS.siteUrl;
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -32,7 +32,7 @@ const QUOTES = [
 ];
 
 const VIDEOS = [
-  { slug: "josh-pedestal", cap: "You've taken money off the pedestal — now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
+  { slug: "josh-pedestal", cap: "You've taken money off the pedestal. Now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
   { slug: "alon-opportunity", cap: "From avoiding money as \"just status\" to seeing it as a tool for freedom.", who: "Alon, personal trainer" },
   { slug: "shambhavi-worth", cap: "Calmer about money, and clear on her worth.", who: "Shambhavi, finishing her master's" },
   { slug: "lynton-autopilot", cap: "Spotted the autopilot spending quietly draining him, and built a system to stop it.", who: "Lynton, personal trainer" },
@@ -67,7 +67,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
     <div class="reveal">
       <h2 class="hm-script-h">Hi, I'm Joel.</h2>
       <p>I'm a behavioural money coach and a Qualified Financial Planner. I work with self-employed people, coaches and practitioners who earn well and still feel broke.</p>
-      <p>I'll show you how to stop the tax panic, the 2am balance checks and the feast-and-famine months, and how to build a system that keeps your money in order without willpower.</p>
+      <p>I'll show you how to stop the tax panic, the 2am balance checks and the feast-and-famine months. And we build a system that looks after your money, so you don't need willpower.</p>
       <p class="hm-accent">My 12-week programme, The Money Story Method, is how we do it, one to one.</p>
       <p class="hm-lead-in">This is for you if:</p>
       <ul class="hm-tick">
@@ -198,7 +198,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
 <section class="cta-section" id="start">
   <div class="cta-inner reveal">
     <h2>Not ready for coaching yet?<br />Start where it's <em>quiet.</em></h2>
-    <p>Finance Fridays: honest, research-based notes on money and behaviour, straight to your inbox once a week. No upsell in every issue, just the thinking that eventually leads people to book a call.</p>
+    <p>Finance Fridays is one email a week on money and how we behave with it. Honest, and based on the research. There's no upsell in every issue.</p>
     <a href={LINKS.newsletter} target="_blank" rel="noopener" class="btn-primary btn-primary-lg">Join Finance Fridays</a>
     <div class="cta-reassure">One email a week. Unsubscribe any time. No webinar, no catch.</div>
   </div>

@@ -118,6 +118,8 @@ Spelling: British throughout. "Behavioural", "Realise", "Programme", "Recognise"
 The Sultanic test (apply to every paragraph, especially opener + closer):
 Ask: "Could 1,000 other coaches write this exact paragraph?" If YES → rewrite into the truth plane (sensory, specific, lived — something only Joel could write). Generic = trust state = AI slop, even without banned words. Lean on £150k story specifics, gym-bag moment, unopened tax-return tab — concrete sensory detail beats generic emotional summary.
 
+SCOPE GUARDRAIL: You are a planner, not an adviser. Never recommend specific investments, funds, products or tax structures, and never tell the reader what price or rate to charge or what to do with their own tax position. Explain the behaviour, give one small action, and point to a qualified professional for personal tax or investment decisions.
+
 Voice principles:
 - Always lead with: safety before opportunity, empathy before advice, science before opinion.
 - Tone: authentic, supportive, clinical-but-warm, witty. Never preachy. Never lecturing. Never patronising.
@@ -135,8 +137,8 @@ STRUCTURE:
 - Name the behavioral concept by its proper academic name + cite the researcher(s) where it adds credibility (Klontz, Galai, Sade, Thaler, Kahneman etc.)
 - Walk Jess through what's happening in her brain, why it's normal, why standard advice misses
 - Give one specific small action ("lower the cost of looking", not "create a budget")
-- End with a soft pointer toward the Money Beliefs Quiz — never claim "no upsell" (the quiz funnel does upsell, this is a hard rule)
-- Sign off "— *Joel*"
+- End with a soft pointer toward The Money Story Method (the 12-week 1:1 programme) or the free Finance Fridays newsletter. Do not mention the Money Beliefs Quiz, it is retired. Never claim "no upsell" (this is a hard rule)
+- Sign off with just "*Joel*". Never use em dashes anywhere in the post.
 
 FORMATTING (markdown):
 - Use ## for section headers (not h1, the layout adds h1 from frontmatter title)
@@ -147,15 +149,18 @@ FORMATTING (markdown):
 
 OUTPUT FORMAT — respond in exactly this shape, no preamble, no commentary:
 
-{"description": "<one sentence, max 165 characters, must hook Jess's emotion>", "tags": ["3-5","lowercase","tags"]}
+{"description": "<one sentence, max 165 characters, must hook Jess's emotion>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
 <<<BODY>>>
 <markdown body, 1200-1500 words, no frontmatter, no h1 — start with a paragraph that validates the feeling. Write any characters you need: quotes, apostrophes, code fences, dashes. Just end with the <<<END>>> sentinel on its own line.>
 <<<END>>>`;
 
 function buildUserPrompt(row) {
+  const longTitle = row.question.length > TITLE_MAX
+    ? `\nTITLE: This question is too long for a page title. Put a shortened version in the "title" JSON field (max ${TITLE_MAX} characters, keep the same meaning and wording as far as possible, end with a question mark).\n`
+    : '';
   return `Today's blog post.
 
-JESS QUESTION (use as the title): ${row.question}
+JESS QUESTION (use as the title): ${row.question}${longTitle}
 BEHAVIORAL CONCEPT TO FEATURE: ${row.concept}
 CATEGORY: ${row.category}
 PRIMARY ICP SEGMENT: ${row.icp}
@@ -212,23 +217,52 @@ function parseClaudeResponse(text) {
     console.error('Metadata JSON parse failed. Raw JSON part:\n', jsonPart);
     throw err;
   }
-  return { description: meta.description, tags: meta.tags, body };
+  return { description: meta.description, tags: meta.tags, title: meta.title, body };
 }
 
 // ───────────────────────────────────────────────────────────────
 // Markdown assembly
 
-function buildMarkdown({ row, description, tags, body }) {
+// Must match the category enum in src/content.config.ts.
+const CATEGORIES = [
+  'Spending & shame',
+  'Anxiety & avoidance',
+  'ADHD & money',
+  'Self-employed',
+  'Budgeting that sticks',
+  'Behavioural basics',
+];
+const TITLE_MAX = 100; // schema limit on title
+
+function normaliseCategory(raw) {
+  // Older queue rows use the American spelling; the schema wants the British one.
+  const fixed = raw.replace(/^Behavioral basics$/i, 'Behavioural basics');
+  if (!CATEGORIES.includes(fixed)) {
+    throw new Error(`Queue category "${raw}" is not in the schema enum: ${CATEGORIES.join(' | ')}`);
+  }
+  return fixed;
+}
+
+function pickTitle(row, modelTitle) {
+  if (row.question.length <= TITLE_MAX) return row.question;
+  const t = (modelTitle ?? '').trim();
+  if (!t || t.length > TITLE_MAX) {
+    throw new Error(`Question is ${row.question.length} chars (limit ${TITLE_MAX}) and Claude did not return a valid shortened "title".`);
+  }
+  return t;
+}
+
+function buildMarkdown({ row, description, tags, title, body }) {
   const today = new Date().toISOString().slice(0, 10);
   const readingTime = estimateReadingTime(body);
   const tagList = (tags ?? []).map((t) => `"${t}"`).join(', ');
   const desc = description.length > 165 ? description.slice(0, 162).trim() + '...' : description;
 
   return `---
-title: ${escapeYamlString(row.question)}
+title: ${escapeYamlString(pickTitle(row, title))}
 description: ${escapeYamlString(desc)}
 pubDate: ${today}
-category: ${escapeYamlString(row.category)}
+category: ${escapeYamlString(normaliseCategory(row.category))}
 tags: [${tagList}]
 redditQuestion: ${escapeYamlString(row.question)}
 readingTime: ${escapeYamlString(readingTime)}
@@ -259,11 +293,11 @@ async function main() {
 
   console.log('Calling Claude...');
   const responseText = await callClaude(SYSTEM_PROMPT, buildUserPrompt(next));
-  const { description, tags, body } = parseClaudeResponse(responseText);
+  const { description, tags, title, body } = parseClaudeResponse(responseText);
 
   if (!description || !body) throw new Error('Claude response missing description or body.');
 
-  const markdown = buildMarkdown({ row: next, description, tags, body });
+  const markdown = buildMarkdown({ row: next, description, tags, title, body });
 
   await mkdir(BLOG_DIR, { recursive: true });
   await writeFile(targetPath, markdown, 'utf8');

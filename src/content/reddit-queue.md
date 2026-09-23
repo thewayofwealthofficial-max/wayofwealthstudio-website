@@ -2,12 +2,14 @@
 
 This is the keyword-mining queue. Each entry is a Jess question harvested from Reddit (in her language, not ours). When the next person Googles that exact question, our blog post is the answer.
 
-**Source subreddits:** r/UKPersonalFinance, r/MoneyDiariesACTIVE, r/ADHD (money threads), r/povertyfinance, r/personalfinance, r/financialindependence, r/Mortgages
+**Source (rows 1-46):** originally harvested from Reddit (r/UKPersonalFinance, r/MoneyDiariesACTIVE, r/ADHD, r/povertyfinance, r/personalfinance). Reddit is no longer used (API policy change, 5 June 2026).
+
+**Source (rows 47 onward):** open forums, Quora and public advice columns (Alignable, Core77, Reiki Rays "Ask RMT"), hand-mined by Joel. Not Reddit. Question wording is kept verbatim from the source.
 
 **Workflow:**
 1. Top of queue → next blog post
 2. Pick the question → match to behavioral econ concept → 1200-1500 words → publish
-3. Replenish queue weekly via Reddit scan (xpoz MCP `getRedditPostsByKeywords`)
+3. Replenish the queue by hand from open sources (Quora, public forums, advice columns). No automatic scraping. The weekly top-up workflow is manual-run only.
 
 **Status legend:** 🔵 queued · 🟡 drafting · ✅ published · ⏸ parked
 
@@ -63,6 +65,24 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 44 | ✅ | Why do I feel like everyone my age has money figured out except me? | pluralistic ignorance, spotlight effect | Behavioral basics | All segments |
 | 45 | ✅ | Why do I avoid setting money goals because I'm scared I'll fail them again? | learned helplessness, self-handicapping | Budgeting that sticks | Anxious Avoider, ADHD/Neurodivergent |
 | 46 | ✅ | Why do I keep buying courses and planners hoping THIS one finally fixes everything? | hope-buying, action bias as avoidance | Spending & shame | ADHD/Neurodivergent, All segments |
+| 47 | 🔵 | Is it wrong to charge for Reiki since the energy is not mine? | money scripts (Klontz), money avoidance, identity threat | Self-employed | Wellness Practitioner |
+| 48 | 🔵 | Can someone make a living by leading spiritual retreats, such as yoga and meditation? | planning fallacy, income volatility, identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 49 | 🔵 | Would charging for energy healing be a form of good or bad Karma and why do think so? | money scripts (Klontz), moral identity | Self-employed | Wellness Practitioner |
+| 50 | 🔵 | Why do some meditation teachers charge money while others offer it for free? | social norms vs market norms (Heyman & Ariely), money scripts | Self-employed | Wellness Practitioner |
+| 51 | 🔵 | Why do you charge for your energy healing services (healing sessions, instruction, attunement, etc.)? | money scripts (Klontz), cognitive dissonance | Self-employed | Wellness Practitioner |
+| 52 | 🔵 | Are there energy healers who offer their services for free? | social norms vs market norms, identity | Self-employed | Wellness Practitioner |
+| 53 | 🔵 | How can I charge $100 an hour as a yoga instructor? | anchoring, self-worth and price fusion | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 54 | 🔵 | How much should I charge for a Reiki session? | anchoring, reference points | Self-employed | Wellness Practitioner |
+| 55 | 🔵 | How much should I charge for Reiki healing sessions? | social comparison, anchoring | Self-employed | Wellness Practitioner |
+| 56 | 🔵 | What is the cost of a private distance healing session with Reiki Energy Healing? | price as a quality signal, anchoring | Behavioural basics | Wellness Practitioner |
+| 57 | 🔵 | How much do energy healers charge for readings? | price as a quality signal, social comparison | Self-employed | Wellness Practitioner |
+| 58 | 🔵 | How much do yoga instructors make per class? | reference point bias, social comparison | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 59 | 🔵 | Yoga Teachers: How much do you charge as an hourly rate teaching in-house corporate yoga classes to a large multi-national? | anchoring, status effects | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 60 | 🔵 | How much should I charge for a group yoga class? | anchoring, mental accounting | Self-employed | Wellness Practitioner |
+| 61 | 🔵 | How much would you charge for meditation session, or a package of 4? | mental accounting, pain of paying (Prelec & Loewenstein) | Self-employed | Wellness Practitioner |
+| 62 | 🔵 | What are some ways to make money through meditation? | money scripts (Klontz), identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 63 | 🔵 | How much should I charge for workshops? | anchoring, planning fallacy | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 64 | 🔵 | How to handle pricing as a freelance designer / "how do you guys handle your pricing? What kind of hourly rate is reasonable?" | anchoring, social comparison | Self-employed | Self-Employed Stresser |
 
 ---
 
