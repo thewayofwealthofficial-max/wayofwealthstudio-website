@@ -2,7 +2,7 @@
 title: "Why do I feel like everyone my age has money figured out except me?"
 description: "Everyone else looks sorted with money. You're not broken — you're experiencing a cognitive illusion. Here's what's actually going on."
 pubDate: 2026-06-05
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "money mindset", "financial anxiety", "budgeting", "self-awareness"]
 redditQuestion: "Why do I feel like everyone my age has money figured out except me?"
 readingTime: "6 min read"

@@ -2,7 +2,7 @@
 title: "Should I save for my kids' future or my own retirement first?"
 description: "Torn between saving for your kids or your own retirement? Your brain isn't broken — it's doing something very human. Here's what's actually going on."
 pubDate: 2026-05-09
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["retirement planning", "saving for kids", "behavioral economics", "money scripts", "financial priorities"]
 redditQuestion: "Should I save for my kids' future or my own retirement first?"
 readingTime: "5 min read"

@@ -2,7 +2,7 @@
 title: "Is it too late to fix my finances in my 40s?"
 description: "You're not behind. Your brain is just doing something predictable — and once you see it, the grip loosens."
 pubDate: 2026-06-03
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "fresh start effect", "sunk cost", "self-employed", "money mindset"]
 redditQuestion: "Is it too late to fix my finances in my 40s?"
 readingTime: "6 min read"

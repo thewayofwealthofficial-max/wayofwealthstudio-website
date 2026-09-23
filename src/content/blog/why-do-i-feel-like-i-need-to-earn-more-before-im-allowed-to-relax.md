@@ -2,7 +2,7 @@
 title: "Why do I feel like I need to earn more before I'm allowed to relax?"
 description: "That 'I'll relax when I earn more' feeling has a name — and understanding it might be the most useful thing you do today."
 pubDate: 2026-06-02
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "money mindset", "anxiety", "financial planning", "goal setting"]
 redditQuestion: "Why do I feel like I need to earn more before I'm allowed to relax?"
 readingTime: "6 min read"

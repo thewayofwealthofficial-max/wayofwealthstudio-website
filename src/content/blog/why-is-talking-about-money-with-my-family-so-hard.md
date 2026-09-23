@@ -2,7 +2,7 @@
 title: "Why is talking about money with my family so hard?"
 description: "Family money conversations feel impossible — and there's a real psychological reason for that. Here's what's actually happening in your brain."
 pubDate: 2026-04-23
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioral basics", "money mindset", "family finances", "money scripts", "financial psychology"]
 redditQuestion: "Why is talking about money with my family so hard?"
 readingTime: "6 min read"

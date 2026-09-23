@@ -2,7 +2,7 @@
 title: "Why do I trust random advice online more than my own money judgement?"
 description: "You Google strangers' money tips but ignore your own gut. There's a name for that — and it's not stupidity."
 pubDate: 2026-06-04
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["behavioural basics", "money psychology", "financial confidence", "authority bias", "self-efficacy"]
 redditQuestion: "Why do I trust random advice online more than my own money judgement?"
 readingTime: "6 min read"

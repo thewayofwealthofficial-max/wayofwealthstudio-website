@@ -2,7 +2,7 @@
 title: "Why my partner and I spend differently — and how we stop fighting"
 description: "Your partner isn't broken and neither are you. Here's the behavioral science behind why couples fight about money — and what actually helps."
 pubDate: 2026-04-18
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["loss aversion", "money scripts", "klontz", "couples and money", "behavioral basics"]
 redditQuestion: "Why does my partner spend differently to me and how do we not fight about it?"
 readingTime: "6 min read"

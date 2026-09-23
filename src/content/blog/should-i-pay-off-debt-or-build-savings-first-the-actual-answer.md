@@ -2,7 +2,7 @@
 title: "Should I pay off debt or build savings first? (the actual answer)"
 description: "The debt-vs-savings question has a maths answer and a brain answer. Here's why ignoring the second one is exactly why people get stuck."
 pubDate: 2026-04-20
-category: "Behavioral basics"
+category: "Behavioural basics"
 tags: ["debt aversion", "loss framing", "behavioral debt snowball", "debt payoff", "savings"]
 redditQuestion: "Should I pay off debt or build savings first? (the actual answer)"
 readingTime: "6 min read"
@@ -85,7 +85,7 @@ What they usually find is that it's clearer, and more manageable, than the vague
 
 The reason this question is hard isn't that you're bad with money. It's that you're being asked to make a calm, rational optimisation decision while your nervous system is treating the whole subject like a threat.
 
-Behavioral economics doesn't fix that by telling you to try harder. It fixes it by designing around how your brain actually works — building in the wins, the buffers, the frames that make follow-through feel possible rather than punishing.
+Behavioural economics doesn't fix that by telling you to try harder. It fixes it by designing around how your brain actually works — building in the wins, the buffers, the frames that make follow-through feel possible rather than punishing.
 
 If you're curious about *why* this stuff feels so loaded for you specifically — the patterns underneath the avoidance — the Money Beliefs Quiz is a good place to start. It takes about four minutes and it'll show you which cognitive patterns are most likely shaping how you think about all of this.
 
