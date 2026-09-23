@@ -10,9 +10,26 @@ const description = "Find out where your money is actually going in under 3 minu
 <section class="rs-wrap">
 
   <!-- ============================================================
-       1 · HERO
+       0 · TOP BAR — matches the Money Story Diagnostic at
+       discover.thewayofwealth.shop: photo + name + credentials left,
+       wordmark right. Replaces the shared site header on this page.
   ============================================================ -->
-  <header class="rs-hero reveal">
+  <header class="rs-top reveal">
+    <div class="rs-who">
+      <img class="rs-face" src="/img/joel.jpg" alt="" width="46" height="46" />
+      <div>
+        <p class="rs-name">Joel Ezekiel</p>
+        <p class="rs-cred">MSc Behavioural Economics · Qualified Financial Planner</p>
+      </div>
+    </div>
+    <p class="rs-mark">Way of <em>Wealth</em></p>
+  </header>
+
+  <!-- ============================================================
+       1 · HERO — copy left, calculator right (same grid as Discover)
+  ============================================================ -->
+  <div class="rs-hero-grid">
+  <div class="rs-copy reveal">
     <p class="rs-badge">⬥ The Cashflow Shield</p>
     <h1 class="rs-h1">
       The Money <em>Reset</em> Tool.
@@ -25,14 +42,15 @@ const description = "Find out where your money is actually going in under 3 minu
       cover your taxes, pay your work bills, and know what’s yours to keep.
     </p>
     <p class="rs-conf">🔒 Free. Your figures never leave this page, and we can’t see them. One email opens the rest.</p>
-  </header>
+  </div>
 
+  <div class="rs-panel reveal">
   <!-- ============================================================
        2 · YOUR NUMBERS — three quick inputs, all pre-filled with a
        sensible default. No life-cost figure to type: the pay formula
        is a flat share of what's left, not a cap against living costs.
   ============================================================ -->
-  <div class="rs-card reveal">
+  <div class="rs-card">
     <p class="rs-step">Step one</p>
     <h2 class="rs-h2">Your numbers.</h2>
 
@@ -111,6 +129,10 @@ const description = "Find out where your money is actually going in under 3 minu
     <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
     <p class="rs-micro">Free. No spam, and you can unsubscribe any time.</p>
   </form>
+  </div><!-- /.rs-panel -->
+  </div><!-- /.rs-hero-grid -->
+
+  <div class="rs-below">
 
   <div id="rs-locked" hidden>
   <!-- ============================================================
@@ -172,15 +194,24 @@ const description = "Find out where your money is actually going in under 3 minu
   </div><!-- /#rs-locked -->
 
   <!-- ============================================================
-       5 · SCOPE — outside the gate on purpose, it is always visible
+       5 · FOOTER — facts line + scope, matches Discover's rs-foot.
+       The scope paragraph is outside the gate on purpose, it is
+       always visible.
   ============================================================ -->
-  <p class="rs-scope reveal">
-    <b>This is an educational tool, not financial advice.</b> It does the arithmetic on the figures
-    you typed and nothing else. Joel is a planner, not an adviser, so nothing here tells you what to
-    do with your money, how much to hold for tax, or where to put anything. Your accountant gives
-    you your tax number.
-    <span class="rs-scope-cred">Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner</span>
-  </p>
+  <footer class="rs-foot reveal">
+    <p class="rs-facts">
+      <b>3 minutes</b> start to finish <span>·</span> <b>Free</b>, no card <span>·</span> <b>Private</b> and confidential
+    </p>
+    <p class="rs-scope">
+      <b>This is an educational tool, not financial advice.</b> It does the arithmetic on the figures
+      you typed and nothing else. Joel is a planner, not an adviser, so nothing here tells you what to
+      do with your money, how much to hold for tax, or where to put anything. Your accountant gives
+      you your tax number.
+      <span class="rs-scope-cred">Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner</span>
+    </p>
+  </footer>
+
+  </div><!-- /.rs-below -->
 
 </section>
 
@@ -453,10 +484,11 @@ const description = "Find out where your money is actually going in under 3 minu
   body.rs-dark main {
     background: radial-gradient(115% 60% at 78% -6%, #16212e 0%, #0b1119 55%, #070c12 100%);
   }
-  /* Header and footer come from the shared layout in a lighter navy. Pull them
-     into this page's darker tone so it reads as one piece. */
-  body.rs-dark .lp-header { background: #0a1017; }
-  body.rs-dark .lp-footer { background: #070c12; }
+  /* This page has its own top bar and footer (rs-top / rs-foot below), matching
+     the Money Story Diagnostic at discover.thewayofwealth.shop. The shared site
+     header and footer are switched off here so there isn't a duplicate. */
+  body.rs-dark .lp-header,
+  body.rs-dark .lp-footer { display: none; }
 
   .rs-wrap {
     --d-bg: #0b1119;
@@ -470,9 +502,9 @@ const description = "Find out where your money is actually going in under 3 minu
     --d-on-gold: #14202c;
     --d-display: 'Fraunces', Georgia, serif;
 
-    max-width: 820px;
+    max-width: 1180px;
     margin: 0 auto;
-    padding: 4.5rem 1.25rem 5rem;
+    padding: 2rem 1.25rem 5rem;
     color: var(--d-text);
   }
 
@@ -482,8 +514,33 @@ const description = "Find out where your money is actually going in under 3 minu
 
   .rs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-  /* --- hero --- */
-  .rs-hero { margin-bottom: 2.5rem; }
+  /* --- top bar: photo + name + credentials left, wordmark right --- */
+  .rs-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    max-width: 1180px; margin: 0 auto clamp(2.2rem, 6vw, 4rem);
+  }
+  .rs-who { display: flex; align-items: center; gap: 0.75rem; }
+  .rs-face { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 1px solid var(--d-line); }
+  .rs-top .rs-name { font-family: var(--d-display); font-weight: 600; font-size: 1rem; margin: 0; color: var(--d-text); }
+  .rs-top .rs-cred { margin: 1px 0 0; font-family: var(--font-ui); font-size: 0.76rem; color: var(--d-mute); line-height: 1.35; }
+  .rs-mark { font-family: var(--d-display); font-size: 1.05rem; margin: 0; color: var(--d-text); }
+  .rs-mark em { color: var(--d-gold); font-style: italic; }
+
+  /* --- hero: copy left, calculator right --- */
+  .rs-hero-grid {
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(1.75rem, 5vw, 4.5rem); align-items: start;
+    max-width: 1180px; margin: 0 auto;
+  }
+  .rs-copy { padding-top: 0.4rem; }
+  .rs-panel { display: flex; flex-direction: column; gap: 1.1rem; }
+  .rs-panel .rs-card,
+  .rs-panel .rs-unlock { margin-bottom: 0; }
+
+  /* --- everything after the hero stays at the narrower reading width --- */
+  .rs-below { max-width: 820px; margin: 2.75rem auto 0; }
+
   .rs-badge {
     display: inline-block; font-family: var(--font-ui); font-size: 11.5px; font-weight: 600;
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--d-gold);
@@ -678,8 +735,12 @@ const description = "Find out where your money is actually going in under 3 minu
   .rs-btn-ghost { background: transparent; color: var(--d-text); border-color: var(--d-line); }
   .rs-btn-ghost:hover { border-color: var(--d-gold); }
 
-  /* --- scope --- */
-  .rs-scope { font-family: var(--font-ui); font-size: 12px; line-height: 1.75; color: var(--d-mute); margin-top: 2.5rem; max-width: 64ch; }
+  /* --- footer: facts line + scope --- */
+  .rs-foot { margin-top: 2.75rem; border-top: 1px solid var(--d-line); padding-top: 1.4rem; }
+  .rs-facts { font-family: var(--font-ui); font-size: 0.88rem; color: var(--d-mute); margin: 0 0 0.9rem; }
+  .rs-facts b { color: var(--d-text); font-weight: 600; }
+  .rs-facts span { color: #3d4a58; margin: 0 0.4rem; }
+  .rs-scope { font-family: var(--font-ui); font-size: 12px; line-height: 1.75; color: var(--d-mute); margin-top: 0; max-width: 64ch; }
   .rs-scope b { color: var(--d-text); }
   .rs-scope-cred { display: block; font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.9rem; color: var(--d-mute); }
 
@@ -693,8 +754,13 @@ const description = "Find out where your money is actually going in under 3 minu
   }
 
   /* --- responsive --- */
+  @media (max-width: 860px) {
+    .rs-hero-grid { grid-template-columns: 1fr; }
+    .rs-top { margin-bottom: 2rem; }
+  }
   @media (max-width: 700px) {
-    .rs-wrap { padding: 3rem 1rem 4rem; }
+    .rs-wrap { padding: 2rem 1rem 4rem; }
+    .rs-mark { font-size: 0.95rem; }
     .rs-card, .rs-walls { padding: 1.7rem 1.35rem 1.9rem; border-radius: 14px; }
     .rs-grid { grid-template-columns: 1fr; }
     .rs-moneybox { max-width: none; }
