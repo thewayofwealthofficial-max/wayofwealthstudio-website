@@ -2,166 +2,451 @@
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 
-const title = "The Money Story Method — 12-Week Behavioural Coaching Programme | Way of Wealth";
-const description = "A 1:1 coaching programme for self-developed people who earn well but don't build wealth. MSc Behavioural Economics. Qualified Financial Planner. Founding cohort: £997.";
+const title = "The Money Story Method — 12-Week 1:1 Coaching | Way of Wealth";
+const description = "A 12-week 1:1 programme for people who earn well but never feel like they keep it. Behavioural coaching, plus the money system built with you. MSc Behavioural Economics | Qualified Financial Planner.";
 
-const FOUNDING_SPOTS_REMAINING = 5;
-const VSL_YOUTUBE_ID = ''; // Set to 11-char YouTube ID when VSL is recorded.
+const VSL_SRC = 'https://discover.thewayofwealth.shop/vsl/vsl.mp4';
+const VSL_POSTER = 'https://discover.thewayofwealth.shop/vsl/vsl-poster.jpg';
 
-// Cohort initials (privacy: cohort 1 in flight, names anonymised)
-const COHORT_INITIALS = ['A', 'J', 'S', 'R', 'M'];
+const PAIN_CARDS = [
+  { n: '01', t: "One account for everything. A £5,000 invoice lands and you spend money that was never yours." },
+  { n: '02', t: "The tax bill arrives and there isn't enough in the account to pay it." },
+  { n: '03', t: "You check your balance at 2am, or you don't check it at all." },
+  { n: '04', t: "Good months disappear into gear and lifestyle. Quiet months arrive with nothing behind them." },
+  { n: '05', t: "\"What should I actually charge?\" Never really answered. You picked a number and hoped nobody would ask why." },
+  { n: '06', t: "A flicker of guilt every time you charge good money for work that also means something to you." },
+  { n: '07', t: "Eight to fifteen subscriptions quietly running while you're not looking." },
+  { n: '08', t: "You've tried the apps, the budgets and the spreadsheets. None of them stuck." },
+];
 
-// Cohort testimonials — verbatim, anonymised, dated.
-const TESTIMONIALS = [
-  { quote: "Exactly what people do with their fitness, I'm doing with my money.", session: "session 1", role: "Personal trainer · UK", initial: "A" },
-  { quote: "It's almost like looking in a mirror.", session: "session 1", role: "Personal trainer · UK", initial: "A" },
-  { quote: "It's kind of financial psychology — it's a different lens of looking at the finances.", session: "session 2", role: "Consultant · UK", initial: "S" },
-  { quote: "I needed to learn to love myself without having a minimum of 10K in my bank account at a time.", session: "session 1", role: "Healing practitioner · US", initial: "J" },
-  { quote: "It's no longer a fear of, oh, I don't want to check my account. Now you're in full control of that as well.", session: "session 4", role: "Personal trainer · UK", initial: "A" },
-  { quote: "Eight years of solid everyday stress — money was the only thing I thought about. Now I'm thinking about, like, I'm going to open a studio.", session: "session 1", role: "Yacht chef · at sea", initial: "J" },
+const RING_QUOTES = [
+  "I just invoiced £14,000 this month, which sounds amazing on LinkedIn, but after paying my sub-contractors, my SaaS stack, and looking at the corporation tax I owe, I literally feel broke.",
+  "Xero tells me I had an £80k year, but my personal savings account has £4,200 in it. Where on earth did all that cash actually go?",
+  "I feel like a child playing with a business bank account. I just pull random chunks of £2,000 out when my personal credit card needs paying, and cross my fingers for tax season.",
+];
+
+const STATS = [
+  { big: "19%", text: "would rather pay a £100 fine than face filing their tax return on time.", src: "Taxfix, Jan 2026" },
+  { big: "1.5 million", text: "self-employed people have less than three months of savings.", src: "IPSE" },
+  { big: "50.7%", text: "of 1,060 self-employed professionals considered going back into employment in the last year.", src: "The Accountancy Partnership" },
+];
+
+const CLIENT_QUOTES = [
+  "It's almost like looking in a mirror.",
+  "I feel seen and called out at the same time.",
+  "I don't want to pay rent with my mental health.",
+  "Eight months ago I was crippled. I was stuck. I didn't know how to get out of my debt.",
+  "You've taken money off the pedestal. Now it's just a tool. I'm in control of it, not it in control of me.",
+  "Permission. That one word defines my whole life.",
+];
+
+const INCLUDES = [
+  { t: "12 weekly 1:1 sessions", d: "Every week, just you and me. We work on your real accounts, on the call, not in theory." },
+  { t: "The system built with you", d: "Four accounts set up and automated: tax, running costs, your pay and your runway." },
+  { t: "A 90-day statement audit", d: "We go through three months of your statements line by line and find where the money actually goes." },
+  { t: "Weekly worksheets", d: "Short, personal exercises in your own portal that take apart the beliefs underneath the habits." },
+  { t: "Support between sessions", d: "I'm at the end of a message. The moments behaviour wobbles are usually where the real work happens." },
+  { t: "You keep everything", d: "Recordings, worksheets and your plan. Lifetime portal access. The work doesn't stop when the twelve weeks do." },
+];
+
+const PHASES = [
+  {
+    tab: "Weeks 1–3", name: "See where it goes",
+    body: [
+      "We open your banking app on the call and look at it together.",
+      "You open a \"Tax Pot, Not Mine\" account, so tax money stops looking like spending money.",
+      "We go through 90 days of statements, line by line, and set your real living wage.",
+    ],
+    quote: "It's almost like looking in a mirror.",
+  },
+  {
+    tab: "Weeks 4–6", name: "Build the system",
+    body: [
+      "We set up the four accounts: tax, running costs, your pay and your runway.",
+      "We work on the resistance to having boundaries with money.",
+      "We take apart the beliefs underneath the habits, in your own words.",
+    ],
+    quote: "I feel seen and called out at the same time.",
+  },
+  {
+    tab: "Weeks 7–9", name: "Make it automatic",
+    body: [
+      "We automate the transfers, so the system runs without you having to remember it.",
+      "We run the Week 8 audit and check it is holding.",
+      "We take the friction out of the moments you usually slip.",
+    ],
+    quote: "You've taken money off the pedestal. Now it's just a tool. I'm in control of it, not it in control of me.",
+  },
+  {
+    tab: "Weeks 10–12", name: "Aim it",
+    body: [
+      "We set goals against what you actually value, not what you think you should want.",
+      "We build your long-range cash flow.",
+      "Graduation. You leave with the plan, the system and the recordings.",
+    ],
+    quote: "Permission. That one word defines my whole life.",
+  },
+];
+
+const VIDEOS = [
+  { slug: "josh-book-the-call", cap: "Book that first call with Joel. Just do it — one call is all it takes.", who: "Josh, yacht chef" },
+  { slug: "josh-pedestal", cap: "You've taken money off the pedestal — now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
+  { slug: "alon-opportunity", cap: "From avoiding money as \"just status\" to seeing it as a tool for freedom.", who: "Alon, personal trainer" },
+  { slug: "shambhavi-worth", cap: "Calmer about money, and clear on her worth.", who: "Shambhavi, finishing her master's" },
+  { slug: "lynton-autopilot", cap: "Spotted the autopilot spending quietly draining him, and built a system to stop it.", who: "Lynton, personal trainer" },
+  { slug: "shira-breakthrough", cap: "A breakthrough moment: seeing what her money could actually build.", who: "Shira" },
+  { slug: "jessica-leaks", cap: "Found exactly where her money was leaking, and started closing the gaps.", who: "Jessica" },
+];
+
+const WINDOWS = [
+  {
+    tab: "The tax bill", head: "The accountant sends the bill. There isn't enough in the account.",
+    you: ["Every payment lands in one account, so tax money looks like spending money.", "You avoid opening the statements until the deadline.", "You'd rather not think about it, so you don't."],
+    we: "In the first three weeks we open a separate tax pot and audit 90 days of statements. Tax stops being a shock.",
+  },
+  {
+    tab: "A big client leaves", head: "A big client gives 30 days' notice. Your runway turns out to be five weeks.",
+    you: ["Most of your money comes from one or two clients.", "Good months got spent, so quiet months have nothing behind them.", "You've never been sure how much cushion you really have."],
+    we: "In weeks 4 to 6 we build a runway pot as part of the four-account system, so a good month can pay for a lean one.",
+  },
+  {
+    tab: "The mortgage says no", head: "A mortgage or lease is refused, even though your top line looks big.",
+    you: ["Lots of money comes in, but the returns show almost no profit.", "Business and personal spending are tangled together.", "You've never worked out what you can actually take out."],
+    we: "We set your real living wage and separate what the business costs from what you take home.",
+  },
+  {
+    tab: "The burnout stop", head: "Three weeks off through illness. Billing goes to zero.",
+    you: ["You realise you own a job, not a business.", "There's no buffer for the weeks you can't work.", "Stopping feels expensive, so you don't."],
+    we: "We build the runway pot and automate it in weeks 7 to 9, so rest is something you can afford.",
+  },
+];
+
+const PRICES = [
+  { label: "Pay once", big: "£1,000", note: "one payment, no plan fee", perks: ["£1,000 in total", "Full programme access", "Everything included"] },
+  { label: "Split in two", big: "£500", note: "× 2 monthly payments", perks: ["£1,000 in total", "First payment starts your access", "Same programme, same support"] },
+  { label: "Lowest upfront", big: "£334", note: "× 3 monthly payments", perks: ["£1,002 in total", "First payment starts your access", "Same programme, same support"] },
+];
+
+const FAQS = [
+  { q: "What happens on the free call?", a: "Twenty minutes on Zoom. No slides, no pressure. You tell me what's going on with your money and I tell you honestly whether this is the right fit. I read your application before we speak, so we don't waste the first ten minutes." },
+  { q: "Is this financial advice?", a: "No. I'm a planner, not an adviser. I don't recommend products, returns or tax structures. I teach you the system and work on the behaviour underneath it. For tax or investment decisions, you'd still use your accountant or an adviser." },
+  { q: "I already have an accountant.", a: "Good. An accountant looks backwards to keep you legal. They don't tell you how much of today's invoice you can actually move to your own account. That's the gap we work on." },
+  { q: "My income is too up and down for a system.", a: "It feels up and down because the way you take money out is broken. A buffer is what lets a big month pay for a small one." },
+  { q: "I'll sort it out when I earn more.", a: "More revenue doesn't fix a leak. It scales it. The sooner the system is in, the more it protects." },
+  { q: "Will this work for my kind of work?", a: "What my clients share is the money mechanics, not the trade. They sell sessions, day rates, packages or retainers, and the money arrives gross, with nothing held back. If that's you, it's built for you." },
+  { q: "What if it isn't for me?", a: "That's what the Three-Session Promise is for. Full refund if it's not landing by session 3." },
+  { q: "Do I keep the material?", a: "Yes. Recordings, worksheets and your plan are yours, with lifetime portal access." },
+  { q: "How do I pay?", a: "You can pay in full, in two monthly payments or in three. We agree the plan on the call." },
 ];
 ---
 <Layout title={title} description={description} canonical={`${LINKS.siteUrl}/coaching`}>
 
-<!-- ============================================================
-     1 · HERO  (Genflow pattern: centered, MASSIVE type, single focus)
-============================================================ -->
-<section class="g-hero">
-  <div class="g-hero-inner reveal">
-    <p class="g-tagline">If any of this sounds like you</p>
-    <h1 class="g-hero-h1">
-      End the anxiety around money, stop quitting every budget, <em>and build wealth that actually fits how you think.</em>
-    </h1>
-    <ul class="g-hero-pains">
-      <li>You're earning well and you have nothing to show for it.</li>
-      <li>You've tried every app, every budget, every spreadsheet. None of them stuck.</li>
-      <li>You can quote the books. You still avoid the bank app.</li>
-      <li>You sabotage yourself every time you get close to a real money decision.</li>
-      <li>You've worked on every other area of your life. Money is the one you can't seem to crack.</li>
-    </ul>
-    <p class="g-hero-creds">
-      I know exactly what you're going through.
-    </p>
-    <p class="g-hero-bio">
-      I'm Joel. I trained in behavioural economics at MSc level and in financial planning at Level 4 in the UK. I spent years at St. James's Place watching smart, disciplined people sign a sound plan and still not follow it. I built the Money Story Method to fix the part the plan can't — the script underneath. Let me help you close that gap.
-    </p>
-    <a href="#video" class="g-step-cta">
-      <span class="g-step-num">Step 1 of 2</span>
-      <span class="g-step-label">Watch the four-minute explainer ↓</span>
-    </a>
+<!-- 1 · HERO -->
+<section class="sp-hero" id="top">
+  <div class="sp-hero-inner">
+    <div class="sp-hero-copy reveal">
+      <p class="sp-eyebrow">The Money Story Method · 12-week 1:1 programme</p>
+      <h1>End the anxiety around money, stop quitting every budget, <em>and build wealth that actually fits how you think.</em></h1>
+      <p class="sp-lead">For people who earn well and still never feel like they keep it. Behavioural coaching, plus the money system built with you, week by week.</p>
+      <div class="sp-cta-row">
+        <a href="#apply" class="sp-btn sp-btn-gold">Book your free 20-minute call</a>
+        <a href="#how" class="sp-link">See how the 12 weeks work ↓</a>
+      </div>
+      <p class="sp-creds"><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</p>
+    </div>
+    <div class="sp-hero-video reveal">
+      <video controls playsinline preload="metadata" poster={VSL_POSTER} src={VSL_SRC}></video>
+    </div>
   </div>
 </section>
 
-<!-- ============================================================
-     2 · VIDEO  (Genflow's hero-anchor: VSL embed under the headline)
-============================================================ -->
-<section class="g-video" id="video">
-  <div class="g-video-inner reveal">
-    {VSL_YOUTUBE_ID ? (
-      <div class="g-video-embed">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${VSL_YOUTUBE_ID}?rel=0`}
-          title="The Money Story Method — 4-minute explainer"
-          loading="lazy"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-        />
+<!-- 2 · CREDENTIALS STRIP -->
+<section class="sp-strip">
+  <p class="sp-strip-label">Trained in · grounded in</p>
+  <ul class="sp-strip-row">
+    <li>MSc Behavioural Economics</li>
+    <li>Qualified Financial Planner (UK)</li>
+    <li>Klontz Money Scripts</li>
+    <li>Kahneman · Thaler · Duhigg</li>
+    <li>Ex St. James's Place</li>
+  </ul>
+</section>
+
+<!-- 3 · EMPATHY -->
+<section class="sp-section sp-cream">
+  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,30 C1200,90 960,0 720,40 C480,80 240,0 0,50 Z"/></svg>
+  <div class="sp-narrow reveal">
+    <h2 class="sp-h2">You invoiced well this month.<br /><em>So why do you feel broke?</em></h2>
+    <p>You know the feeling.</p>
+    <p>The invoice lands. The balance looks big. You feel good for about a day.</p>
+    <p>Then tax, software, rent and shopping all come out of the same pot. Your accountant says it was a great year. Your savings say something else.</p>
+    <blockquote class="sp-pull">"Xero tells me I had an £80k year, but my personal savings account has £4,200 in it. Where on earth did all that cash actually go?"<cite>Self-employed professional, in their own words</cite></blockquote>
+    <p>Then there's the 9pm problem. You've been deciding things for ten hours. At 9pm you take whatever route is easiest, and the easiest route is the app that already has your card.</p>
+    <p class="sp-strong">It isn't a willpower problem. It isn't a maths problem. It's how the money moves, and how your brain treats it.</p>
+  </div>
+</section>
+
+<!-- 4 · THE TURN -->
+<section class="sp-section sp-white">
+  <div class="sp-narrow reveal">
+    <h2 class="sp-h2">Working harder is not the answer.<br /><em>Fixing how the money moves is.</em></h2>
+    <p>More revenue doesn't fix a leak. It scales it.</p>
+    <p>The people who seem calm about money aren't more disciplined than you. They have a system that makes the right thing the easy thing, so they don't have to rely on willpower.</p>
+    <p>That's what we build. Not another budget you'll quit in a week. A set-up that runs even when you're tired.</p>
+  </div>
+</section>
+
+<!-- 5 · PAIN CARDS -->
+<section class="sp-section sp-navy">
+  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-on-dark reveal">Which of these do you<br /><em>know too well?</em></h2>
+    <ul class="sp-pain-grid">
+      {PAIN_CARDS.map((c) => (
+        <li class="sp-pain reveal"><span class="sp-pain-n">{c.n}</span><p>{c.t}</p></li>
+      ))}
+    </ul>
+    <p class="sp-on-dark sp-center sp-after">These patterns show up at every income level. The fix is not more money. It's a better way for money to move.</p>
+  </div>
+</section>
+
+<!-- 6 · RING A BELL -->
+<section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <div class="sp-wide sp-two reveal">
+    <div>
+      <h2 class="sp-h2">Do any of these<br /><em>ring a bell?</em></h2>
+      <ul class="sp-tick">
+        <li>You know you should set money aside for tax, but it never quite happens.</li>
+        <li>You avoid your statements until you have to open them.</li>
+        <li>You can't say what you can safely take out this month.</li>
+        <li>You've started a budget more than once and quit.</li>
+        <li>You feel guilty spending on yourself, or charging what you're worth.</li>
+        <li>You want to feel calm about money, not just "good at it".</li>
+      </ul>
+      <p class="sp-strong">If two or three of those landed, you're in the right place. None of this means you're bad with money.</p>
+    </div>
+    <div class="sp-quote-stack">
+      {RING_QUOTES.map((q, i) => (
+        i !== 1 && <blockquote class="sp-card-quote">"{q}"<cite>Self-employed professional, in their own words</cite></blockquote>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 7 · NOT JUST YOU (stats) -->
+<section class="sp-section sp-cream">
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-center reveal">It's not just you.<br /><em>Here's what the research says.</em></h2>
+    <ul class="sp-stats">
+      {STATS.map((s) => (
+        <li class="sp-stat reveal"><span class="sp-stat-big">{s.big}</span><p>{s.text}</p><small>{s.src}</small></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- 8 · FOUNDER -->
+<section class="sp-section sp-white">
+  <div class="sp-wide sp-founder reveal" id="origin">
+    <figure class="sp-portrait">
+      <img src="/images/joel-headshot-web.jpg" alt="Joel Ezekiel" loading="lazy" />
+    </figure>
+    <div>
+      <h2 class="sp-h2">Hi, I'm <em>Joel.</em></h2>
+      <p>I turned £3,000 into £150,000 trading. I thought I was a genius. Then I lost all of it.</p>
+      <p>I had no degree at the time. That loss is what sent me to study.</p>
+      <p>Now I hold an MSc in Behavioural Economics and I'm a Qualified Financial Planner. Here is what I learned: the plan is almost never the problem. Smart people sign sound plans and still don't follow them. The gap is underneath, in the beliefs and habits about money that run on autopilot.</p>
+      <p>The Money Story Method is what I built to work on that layer, and to build the system with you, on the call.</p>
+      <ul class="sp-tick sp-tick-tight">
+        <li>MSc Behavioural Economics</li>
+        <li>Qualified Financial Planner (UK)</li>
+        <li>A planner, not an adviser. I teach you the system. I don't tell you what to buy.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · WHAT CHANGES + QUOTES -->
+<section class="sp-section sp-navy">
+  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <div class="sp-wide">
+    <div class="sp-narrow sp-center reveal">
+      <h2 class="sp-h2 sp-on-dark">What changes when the<br /><em>system does the work.</em></h2>
+      <p class="sp-on-dark">You open your bank app and you know what's yours. Tax money is already set aside. Your pay lands on a schedule. A quiet month stops being a crisis.</p>
+    </div>
+    <ul class="sp-quote-row">
+      {CLIENT_QUOTES.slice(0, 3).map((q) => (
+        <li class="sp-qcard reveal"><span class="sp-qmark" aria-hidden="true">“</span><p>{q}</p><small>Money Story Method client, in their own words</small></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- 10 · INTRODUCING + INCLUDES -->
+<section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <div class="sp-wide">
+    <div class="sp-narrow sp-center reveal">
+      <span class="sp-badge">Introducing</span>
+      <h2 class="sp-h2">The Money Story <em>Method</em></h2>
+      <p>Twelve weeks, one to one. Behavioural coaching, plus the system actually installed. Not a course, not a community, not a PDF.</p>
+    </div>
+    <h3 class="sp-h3 sp-center reveal">Here's what's included</h3>
+    <ul class="sp-include-grid">
+      {INCLUDES.map((c) => (
+        <li class="sp-include reveal"><h4>{c.t}</h4><p>{c.d}</p></li>
+      ))}
+    </ul>
+    <div class="sp-center sp-after"><a href="#apply" class="sp-btn sp-btn-gold">Book your free 20-minute call</a></div>
+  </div>
+</section>
+
+<!-- 11 · 12-WEEK TABS -->
+<section class="sp-section sp-cream" id="how">
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-center reveal">How the 12 weeks<br /><em>actually work.</em></h2>
+    <div class="sp-tabs" data-tabs>
+      <div class="sp-tablist" role="tablist">
+        {PHASES.map((p, i) => (
+          <button role="tab" class={`sp-tab${i === 0 ? ' active' : ''}`} aria-selected={i === 0 ? 'true' : 'false'} data-i={i}><small>{p.tab}</small><span>{p.name}</span></button>
+        ))}
       </div>
-    ) : (
-      <div class="g-video-placeholder">
-        <div class="g-video-play" aria-hidden="true">
-          <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
-            <circle cx="40" cy="40" r="38" stroke="currentColor" stroke-width="1.5" />
-            <path d="M32 26 L56 40 L32 54 Z" fill="currentColor" />
-          </svg>
+      {PHASES.map((p, i) => (
+        <div class={`sp-panel${i === 0 ? ' active' : ''}`} role="tabpanel" data-i={i}>
+          <div class="sp-panel-head"><small>{p.tab}</small><h3>{p.name}</h3></div>
+          <div class="sp-panel-body">
+            <ul class="sp-tick sp-tick-tight">
+              {p.body.map((b) => <li>{b}</li>)}
+            </ul>
+            <blockquote class="sp-panel-quote">"{p.quote}"<cite>Money Story Method client</cite></blockquote>
+          </div>
         </div>
-        <p class="g-video-tag">Four-minute explainer · coming soon</p>
-        <p class="g-video-sub">In the meantime, jump to <a href="#step2">Step 2</a> — apply to work with me 1-1.</p>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 12 · VIDEO WALL -->
+<section class="sp-section sp-navy">
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-on-dark sp-center reveal">Wondering what<br /><em>results look like?</em></h2>
+    <p class="sp-on-dark sp-center sp-sub reveal">Hear it from people who were exactly where you are.</p>
+    <figure class="sp-vfeature reveal">
+      <video controls playsinline preload="none" poster={`/testimonials/${VIDEOS[0].slug}.jpg`} src={`/testimonials/${VIDEOS[0].slug}.mp4`}></video>
+      <figcaption>
+        <p>"{VIDEOS[0].cap}"</p>
+        <small>{VIDEOS[0].who} · came in stuck in debt, left debt-free and on a five-year plan</small>
+      </figcaption>
+    </figure>
+    <div class="sp-video-grid">
+      {VIDEOS.slice(1).map((v) => (
+        <figure class="sp-vcard reveal">
+          <video controls playsinline preload="none" poster={`/testimonials/${v.slug}.jpg`} src={`/testimonials/${v.slug}.mp4`}></video>
+          <figcaption><p>{v.cap}</p><small>{v.who}</small></figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 13 · WHICH ONE IS YOU (tabs) -->
+<section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-center reveal">People usually reach out<br /><em>at one of four moments.</em></h2>
+    <p class="sp-center sp-sub reveal">Which one is closest to yours?</p>
+    <div class="sp-tabs" data-tabs>
+      <div class="sp-tablist sp-tablist-4" role="tablist">
+        {WINDOWS.map((w, i) => (
+          <button role="tab" class={`sp-tab${i === 0 ? ' active' : ''}`} aria-selected={i === 0 ? 'true' : 'false'} data-i={i}><span>{w.tab}</span></button>
+        ))}
       </div>
-    )}
-  </div>
-</section>
-
-<!-- ============================================================
-     3 · STEP 2 OF 2  (Genflow's "Apply to work with us" centered block)
-============================================================ -->
-<section class="g-step2" id="step2">
-  <div class="g-step2-inner reveal">
-    <p class="g-step-eyebrow">Step 2 of 2 · Apply to work with me</p>
-    <h2 class="g-step2-h2">
-      If any of that sounds like you,<br />
-      <em>this is what we'd actually do.</em>
-    </h2>
-    <ul class="g-step2-list">
-      <li>Weeks 1–4, we map your money scripts. The four beliefs running underneath every financial decision you make. Most people are running two at once and don't know it.</li>
-      <li>Weeks 4–8, we trace the inheritance. Whose pattern you're actually running. Usually a parent's, often older than that. Once you see it, you can stop carrying it.</li>
-      <li>Weeks 8–12, we build the system. Behavioural cashflow architecture you'll actually use. A real financial plan, built around your psychology, not someone else's textbook.</li>
-      <li>Between sessions, I'm at the end of a message. The moments behaviour wobbles are usually where the real work happens.</li>
-      <li>You keep everything. Recordings, worksheets, Behavioural Financial Plan. The work doesn't stop when the twelve weeks do.</li>
-    </ul>
-    <a href="#apply" class="g-step-cta g-step-cta-primary">
-      <span class="g-step-num">Step 2 of 2</span>
-      <span class="g-step-label">Apply for the founding cohort →</span>
-    </a>
-    <p class="g-step2-spots">{FOUNDING_SPOTS_REMAINING} founding-cohort spots · £997 (rises to £1,997 after this cohort)</p>
-  </div>
-</section>
-
-<!-- ============================================================
-     4 · CREDENTIALS STRIP  (Genflow's small logo bar — subtle)
-============================================================ -->
-<section class="g-strip">
-  <div class="g-strip-inner reveal">
-    <p class="g-strip-label">Trained in · grounded in · regulated by</p>
-    <ul class="g-strip-row">
-      <li>MSc Behavioural Economics</li>
-      <li>Level 4 QFP (UK)</li>
-      <li>Klontz Money Scripts</li>
-      <li>Kahneman · Thaler · Duhigg</li>
-      <li>Ex St. James's Place</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ============================================================
-     5 · COHORT TESTIMONIALS  (Genflow's "founders I've worked with" grid)
-============================================================ -->
-<section class="g-testimonials">
-  <div class="g-testimonials-inner">
-    <h2 class="g-testimonials-h2 reveal">
-      What they actually say<br />
-      <em>once we get going.</em>
-    </h2>
-    <p class="g-testimonials-sub reveal">All of these are real things real clients said in session. I changed their names. I didn't change a word of what they said.</p>
-    <ul class="g-testimonial-grid reveal">
-      {TESTIMONIALS.map((t) => (
-        <li class="g-testimonial-card">
-          <div class="g-testimonial-avatar" aria-hidden="true">
-            <span>{t.initial}</span>
+      {WINDOWS.map((w, i) => (
+        <div class={`sp-panel${i === 0 ? ' active' : ''}`} role="tabpanel" data-i={i}>
+          <div class="sp-panel-head"><small>This might be you</small><h3>{w.head}</h3></div>
+          <div class="sp-panel-body">
+            <div>
+              <p class="sp-mini">This is you if:</p>
+              <ul class="sp-tick sp-tick-tight">{w.you.map((y) => <li>{y}</li>)}</ul>
+            </div>
+            <div class="sp-we"><p class="sp-mini">What we'd do:</p><p>{w.we}</p></div>
           </div>
-          <span class="g-testimonial-mark" aria-hidden="true">&ldquo;</span>
-          <blockquote>{t.quote}</blockquote>
-          <div class="g-testimonial-attr">
-            <p class="g-testimonial-role">{t.role}</p>
-            <p class="g-testimonial-session">{t.session}</p>
-          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 14 · WHAT'S IT WORTH -->
+<section class="sp-section sp-cream">
+  <div class="sp-narrow reveal">
+    <h2 class="sp-h2">What would it be worth<br /><em>to feel calm about money?</em></h2>
+    <p>Picture a normal Tuesday.</p>
+    <ul class="sp-tick">
+      <li>You open your banking app and you know what's yours.</li>
+      <li>The tax is already set aside. No dread when the bill comes.</li>
+      <li>A quiet month is a quiet month, not a crisis.</li>
+      <li>You charge what the work is worth, without the flinch.</li>
+      <li>You stop thinking about money at 2am.</li>
+    </ul>
+    <p class="sp-strong">That's what the twelve weeks are for.</p>
+  </div>
+</section>
+
+<!-- 15 · PRICING -->
+<section class="sp-section sp-navy" id="price">
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-on-dark sp-center reveal">Choose how you'd like<br /><em>to pay.</em></h2>
+    <p class="sp-on-dark sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call.</p>
+    <ul class="sp-price-grid">
+      {PRICES.map((p) => (
+        <li class="sp-price reveal">
+          <span class="sp-price-label">{p.label}</span>
+          <div class="sp-price-big">{p.big}</div>
+          <p class="sp-price-note">{p.note}</p>
+          <ul>{p.perks.map((x) => <li>{x}</li>)}</ul>
+          <a href="#apply" class="sp-btn sp-btn-gold">Book a free call</a>
         </li>
       ))}
     </ul>
   </div>
 </section>
 
-<!-- ============================================================
-     6 · APPLY  (Final CTA: form + Calendly auto-reveal)
-============================================================ -->
-<section class="g-apply" id="apply">
+<!-- 16 · GUARANTEE -->
+<section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <div class="sp-narrow sp-center reveal">
+    <div class="sp-seal" aria-hidden="true">3</div>
+    <h2 class="sp-h2">The Three-Session <em>Promise</em></h2>
+    <p class="sp-strong">Full refund if it's not landing by session 3.</p>
+    <p>I want you to feel good about this. If the work isn't landing for you by session 3, you get all of your money back.</p>
+  </div>
+</section>
+
+<!-- 17 · FAQ -->
+<section class="sp-section sp-cream" id="faq">
+  <div class="sp-narrow">
+    <h2 class="sp-h2 sp-center reveal">Commonly asked <em>questions</em></h2>
+    <div class="sp-faq reveal">
+      {FAQS.map((f) => (
+        <details><summary>{f.q}</summary><p>{f.a}</p></details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 18 · CLOSING + APPLY -->
+<section class="g-apply sp-apply" id="apply">
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="g-apply-inner">
-    <p class="g-step-eyebrow reveal">Apply for the founding cohort</p>
+    <p class="sp-eyebrow reveal">Apply to work with me</p>
     <h2 class="g-apply-h2 reveal">
       Tell me where you're at.<br /><em>Then we'll book the call.</em>
     </h2>
-    <p class="g-apply-sub reveal">Two short forms on the same page. You write a few sentences about what's actually going on. You pick a time. I read your application before we speak, so we don't waste the first ten minutes on what.</p>
+    <p class="g-apply-sub reveal">Two short forms on the same page. You write a few sentences about what's actually going on. You pick a time. I read your application before we speak, so we don't waste the first ten minutes.</p>
 
     <div id="calendly-step" class="calendly-step" style="display:none;">
       <div class="calendly-confirm">
@@ -216,11 +501,18 @@ const TESTIMONIALS = [
         <label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
       </div>
       <button type="submit" class="g-submit btn-submit">Submit application →</button>
-      <p class="g-form-reassure">£997 founding rate confirmed on the call. Three-Session Promise: full refund if it's not landing by session 3. Your details stay private.</p>
+      <p class="g-form-reassure">£1,000 confirmed on the call. Three-Session Promise: full refund if it's not landing by session 3. Your details stay private.</p>
       <div id="form-status" class="form-status" aria-live="polite"></div>
     </form>
+    <p class="sp-fine">This programme is education and planning support, not financial advice. I don't recommend products, returns or tax structures. The testimonials are real. Results vary.</p>
   </div>
 </section>
+
+<!-- Sticky call bar -->
+<div class="sp-bar" id="sp-bar" aria-hidden="true">
+  <span>The Money Story Method · 12-week 1:1 programme</span>
+  <a href="#apply" class="sp-btn sp-btn-gold sp-btn-sm">Book a free call</a>
+</div>
 
 </Layout>
 
@@ -300,718 +592,237 @@ const TESTIMONIALS = [
   })();
 </script>
 
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-tabs]').forEach(function (root) {
+      var tabs = root.querySelectorAll('.sp-tab');
+      var panels = root.querySelectorAll('.sp-panel');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var i = tab.getAttribute('data-i');
+          tabs.forEach(function (t) { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+          panels.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-i') === i); });
+        });
+      });
+    });
+
+    var bar = document.getElementById('sp-bar');
+    var hero = document.getElementById('top');
+    var apply = document.getElementById('apply');
+    if (!bar || !hero || !apply || !('IntersectionObserver' in window)) return;
+    var heroOut = false, applyIn = false;
+    function update() { bar.classList.toggle('show', heroOut && !applyIn); }
+    new IntersectionObserver(function (e) { heroOut = !e[0].isIntersecting; update(); }, { threshold: 0.05 }).observe(hero);
+    new IntersectionObserver(function (e) { applyIn = e[0].isIntersecting; update(); }, { threshold: 0.05 }).observe(apply);
+  })();
+</script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
 
-/* =================================================================
-   COACHING PAGE — pairing researched for WoW palette (cream/navy/gold).
-   Display headings → Fraunces (variable serif, opsz 144 for display,
-     SOFT 50 for the warm rounded edge that complements cream).
-   Body, bullets, UI, CTAs → Inter Tight (kept; pairs with serif).
-   Layout follows Genflow structure (centered, 100vh hero, step1/step2
-     spine, single-focus sections).
-   ================================================================= */
-
-/* --- Section base --- */
-.g-hero, .g-video, .g-step2, .g-strip, .g-testimonials, .g-apply {
-  padding: 9rem 1.5rem;
-  position: relative;
-}
-.g-hero { padding: 11rem 1.5rem 7rem; }
-.g-strip { padding: 4.5rem 1.5rem; }
-
-/* =================================================================
-   FONT SYSTEM — Inter Tight everywhere, matching Genflow exactly.
-   Genflow specs (from Playwright):
-     h1: 700 weight, 64px, line-height 1.0
-     body: 400 weight, 18px, line-height 1.4
-     ctas: 500 weight, 18px
-     micro-tags: 400, 12-15px
-   ================================================================= */
-/* All body / UI / bullets / forms / CTAs in Inter Tight */
-.g-hero, .g-hero *,
-.g-video, .g-video *,
-.g-step2, .g-step2 *,
-.g-strip, .g-strip *,
-.g-testimonials, .g-testimonials *,
-.g-apply, .g-apply * {
-  font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-/* Display headings (upright) → Fraunces SOFT 50, opsz 144 (warm display) */
-.g-hero-h1,
-.g-step2-h2,
-.g-testimonials-h2,
-.g-apply-h2 {
-  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+/* ---------- base ---------- */
+.sp-hero, .sp-strip, .sp-section, .sp-apply, .sp-bar { font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+.sp-h2, .sp-h3, .sp-hero h1, .sp-price-big, .sp-stat-big, .sp-pull, .sp-panel-head h3, .g-apply-h2 {
+  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif;
   font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
 }
-/* Italic gold accent (italic em) → SHARPER serifs (SOFT 0) + lighter weight 500.
-   Was reading bubbly + thick at SOFT 50 / weight 700. */
-.g-hero-h1 em,
-.g-step2-h2 em,
-.g-testimonials-h2 em,
-.g-apply-h2 em,
-.g-hero-creds {
-  font-family: 'Fraunces', 'Source Serif 4', Georgia, serif !important;
+.sp-h2 em, .sp-hero h1 em, .g-apply-h2 em {
+  font-style: italic; font-weight: 500; color: var(--color-gold);
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
-  font-weight: 500;
-  font-style: italic;
 }
+.sp-section { position: relative; padding: 7.5rem 1.5rem 6rem; }
+.sp-cream { background: var(--color-cream); color: var(--color-charcoal); }
+.sp-white { background: var(--color-bg-white); color: var(--color-charcoal); }
+.sp-navy  { background: var(--color-navy-deep); color: var(--color-cream); }
+.sp-wide { max-width: 1140px; margin: 0 auto; position: relative; }
+.sp-narrow { max-width: 720px; margin: 0 auto; position: relative; }
+.sp-center { text-align: center; }
+.sp-section .sp-after { margin-top: 2.5rem; }
+.sp-section .sp-sub { font-size: 1.1rem; margin: -0.5rem auto 2.5rem; max-width: 620px; opacity: 0.85; text-align: center; }
+.sp-h2 { font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.015em; margin: 0 0 1.6rem; color: var(--color-navy); }
+.sp-h3 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); font-weight: 600; margin: 3rem 0 1.6rem; color: var(--color-navy); }
+.sp-on-dark, .sp-navy .sp-h2 { color: var(--color-cream); }
+.sp-section p { font-size: 1.1rem; line-height: 1.7; margin: 0 0 1.15rem; }
+.sp-strong { font-weight: 700; font-size: 1.2rem !important; }
+.sp-eyebrow { display: inline-block; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); margin: 0 0 1.4rem; }
+.sp-badge { display: inline-block; background: var(--color-gold); color: var(--color-navy); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.35rem 0.9rem; border-radius: 3px; margin-bottom: 1rem; }
+.sp-wave { position: absolute; top: -1px; left: 0; width: 100%; height: clamp(40px, 6vw, 90px); display: block; fill: var(--wave-fill); pointer-events: none; }
 
-/* =================================================================
-   DARK THEME — every section matches the navy-deep video band.
-   Drops gold from headline italics (replaced with cream).
-   Gold is reserved for CTAs + tiny accents.
-   ================================================================= */
-.g-hero,
-.g-step2,
-.g-strip,
-.g-testimonials,
-.g-apply {
-  background: var(--color-navy-deep) !important;
-  border-color: rgba(245,240,232,0.10) !important;
-}
-.g-hero::before, .g-apply::before {
-  background:
-    radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%),
-    radial-gradient(circle at 20% 90%, rgba(196,162,101,0.04), transparent 55%) !important;
-}
+/* buttons */
+.sp-btn { display: inline-block; text-decoration: none; font-weight: 600; font-size: 1rem; letter-spacing: 0.01em; padding: 1.1rem 2.2rem; border-radius: 4px; transition: transform .25s, background .25s, box-shadow .25s; text-align: center; }
+.sp-btn-gold { background: var(--color-gold); color: var(--color-navy-deep); }
+.sp-btn-gold:hover { background: var(--color-gold-hover); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.25); }
+.sp-btn-sm { padding: 0.7rem 1.4rem; font-size: 0.92rem; }
+.sp-link { color: var(--color-gold-subtle); font-size: 0.98rem; text-decoration: underline; text-underline-offset: 4px; }
 
-/* Main headline → cream */
-.g-hero-h1,
-.g-step2-h2,
-.g-testimonials-h2,
-.g-apply-h2 {
-  color: var(--color-cream) !important;
-}
-/* Italic accent line → gold (the one warm pop on the page) */
-.g-hero-h1 em,
-.g-step2-h2 em,
-.g-testimonials-h2 em,
-.g-apply-h2 em {
-  color: var(--color-gold) !important;
-}
+/* ---------- hero ---------- */
+.sp-hero { background: var(--color-navy-deep); color: var(--color-cream); padding: 9.5rem 1.5rem 6rem; position: relative; overflow: hidden; }
+.sp-hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 75% 15%, rgba(196,162,101,0.13), transparent 55%), radial-gradient(circle at 15% 90%, rgba(196,162,101,0.05), transparent 55%); pointer-events: none; }
+.sp-hero-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr 1fr; gap: 3.5rem; align-items: center; position: relative; }
+.sp-hero h1 { font-size: clamp(2.1rem, 3.9vw, 3.4rem); line-height: 1.07; font-weight: 700; letter-spacing: -0.015em; color: var(--color-cream); margin: 0 0 1.5rem; }
+.sp-hero h1 em { display: block; margin-top: 0.4rem; }
+.sp-lead { font-size: 1.2rem; line-height: 1.6; color: rgba(245,240,232,0.85); margin: 0 0 2rem; }
+.sp-cta-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+.sp-creds { font-size: 0.92rem; color: rgba(245,240,232,0.65); margin: 0; }
+.sp-creds b { color: var(--color-cream); }
+.sp-hero-video video { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; border: 1px solid rgba(196,162,101,0.4); box-shadow: 0 30px 80px rgba(0,0,0,0.5); display: block; }
 
-/* Body / bullets / bio / sub-copy → soft cream */
-.g-hero-pains li,
-.g-hero-bio,
-.g-step2-list li,
-.g-testimonials-sub,
-.g-apply-sub {
-  color: rgba(245,240,232,0.82) !important;
-}
-.g-hero-bio strong { color: var(--color-cream) !important; }
+/* ---------- strip ---------- */
+.sp-strip { background: var(--color-bg-white); text-align: center; padding: 3.2rem 1.5rem; }
+.sp-strip-label { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-slate); margin: 0 0 1.2rem; }
+.sp-strip-row { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem 2.2rem; }
+.sp-strip-row li { font-family: var(--font-heading); font-style: italic; color: var(--color-charcoal); }
+.sp-strip-row li:not(:last-child)::after { content: "·"; color: var(--color-gold); margin-left: 2.2rem; font-style: normal; }
 
-/* The bridge line "I know exactly what you're going through" — keep as the one warm accent */
-.g-hero-creds { color: var(--color-gold) !important; }
+/* ---------- copy blocks ---------- */
+.sp-pull { font-size: clamp(1.3rem, 2.4vw, 1.7rem); font-style: italic; line-height: 1.4; color: var(--color-navy); border-left: 3px solid var(--color-gold); padding: 0.4rem 0 0.4rem 1.6rem; margin: 2rem 0; }
+.sp-pull cite, .sp-card-quote cite, .sp-panel-quote cite { display: block; margin-top: 0.9rem; font-family: 'Inter Tight', sans-serif; font-style: normal; font-size: 0.85rem; letter-spacing: 0.02em; color: var(--color-slate); }
+.sp-tick { list-style: none; padding: 0; margin: 1.4rem 0; }
+.sp-tick li { position: relative; padding: 0.7rem 0 0.7rem 2.2rem; font-size: 1.08rem; line-height: 1.55; border-bottom: 1px dashed rgba(28,42,58,0.18); }
+.sp-tick li::before { content: "✓"; position: absolute; left: 0; top: 0.65rem; color: var(--color-gold); font-weight: 700; }
+.sp-tick li:last-child { border-bottom: none; }
+.sp-tick-tight li { padding: 0.5rem 0 0.5rem 2.2rem; }
 
-/* Dashed bullet dividers — flip to soft cream on dark */
-.g-hero-pains li:not(:last-child),
-.g-step2-list li {
-  border-bottom-color: rgba(245,240,232,0.15) !important;
-}
+/* ---------- pain cards ---------- */
+.sp-pain-grid { list-style: none; margin: 3rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
+.sp-pain { background: var(--color-bg-white); color: var(--color-charcoal); border-radius: 6px; padding: 1.8rem 1.5rem; }
+.sp-pain-n { display: block; font-family: 'Fraunces', serif; font-size: 1.7rem; color: var(--color-gold); margin-bottom: 0.7rem; }
+.sp-pain p { font-size: 0.98rem !important; line-height: 1.55 !important; margin: 0 !important; }
 
-/* Eyebrows / pills / tags */
-.g-tagline {
-  background: rgba(245,240,232,0.08) !important;
-  border-color: rgba(245,240,232,0.18) !important;
-  color: var(--color-cream) !important;
-}
-.g-step-eyebrow {
-  background: rgba(245,240,232,0.06) !important;
-  border-color: rgba(245,240,232,0.18) !important;
-  color: var(--color-cream) !important;
-}
-.g-step2-spots { color: rgba(245,240,232,0.6) !important; }
+/* ---------- ring a bell ---------- */
+.sp-two { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3.5rem; align-items: start; }
+.sp-quote-stack { display: grid; gap: 1.3rem; }
+.sp-card-quote { background: var(--color-cream); border-left: 3px solid var(--color-gold); padding: 1.6rem 1.6rem 1.4rem; margin: 0; border-radius: 4px; font-size: 1.02rem; line-height: 1.6; font-style: italic; color: var(--color-charcoal); }
 
-/* Credentials strip */
-.g-strip-label { color: rgba(245,240,232,0.55) !important; }
-.g-strip-row li { color: var(--color-cream) !important; }
+/* ---------- stats ---------- */
+.sp-stats { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
+.sp-stat { background: var(--color-bg-white); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 2rem 1.6rem; text-align: center; }
+.sp-stat-big { display: block; font-size: 2.8rem; font-weight: 700; color: var(--color-navy); margin-bottom: 0.6rem; }
+.sp-stat p { font-size: 1rem !important; line-height: 1.55 !important; }
+.sp-stat small { color: var(--color-slate); font-size: 0.82rem; }
 
-/* Testimonial cards — slightly lighter on dark */
-.g-testimonial-card {
-  background: rgba(245,240,232,0.04) !important;
-  border-color: rgba(245,240,232,0.12) !important;
-}
-.g-testimonial-card blockquote { color: var(--color-cream) !important; }
-.g-testimonial-role { color: var(--color-cream) !important; }
-.g-testimonial-session { color: rgba(245,240,232,0.55) !important; }
-.g-testimonial-attr { border-top-color: rgba(245,240,232,0.12) !important; }
-.g-testimonial-mark { color: var(--color-gold); opacity: 0.4; }
+/* ---------- founder ---------- */
+.sp-founder { display: grid; grid-template-columns: 340px 1fr; gap: 3.5rem; align-items: start; }
+.sp-portrait { margin: 0; }
+.sp-portrait img { width: 100%; border-radius: 8px; display: block; }
 
-/* Step 1 CTA — invert: cream button on dark */
-.g-step-cta {
-  background: var(--color-cream) !important;
-  color: var(--color-navy) !important;
-  border-color: var(--color-cream) !important;
-}
-.g-step-cta:hover {
-  background: #fff !important;
-  border-color: #fff !important;
-}
-/* Step 2 CTA stays gold (primary) */
+/* ---------- quote cards ---------- */
+.sp-quote-row { list-style: none; margin: 3rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+.sp-qcard { background: rgba(245,240,232,0.06); border: 1px solid rgba(196,162,101,0.25); border-radius: 8px; padding: 1.8rem 1.6rem; position: relative; }
+.sp-qmark { position: absolute; top: 0.6rem; right: 1.2rem; font-family: 'Fraunces', serif; font-size: 3.6rem; color: var(--color-gold); opacity: 0.4; line-height: 1; }
+.sp-qcard p { font-size: 1.08rem !important; line-height: 1.55 !important; color: var(--color-cream); }
+.sp-qcard small { color: rgba(245,240,232,0.6); font-size: 0.82rem; }
 
-/* Apply form section — form card stays light for input contrast */
-.g-apply-form {
-  background: var(--color-cream) !important;
-  border-color: rgba(196,162,101,0.30) !important;
-}
-.g-form-reassure { color: var(--color-slate) !important; }
+/* ---------- includes ---------- */
+.sp-include-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+.sp-include { background: var(--color-cream); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 1.8rem 1.6rem; }
+.sp-include h4 { font-family: 'Fraunces', serif; font-size: 1.2rem; color: var(--color-navy); margin: 0 0 0.6rem; }
+.sp-include p { font-size: 0.98rem !important; line-height: 1.6 !important; margin: 0 !important; color: var(--color-slate); }
 
-/* =================================================================
-   1 · HERO  (Genflow: claims full viewport, massive type, centered)
-   ================================================================= */
-.g-hero {
-  background: var(--color-bg-white);
-  text-align: center;
-  border-bottom: 1px solid var(--color-border-warm);
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8rem 1.5rem 6rem;
-}
-.g-hero::before {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%),
-    radial-gradient(circle at 20% 90%, rgba(28,42,58,0.04), transparent 55%);
-  pointer-events: none;
-}
-.g-hero-inner {
-  max-width: 1080px;
-  margin: 0 auto;
-  position: relative;
-  width: 100%;
-}
-/* Tag pill — Genflow style: white pill with dark text, small */
-.g-tagline {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--color-navy);
-  background: #fff;
-  border: 1px solid var(--color-border-warm);
-  border-radius: 999px;
-  padding: 6px 24px;
-  display: inline-block;
-  margin: 0 0 2.4rem;
-}
-/* Hero H1 — Genflow exact: 64px, weight 700, line-height 1.0 */
-.g-hero-h1 {
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.0;
-  color: var(--color-navy);
-  margin: 0 0 2rem;
-  letter-spacing: -0.015em;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 2rem;
-}
-.g-hero-h1 em {
-  color: var(--color-gold);
-  font-weight: 500;
-  display: block;
-  margin-top: 0.5rem;
-}
-.g-hero-pains {
-  list-style: none;
-  margin: 0 auto 1.8rem;
-  padding: 0;
-  max-width: 720px;
-  text-align: center;
-}
-.g-hero-pains li {
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--color-navy);
-  padding: 0.45rem 0;
-}
-.g-hero-pains li:not(:last-child) {
-  border-bottom: 1px dashed var(--color-border-warm);
-}
-.g-hero-creds {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--color-gold);
-  margin: 0 0 1.2rem;
-}
-.g-hero-bio {
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--color-slate);
-  max-width: 720px;
-  margin: 0 auto 2.4rem;
-}
-.g-hero-bio strong { color: var(--color-navy); font-weight: 600; }
+/* ---------- tabs ---------- */
+.sp-tabs { margin-top: 2.5rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--color-border-warm); background: var(--color-bg-white); }
+.sp-tablist { display: grid; grid-template-columns: repeat(4, 1fr); background: #eee9de; }
+.sp-tablist-4 { grid-template-columns: repeat(4, 1fr); }
+.sp-tab { appearance: none; border: 0; background: transparent; cursor: pointer; padding: 1.3rem 1rem; text-align: left; font-family: 'Inter Tight', sans-serif; color: var(--color-slate); border-right: 1px solid rgba(28,42,58,0.08); transition: background .2s, color .2s; }
+.sp-tab:last-child { border-right: 0; }
+.sp-tab small { display: block; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.25rem; }
+.sp-tab span { font-weight: 600; font-size: 1.02rem; }
+.sp-tab.active { background: var(--color-navy); color: var(--color-cream); }
+.sp-tab:hover:not(.active) { background: #e4dece; }
+.sp-panel { display: none; }
+.sp-panel.active { display: block; }
+.sp-panel-head { background: var(--color-navy); color: var(--color-cream); padding: 2.2rem 2rem 2rem; border-top: 1px solid rgba(196,162,101,0.4); }
+.sp-panel-head small { display: block; font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 0.5rem; }
+.sp-panel-head h3 { margin: 0; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 600; color: var(--color-cream); }
+.sp-panel-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; padding: 2rem; align-items: start; }
+.sp-panel-quote { background: var(--color-cream); border-left: 3px solid var(--color-gold); padding: 1.4rem; margin: 0; font-style: italic; line-height: 1.55; border-radius: 4px; color: var(--color-charcoal); }
+.sp-mini { font-size: 0.78rem !important; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-gold); font-weight: 700; margin: 0 0 0.4rem !important; }
+.sp-we { background: var(--color-cream); padding: 1.4rem; border-radius: 6px; }
+.sp-we p:last-child { margin: 0 !important; font-size: 1.02rem !important; }
 
-@media (max-width: 760px) {
-  .g-hero { min-height: auto; padding: 7rem 1.2rem 5rem; }
-  .g-hero-h1 { font-size: clamp(2rem, 8vw, 3rem); }
-  .g-hero-pains li, .g-hero-creds, .g-hero-bio { font-size: 16px; }
-}
+/* ---------- video wall ---------- */
+.sp-vfeature { margin: 0 0 1.5rem; display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: center; background: rgba(245,240,232,0.05); border: 1px solid rgba(196,162,101,0.3); border-radius: 10px; padding: 1.6rem; }
+.sp-vfeature video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
+.sp-vfeature figcaption p { font-family: 'Fraunces', serif; font-style: italic; font-size: clamp(1.3rem, 2.3vw, 1.75rem) !important; line-height: 1.4 !important; color: var(--color-cream); margin: 0 0 1rem !important; }
+.sp-vfeature figcaption small { color: var(--color-gold-subtle); font-size: 0.9rem; }
+.sp-video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1rem; }
+.sp-vcard { margin: 0; background: rgba(245,240,232,0.05); border: 1px solid rgba(196,162,101,0.2); border-radius: 8px; padding: 1rem; }
+.sp-vcard video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
+.sp-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
+.sp-vcard figcaption p { font-size: 0.98rem !important; line-height: 1.5 !important; color: var(--color-cream); margin: 0 0 0.5rem !important; }
+.sp-vcard figcaption small { color: var(--color-gold-subtle); font-size: 0.82rem; }
 
-/* Step CTA pattern (used in hero + step2) */
-.g-step-cta {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 1.4rem 2.6rem;
-  background: var(--color-navy);
-  color: var(--color-cream);
-  text-decoration: none;
-  border-radius: 4px;
-  transition: all 0.3s;
-  border: 1px solid var(--color-navy);
-}
-.g-step-cta:hover {
-  background: var(--color-navy-deep);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(28, 42, 58, 0.25);
-}
-.g-step-cta-primary {
-  background: var(--color-gold);
-  color: var(--color-navy);
-  border-color: var(--color-gold);
-}
-.g-step-cta-primary:hover {
-  background: var(--color-gold-hover);
-  border-color: var(--color-gold-hover);
-}
-.g-step-num {
-  font-family: var(--font-heading-sc);
-  font-size: 0.74rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.78;
-}
-.g-step-label {
-  font-family: var(--font-ui);
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
+/* ---------- pricing ---------- */
+.sp-price-grid { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.sp-price { background: var(--color-bg-white); color: var(--color-charcoal); border-radius: 8px; padding: 2.4rem 1.8rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.sp-price-label { background: var(--color-gold); color: var(--color-navy-deep); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 3px; }
+.sp-price-big { font-size: 3.3rem; font-weight: 700; color: var(--color-navy); margin: 1.1rem 0 0.2rem; }
+.sp-price-note { color: var(--color-slate); font-size: 0.95rem !important; margin: 0 0 1.2rem !important; }
+.sp-price ul { list-style: none; padding: 0; margin: 0 0 1.8rem; flex: 1; }
+.sp-price ul li { font-size: 0.98rem; padding: 0.35rem 0; color: var(--color-charcoal); }
 
-/* =================================================================
-   2 · VIDEO
-   ================================================================= */
-.g-video {
-  background: var(--color-navy-deep);
-  text-align: center;
-}
-.g-video-inner {
-  max-width: 960px;
-  margin: 0 auto;
-}
-.g-video-embed {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(196,162,101,0.35);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-}
-.g-video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.g-video-placeholder {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: linear-gradient(135deg, #1a2638 0%, #0c141f 100%);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.4rem;
-  border: 1px solid rgba(196,162,101,0.35);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-  color: var(--color-cream);
-  position: relative;
-  overflow: hidden;
-}
-.g-video-placeholder::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 40%, rgba(196,162,101,0.12), transparent 55%);
-}
-.g-video-play {
-  color: var(--color-gold);
-  position: relative;
-  opacity: 0.85;
-}
-.g-video-tag {
-  font-family: var(--font-heading-sc);
-  font-size: 0.76rem;
-  letter-spacing: 0.22em;
-  color: rgba(245,240,232,0.78);
-  margin: 0;
-  text-transform: uppercase;
-  position: relative;
-}
-.g-video-sub {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: rgba(245,240,232,0.65);
-  margin: 0;
-  position: relative;
-}
-.g-video-sub a {
-  color: var(--color-gold);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
-}
+/* ---------- guarantee ---------- */
+.sp-seal { width: 92px; height: 92px; border-radius: 50%; border: 3px double var(--color-gold); display: grid; place-items: center; margin: 0 auto 1.4rem; font-family: 'Fraunces', serif; font-size: 2.6rem; color: var(--color-gold); }
 
-/* =================================================================
-   3 · STEP 2 OF 2
-   ================================================================= */
-.g-step2 {
-  background: var(--color-bg-white);
-  text-align: center;
-  border-top: 1px solid var(--color-border-warm);
-  border-bottom: 1px solid var(--color-border-warm);
-}
-.g-step2-inner {
-  max-width: 880px;
-  margin: 0 auto;
-}
-.g-step-eyebrow {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--color-navy);
-  background: #fff;
-  border: 1px solid var(--color-border-warm);
-  border-radius: 999px;
-  padding: 6px 18px;
-  display: inline-block;
-  margin: 0 0 2rem;
-}
-.g-step2-h2 {
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.0;
-  color: var(--color-navy);
-  margin: 0 0 2.4rem;
-  letter-spacing: -0.015em;
-}
-.g-step2-h2 em {
-  color: var(--color-gold);
-  font-weight: 500;
-  font-style: italic;
-}
-.g-step2-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 2.4rem;
-  max-width: 720px;
-  text-align: center;
-}
-.g-step2-list li {
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--color-navy);
-  padding: 0.7rem 0;
-  border-bottom: 1px dashed var(--color-border-warm);
-}
-.g-step2-list li:last-child { border-bottom: none; }
-.g-step2-spots {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-slate);
-  margin: 1.4rem 0 0;
-}
+/* ---------- FAQ ---------- */
+.sp-faq { display: grid; gap: 0.8rem; margin-top: 2rem; }
+.sp-faq details { background: var(--color-bg-white); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 0 1.4rem; }
+.sp-faq summary { cursor: pointer; font-weight: 600; font-size: 1.05rem; padding: 1.15rem 2rem 1.15rem 0; list-style: none; position: relative; color: var(--color-navy); }
+.sp-faq summary::-webkit-details-marker { display: none; }
+.sp-faq summary::after { content: "+"; position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--color-gold); }
+.sp-faq details[open] summary::after { content: "–"; }
+.sp-faq details p { padding: 0 0 1.2rem; margin: 0; font-size: 1.02rem; color: var(--color-slate); }
 
-/* =================================================================
-   4 · CREDENTIALS STRIP (Genflow brand-logo strip pattern)
-   ================================================================= */
-.g-strip {
-  background: var(--color-cream);
-  text-align: center;
-}
-.g-strip-inner { max-width: 1100px; margin: 0 auto; }
-.g-strip-label {
-  font-family: var(--font-heading-sc);
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  color: var(--color-slate);
-  text-transform: uppercase;
-  margin: 0 0 1.6rem;
-}
-.g-strip-row {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem 2.4rem;
-}
-.g-strip-row li {
-  font-family: var(--font-heading);
-  font-style: italic;
-  font-size: 1rem;
-  color: var(--color-charcoal);
-  position: relative;
-}
-.g-strip-row li:not(:last-child)::after {
-  content: "·";
-  color: var(--color-gold);
-  margin-left: 2.4rem;
-  font-style: normal;
-}
-@media (max-width: 740px) {
-  .g-strip-row li:not(:last-child)::after { display: none; }
-  .g-strip-row { gap: 0.4rem 1.4rem; }
-}
-
-/* =================================================================
-   5 · COHORT TESTIMONIALS  (Genflow founder-grid pattern)
-   ================================================================= */
-.g-testimonials {
-  background: var(--color-bg-white);
-  text-align: center;
-}
-.g-testimonials-inner { max-width: 1180px; margin: 0 auto; }
-.g-testimonials-h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  line-height: 1.05;
-  color: var(--color-navy);
-  margin: 0 0 1.2rem;
-  letter-spacing: -0.015em;
-}
-.g-testimonials-h2 em {
-  color: var(--color-gold);
-  font-weight: 500;
-  font-style: italic;
-}
-.g-testimonials-sub {
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--color-slate);
-  max-width: 680px;
-  margin: 0 auto 3rem;
-  line-height: 1.4;
-}
-.g-testimonial-grid {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.6rem;
-}
-.g-testimonial-card {
-  background: var(--color-cream);
-  border: 1px solid var(--color-border-warm);
-  border-radius: 6px;
-  padding: 2rem 1.7rem 1.7rem;
-  text-align: left;
-  position: relative;
-  transition: transform 0.3s, box-shadow 0.3s;
-  display: flex;
-  flex-direction: column;
-}
-.g-testimonial-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(28,42,58,0.08);
-}
-.g-testimonial-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
-  color: var(--color-gold);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-heading);
-  font-size: 1.3rem;
-  margin-bottom: 1.2rem;
-}
-.g-testimonial-mark {
-  position: absolute;
-  top: 1.6rem;
-  right: 1.4rem;
-  font-family: var(--font-heading);
-  font-size: 3.4rem;
-  color: var(--color-gold);
-  line-height: 1;
-  opacity: 0.3;
-  pointer-events: none;
-}
-.g-testimonial-card blockquote {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--color-navy);
-  margin: 0 0 1.4rem;
-  flex: 1;
-  letter-spacing: -0.005em;
-}
-.g-testimonial-attr {
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--color-border-warm);
-}
-.g-testimonial-role {
-  font-size: 14px;
-  color: var(--color-charcoal);
-  margin: 0;
-  font-weight: 600;
-}
-.g-testimonial-session {
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: var(--color-slate);
-  margin: 0.25rem 0 0;
-}
-@media (max-width: 980px) { .g-testimonial-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .g-testimonial-grid { grid-template-columns: 1fr; } }
-
-/* =================================================================
-   6 · APPLY
-   ================================================================= */
-.g-apply {
-  background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-bg-cool) 100%);
-  text-align: center;
-  border-top: 1px solid var(--color-border-warm);
-}
-.g-apply::before {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 70% 30%, rgba(196,162,101,0.12), transparent 60%),
-    radial-gradient(circle at 25% 80%, rgba(28,42,58,0.06), transparent 50%);
-  pointer-events: none;
-}
-.g-apply-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  position: relative;
-}
-.g-apply-h2 {
-  font-family: var(--font-heading);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  line-height: 1.05;
-  color: var(--color-navy);
-  margin: 0 0 1.4rem;
-  letter-spacing: -0.015em;
-}
-.g-apply-h2 em { color: var(--color-gold); font-weight: 500; font-style: italic; }
-.g-apply-sub {
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--color-slate);
-  max-width: 640px;
-  margin: 0 auto 2.4rem;
-  line-height: 1.4;
-}
-.g-apply-form {
-  background: #fff;
-  border: 1px solid var(--color-border-warm);
-  border-radius: 6px;
-  padding: 2.6rem 2.4rem;
-  box-shadow: 0 10px 30px rgba(28, 42, 58, 0.08);
-  text-align: left;
-}
+/* ---------- apply (form CSS kept from before) ---------- */
+.g-apply { position: relative; padding: 8rem 1.5rem 6rem; background: var(--color-navy-deep); text-align: center; border-top: 1px solid rgba(245,240,232,0.10); }
+.g-apply::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%), radial-gradient(circle at 20% 90%, rgba(196,162,101,0.04), transparent 55%); pointer-events: none; }
+.g-apply-inner { max-width: 720px; margin: 0 auto; position: relative; }
+.g-apply-h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.05; color: var(--color-cream); margin: 0 0 1.4rem; letter-spacing: -0.015em; }
+.g-apply-sub { font-size: 1.1rem; color: rgba(245,240,232,0.82); max-width: 640px; margin: 0 auto 2.4rem; line-height: 1.55; }
+.g-apply-form { background: var(--color-cream); border: 1px solid rgba(196,162,101,0.30); border-radius: 6px; padding: 2.6rem 2.4rem; box-shadow: 0 10px 30px rgba(0,0,0,0.25); text-align: left; }
 .form-row { margin-bottom: 1.2rem; }
-.form-row label {
-  display: block;
-  font-family: var(--font-ui);
-  font-size: 0.86rem;
-  font-weight: 500;
-  color: var(--color-charcoal);
-}
+.form-row label { display: block; font-family: var(--font-ui); font-size: 0.86rem; font-weight: 500; color: var(--color-charcoal); }
 .form-row label span { display: block; margin-bottom: 0.4rem; }
-.form-row input,
-.form-row select,
-.form-row textarea {
-  width: 100%;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--color-charcoal);
-  padding: 0.75rem 0.95rem;
-  border: 1px solid var(--color-border-warm);
-  border-radius: 4px;
-  background: var(--color-bg-white);
-  transition: border-color 0.2s ease;
-}
-.form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus {
-  outline: none;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px rgba(196,162,101,0.18);
-}
+.form-row input, .form-row select, .form-row textarea { width: 100%; font-family: var(--font-body); font-size: 1rem; color: var(--color-charcoal); padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-warm); border-radius: 4px; background: var(--color-bg-white); transition: border-color 0.2s ease; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,162,101,0.18); }
 .form-row textarea { resize: vertical; min-height: 80px; }
 .honeypot { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
-.g-submit {
-  width: 100%;
-  padding: 1rem 2rem;
-  background: var(--color-navy);
-  color: var(--color-cream);
-  border: none;
-  border-radius: 4px;
-  font-family: var(--font-ui);
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
-  margin-top: 0.6rem;
-}
-.g-submit:hover {
-  background: var(--color-navy-deep);
-  transform: translateY(-1px);
-}
-.g-form-reassure {
-  font-family: var(--font-body);
-  font-size: 0.84rem;
-  color: var(--color-slate);
-  font-style: italic;
-  margin: 1.2rem 0 0;
-  text-align: center;
-}
+.g-submit { width: 100%; padding: 1rem 2rem; background: var(--color-navy); color: var(--color-cream); border: none; border-radius: 4px; font-family: var(--font-ui); font-size: 0.95rem; font-weight: 500; letter-spacing: 0.02em; cursor: pointer; transition: background 0.3s, transform 0.3s; margin-top: 0.6rem; }
+.g-submit:hover { background: var(--color-navy-deep); transform: translateY(-1px); }
+.g-form-reassure { font-family: var(--font-body); font-size: 0.84rem; color: var(--color-slate); font-style: italic; margin: 1.2rem 0 0; text-align: center; }
 .form-status { margin-top: 1rem; min-height: 1.2rem; font-family: var(--font-ui); font-size: 0.9rem; text-align: center; }
 .form-status.loading { color: var(--color-slate); }
 .form-status.error { color: #B0413E; }
-
 .calendly-step { margin-top: 1rem; }
 .calendly-confirm { text-align: center; margin-bottom: 2rem; }
 .calendly-tick { font-size: 2.4rem; color: var(--color-gold); margin: 0 0 0.6rem; }
-.calendly-confirm h3 {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
-  font-weight: 400;
-  color: var(--color-charcoal);
-  margin-bottom: 0.6rem;
-}
-.calendly-confirm p {
-  font-family: var(--font-body);
-  font-size: 0.98rem;
-  color: var(--color-slate);
-  max-width: 50ch;
-  margin: 0 auto;
-}
+.calendly-confirm h3 { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 400; color: var(--color-cream); margin-bottom: 0.6rem; }
+.calendly-confirm p { font-family: var(--font-body); font-size: 0.98rem; color: rgba(245,240,232,0.8); max-width: 50ch; margin: 0 auto; }
+.sp-fine { margin: 2rem auto 0; max-width: 620px; font-size: 0.82rem; color: rgba(245,240,232,0.55); line-height: 1.6; }
 
-/* =================================================================
-   RESPONSIVE
-   ================================================================= */
-@media (max-width: 760px) {
-  .g-hero { padding: 8rem 1.2rem 5rem; }
-  .g-video, .g-step2, .g-testimonials, .g-apply { padding: 6rem 1.2rem; }
-  .g-strip { padding: 3rem 1.2rem; }
+/* ---------- sticky bar ---------- */
+.sp-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: flex; align-items: center; justify-content: center; gap: 1.6rem; padding: 0.8rem 1.2rem; background: var(--color-navy-deep); border-top: 1px solid rgba(196,162,101,0.5); color: var(--color-cream); transform: translateY(110%); transition: transform .35s ease; font-size: 0.95rem; }
+.sp-bar.show { transform: translateY(0); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1024px) {
+  .sp-hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .sp-pain-grid { grid-template-columns: repeat(2, 1fr); }
+  .sp-two, .sp-founder { grid-template-columns: 1fr; gap: 2.2rem; }
+  .sp-portrait { max-width: 280px; }
+  .sp-include-grid, .sp-video-grid, .sp-price-grid, .sp-quote-row, .sp-stats { grid-template-columns: repeat(2, 1fr); }
+  .sp-panel-body { grid-template-columns: 1fr; }
+  .sp-vfeature { grid-template-columns: 1fr; gap: 1.4rem; }
+}
+@media (max-width: 680px) {
+  .sp-section { padding: 6rem 1.2rem 4.5rem; }
+  .sp-hero { padding: 8rem 1.2rem 4.5rem; }
+  .sp-pain-grid, .sp-include-grid, .sp-video-grid, .sp-price-grid, .sp-quote-row, .sp-stats { grid-template-columns: 1fr; }
+  .sp-tablist, .sp-tablist-4 { grid-template-columns: repeat(2, 1fr); }
+  .sp-tab { border-bottom: 1px solid rgba(28,42,58,0.08); }
+  .sp-bar span { display: none; }
+  .sp-strip-row li:not(:last-child)::after { display: none; }
+  .g-apply { padding: 6rem 1.2rem 4rem; }
   .g-apply-form { padding: 1.8rem 1.4rem; }
 }
 </style>

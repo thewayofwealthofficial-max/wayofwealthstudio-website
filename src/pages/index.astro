@@ -1,32 +1,120 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
+import { getCollection } from 'astro:content';
 
 const title = "Way of Wealth — Behavioural money coaching for people who've tried everything else";
 const description = "Behavioural economics-led coaching, workbooks, and a free quiz for people who've tried budgets, apps, and spreadsheets — and still feel stuck. MSc Behavioural Economics | Qualified Financial Planner.";
 const canonical = LINKS.siteUrl;
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const VSL_SRC = 'https://discover.thewayofwealth.shop/vsl/vsl.mp4';
+const VSL_POSTER = 'https://discover.thewayofwealth.shop/vsl/vsl-poster.jpg';
+
+const FOR_YOU = [
+  "You've downloaded budget templates you never opened.",
+  "You check your bank balance less often than you'd like to admit.",
+  "\"What should I actually charge?\" is a question you've never really answered. You picked a number and hoped nobody would ask why.",
+  "You feel a flicker of guilt charging good money for work that also means something to you.",
+  "Your income swings from a fully booked month to weeks of almost nothing, and you've never built anything to survive the gap.",
+  "You want to feel calm about money, not just \"good at it\".",
+];
+
+const CREDS = ["MSc Behavioural Economics", "Qualified Financial Planner (UK)", "Klontz Money Scripts", "Kahneman · Thaler · Duhigg"];
+
+const QUOTES = [
+  "It's almost like looking in a mirror.",
+  "I feel seen and called out at the same time.",
+  "Permission. That one word defines my whole life.",
+];
+
+const VIDEOS = [
+  { slug: "josh-pedestal", cap: "You've taken money off the pedestal — now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
+  { slug: "alon-opportunity", cap: "From avoiding money as \"just status\" to seeing it as a tool for freedom.", who: "Alon, personal trainer" },
+  { slug: "shambhavi-worth", cap: "Calmer about money, and clear on her worth.", who: "Shambhavi, finishing her master's" },
+  { slug: "lynton-autopilot", cap: "Spotted the autopilot spending quietly draining him, and built a system to stop it.", who: "Lynton, personal trainer" },
+  { slug: "shira-breakthrough", cap: "A breakthrough moment: seeing what her money could actually build.", who: "Shira" },
+  { slug: "jessica-leaks", cap: "Found exactly where her money was leaking, and started closing the gaps.", who: "Jessica" },
+];
+
+const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 <Layout title={title} description={description} canonical={canonical}>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-credential">MSc Behavioural Economics &nbsp;|&nbsp; Qualified Financial Planner</div>
-  <h1>You've tried budgets before.<br />Something keeps <em>getting in the way.</em></h1>
-  <p class="hero-sub">It's not a willpower problem. It's not a maths problem. It's the way your brain is wired to handle money stress — and it's more common than you think.</p>
-  <div class="hero-actions">
-    <a href={LINKS.coaching} class="btn-primary">See The Money Story Method</a>
-    <a href={LINKS.newsletter} target="_blank" rel="noopener" class="btn-ghost">Join Finance Fridays Newsletter</a>
+<!-- 1 · HERO: photo + overlay card -->
+<section class="hm-hero">
+  <div class="hm-hero-photo" aria-hidden="true"></div>
+  <div class="hm-hero-inner">
+    <div class="hm-card reveal">
+      <p class="hm-script">Joel Ezekiel</p>
+      <h1>Behavioural money coach for people who earn well and still don't feel like they keep it.</h1>
+      <p class="hm-card-sub">Stop the tax panic and the 2am balance checks. Build a money system that runs even when you're tired.</p>
+      <div class="hm-actions">
+        <a href={LINKS.coaching} class="btn-primary">See The Money Story Method</a>
+        <a href={LINKS.newsletter} target="_blank" rel="noopener" class="hm-ghost">Join Finance Fridays</a>
+      </div>
+      <p class="hm-creds-line">MSc Behavioural Economics &nbsp;|&nbsp; Qualified Financial Planner</p>
+    </div>
   </div>
 </section>
 
-<!-- ICEBERG — lifted verbatim from coaching.astro -->
+<!-- 2 · HI, I'M JOEL + who it's for -->
+<section class="hm-intro" id="about">
+  <div class="hm-intro-inner">
+    <div class="reveal">
+      <h2 class="hm-script-h">Hi, I'm Joel.</h2>
+      <p>I'm a behavioural money coach and a Qualified Financial Planner. I work with self-employed people, coaches and practitioners who earn well and still feel broke.</p>
+      <p>I'll show you how to stop the tax panic, the 2am balance checks and the feast-and-famine months, and how to build a system that keeps your money in order without willpower.</p>
+      <p class="hm-accent">My 12-week programme, The Money Story Method, is how we do it, one to one.</p>
+      <p class="hm-lead-in">This is for you if:</p>
+      <ul class="hm-tick">
+        {FOR_YOU.map((t) => <li>{t}</li>)}
+      </ul>
+      <a href="/coaching#apply" class="btn-primary">Book your free call</a>
+    </div>
+    <div class="hm-video reveal">
+      <video controls playsinline preload="none" poster={VSL_POSTER} src={VSL_SRC}></video>
+      <p class="hm-video-cap">Watch: how the Money Story Method works</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · CREDENTIALS BAND -->
+<section class="hm-band">
+  <p class="hm-band-label">Trained in · grounded in</p>
+  <ul class="hm-band-row">
+    {CREDS.map((c) => <li>{c}</li>)}
+  </ul>
+</section>
+
+<!-- 4 · HOW CAN I HELP -->
+<section class="hm-help">
+  <h2 class="hm-h2 reveal">How can I help you?</h2>
+  <div class="hm-help-grid">
+    <article class="hm-help-card reveal">
+      <div class="hm-help-top"><span>1:1 · 12 weeks</span></div>
+      <h3>The Money Story Method</h3>
+      <p><b>WORK WITH ME</b> to build your money system, one to one, and change the habits underneath it. Free 20-minute call to start.</p>
+      <a href={LINKS.coaching} class="hm-card-btn">See the programme</a>
+    </article>
+    <article class="hm-help-card reveal">
+      <div class="hm-help-top"><span>Free · weekly</span></div>
+      <h3>Finance Fridays</h3>
+      <p><b>READ</b> honest, research-based notes on money and behaviour. One email a week, one-click unsubscribe any time.</p>
+      <a href={LINKS.newsletter} target="_blank" rel="noopener" class="hm-card-btn">Join for free</a>
+    </article>
+  </div>
+</section>
+
+<!-- 5 · METHOD IN ONE IMAGE -->
 <section class="iceberg-section">
   <div class="iceberg-inner reveal">
     <span class="section-tag">The Method, in One Image</span>
     <h2>Budgets live above the waterline.<br /><em>The real work is below.</em></h2>
-
     <div class="iceberg-layout">
-      <!-- ABOVE WATER CARD -->
       <div class="iceberg-card iceberg-above">
         <p class="iceberg-card-label">ABOVE THE WATERLINE · BEHAVIOUR</p>
         <ul class="iceberg-card-list">
@@ -37,23 +125,12 @@ const canonical = LINKS.siteUrl;
           <li>What you <em>track</em>, what you <em>try</em></li>
         </ul>
       </div>
-
-      <!-- ICEBERG VISUAL -->
       <div class="iceberg-figure" aria-hidden="true">
         <svg viewBox="0 0 300 320" role="img" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="ice-above-v2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F5F0E8" />
-              <stop offset="100%" stop-color="#E8D5B0" />
-            </linearGradient>
-            <linearGradient id="ice-below-v2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#1C2A3A" />
-              <stop offset="100%" stop-color="#141F2B" />
-            </linearGradient>
-            <linearGradient id="water-v2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#C4A265" stop-opacity="0.6" />
-              <stop offset="100%" stop-color="#C4A265" stop-opacity="0" />
-            </linearGradient>
+            <linearGradient id="ice-above-v2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5F0E8" /><stop offset="100%" stop-color="#E8D5B0" /></linearGradient>
+            <linearGradient id="ice-below-v2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1C2A3A" /><stop offset="100%" stop-color="#141F2B" /></linearGradient>
+            <linearGradient id="water-v2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C4A265" stop-opacity="0.6" /><stop offset="100%" stop-color="#C4A265" stop-opacity="0" /></linearGradient>
           </defs>
           <polygon points="120,30 180,30 200,110 100,110" fill="url(#ice-above-v2)" stroke="#C4A265" stroke-width="1.5" />
           <line x1="10" y1="115" x2="290" y2="115" stroke="#C4A265" stroke-width="1.5" stroke-dasharray="4 5" />
@@ -64,8 +141,6 @@ const canonical = LINKS.siteUrl;
           <path d="M 75 250 L 220 245" stroke="#C4A265" stroke-width="0.8" opacity="0.2" />
         </svg>
       </div>
-
-      <!-- BELOW WATER CARD -->
       <div class="iceberg-card iceberg-below">
         <p class="iceberg-card-label">BELOW THE WATERLINE · THE STORY</p>
         <ul class="iceberg-card-list iceberg-card-list-below">
@@ -77,129 +152,53 @@ const canonical = LINKS.siteUrl;
         </ul>
       </div>
     </div>
-
     <p class="iceberg-caption">Most financial advice works above the line. The Money Story Method starts below it.</p>
   </div>
 </section>
 
-<!-- WHO THIS IS FOR -->
-<section class="whofor">
-  <div class="whofor-inner">
-    <div class="reveal">
-      <span class="section-tag">Who This Is For</span>
-      <h2>You might recognise<br />yourself <em>here.</em></h2>
-      <p class="whofor-intro">If one or more of these land, you're probably in the right place. None of this makes you broken — it makes you human, and it's more common than the finance world likes to admit.</p>
-    </div>
-    <ul class="checklist reveal">
-      <li>You've downloaded budget templates you never opened</li>
-      <li>You check your bank balance less often than you'd like to admit</li>
-      <li>"What should I actually charge?" is a question you've never really answered — you just picked a number and hoped nobody would ask why</li>
-      <li>You've felt a flicker of guilt charging good money for work that's also meaningful to you</li>
-      <li>Your income swings from a fully-booked month to weeks of almost nothing, and you've never built anything to survive the gap</li>
-      <li>You want to feel calm about money, not just "good at it"</li>
+<!-- 6 · CLIENT WINS -->
+<section class="hm-wins">
+  <svg class="hm-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <div class="hm-wins-inner">
+    <h2 class="hm-h2 hm-h2-light reveal">Client wins</h2>
+    <p class="hm-wins-sub reveal">In their own words. Real people, real recordings.</p>
+    <ul class="hm-qrow">
+      {QUOTES.map((q) => (
+        <li class="hm-qcard reveal"><span aria-hidden="true">“</span><p>{q}</p><small>Money Story Method client</small></li>
+      ))}
     </ul>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="testis-section">
-  <div class="testis-inner">
-    <span class="section-tag reveal">Don't Take My Word For It</span>
-    <h2 class="reveal">People who were exactly<br />where you are <em>now.</em></h2>
-
-    <div class="testis-feature reveal">
-      <video class="testis-feature-vid" controls preload="none" playsinline poster="/testimonials/josh-book-the-call.jpg" src="/testimonials/josh-book-the-call.mp4"></video>
-      <blockquote class="testis-feature-quote">
-        "Book that first call with Joel. Just do it — one call is all it takes."
-        <cite>— Josh, yacht chef · came in stuck in debt, left debt-free and on a five-year plan</cite>
-      </blockquote>
-    </div>
-
-    <div class="testis-grid">
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/josh-pedestal.jpg" src="/testimonials/josh-pedestal.mp4"></video>
-        <p class="testis-quote">"You've taken money off the pedestal — now it's a tool I'm in control of, not the other way round."</p>
-        <p class="testis-name">— Josh, yacht chef</p>
-      </div>
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/alon-opportunity.jpg" src="/testimonials/alon-opportunity.mp4"></video>
-        <p class="testis-quote">From avoiding money as "just status" to seeing it as a tool for freedom — now planning his own studio.</p>
-        <p class="testis-name">— Alon, personal trainer</p>
-      </div>
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/shambhavi-worth.jpg" src="/testimonials/shambhavi-worth.mp4"></video>
-        <p class="testis-quote">Left calmer about money — and clear on her worth, no longer settling for less than she deserves.</p>
-        <p class="testis-name">— Shambhavi, finishing her master's</p>
-      </div>
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/lynton-autopilot.jpg" src="/testimonials/lynton-autopilot.mp4"></video>
-        <p class="testis-quote">Spotted the autopilot spending quietly draining him — and built a system to stop it.</p>
-        <p class="testis-name">— Lynton, personal trainer</p>
-      </div>
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/shira-breakthrough.jpg" src="/testimonials/shira-breakthrough.mp4"></video>
-        <p class="testis-quote">A breakthrough moment — seeing what her money could actually build.</p>
-        <p class="testis-name">— Shira</p>
-      </div>
-      <div class="testis-card reveal">
-        <video class="testis-vid" controls preload="none" playsinline poster="/testimonials/jessica-leaks.jpg" src="/testimonials/jessica-leaks.mp4"></video>
-        <p class="testis-quote">Found exactly where her money was leaking — and started plugging the holes.</p>
-        <p class="testis-name">— Jessica</p>
-      </div>
+    <div class="hm-vgrid">
+      {VIDEOS.map((v) => (
+        <figure class="hm-vcard reveal">
+          <video controls playsinline preload="none" poster={`/testimonials/${v.slug}.jpg`} src={`/testimonials/${v.slug}.mp4`}></video>
+          <figcaption><p>{v.cap}</p><small>{v.who}</small></figcaption>
+        </figure>
+      ))}
     </div>
   </div>
 </section>
 
-<!-- WHAT'S HERE -->
-<section class="whats-here" id="whats-here">
-  <div class="whats-here-inner">
-    <div class="section-header reveal">
-      <span class="section-tag">What's Actually Here</span>
-      <h2>Simple, honest places to <em>start.</em></h2>
-    </div>
-
-    <!-- FLAGSHIP CARD: full-width row above the 4-card grid -->
-    <a href="/coaching" class="flagship reveal">
-      <div class="flagship-body">
-        <span class="flagship-label">Flagship · 1:1 Programme</span>
-        <h3>The Money Story Method</h3>
-        <p class="flagship-sub">12-week 1:1 behavioural coaching</p>
-        <p class="flagship-desc">The deep version of this work. For anyone who's tried everything and wants to go underneath the budgets and apps — into the story running the pattern.</p>
-        <span class="flagship-cta">See the programme →</span>
-      </div>
-      <div class="flagship-aside" aria-hidden="true">
-        <span class="flagship-aside-num">01</span>
-        <span class="flagship-aside-label">The full method</span>
-      </div>
-    </a>
+<!-- 7 · READ ALL ABOUT IT -->
+<section class="hm-read">
+  <h2 class="hm-h2 reveal">Read all about it</h2>
+  <div class="hm-read-grid">
+    {posts.map((p) => (
+      <a href={`/blog/${p.id}/`} class="hm-read-card reveal">
+        <span class="hm-read-cat">{p.data.category}</span>
+        <h3>{p.data.title}</h3>
+        <p>{p.data.description}</p>
+        <small>{dateFmt.format(p.data.pubDate)}</small>
+      </a>
+    ))}
   </div>
+  <p class="hm-read-more"><a href="/blog">Read the blog →</a></p>
 </section>
 
-<!-- ABOUT (short) -->
-<section class="about" id="about">
-  <div class="about-inner reveal">
-    <span class="section-tag">About</span>
-    <div class="about-layout">
-      <figure class="about-portrait">
-        <img src="/images/joel-headshot.jpg" alt="Joel — Way of Wealth" loading="lazy" />
-        <figcaption>Joel · MSc Behavioural Economics · QFP (UK)</figcaption>
-      </figure>
-      <div class="about-body">
-        <h2>A quick note on <em>why me.</em></h2>
-        <p>I studied behavioural economics at MSc level to understand why smart, capable people make money decisions that don't look logical on paper.</p>
-        <p>Then I spent years as a qualified financial planner, watching people walk out of meetings with sound plans and change almost nothing about how they lived.</p>
-        <p>Way of Wealth is what I built to work the layer underneath — the one every standard plan skips over.</p>
-        <a href="/coaching#origin" class="about-link">Read the full story →</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
+<!-- 8 · NEWSLETTER BAND -->
 <section class="cta-section" id="start">
   <div class="cta-inner reveal">
     <h2>Not ready for coaching yet?<br />Start where it's <em>quiet.</em></h2>
-    <p>Finance Fridays — honest, research-based notes on money and behaviour, straight to your inbox once a week. No upsells buried in every issue, just the thinking that eventually leads people to book a call.</p>
+    <p>Finance Fridays: honest, research-based notes on money and behaviour, straight to your inbox once a week. No upsell in every issue, just the thinking that eventually leads people to book a call.</p>
     <a href={LINKS.newsletter} target="_blank" rel="noopener" class="btn-primary btn-primary-lg">Join Finance Fridays</a>
     <div class="cta-reassure">One email a week. Unsubscribe any time. No webinar, no catch.</div>
   </div>
@@ -208,556 +207,137 @@ const canonical = LINKS.siteUrl;
 </Layout>
 
 <style>
-  /* --- HERO --- */
-  .hero {
-    min-height: 92vh;
-    background: var(--color-navy);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 9rem 2rem 5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 4px;
-    background: var(--color-gold);
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    top: -30%; left: 50%;
-    transform: translateX(-50%);
-    width: 900px; height: 900px;
-    background: radial-gradient(ellipse, rgba(196, 162, 101, 0.05) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .hero-credential {
-    font-family: var(--font-heading-sc);
-    font-size: 0.78rem;
-    letter-spacing: 0.15em;
-    color: var(--color-gold);
-    margin-bottom: 2.5rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 1px solid rgba(196, 162, 101, 0.4);
-    position: relative;
-    z-index: 2;
-  }
-  .hero h1 {
-    font-family: var(--font-heading);
-    font-size: clamp(2.6rem, 6vw, 5.2rem);
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    max-width: 920px;
-    color: var(--color-cream);
-    position: relative;
-    z-index: 2;
-  }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--color-gold);
-    font-weight: 400;
-  }
-  .hero-sub {
-    font-family: var(--font-body);
-    font-size: 1.15rem;
-    color: rgba(245, 240, 232, 0.82);
-    max-width: 580px;
-    line-height: 1.75;
-    margin-top: 2rem;
-    font-weight: 400;
-    position: relative;
-    z-index: 2;
-  }
-  .hero-actions {
-    margin-top: 2.75rem;
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
-  }
+  /* ---------- HERO (photo + overlay card) ---------- */
+  .hm-hero { position: relative; min-height: 92vh; background: var(--color-navy-deep); display: flex; align-items: center; overflow: hidden; padding: 9rem 2rem 5rem; }
+  .hm-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--color-gold); z-index: 3; }
+  .hm-hero-photo { position: absolute; top: 0; right: 0; bottom: 0; width: 58%; background: url('/images/joel-headshot-web.jpg') center 18% / cover no-repeat; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 38%); mask-image: linear-gradient(to right, transparent 0%, #000 38%); }
+  .hm-hero-inner { position: relative; z-index: 2; max-width: 1180px; width: 100%; margin: 0 auto; }
+  .hm-card { max-width: 560px; background: rgba(20,31,43,0.94); border: 1px solid rgba(196,162,101,0.4); border-radius: 8px; padding: 2.6rem 2.4rem; box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+  .hm-script { font-family: var(--font-heading); font-style: italic; font-size: 2.1rem; color: var(--color-gold); margin: 0 0 1rem; line-height: 1.1; }
+  .hm-card h1 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(1.7rem, 2.8vw, 2.35rem); line-height: 1.25; color: var(--color-cream); margin: 0 0 1.1rem; }
+  .hm-card-sub { font-size: 1.08rem; line-height: 1.65; color: rgba(245,240,232,0.85); margin: 0 0 1.8rem; }
+  .hm-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.4rem; }
+  .hm-ghost { color: var(--color-cream); font-family: var(--font-ui); font-size: 0.95rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(196,162,101,0.7); padding: 0.4rem 0.2rem; }
+  .hm-ghost:hover { color: var(--color-gold); }
+  .hm-creds-line { font-family: var(--font-heading-sc); font-size: 0.74rem; letter-spacing: 0.14em; color: var(--color-gold-subtle); margin: 0; }
 
-  /* --- ICEBERG (lifted from coaching.astro) --- */
-  .iceberg-section {
-    padding: 6rem 2rem;
-    background: var(--color-cream);
-  }
-  .iceberg-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .iceberg-section h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--color-charcoal);
-    margin-bottom: 2.5rem;
-  }
+  /* ---------- INTRO ---------- */
+  .hm-intro { padding: 7rem 2rem; background: var(--color-bg-white); }
+  .hm-intro-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr; gap: 4rem; align-items: start; }
+  .hm-script-h { font-family: var(--font-heading); font-style: italic; font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.6rem); color: var(--color-gold); margin: 0 0 1.4rem; line-height: 1.05; }
+  .hm-intro p { font-size: 1.08rem; line-height: 1.75; color: var(--color-charcoal); margin: 0 0 1.1rem; }
+  .hm-accent { color: var(--color-gold) !important; font-weight: 500; }
+  .hm-lead-in { font-weight: 700; margin-top: 1.6rem !important; color: var(--color-navy) !important; }
+  .hm-tick { list-style: none; margin: 0 0 2rem; padding: 0; }
+  .hm-tick li { position: relative; padding: 0.7rem 0 0.7rem 2.1rem; border-bottom: 1px solid var(--color-border-warm); font-size: 1.02rem; line-height: 1.55; color: var(--color-charcoal); }
+  .hm-tick li:last-child { border-bottom: none; }
+  .hm-tick li::before { content: '✓'; position: absolute; left: 0; top: 0.65rem; color: var(--color-gold); font-weight: 700; }
+  .hm-video { position: sticky; top: 7rem; }
+  .hm-video video { width: 100%; aspect-ratio: 16/9; border-radius: 8px; background: #000; border: 1px solid rgba(196,162,101,0.4); box-shadow: 0 20px 50px rgba(28,42,58,0.25); display: block; }
+  .hm-video-cap { text-align: center; font-family: var(--font-ui); font-size: 0.85rem !important; color: var(--color-slate) !important; margin: 0.9rem 0 0 !important; }
+
+  /* ---------- CREDENTIALS BAND ---------- */
+  .hm-band { background: var(--color-gold-subtle); text-align: center; padding: 2.6rem 1.5rem; }
+  .hm-band-label { font-family: var(--font-heading-sc); font-size: 0.74rem; letter-spacing: 0.22em; color: var(--color-navy); margin: 0 0 1rem; }
+  .hm-band-row { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2.4rem; }
+  .hm-band-row li { font-family: var(--font-heading); font-style: italic; font-size: 1.05rem; color: var(--color-navy); }
+
+  /* ---------- HOW CAN I HELP ---------- */
+  .hm-help { padding: 7rem 2rem; background: var(--color-bg-white); text-align: center; }
+  .hm-h2 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(2rem, 3.8vw, 2.9rem); color: var(--color-navy); margin: 0 0 3rem; }
+  .hm-h2-light { color: var(--color-cream); margin-bottom: 0.8rem; }
+  .hm-help-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .hm-help-card { background: #fff; border: 1px solid var(--color-border-warm); border-radius: 6px; box-shadow: 0 10px 35px rgba(28,42,58,0.08); overflow: hidden; display: flex; flex-direction: column; text-align: center; }
+  .hm-help-top { background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-deep) 100%); padding: 3.2rem 1rem; }
+  .hm-help-top span { font-family: var(--font-heading-sc); letter-spacing: 0.2em; font-size: 0.85rem; color: var(--color-gold); }
+  .hm-help-card h3 { font-family: var(--font-heading); font-weight: 400; font-size: 1.7rem; color: var(--color-navy); margin: 1.8rem 1.2rem 0.8rem; }
+  .hm-help-card p { font-size: 1rem; line-height: 1.65; color: var(--color-charcoal); margin: 0 1.6rem 1.6rem; flex: 1; }
+  .hm-card-btn { align-self: center; margin-bottom: 2.2rem; background: var(--color-gold); color: var(--color-navy-deep); font-family: var(--font-ui); font-weight: 600; font-size: 0.9rem; text-decoration: none; padding: 0.85rem 1.8rem; border-radius: 3px; transition: background .25s, transform .25s; }
+  .hm-card-btn:hover { background: var(--color-gold-hover); transform: translateY(-2px); }
+
+  /* ---------- ICEBERG ---------- */
+  .iceberg-section { padding: 6rem 2rem; background: var(--color-cream); }
+  .iceberg-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+  .iceberg-section h2 { font-family: var(--font-heading); font-size: clamp(1.9rem, 3.5vw, 2.6rem); font-weight: 400; line-height: 1.2; color: var(--color-charcoal); margin-bottom: 2.5rem; }
   .iceberg-section h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-  .iceberg-layout {
-    display: grid;
-    grid-template-columns: 1fr 280px 1fr;
-    gap: 2rem;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  .iceberg-figure {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .iceberg-figure svg {
-    width: 100%;
-    max-width: 260px;
-    height: auto;
-  }
-  .iceberg-card {
-    padding: 1.75rem;
-    border-radius: 8px;
-    text-align: left;
-  }
-  .iceberg-above {
-    background: var(--color-bg-white);
-    border: 1px solid var(--color-border-warm);
-  }
-  .iceberg-below {
-    background: var(--color-navy);
-    color: var(--color-cream);
-  }
-  .iceberg-card-label {
-    font-family: var(--font-heading-sc);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    color: var(--color-gold);
-    margin: 0 0 0.85rem;
-  }
+  .iceberg-layout { display: grid; grid-template-columns: 1fr 280px 1fr; gap: 2rem; align-items: center; margin-bottom: 2rem; }
+  .iceberg-figure { display: flex; justify-content: center; align-items: center; }
+  .iceberg-figure svg { width: 100%; max-width: 260px; height: auto; }
+  .iceberg-card { padding: 1.75rem; border-radius: 8px; text-align: left; }
+  .iceberg-above { background: var(--color-bg-white); border: 1px solid var(--color-border-warm); }
+  .iceberg-below { background: var(--color-navy); color: var(--color-cream); }
+  .iceberg-card-label { font-family: var(--font-heading-sc); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--color-gold); margin: 0 0 0.85rem; }
   .iceberg-above .iceberg-card-label { color: var(--color-slate); }
-  .iceberg-card-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: 0.98rem;
-    line-height: 1.85;
-  }
+  .iceberg-card-list { list-style: none; padding: 0; margin: 0; font-family: var(--font-body); font-size: 0.98rem; line-height: 1.85; }
   .iceberg-above .iceberg-card-list { color: var(--color-charcoal); }
   .iceberg-below .iceberg-card-list { color: var(--color-cream); }
   .iceberg-card-list li { position: relative; padding-left: 1rem; }
-  .iceberg-card-list li::before {
-    content: '·';
-    color: var(--color-gold);
-    position: absolute;
-    left: 0;
-    font-weight: 700;
-  }
+  .iceberg-card-list li::before { content: '·'; color: var(--color-gold); position: absolute; left: 0; font-weight: 700; }
   .iceberg-card-list em { font-style: italic; color: var(--color-gold); }
   .iceberg-below .iceberg-card-list em { color: var(--color-gold-subtle); }
-  .iceberg-caption {
-    font-family: var(--font-body);
-    font-style: italic;
-    font-size: 1.05rem;
-    color: var(--color-slate);
-    margin-top: 2rem;
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  @media (max-width: 900px) {
-    .iceberg-layout {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
+  .iceberg-caption { font-family: var(--font-body); font-style: italic; font-size: 1.05rem; color: var(--color-slate); margin: 2rem auto 0; max-width: 640px; }
+
+  /* ---------- CLIENT WINS ---------- */
+  .hm-wins { position: relative; background: var(--color-navy-deep); padding: 8rem 2rem 6rem; text-align: center; }
+  .hm-wave { position: absolute; top: -1px; left: 0; width: 100%; height: clamp(40px, 6vw, 90px); fill: var(--color-cream); display: block; pointer-events: none; }
+  .hm-wins-inner { max-width: 1140px; margin: 0 auto; }
+  .hm-wins-sub { color: rgba(245,240,232,0.75); font-size: 1.05rem; margin: 0 0 3rem; }
+  .hm-qrow { list-style: none; margin: 0 0 2rem; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .hm-qcard { position: relative; background: #fff; border-radius: 4px; padding: 2rem 1.6rem 1.6rem; text-align: center; }
+  .hm-qcard span { display: block; font-family: var(--font-heading); font-size: 3rem; line-height: 0.6; color: var(--color-gold); margin-bottom: 0.9rem; }
+  .hm-qcard p { font-family: var(--font-heading); font-style: italic; font-size: 1.15rem; line-height: 1.5; color: var(--color-navy); margin: 0 0 1rem; }
+  .hm-qcard small { color: var(--color-slate); font-size: 0.82rem; }
+  .hm-vgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; text-align: left; }
+  .hm-vcard { margin: 0; background: rgba(245,240,232,0.05); border: 1px solid rgba(196,162,101,0.2); border-radius: 8px; padding: 1rem; }
+  .hm-vcard video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .hm-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
+  .hm-vcard figcaption p { font-size: 0.95rem; line-height: 1.5; color: var(--color-cream); margin: 0 0 0.5rem; }
+  .hm-vcard figcaption small { color: var(--color-gold-subtle); font-size: 0.82rem; }
+
+  /* ---------- READ ALL ABOUT IT ---------- */
+  .hm-read { padding: 7rem 2rem 5rem; background: var(--color-bg-white); text-align: center; }
+  .hm-read-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; text-align: left; }
+  .hm-read-card { display: flex; flex-direction: column; background: var(--color-cream); border-left: 3px solid var(--color-gold); border-radius: 4px; padding: 1.8rem 1.6rem; text-decoration: none; color: inherit; transition: transform .25s, box-shadow .25s; }
+  .hm-read-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(28,42,58,0.1); }
+  .hm-read-cat { font-family: var(--font-heading-sc); font-size: 0.7rem; letter-spacing: 0.16em; color: var(--color-slate); margin-bottom: 0.7rem; text-transform: uppercase; }
+  .hm-read-card h3 { font-family: var(--font-heading); font-weight: 400; font-size: 1.3rem; line-height: 1.3; color: var(--color-navy); margin: 0 0 0.8rem; }
+  .hm-read-card p { font-size: 0.95rem; line-height: 1.6; color: var(--color-slate); margin: 0 0 1rem; flex: 1; }
+  .hm-read-card small { color: var(--color-slate); font-size: 0.8rem; }
+  .hm-read-more { margin: 2.2rem 0 0; }
+  .hm-read-more a { font-family: var(--font-ui); font-weight: 500; color: var(--color-gold); text-decoration: none; }
+  .hm-read-more a:hover { color: var(--color-gold-hover); }
+
+  /* ---------- NEWSLETTER BAND (kept) ---------- */
+  .cta-section { padding: 8rem 2rem; background: var(--color-navy); text-align: center; position: relative; overflow: hidden; }
+  .cta-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--color-gold); }
+  .cta-section::after { content: ''; position: absolute; bottom: -250px; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(ellipse, rgba(196, 162, 101, 0.06) 0%, transparent 65%); pointer-events: none; }
+  .cta-inner { max-width: 780px; margin: 0 auto; position: relative; z-index: 2; }
+  .cta-section h2 { font-family: var(--font-heading); font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 400; color: var(--color-cream); line-height: 1.15; margin-bottom: 1.5rem; }
+  .cta-section h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
+  .cta-section > .cta-inner > p { color: rgba(245, 240, 232, 0.78); font-size: 1.06rem; max-width: 540px; margin: 0 auto 2.75rem; line-height: 1.8; }
+  .cta-reassure { margin-top: 1.5rem; font-family: var(--font-ui); font-size: 0.82rem; color: rgba(245, 240, 232, 0.82); }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1024px) {
+    .hm-hero { min-height: auto; padding: 8rem 1.5rem 4rem; align-items: flex-end; }
+    .hm-hero-photo { width: 100%; height: 55%; bottom: auto; -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); background-position: center 12%; }
+    .hm-hero-inner { margin-top: 26rem; }
+    .hm-intro-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .hm-video { position: static; }
+    .hm-qrow, .hm-vgrid, .hm-read-grid { grid-template-columns: repeat(2, 1fr); }
+    .iceberg-layout { grid-template-columns: 1fr; gap: 1.5rem; }
     .iceberg-figure { order: 2; }
     .iceberg-above { order: 1; }
     .iceberg-below { order: 3; }
     .iceberg-figure svg { max-width: 200px; }
   }
-
-  /* --- WHO THIS IS FOR --- */
-  .whofor { padding: 7rem 2rem; background: var(--color-bg-white); }
-  .whofor-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 5rem;
-    align-items: start;
-  }
-  .whofor h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--color-charcoal);
-    margin-bottom: 1.5rem;
-  }
-  .whofor h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-  .whofor p.whofor-intro {
-    color: var(--color-slate);
-    font-size: 1.02rem;
-    line-height: 1.8;
-  }
-  .checklist { list-style: none; padding: 0; }
-  .checklist li {
-    padding: 1.1rem 0 1.1rem 2rem;
-    border-bottom: 1px solid var(--color-border-warm);
-    font-size: 1.02rem;
-    color: var(--color-charcoal);
-    position: relative;
-    line-height: 1.6;
-  }
-  .checklist li:last-child { border-bottom: none; }
-  .checklist li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
-    top: 1.1rem;
-    color: var(--color-gold);
-    font-weight: 500;
-  }
-
-  /* --- WHAT'S HERE --- */
-  .whats-here { padding: 7rem 2rem; background: var(--color-bg-cool); }
-  .whats-here-inner { max-width: 1100px; margin: 0 auto; }
-  .whats-here .section-header { text-align: center; margin-bottom: 4rem; }
-  .whats-here h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(2rem, 3.5vw, 2.8rem);
-    font-weight: 400;
-    color: var(--color-charcoal);
-    line-height: 1.2;
-  }
-  .whats-here h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-
-  /* FLAGSHIP CARD — full-width row above the 4-card grid */
-  .flagship {
-    display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 2.5rem;
-    align-items: stretch;
-    background: var(--color-navy);
-    color: var(--color-cream);
-    padding: 2.75rem 3rem;
-    border-radius: 8px;
-    border: 2px solid var(--color-gold);
-    box-shadow: 0 8px 28px rgba(28, 42, 58, 0.12);
-    text-decoration: none;
-    margin-bottom: 2.25rem;
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .flagship::before {
-    content: '';
-    position: absolute;
-    top: -40%; right: -15%;
-    width: 360px; height: 360px;
-    background: radial-gradient(ellipse, rgba(196, 162, 101, 0.10) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .flagship:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 36px rgba(28, 42, 58, 0.18);
-  }
-  .flagship-body { position: relative; z-index: 2; }
-  .flagship-label {
-    font-family: var(--font-heading-sc);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    color: var(--color-gold);
-    display: block;
-    margin-bottom: 0.9rem;
-  }
-  .flagship h3 {
-    font-family: var(--font-heading);
-    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--color-cream);
-    margin-bottom: 0.35rem;
-  }
-  .flagship-sub {
-    font-family: var(--font-heading-sc);
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
-    color: var(--color-gold-subtle);
-    margin-bottom: 1.1rem;
-  }
-  .flagship-desc {
-    font-family: var(--font-body);
-    font-size: 1.02rem;
-    line-height: 1.8;
-    color: rgba(245, 240, 232, 0.82);
-    max-width: 640px;
-    margin-bottom: 1.4rem;
-  }
-  .flagship-cta {
-    display: inline-block;
-    font-family: var(--font-ui);
-    font-size: 0.88rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--color-gold);
-    transition: transform 0.3s, color 0.3s;
-  }
-  .flagship:hover .flagship-cta {
-    color: var(--color-gold-hover);
-    transform: translateX(3px);
-  }
-  .flagship-aside {
-    position: relative;
-    z-index: 2;
-    border-left: 1px solid rgba(196, 162, 101, 0.45);
-    padding-left: 2.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-  }
-  .flagship-aside-num {
-    font-family: var(--font-heading);
-    font-style: italic;
-    font-size: 3.2rem;
-    color: var(--color-gold);
-    line-height: 1;
-  }
-  .flagship-aside-label {
-    font-family: var(--font-heading-sc);
-    font-size: 0.74rem;
-    letter-spacing: 0.14em;
-    color: rgba(245, 240, 232, 0.82);
-    margin-top: 0.75rem;
-  }
-
-  /* --- TESTIMONIALS --- */
-  .testis-section { padding: 7rem 2rem; background: var(--color-navy); }
-  .testis-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
-  .testis-inner .section-tag { color: var(--color-gold); }
-  .testis-inner h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--color-cream);
-    margin-bottom: 3.5rem;
-  }
-  .testis-inner h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-
-  .testis-feature {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 2.5rem;
-    align-items: center;
-    text-align: left;
-    background: rgba(245, 240, 232, 0.04);
-    border: 1px solid rgba(196, 162, 101, 0.25);
-    border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2.5rem;
-  }
-  .testis-feature-vid {
-    width: 100%;
-    border-radius: 6px;
-    display: block;
-    background: #000;
-  }
-  .testis-feature-quote {
-    font-family: var(--font-heading);
-    font-style: italic;
-    font-size: 1.4rem;
-    line-height: 1.5;
-    color: var(--color-cream);
-    margin: 0;
-  }
-  .testis-feature-quote cite {
-    display: block;
-    margin-top: 1.25rem;
-    font-family: var(--font-ui);
-    font-style: normal;
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
-    color: var(--color-gold-subtle);
-  }
-
-  .testis-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    text-align: left;
-  }
-  .testis-card {
-    background: rgba(245, 240, 232, 0.04);
-    border: 1px solid rgba(196, 162, 101, 0.18);
-    border-radius: 8px;
-    padding: 1.25rem;
-    transition: transform 0.3s, border-color 0.3s;
-  }
-  .testis-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(196, 162, 101, 0.4);
-  }
-  .testis-vid {
-    width: 100%;
-    border-radius: 6px;
-    display: block;
-    background: #000;
-    margin-bottom: 1rem;
-  }
-  .testis-quote {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: rgba(245, 240, 232, 0.88);
-    margin: 0 0 0.6rem;
-  }
-  .testis-name {
-    font-family: var(--font-ui);
-    font-size: 0.8rem;
-    color: var(--color-gold-subtle);
-    margin: 0;
-  }
-  @media (max-width: 900px) {
-    .testis-feature { grid-template-columns: 1fr; }
-    .testis-grid { grid-template-columns: 1fr; }
-  }
-
-  /* --- ABOUT (short) --- */
-  .about { padding: 7rem 2rem; background: var(--color-bg-white); }
-  .about-inner { max-width: 1000px; margin: 0 auto; }
-  .about-inner > .section-tag { text-align: center; }
-  .about-layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 3rem;
-    align-items: start;
-    margin-top: 1rem;
-  }
-  .about-portrait { margin: 0; }
-  .about-portrait img {
-    width: 100%;
-    border-radius: 8px;
-    display: block;
-  }
-  .about-portrait figcaption {
-    font-family: var(--font-heading-sc);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    color: var(--color-slate);
-    margin-top: 0.75rem;
-    text-align: center;
-  }
-  .about h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(1.9rem, 3.2vw, 2.5rem);
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--color-charcoal);
-    margin-bottom: 1.5rem;
-  }
-  .about h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-  .about-body p {
-    font-family: var(--font-body);
-    font-size: 1.05rem;
-    color: var(--color-charcoal);
-    line-height: 1.85;
-    margin-bottom: 1.1rem;
-  }
-  .about-link {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-family: var(--font-ui);
-    font-size: 0.88rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--color-gold);
-    text-decoration: none;
-    transition: color 0.3s, transform 0.3s;
-  }
-  .about-link:hover {
-    color: var(--color-gold-hover);
-    transform: translateX(2px);
-  }
-
-  /* --- CTA --- */
-  .cta-section {
-    padding: 8rem 2rem;
-    background: var(--color-navy);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .cta-section::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: var(--color-gold);
-  }
-  .cta-section::after {
-    content: '';
-    position: absolute;
-    bottom: -250px; left: 50%;
-    transform: translateX(-50%);
-    width: 700px; height: 700px;
-    background: radial-gradient(ellipse, rgba(196, 162, 101, 0.06) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .cta-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 2; }
-  .cta-section h2 {
-    font-family: var(--font-heading);
-    font-size: clamp(2.2rem, 4.5vw, 3.4rem);
-    font-weight: 400;
-    color: var(--color-cream);
-    line-height: 1.15;
-    margin-bottom: 1.5rem;
-  }
-  .cta-section h2 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
-  .cta-section > .cta-inner > p {
-    color: rgba(245, 240, 232, 0.78);
-    font-size: 1.06rem;
-    max-width: 540px;
-    margin: 0 auto 2.75rem;
-    line-height: 1.8;
-  }
-  .cta-reassure {
-    margin-top: 1.5rem;
-    font-family: var(--font-ui);
-    font-size: 0.82rem;
-    color: rgba(245, 240, 232, 0.82);
-  }
-
-  /* --- RESPONSIVE --- */
-  @media (max-width: 1024px) {
-    .whofor-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .testis-grid { grid-template-columns: repeat(2, 1fr); }
-    .flagship { grid-template-columns: 1fr; padding: 2.25rem; }
-    .flagship-aside {
-      border-left: none;
-      border-top: 1px solid rgba(196, 162, 101, 0.4);
-      padding-left: 0;
-      padding-top: 1.5rem;
-      flex-direction: row;
-      align-items: center;
-      gap: 1.25rem;
-    }
-    .flagship-aside-num { font-size: 2.4rem; }
-    .flagship-aside-label { margin-top: 0; }
-    .about-layout { grid-template-columns: 1fr; gap: 2rem; }
-    .about-portrait { max-width: 220px; margin: 0 auto; }
-  }
-  @media (max-width: 768px) {
-    .hero { padding: 8rem 1.5rem 4rem; }
-    .iceberg-section, .whofor, .testis-section, .whats-here, .about, .cta-section { padding: 5rem 1.5rem; }
-    .hero-actions { flex-direction: column; width: 100%; max-width: 320px; }
-    .hero-actions :global(.btn-primary), .hero-actions :global(.btn-ghost) { width: 100%; text-align: center; }
-    .flagship { padding: 2rem 1.5rem; }
+  @media (max-width: 680px) {
+    .hm-intro, .hm-help, .iceberg-section, .hm-read, .cta-section { padding: 5rem 1.5rem; }
+    .hm-wins { padding: 6rem 1.5rem 4rem; }
+    .hm-help-grid, .hm-qrow, .hm-vgrid, .hm-read-grid { grid-template-columns: 1fr; }
+    .hm-card { padding: 2rem 1.5rem; }
+    .hm-actions { flex-direction: column; align-items: stretch; }
+    .hm-actions :global(.btn-primary) { text-align: center; }
+    .hm-ghost { text-align: center; }
   }
 </style>
