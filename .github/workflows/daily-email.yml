@@ -1,0 +1,64 @@
+name: Daily Subscriber Email
+
+# Drafts today's email in Joel's voice, checks it automatically, and sends it to the list
+# through Resend. Fully automatic once switched on.
+#
+# SWITCH: scheduled runs only happen when the repo variable DAILY_EMAIL_ENABLED is 'true'
+# (Settings > Secrets and variables > Actions > Variables). Set it to anything else to pause.
+#
+# MANUAL RUNS (Actions tab > Run workflow) pick a mode:
+#   dry  = draft + check, print it, send nothing
+#   test = send to the private "Test" audience (Joel only)
+#   live = send to the real list now
+#
+# Runs 06:47 UTC (07:47 UK summer time) every day.
+
+on:
+  schedule:
+    - cron: '47 6 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry (send nothing), test (send to Joel only) or live (send to the list)'
+        type: choice
+        options: [dry, test, live]
+        default: dry
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-email
+  cancel-in-progress: false
+
+jobs:
+  send:
+    if: github.event_name != 'schedule' || vars.DAILY_EMAIL_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Draft, check and send
+        env:
+          DAILY_EMAIL_MODE: ${{ github.event_name == 'schedule' && 'live' || inputs.mode }}
+          TEST_EMAIL: joeleezekiel@gmail.com
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY || secrets.MAILERLITE_API }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          DAILY_EMAIL_FOOTER_ADDRESS: ${{ vars.DAILY_EMAIL_FOOTER_ADDRESS }}
+        run: node scripts/daily-email/send-daily.mjs
