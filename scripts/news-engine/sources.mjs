@@ -9,9 +9,14 @@ const FEEDS = [
   { name: 'Guardian Business', url: 'https://www.theguardian.com/uk/business/rss' },
   { name: 'BBC Business', url: 'https://feeds.bbci.co.uk/news/business/rss.xml' },
   { name: 'BBC Technology', url: 'https://feeds.bbci.co.uk/news/technology/rss.xml' },
-  { name: 'Google News: self-employed and tax', url: 'https://news.google.com/rss/search?q=%28self-employed+OR+HMRC+OR+%22self+assessment%22+OR+freelancer%29+when%3A2d&hl=en-GB&gl=GB&ceid=GB%3Aen' },
-  { name: 'Google News: money and cost of living', url: 'https://news.google.com/rss/search?q=%28%22cost+of+living%22+OR+%22interest+rates%22+OR+savings+OR+%22energy+bills%22+OR+mortgage%29+when%3A2d&hl=en-GB&gl=GB&ceid=GB%3Aen' },
+  { name: 'Guardian World Business', url: 'https://www.theguardian.com/business/rss' },
+  { name: 'CNBC Personal Finance', url: 'https://www.cnbc.com/id/21324812/device/rss/rss.html' },
+  { name: 'CNBC Economy', url: 'https://www.cnbc.com/id/20910258/device/rss/rss.html' },
+  { name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' },
   { name: 'Google Trends UK', url: 'https://trends.google.com/trending/rss?geo=GB', trends: true },
+  { name: 'Google Trends US', url: 'https://trends.google.com/trending/rss?geo=US', trends: true },
+  { name: 'Google Trends Canada', url: 'https://trends.google.com/trending/rss?geo=CA', trends: true },
+  { name: 'Google Trends South Africa', url: 'https://trends.google.com/trending/rss?geo=ZA', trends: true },
 ];
 
 const decode = (s) => String(s || '')

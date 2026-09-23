@@ -46,9 +46,9 @@ const clean = (s) => String(s || '').replace(/\s*—\s*/g, ', ').replace(/\s*–
 
 const PICKER_SYSTEM = `You choose the single best story for a money-psychology blog written by Joel: MSc Behavioural Economics, Qualified Financial Planner (UK).
 
-READERS: self-employed people, coaches and wellness practitioners (yoga, breathwork, meditation, energy work) who earn well and still feel broke. They feel guilty charging what they are worth, avoid their tax and statements, and live in feast-or-famine months.
+READERS: a GLOBAL audience (UK, US, Canada, South Africa, Israel, Germany and more) of self-employed people, coaches and wellness practitioners (yoga, breathwork, meditation, energy work) who earn well and still feel broke. They feel guilty charging what they are worth, avoid their tax and statements, and live in feast-or-famine months.
 
-PICK the ONE item that (a) is genuinely talked about right now (it shows up in several sources or is trending) and (b) these readers will feel in their own money life, so Joel can honestly connect it to a well-known behavioural idea. Good: tax and HMRC changes, interest rates, energy and living costs, a cost or price shock, savings, pensions for the self-employed, AI changing freelance work, big spending events.
+PICK the ONE item that (a) is genuinely talked about right now (it shows up in several sources or is trending) and (b) these readers will feel in their own money life, so Joel can honestly connect it to a well-known behavioural idea. Good: stories that land in many countries: interest rates, inflation, energy and oil prices, a cost or price shock, recession worries, AI changing freelance and creative work, the gig economy, big spending or saving trends. Prefer a story that matters in more than one country. AVOID stories that only make sense inside one country's tax or fiscal system (a national Budget, HMRC, the IRS, a single country's benefits or pensions) unless the self-employed angle is truly universal.
 
 SKIP: war, partisan politics, crime, deaths, disasters, celebrity, sport, health emergencies, anything you could only discuss by giving personal tax or investment advice. If nothing fits, return null. Never force a weak fit.
 
@@ -71,7 +71,7 @@ async function pickStory(items) {
 
 const BANNED = ['hustle', 'grind', 'manifest', 'abundance', 'money magnet', 'passive income', 'financial freedom', 'vibration', 'law of attraction', 'journey', 'breakthrough', 'unlock', 'delve', 'unpack', 'tapestry', 'holistic', 'mindset', 'level 4', 'game changer', 'quiz'];
 
-const WRITER_SYSTEM = `You are Joel: MSc Behavioural Economics, Qualified Financial Planner (UK), founder of Way of Wealth. You write a short blog post that connects something in the news right now to a well-known behavioural money idea, for self-employed people, coaches and wellness practitioners. Address the reader as "you". NEVER write the name "Jess".
+const WRITER_SYSTEM = `You are Joel: MSc Behavioural Economics, Qualified Financial Planner (UK), founder of Way of Wealth. You write a short blog post that connects something in the news right now to a well-known behavioural money idea, for a global audience of self-employed people, coaches and wellness practitioners. Address the reader as "you". Do NOT assume the reader lives in the UK: no country-specific tax or benefits advice, and no currency symbol unless it comes from the source. NEVER write the name "Jess".
 
 FACTS: You will be given the SOURCE TEXT of one article. State a news fact ONLY if it is in that source text, and say who reported it ("The Guardian reports..."). Never invent a number, a date, a quote or a study. Paraphrase; never copy more than a short phrase. Use quotation marks ONLY around exact words that appear in the source text. NEVER write imagined quotes or thoughts in quotation marks (no "I'll deal with it later" style lines): describe the thought in plain words with no quotation marks. NEVER give example figures or hypothetical prices ("say you charge £80"): use no number that is not in the source text. If the source is thin, say less. Do not add facts from memory about the news event.
 
@@ -134,14 +134,21 @@ async function main() {
   const fresh = items.filter((i) => !(i.link && usedText.includes(i.link)));
   console.log(`${items.length} items, ${fresh.length} not yet written about.`);
 
-  const pick = await pickStory(fresh);
-  if (!pick) { console.log('No story today is a genuine fit for the readers. No post written.'); return; }
-  console.log(`Picked: [${pick.item.source}] ${pick.item.title}\nWhy: ${pick.why}\nConcept: ${pick.concept}`);
-
-  const url = pick.item.link.split('?')[0];
-  let source = await fetchArticleText(url);
-  if (source.length < 600) source = `${pick.item.title}. ${pick.item.summary}`;
-  if (source.length < 200) throw new Error('Could not get enough source text to write from safely.');
+  // Pick a story; if its article can't be read (paywall, redirect), drop it and pick the next best.
+  let pick = null, url = '', source = '';
+  let pool = fresh;
+  for (let tryNo = 1; tryNo <= 4; tryNo++) {
+    pick = await pickStory(pool);
+    if (!pick) { console.log('No story today is a genuine fit for the readers. No post written.'); return; }
+    console.log(`Picked: [${pick.item.source}] ${pick.item.title}\nWhy: ${pick.why}\nConcept: ${pick.concept}`);
+    url = pick.item.link.split('?')[0];
+    source = await fetchArticleText(url);
+    if (source.length >= 800) break;
+    console.log(`Could not read enough of that article (${source.length} characters). Trying the next best story.`);
+    pool = pool.filter((i) => i !== pick.item);
+    pick = null;
+  }
+  if (!pick) throw new Error('Could not read the article for any of the top stories. Feeds or sites may be blocking the bot.');
   console.log(`Source text: ${source.length} characters from ${url}`);
 
   let post = null, problems = [], feedback = '';
