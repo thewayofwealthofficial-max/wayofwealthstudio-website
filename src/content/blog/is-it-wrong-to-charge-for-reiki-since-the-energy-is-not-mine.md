@@ -10,7 +10,7 @@ readingTime: "6 min read"
 
 If you've ever typed that question into Google, you're not doing anything wrong. You're also not alone. Reiki practitioners, sound healers, and energy workers ask some version of it constantly: *can I really charge for something that flows through me, not from me?*
 
-The question feels spiritual. The discomfort feels spiritual. But what's happening underneath it is, at least in part, psychological — and there's a name for it.
+The question feels spiritual. The discomfort feels spiritual. But what's happening underneath it is, at least in part, psychological, and there's a name for it.
 
 ## What Brad Klontz Found (and Why It Matters Here)
 
@@ -20,7 +20,7 @@ One of the most common money script clusters he identified is **money avoidance*
 
 For wellness practitioners, that script gets a specific shape. It sounds like: "The energy isn't mine to sell." Or: "Charging too much will block my practice." Or: "Healers should serve, not profit."
 
-These beliefs feel like ethics. They behave like ethics. But Klontz's research is clear: they function as financial avoidance. And avoidance has consequences.
+These beliefs feel like ethics. They behave like ethics. But they can work as financial avoidance. And avoidance has consequences.
 
 ## The Identity Threat Running Alongside It
 
@@ -44,7 +44,7 @@ The practical advice sits on top of the psychological problem. It doesn't touch 
 
 ## What's Actually True About the Energy
 
-Here's where it helps to take the spiritual question seriously, because Jess, you asked it seriously.
+Here's where it helps to take the spiritual question seriously, because you asked it seriously.
 
 If the energy that moves through you in a session is not "yours," then what *is* yours? Your training. Your years of practice. Your ability to hold a safe space for someone in real distress. Your time, which you are removing from every other possible use of that day. Your presence, which you have spent years learning to cultivate and offer.
 
@@ -56,9 +56,9 @@ Charging for Reiki is the same logic. The energy being universal does not make y
 
 ## The Specific Belief Worth Examining
 
-Klontz's research shows that money avoidance scripts don't respond well to argument. You can't logic your way out of them, because they're not logical structures. They're emotional ones.
+Money scripts don't respond well to argument. You can't logic your way out of them, because they're not logical structures. They're emotional ones.
 
-What does work, slowly, is **exposure with reflection**. You notice the belief ("charging this much feels wrong"), you name it as a *script* rather than a *truth*, and you act anyway — at a small enough scale that the anxiety stays manageable.
+What does work, slowly, is **exposure with reflection**. You notice the belief ("charging this much feels wrong"), you name it as a *script* rather than a *truth*, and you act anyway, at a small enough scale that the anxiety stays manageable.
 
 So here's the one concrete thing worth trying this week.
 
@@ -86,7 +86,7 @@ The money avoidance script and the identity threat tend to reinforce each other 
 
 That's worth naming, because it means you may be getting social rewards for undercharging. Which makes the behaviour stickier than it looks from outside.
 
-This is not a judgement. It's a mechanism. Klontz's research documents exactly this pattern: money avoidance scripts are often maintained by social systems that reward the avoider for staying small.
+This is not a judgement. It's a mechanism.
 
 Seeing the system doesn't mean exiting it overnight. But it means you're responding to reality rather than running on a script that was written before you were running a business.
 
