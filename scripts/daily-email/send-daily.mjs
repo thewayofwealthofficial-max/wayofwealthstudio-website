@@ -117,6 +117,7 @@ async function main() {
     const candidate = { subject: clean(d.subject), preview: clean(d.preview), body_plain: clean(d.body_plain) };
     problems = checkDraft(candidate, { ctaUrl: CTA_URL, intelText });
     console.log(`Attempt ${attempt}: "${candidate.subject}" -> ${problems.length ? problems.length + ' problem(s): ' + problems.join(' | ') : 'passed all checks'}`);
+    console.log(`--- attempt ${attempt} text ---\n${candidate.body_plain}\n--- end ---`);
     if (!problems.length) { draft = candidate; break; }
     feedback = `\n\nYour previous draft was rejected for these reasons. Fix every one and write a fresh email:\n- ${problems.join('\n- ')}`;
   }
