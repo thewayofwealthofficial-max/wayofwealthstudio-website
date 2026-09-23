@@ -1,0 +1,92 @@
+name: Trending Blog Post
+
+# Scans what people are reading and searching for right now (Guardian, BBC, Google News, Google Trends UK),
+# picks the one story that fits Joel's readers, and publishes a post that connects it to a behavioural
+# money idea. If nothing genuinely fits, no post is written.
+#
+# Runs Monday, Wednesday and Friday at 05:37 UTC. Manual run: Actions tab > Run workflow
+# (tick "dry_run" to print the post without publishing it).
+
+on:
+  schedule:
+    - cron: '37 5 * * 1,3,5'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Print the post, publish nothing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trending-blog-post
+  cancel-in-progress: false
+
+jobs:
+  generate-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Pick a story and write the post
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
+        run: node scripts/news-engine/generate-news-post.mjs
+
+      - name: Commit + push
+        if: steps.generate.outputs.slug != ''
+        env:
+          TITLE: ${{ steps.generate.outputs.title }}
+          SLUG: ${{ steps.generate.outputs.slug }}
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add src/content/blog/
+          if git diff --staged --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "blog: ${TITLE}" -m "Auto-published by the trending-topic engine (slug: ${SLUG})."
+          git pull --rebase origin main
+          git push
+
+      - name: Notify Telegram on success
+        if: success() && steps.generate.outputs.slug != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TITLE: ${{ steps.generate.outputs.title }}
+          SLUG: ${{ steps.generate.outputs.slug }}
+          SOURCE: ${{ steps.generate.outputs.source }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "📰" --title "New trending post live" --body "$TITLE
+
+          https://thewayofwealth.shop/blog/$SLUG
+
+          Based on: $SOURCE"
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          node scripts/telegram-notify.mjs --emoji "❌" --title "Trending blog post FAILED" --body "No post published. Check the run logs:
+
+          $RUN_URL"
