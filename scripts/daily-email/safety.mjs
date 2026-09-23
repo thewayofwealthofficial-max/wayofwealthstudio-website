@@ -43,6 +43,7 @@ export function checkDraft({ subject, preview, body_plain }, { ctaUrl, intelText
   const links = body_plain.match(/https?:\/\/\S+/g) || [];
   for (const l of links) if (ctaUrl && !l.startsWith(ctaUrl)) problems.push(`Contains a link other than the call link: ${l}`);
 
+  if (/\b(I read every|I reply to every|thousands of|hundreds of|most of my clients|all of my clients|every client|guaranteed?)\b/i.test(all)) problems.push('Makes an unverifiable claim about Joel, his clients or results.');
   if (!/\bJoel\b/.test(body_plain.trim().split('\n').slice(-3).join(' '))) problems.push('Must be signed off "Joel" at the end.');
   if (/\b(investment advice|you should invest|buy shares|buy (?:this )?fund|put your money in)\b/i.test(all)) problems.push('Reads like regulated investment advice.');
   if (/\b(pay less tax|avoid tax|tax loophole|claim (?:this|it) as an expense)\b/i.test(all)) problems.push('Reads like tax advice.');

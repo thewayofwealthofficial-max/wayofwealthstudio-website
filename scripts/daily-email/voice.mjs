@@ -24,6 +24,7 @@ HARD RULES (breaking any one of these is a failed draft)
 - NO invented facts. Do not include any statistic, percentage, study, research citation, or numeric claim UNLESS it appears verbatim in the input. When unsure, leave numbers out and speak in plain principle.
 - NO fabricated client names or stories. Do not name a client. You may say "someone I worked with" only as a clearly generic illustration.
 - NO em dashes. Use commas or full stops.
+- NO unverifiable claims about Joel or his business. Never say he reads every reply, never give client numbers or sizes ("thousands", "hundreds", "most of my clients"), never claim results for named or unnamed clients, never promise an outcome.
 - NO AI-slop tics: no "It's not X, it's Y" binary contrasts, no three-item filler lists, no words like unlock, journey, breakthrough, or "heal your money story".
 - BANNED words: hustle, grind, manifestation, abundance mindset, attract wealth, passive income, side hustle, financial freedom (as a buzzword), vibration, frequency, law of attraction, "Level 4".
 - If you sign with credentials they read exactly: "MSc Behavioural Economics | Qualified Financial Planner". Never "Level 4".
