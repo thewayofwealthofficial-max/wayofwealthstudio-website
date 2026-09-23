@@ -107,7 +107,7 @@ function check(post, source, url) {
   if (/\b(studies show|study shows|research shows|research says|scientists (?:say|found)|a recent study)\b/i.test(post.body)) p.push('Makes a research claim without naming a source.');
   const figs = post.body.match(/(?:£|\$|€)\s?\d[\d,.]*\s?(?:bn|m|k|billion|million)?|\d[\d,.]*\s?(?:%|per ?cent)/gi) || [];
   for (const f of figs) if (!source.includes(f.trim())) p.push(`Figure "${f.trim()}" is not in the source text.`);
-  const norm = (s) => s.toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, ' ');
+  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const quotes = (post.body.match(/["“]([^"”]{12,}?)["”]/g) || []).map((q) => q.slice(1, -1));
   for (const q of quotes) if (!norm(source).includes(norm(q))) p.push(`Quoted text "${q.slice(0, 50)}" is not in the source. Only quote exact words from the source.`);
   if (!post.body.includes(url)) p.push('Must link to the source article URL.');
@@ -138,7 +138,7 @@ async function main() {
   if (!pick) { console.log('No story today is a genuine fit for the readers. No post written.'); return; }
   console.log(`Picked: [${pick.item.source}] ${pick.item.title}\nWhy: ${pick.why}\nConcept: ${pick.concept}`);
 
-  const url = pick.item.link;
+  const url = pick.item.link.split('?')[0];
   let source = await fetchArticleText(url);
   if (source.length < 600) source = `${pick.item.title}. ${pick.item.summary}`;
   if (source.length < 200) throw new Error('Could not get enough source text to write from safely.');
