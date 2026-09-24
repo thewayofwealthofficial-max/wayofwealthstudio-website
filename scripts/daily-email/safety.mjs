@@ -3,7 +3,7 @@
 // send is skipped and Joel is told why.
 
 // AI tells and hype only. Joel lifted vocabulary bans on 2026-09-06; spiritual words are
-// allowed as the reader's own words (the prompt forbids claiming manifesting works).
+// allowed (Joel dropped the "never claim manifesting works" rule on 2026-09-24).
 const BANNED = [
   'hustle', 'grind', 'side hustle', 'boss babe', 'money magnet', 'passive income', 'toxic positivity',
   'growth hack', 'you got this', 'level up', 'journey', 'breakthrough', 'unlock', 'heal your money story',
@@ -105,7 +105,6 @@ export function checkDraft({ subject, preview, body_plain }, { type, allowedLink
   if (!/\bJoel\b/.test(body_plain)) problems.push('Must be signed off "Joel".');
   if (/\b(investment advice|you should invest|buy shares|buy (?:this )?fund|put your money in)\b/i.test(all)) problems.push('Reads like regulated investment advice.');
   if (/\b(pay less tax|avoid tax|tax loophole|claim (?:this|it) as an expense)\b/i.test(all)) problems.push('Reads like tax advice.');
-  if (/\bmanifest(?:ing|ation)? (?:works|will bring|brings)\b/i.test(all)) problems.push('Claims manifesting works.');
 
   return problems;
 }
