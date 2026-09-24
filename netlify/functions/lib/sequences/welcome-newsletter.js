@@ -6,7 +6,7 @@
 //
 // afterHours = hours after sign-up. Email 1 goes instantly from the sign-up form.
 
-const APPLY = 'https://thewayofwealth.shop/coaching#apply';
+const CALL = 'https://calendly.com/thewayofwealth-official/20min';
 const RESET = 'https://thewayofwealth.shop/reset';
 
 module.exports = {
@@ -42,7 +42,7 @@ Tomorrow I'll send you a free tool that shows what's actually yours to keep. It 
 Joel
 MSc Behavioural Economics | Qualified Financial Planner
 
-P.S. If you already know you want help with this one to one, you can [apply for a free 20-minute call here](${APPLY}).
+P.S. If you already know you want help with this one to one, you can [book a free 20-minute call here](${CALL}).
 `,
     },
     {
@@ -168,7 +168,7 @@ Taking it off the pedestal doesn't mean caring less about money. You just get to
 
 [Watch Josh say it himself here](https://thewayofwealth.shop/testimonials/josh-pedestal.mp4).
 
-If you want to work on this with me, one to one, [apply for a free 20-minute call](${APPLY}). I take on five people a month.
+If you want to work on this with me, one to one, [book a free 20-minute call](${CALL}). I take on five people a month.
 
 Joel
 `,
@@ -192,14 +192,14 @@ Now, most people stop here. They read the emails, they nod, they think "yeah, th
 
 So here's what working together actually looks like. It's called the Money Story Method. Twelve weeks, one to one, just you and me.
 
-- **Weeks 1 to 3:** we open your banking app together on the call. We set up a tax pot, go through 90 days of statements line by line, find the leaks, and work out your real living wage.
-- **Weeks 4 to 6:** we set up your accounts, one for each job your money does, and we work on the beliefs underneath that keep pulling you back.
-- **Weeks 7 to 9:** we automate the transfers so it runs without you deciding every time, and we check it's actually working.
-- **Weeks 10 to 12:** we line your goals up with what you actually care about, and look further ahead.
+- **Weeks 1 to 4:** we find your money script, the one running the show. Then we go deep on where your money story comes from, what money means to you, and what sets off your spending. I give you your Money Story Profile and a report on your behaviour patterns.
+- **Weeks 3 to 8:** alongside that, the practical side. You do a 90-day spending audit, we work out your real number, and we find where the money's leaking.
+- **Weeks 6 to 8:** we pick the belief holding you back the most and rewrite it. Then we set up guardrails and automation, so the new habits don't depend on willpower.
+- **Weeks 9 to 12:** goal planning, mapping out your cash flow with the new system in place, where you go from here, and graduation.
 
-It's not a course or a PDF. It's the system, set up with you, plus the work on why it hasn't stuck before.
+It's not a course or a PDF. It's the work on why it hasn't stuck before, plus the system, set up with you.
 
-I take on five people a month. If you'd like to see if it's a fit, [apply for a free 20-minute call](${APPLY}). We just talk about where you are and whether I can help.
+I take on five people a month. If you'd like to see if it's a fit, [book a free 20-minute call](${CALL}). We just talk about where you are and whether I can help.
 
 Joel
 `,
@@ -222,7 +222,7 @@ I learned something like this in the gym, of all places. On the days I didn't wa
 
 So you don't need to wait for a calm month to start.
 
-If you want to do this properly, with me, [apply for a free 20-minute call](${APPLY}). I take on five people a month.
+If you want to do this properly, with me, [book a free 20-minute call](${CALL}). I take on five people a month.
 
 And if now's not the time, that's completely fine. From here you'll get Finance Fridays every Friday, and a few shorter emails in between. I'm really glad you're here.
 
