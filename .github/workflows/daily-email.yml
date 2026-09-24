@@ -55,7 +55,6 @@ jobs:
           TEST_EMAIL: joeleezekiel@gmail.com
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY || secrets.MAILERLITE_API }}
           FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
