@@ -16,7 +16,7 @@ const RESEND = 'https://api.resend.com';
 const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8744-72085ceac3e7';
 const SITE = 'https://thewayofwealth.shop';
 const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
-const REPLY_TO = 'joel@thewayofwealth.shop';
+const REPLY_TO = 'joeleezekiel@gmail.com'; // thewayofwealth.shop can't receive mail
 const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, company no. 17214427';
 
 const SEQUENCES = {

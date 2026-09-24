@@ -219,7 +219,7 @@ async function main() {
   const id = await createBroadcast(resendKey, {
     audienceId,
     from: `${FROM_NAME} <${FROM_EMAIL}>`,
-    replyTo: FROM_EMAIL,
+    replyTo: 'joeleezekiel@gmail.com', // thewayofwealth.shop can't receive mail
     subject: (MODE === 'review' ? `[DRAFT ${uk.weekday}] ` : '') + draft.subject,
     previewText: draft.preview,
     html: toHtml(draft.body_plain, footerAddress),
