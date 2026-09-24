@@ -9,7 +9,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 **Workflow:**
 1. Top of queue → next blog post
 2. Pick the question → match to behavioral econ concept → 1200-1500 words → publish
-3. Replenish the queue by hand from open sources (Quora, public forums, advice columns). No automatic scraping. The weekly top-up workflow is manual-run only.
+3. The queue refills itself every Sunday (.github/workflows/weekly-queue-topup.yml): Google search suggestions (UK/US/AU/CA) and Personal Finance Stack Exchange, picked by Claude, wording kept as typed. Hand-mined rows can still be added any time.
 
 **Status legend:** 🔵 queued · 🟡 drafting · ✅ published · ⏸ parked
 

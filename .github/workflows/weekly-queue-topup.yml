@@ -1,13 +1,19 @@
 name: Weekly Queue Topup
 
-# SCHEDULE REMOVED 2026-09-23. This job scraped Reddit, and it has failed every week since June.
-# Reddit changed its API policy on 2026-06-05 (approval needed, no use of data for AI content),
-# and old.reddit.com now blocks GitHub runners. Topics are now hand-mined from open sources
-# (Quora, public forums, advice columns) and added straight to src/content/reddit-queue.md.
-# Kept as manual-run only (workflow_dispatch) in case a legitimate data source is added later.
+# Every Sunday: finds new blog questions from Google search suggestions (UK/US/AU/CA) and
+# Personal Finance Stack Exchange, lets Claude pick the best, and adds them to
+# src/content/reddit-queue.md so the daily blog never runs dry. Keeps ~28 waiting.
+# (Replaced the Reddit scraper, which Reddit's API policy killed in June 2026.)
 
 on:
+  schedule:
+    - cron: '23 4 * * 0'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Show what would be added, change nothing'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,7 +26,7 @@ concurrency:
 jobs:
   topup-queue:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repo
@@ -38,11 +44,10 @@ jobs:
         id: topup
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
-          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
-        run: node scripts/topup-reddit-queue.mjs
+        run: node scripts/topup-blog-queue.mjs ${{ inputs.dry_run && '--dry' || '' }}
 
       - name: Commit + push
+        if: ${{ !inputs.dry_run }}
         run: |
           git config user.name "Way of Wealth Bot"
           git config user.email "bot@thewayofwealth.shop"
@@ -52,18 +57,19 @@ jobs:
             exit 0
           fi
           COUNT="${{ steps.topup.outputs.count }}"
-          git commit -m "queue: weekly topup (${COUNT:-?} new Jess questions)" -m "Harvested from r/UKPersonalFinance, r/MoneyDiariesACTIVE, r/povertyfinance, r/personalfinance, r/ADHD. Curated by Claude."
+          git commit -m "queue: weekly topup (${COUNT:-?} new questions)" -m "From Google search suggestions and Personal Finance Stack Exchange. Picked by Claude."
+          git pull --rebase
           git push
 
       - name: Notify Telegram on success
-        if: success()
+        if: success() && !inputs.dry_run
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           COUNT="${{ steps.topup.outputs.count }}"
-          QUEUED=$(grep -c "^| .* | 🔵 |" src/content/reddit-queue.md || echo "?")
-          node scripts/telegram-notify.mjs --emoji "🔍" --title "Weekly queue topup" --body "+${COUNT:-0} new Jess questions added.
+          QUEUED=$(grep -c "| 🔵 |" src/content/reddit-queue.md || echo "?")
+          node scripts/telegram-notify.mjs --emoji "🔍" --title "Weekly blog topics" --body "+${COUNT:-0} new questions added.
 
           Queue now: $QUEUED waiting."
 
@@ -74,20 +80,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          node scripts/telegram-notify.mjs --emoji "❌" --title "Weekly queue topup FAILED" --body "Queue was not replenished this week. Daily posts continue until queue empties. Check logs:
+          node scripts/telegram-notify.mjs --emoji "❌" --title "Weekly blog topics FAILED" --body "The queue was not topped up this week. Daily posts continue until it empties. Logs:
 
           $RUN_URL"
-
-      - name: Open issue on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Weekly queue topup failed — ${new Date().toISOString().slice(0,10)}`,
-              body: `The weekly Reddit-scan + queue topup workflow failed.\n\n**Run logs:** ${runUrl}\n\n**Common causes:**\n- ANTHROPIC_API_KEY rotated or revoked\n- Reddit blocked our requests (rate limit / IP block)\n- Anthropic API outage\n- Script syntax broken by a recent commit\n\nThe queue was not topped up this week. Daily posts will keep running until the queue empties.`,
-              labels: ['automation-failure', 'weekly-topup']
-            });
