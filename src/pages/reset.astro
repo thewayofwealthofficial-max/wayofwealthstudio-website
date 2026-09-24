@@ -77,9 +77,9 @@ const description = "Find out where your money is actually going in under 3 minu
     <!-- Tax reserve -->
     <div class="rs-block">
       <label class="rs-label" for="rs-tax-chips">How much do you want to set aside for taxes?</label>
-      <p class="rs-help rs-help-tight">If you're unsure, 20% is the safe baseline for self-employed income.</p>
+      <p class="rs-help rs-help-tight">Not sure? Pick one to see how the split works, then check your real figure with your accountant.</p>
       <div class="rs-chips" id="rs-tax-chips">
-        <button type="button" class="rs-chip is-on" data-val="20">20% <span class="rs-rec">Safe Standard</span></button>
+        <button type="button" class="rs-chip is-on" data-val="20">20%</button>
         <button type="button" class="rs-chip" data-val="25">25%</button>
         <button type="button" class="rs-chip" data-val="30">30%</button>
       </div>
@@ -195,7 +195,7 @@ const description = "Find out where your money is actually going in under 3 minu
     cur: '£',
     revenue: 5000,
     runAmt: 500, // work costs, a flat amount — not a share of revenue
-    taxPct: 20,  // defaults to the safe-standard 20%
+    taxPct: 20,  // a starting point to show the split, not a recommendation
     unlocked: false, // set once they have given an email (or did on a previous visit)
   };
 
