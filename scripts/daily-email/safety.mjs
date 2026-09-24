@@ -69,6 +69,16 @@ export function checkDraft({ subject, preview, body_plain }, { type, allowedLink
     if (new RegExp(`\\b${n.replace(/[^A-Za-z'-]/g, '')}\\b`, 'i').test(all)) problems.push(`Contains the name "${n}" from a private call. Anonymise it.`);
   }
 
+  if (/\b(suicid\w*|self[- ]harm|overdos\w*|rehab)\b/i.test(all)) problems.push('Touches suicide, self-harm, overdose or rehab. Never in a list email.');
+  // Capitalised names that appear in Joel's call passages (partners, exes, friends, firms) must not reach the email.
+  if (passagesText) {
+    const ALLOW = new Set(['Joel', 'I', 'Money', 'Story', 'Method', 'Reset', 'Tool', 'Finance', 'Fridays', 'Way', 'Wealth', 'Friday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday', 'Deliveroo', 'Uber', 'Instagram', 'Christmas', 'MSc', 'Behavioural', 'Economics', 'Qualified', 'Financial', 'Planner', 'Book', 'Know', 'Try', 'One', 'Read', 'Hey', 'P', 'S']);
+    const COMMON = /^(The|And|But|So|When|There|Not|Yeah|Right|Tell|Week|God|Jesus|Okay|Yes|No|This|That|What|Why|How|Now|Then|Just|Like|January|February|March|April|May|June|July|August|September|October|November|December|Saturdays|Sundays|North|Star|Hebrew|South|Africa|Israel|Italy|America|England|London)$/;
+    const midSentence = (s) => new Set((s.match(/(?<=[a-z,] )[A-Z][a-z]{2,}\b/g) || []).filter((w) => !ALLOW.has(w) && !COMMON.test(w)));
+    const inCalls = midSentence(passagesText);
+    for (const w of midSentence(body_plain)) if (inCalls.has(w)) problems.push(`Uses the name or place "${w}" from a private call. Leave other people and places out.`);
+  }
+
   const copied = copiedRun(body_plain, shapeText);
   if (copied) problems.push(`Copies the competitor's wording ("${copied}"). Copy the shape, write Joel's own words.`);
 
