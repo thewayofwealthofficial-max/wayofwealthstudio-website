@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Privacy policy — Way of Wealth" description="What Way of Wealth collects, why, who helps us handle it, and your rights.">
+  <section class="legal">
+    <div class="legal-inner">
+      <span class="section-tag">Privacy</span>
+      <h1>Privacy <em>policy</em></h1>
+      <p class="legal-date">Last updated: 24 September 2026</p>
+
+      <p>This page explains what we collect when you use thewayofwealth.shop, why we collect it, and what you can do about it. "We" means Way of Wealth. If you have a question, email <a href="mailto:joel@thewayofwealth.shop">joel@thewayofwealth.shop</a>.</p>
+
+      <h2>What we collect</h2>
+      <ul>
+        <li><strong>Your email address, and sometimes your first name</strong>, when you join the newsletter or unlock one of our free tools.</li>
+        <li><strong>Your answers on the coaching application</strong>, when you apply to work with us.</li>
+        <li><strong>Your booking details</strong>, when you book a call.</li>
+        <li><strong>Payment details</strong>, if you buy coaching. Payments are handled by Stripe. We never see or store your full card number.</li>
+      </ul>
+
+      <h2>Why we collect it</h2>
+      <ul>
+        <li>To send you the emails you asked for.</li>
+        <li>To read your application and get ready for your call.</li>
+        <li>To deliver coaching you have paid for.</li>
+      </ul>
+      <p>We send emails because you signed up for them. You can unsubscribe at any time with the link at the bottom of every email.</p>
+
+      <h2>Who helps us</h2>
+      <p>We use a few trusted services to run the site. They only use your data to do the job we give them.</p>
+      <ul>
+        <li><strong>Resend</strong> and <strong>MailerLite</strong>: keep our email list and send our emails.</li>
+        <li><strong>Calendly</strong>: handles call bookings.</li>
+        <li><strong>Stripe</strong>: handles payments.</li>
+        <li><strong>Supabase</strong>: stores coaching applications and client accounts.</li>
+        <li><strong>Netlify</strong>: hosts this website.</li>
+      </ul>
+      <p>Some of these services are based outside the UK. When your data leaves the UK, it is protected by the standard legal safeguards those services use.</p>
+      <p>We never sell your data. We never share it with anyone for their own marketing.</p>
+
+      <h2>Cookies and tracking</h2>
+      <p>We do not use advertising trackers or analytics trackers on this site. The booking calendar (Calendly) and our fonts (Google Fonts) are loaded from those companies, so they may see your IP address or set their own cookies.</p>
+
+      <h2>How long we keep it</h2>
+      <p>We keep your email address until you unsubscribe or ask us to delete it. We keep application and client records for as long as we need them to work with you, and to meet our legal and tax duties.</p>
+
+      <h2>Your rights</h2>
+      <p>Under UK data protection law you can ask us to:</p>
+      <ul>
+        <li>show you the data we hold about you,</li>
+        <li>correct it,</li>
+        <li>delete it,</li>
+        <li>stop using it.</li>
+      </ul>
+      <p>Just email <a href="mailto:joel@thewayofwealth.shop">joel@thewayofwealth.shop</a>. If you are unhappy with how we handle your data, you can complain to the Information Commissioner's Office at <a href="https://ico.org.uk" rel="noopener">ico.org.uk</a>.</p>
+
+      <h2>Changes</h2>
+      <p>If we change this policy, we will update this page and the date at the top.</p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .legal {
+    background: var(--color-cream);
+    padding: 9rem 1.5rem 5rem;
+  }
+  .legal-inner { max-width: 720px; margin: 0 auto; }
+  .legal :global(.section-tag) { color: var(--color-gold); }
+  .legal h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2.3rem, 5vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--color-navy);
+    margin-bottom: 0.5rem;
+  }
+  .legal h1 em { font-style: italic; color: var(--color-gold); font-weight: 400; }
+  .legal-date { font-family: var(--font-ui); font-size: 0.85rem; color: rgba(27, 42, 74, 0.65); margin-bottom: 2rem; }
+  .legal h2 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-navy);
+    margin: 2.5rem 0 0.8rem;
+  }
+  .legal p, .legal li {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--color-navy);
+  }
+  .legal p { margin-bottom: 1rem; }
+  .legal ul { padding-left: 1.3rem; margin-bottom: 1rem; }
+  .legal li { margin-bottom: 0.4rem; }
+  .legal a { color: var(--color-navy); text-decoration: underline; text-decoration-color: var(--color-gold); }
+</style>
