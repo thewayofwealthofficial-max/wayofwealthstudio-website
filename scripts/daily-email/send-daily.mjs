@@ -178,7 +178,12 @@ async function main() {
       user: userPrompt({ type, phase, theme, dateStr: uk.iso, shape, passages, post, testimonials }) + feedback,
     });
     const candidate = { subject: clean(d.subject), preview: clean(d.preview), body_plain: clean(d.body_plain) };
-    problems = checkDraft(candidate, { type, allowedLinks, sourceText, shapeText: shape?.body || '', blockedNames: names });
+    problems = checkDraft(candidate, {
+      type, allowedLinks, sourceText, blockedNames: names,
+      shapeText: shape?.body || '', shapeSubject: shape?.subject || '',
+      passagesText: passages.map((p) => p.text).join('\n'),
+      requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
+    });
     console.log(`Attempt ${attempt}: ${problems.length ? problems.length + ' problem(s)' : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
     feedback = `\n\nYour previous draft was rejected for these reasons. Fix every one and write a fresh email:\n- ${problems.join('\n- ')}`;

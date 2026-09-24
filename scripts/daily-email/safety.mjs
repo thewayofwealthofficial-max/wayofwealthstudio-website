@@ -32,7 +32,7 @@ function copiedRun(body, shapeText) {
   return null;
 }
 
-export function checkDraft({ subject, preview, body_plain }, { type, allowedLinks = [], sourceText = '', shapeText = '', blockedNames = new Set() } = {}) {
+export function checkDraft({ subject, preview, body_plain }, { type, allowedLinks = [], sourceText = '', shapeText = '', shapeSubject = '', blockedNames = new Set(), passagesText = '', requireJoelWords = false } = {}) {
   const problems = [];
   const all = `${subject}\n${preview}\n${body_plain}`;
   const lower = all.toLowerCase();
@@ -72,7 +72,24 @@ export function checkDraft({ subject, preview, body_plain }, { type, allowedLink
   const copied = copiedRun(body_plain, shapeText);
   if (copied) problems.push(`Copies the competitor's wording ("${copied}"). Copy the shape, write Joel's own words.`);
 
-  if (/\b(I read every|I reply to every|thousands of|hundreds of|most of my clients|all of my clients|every client|guaranteed (?:results|to))\b/i.test(all)) problems.push('Makes an unverifiable claim about Joel, his clients or results.');
+  if (/\b(I read every|I reply to every|thousands of|hundreds of|most of my clients|all of my clients|every client|guaranteed (?:results|to)|most people|one of the most common|I see (?:this|it) all the time|everyone I work with)\b/i.test(all)) problems.push('Makes an unverifiable claim about Joel, his clients, or "most people".');
+  if (/\b(spots?|places?|spaces?)\b[^.\n]{0,25}\b(left|open|remaining|available)\b|\b(only|just) (?:a few|\d+|one|two|three) (?:spots?|places?|spaces?)\b/i.test(all)) problems.push('States availability ("spots still open", "places left"). Only "I take on 5 people a month" is true; never say how many are left.');
+  if (/\bhere'?s the thing\b|\bdopamine\b|\bthe truth is\b/i.test(all)) problems.push('Uses an AI tell or an unsourced brain claim ("here\'s the thing", "dopamine", "the truth is").');
+  const wordNums = body_plain.match(/\b(?:two|three|four|five|six|seven|eight|nine|ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)(?:[- ](?:one|two|three|four|five|six|seven|eight|nine))?\s+(?:minutes?|hours?|days?|weeks?|months?|years?|percent|per cent|pounds|times)\b/gi) || [];
+  for (const w of wordNums) if (!norm(sourceText).includes(norm(w))) problems.push(`Contains a spelled-out figure "${w}" that isn't in the input. No invented numbers.`);
+
+  if (requireJoelWords && passagesText) {
+    const b = norm(body_plain).split(' ');
+    const p = ` ${norm(passagesText)} `;
+    let found = false;
+    for (let i = 0; i + 6 <= b.length && !found; i++) if (p.includes(` ${b.slice(i, i + 6).join(' ')} `)) found = true;
+    if (!found) problems.push("Doesn't use Joel's own words. Build the story from ONE of JOEL'S OWN WORDS passages and keep at least one of his phrases word for word.");
+  }
+  if (shapeSubject) {
+    const s = norm(subject).split(' ');
+    const ss = ` ${norm(shapeSubject)} `;
+    for (let i = 0; i + 4 <= s.length; i++) if (ss.includes(` ${s.slice(i, i + 4).join(' ')} `)) { problems.push("Subject reuses the competitor's subject wording. Write Joel's own subject in the same style."); break; }
+  }
   if (!/\bJoel\b/.test(body_plain)) problems.push('Must be signed off "Joel".');
   if (/\b(investment advice|you should invest|buy shares|buy (?:this )?fund|put your money in)\b/i.test(all)) problems.push('Reads like regulated investment advice.');
   if (/\b(pay less tax|avoid tax|tax loophole|claim (?:this|it) as an expense)\b/i.test(all)) problems.push('Reads like tax advice.');

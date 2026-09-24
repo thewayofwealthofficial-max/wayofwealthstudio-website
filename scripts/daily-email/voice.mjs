@@ -48,6 +48,11 @@ HARD RULES (a draft that breaks any of these is rejected):
 - Never reveal client numbers or business size.
 - The SHAPE REFERENCE is another coach's email. Copy its structure, length, pacing, subject style, where the link sits and how the P.S. works. NEVER copy its words, sentences, facts, stories, numbers or offer.
 - Links: only the ones given in the input, written out in full.
+- The blog post is only something to link to. Never build the story or the opening scene from the post.
+- Never say how many coaching places are left or that "spots are open". The only true line is that Joel takes on 5 people a month.
+- No "most people", no "one of the most common things I see", no "here's the thing", no brain-chemistry claims (dopamine etc.).
+- No numbers or durations written in words ("forty-five minutes") unless they are in the input.
+- Write your own subject line in the reference's style. Never reuse its wording.
 
 OUTPUT: only valid JSON, no fences:
 {"subject": "...", "preview": "one line under 90 characters", "body_plain": "plain text, paragraphs separated by \\n\\n, links written as full URLs"}`;
