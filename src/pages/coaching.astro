@@ -98,26 +98,22 @@ const VIDEOS = [
   { slug: "jessica-leaks", cap: "Found exactly where her money was leaking, and started closing the gaps.", who: "Jessica" },
 ];
 
+// The three reasons clients actually gave on their calls (Fathom check, 2026-09-24).
 const WINDOWS = [
   {
-    tab: "The tax bill", head: "The accountant sends the bill. There isn't enough in the account.",
-    you: ["Every payment lands in one account, so tax money looks like spending money.", "You avoid opening the statements until the deadline.", "You'd rather not think about it, so you don't."],
-    we: "In the first three weeks we open a separate tax pot and audit 90 days of statements. Tax stops being a shock.",
+    tab: "The same loop", head: "It keeps happening, and you can't make it stop.",
+    you: ["You've tried budgets and apps, and they never stick.", "You know what to do. You just don't do it.", "Every time you get ahead, something pulls you back."],
+    we: "We find the belief running the loop. And by week 3 the money is already moving: pots, standing orders and a buffer.",
   },
   {
-    tab: "A big client leaves", head: "A big client gives 30 days' notice. Your runway turns out to be five weeks.",
-    you: ["Most of your money comes from one or two clients.", "Good months got spent, so quiet months have nothing behind them.", "You've never been sure how much cushion you really have."],
-    we: "In weeks 4 to 6 we build a runway pot as part of the four-account system, so a good month can pay for a lean one.",
+    tab: "Ready to build", head: "The money comes in. You want it to build something.",
+    you: ["Money sits in your account and never turns into anything.", "You want a plan, not just a balance.", "You're curious why you handle money the way you do."],
+    we: "We work out your real number, set up the system, then map out your cash flow so your money has a job and a direction.",
   },
   {
-    tab: "The mortgage says no", head: "A mortgage or lease is refused, even though your top line looks big.",
-    you: ["Lots of money comes in, but the returns show almost no profit.", "Business and personal spending are tangled together.", "You've never worked out what you can actually take out."],
-    we: "We set your real living wage and separate what the business costs from what you take home.",
-  },
-  {
-    tab: "The burnout stop", head: "Three weeks off through illness. Billing goes to zero.",
-    you: ["You realise you own a job, not a business.", "There's no buffer for the weeks you can't work.", "Stopping feels expensive, so you don't."],
-    we: "We build the runway pot and automate it in weeks 7 to 9, so rest is something you can afford.",
+    tab: "Life just changed", head: "A move, a relationship, a new chapter. Money suddenly matters more.",
+    you: ["Someone close has started asking about your spending.", "A big change is coming and you want to be ready for it.", "Your old habits don't fit the life you're building."],
+    we: "We go through your last 90 days together, see what's really going on, and set up a system that fits the life you're moving into.",
   },
 ];
 
@@ -355,10 +351,10 @@ const FAQS = [
 <section class="sp-section sp-white">
   <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
   <div class="sp-wide">
-    <h2 class="sp-h2 sp-center reveal">People usually reach out<br /><em>at one of four moments.</em></h2>
+    <h2 class="sp-h2 sp-center reveal">Most people reach out<br /><em>for one of three reasons.</em></h2>
     <p class="sp-center sp-sub reveal">Which one is closest to yours?</p>
     <div class="sp-tabs" data-tabs>
-      <div class="sp-tablist sp-tablist-4" role="tablist">
+      <div class="sp-tablist sp-tablist-3" role="tablist">
         {WINDOWS.map((w, i) => (
           <button role="tab" class={`sp-tab${i === 0 ? ' active' : ''}`} aria-selected={i === 0 ? 'true' : 'false'} data-i={i}><span>{w.tab}</span></button>
         ))}
@@ -723,6 +719,7 @@ const FAQS = [
 .sp-tabs { margin-top: 2.5rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--color-border-warm); background: var(--color-bg-white); }
 .sp-tablist { display: grid; grid-template-columns: repeat(4, 1fr); background: #eee9de; }
 .sp-tablist-4 { grid-template-columns: repeat(4, 1fr); }
+.sp-tablist-3 { grid-template-columns: repeat(3, 1fr); }
 .sp-tab { appearance: none; border: 0; background: transparent; cursor: pointer; padding: 1.3rem 1rem; text-align: left; font-family: 'Inter Tight', sans-serif; color: var(--color-slate); border-right: 1px solid rgba(28,42,58,0.08); transition: background .2s, color .2s; }
 .sp-tab:last-child { border-right: 0; }
 .sp-tab small { display: block; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; margin-bottom: 0.25rem; }
@@ -819,6 +816,7 @@ const FAQS = [
   .sp-hero { padding: 8rem 1.2rem 4.5rem; }
   .sp-pain-grid, .sp-include-grid, .sp-video-grid, .sp-price-grid, .sp-quote-row, .sp-stats { grid-template-columns: 1fr; }
   .sp-tablist, .sp-tablist-4 { grid-template-columns: repeat(2, 1fr); }
+  .sp-tablist-3 { grid-template-columns: repeat(3, 1fr); }
   .sp-tab { border-bottom: 1px solid rgba(28,42,58,0.08); }
   .sp-bar span { display: none; }
   .sp-strip-row li:not(:last-child)::after { display: none; }
