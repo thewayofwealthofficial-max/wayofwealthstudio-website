@@ -184,7 +184,8 @@ async function main() {
       passagesText: passages.map((p) => p.text).join('\n'),
       requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
     });
-    console.log(`Attempt ${attempt}: ${problems.length ? problems.length + ' problem(s)' : 'passed all checks'}`);
+    // Quoted parts can hold client names or private words, so they're blanked in the public log.
+    console.log(`Attempt ${attempt}: ${problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
     feedback = `\n\nYour previous draft was rejected for these reasons. Fix every one and write a fresh email:\n- ${problems.join('\n- ')}`;
   }

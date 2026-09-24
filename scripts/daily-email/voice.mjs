@@ -62,14 +62,14 @@ const TYPE_RULES = {
   post: `THIS EMAIL: the Thursday "this week on the blog" email, in the shape of the reference's weekly episode email:
 1. A hook that is the post's point (a question, an admission or a quoted thought), not "new post".
 2. A line tying it to this month's theme.
-3. "This week on the blog I..." then "Inside the post:" with 3 to 5 short bullets taken from the post.
+3. "This week on the blog I..." then "Inside the post:" with 3 to 5 short bullets taken from the post. Bullets only summarise what the post itself says: never attribute a finding to a researcher unless the post does, and never widen it (e.g. to a group the research didn't study).
 4. A one-line takeaway.
 5. The link to the post.
 6. "Joel" on its own line, then a P.S. (see MONTH PHASE for what it points to).
 About 180 to 320 words.`,
   fridays: `THIS EMAIL: Finance Fridays, in the shape of the reference weekly newsletter:
 1. Subject: short, lower case, playful, may end with one emoji. Preview: a plain teaser of the topic.
-2. Open mid-scene on one small true moment from JOEL'S OWN WORDS. No throat-clearing.
+2. Open mid-scene on one small true moment from JOEL'S OWN WORDS. No throat-clearing. Keep at least one of his sentences exactly as he said it (you may put it in quotes).
 3. One bold-feeling line that ties the story to money (write it as its own short paragraph).
 4. A short list (3 to 5 lines) of related money beliefs or moments the reader might recognise.
 5. "→ Read this week's post: <post link>" as its own line.
