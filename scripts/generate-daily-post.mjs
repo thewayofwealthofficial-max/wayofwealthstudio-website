@@ -204,6 +204,21 @@ async function callClaude(systemPrompt, userPrompt) {
   return text;
 }
 
+// The model sometimes adds a stray line after the JSON header; take only the first complete object.
+function firstJsonObject(s) {
+  const start = s.indexOf('{');
+  if (start < 0) return s;
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+    if (c === '"') inStr = true;
+    else if (c === '{') depth++;
+    else if (c === '}' && --depth === 0) return s.slice(start, i + 1);
+  }
+  return s;
+}
+
 function parseClaudeResponse(text) {
   // Response format: one-line JSON with {description, tags}, then <<<BODY>>>...<<<END>>>.
   // Splitting the body out of the JSON avoids parser breakage from quotes/newlines in prose.
@@ -218,7 +233,7 @@ function parseClaudeResponse(text) {
   const body = cleaned.slice(bodyStart + '<<<BODY>>>'.length, bodyEnd).trim();
   let meta;
   try {
-    meta = JSON.parse(jsonPart);
+    meta = JSON.parse(firstJsonObject(jsonPart));
   } catch (err) {
     console.error('Metadata JSON parse failed. Raw JSON part:\n', jsonPart);
     throw err;
