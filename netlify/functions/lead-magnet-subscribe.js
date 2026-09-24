@@ -14,6 +14,8 @@
 // Rules: nobody who has unsubscribed is ever re-subscribed by a form.
 
 const { notifyLeadCaptured, notifyCaptureFailed } = require('./lib/slack');
+const { connectLambda, getStore } = require('@netlify/blobs');
+const seq = require('./lib/sequence-core');
 
 const ML_API = 'https://connect.mailerlite.com/api/subscribers';
 const RESEND_API = 'https://api.resend.com';
@@ -48,7 +50,30 @@ function validateEmail(s) {
   return { ok: true, email };
 }
 
-async function addToResend({ email, name }) {
+// New person on a form that has a welcome sequence: enrol them and send email 1 now.
+// They join the main list when the sequence ends (see lib/sequence-core.js).
+async function startSequence({ event, email, name, seqId }) {
+  const aud = await seq.sequenceAudienceId(seqId);
+  if (await seq.getContact(aud, email)) return { ok: true, note: 'already in this sequence' };
+  const made = await seq.rs(`/audiences/${aud}/contacts`, {
+    method: 'POST',
+    body: { email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false },
+  });
+  if (!made.ok) return { ok: false, detail: `Resend enrol ${made.status} ${made.text.slice(0, 160)}` };
+  const def = seq.SEQUENCES[seqId];
+  const first = def.emails[0];
+  try {
+    await seq.sendEmail({ to: email, email: first, firstName: name, footerReason: def.footerReason, tagSeq: `${seqId}_${first.id}` });
+    connectLambda(event);
+    await getStore('sequences').setJSON(`${seqId}/${email}`, { sent: [first.id], lastSentAt: new Date().toISOString() });
+  } catch (e) {
+    // They are enrolled; the hourly runner will send email 1 if this failed.
+    console.error('[lead-magnet-subscribe] email 1 not sent now:', e.message);
+  }
+  return { ok: true, note: `enrolled in ${seqId}` };
+}
+
+async function addToResend({ email, name, magnetKey, event }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, skipped: true, detail: 'RESEND_API_KEY not set' };
   const audience = process.env.RESEND_AUDIENCE_ID || DEFAULT_AUDIENCE;
@@ -61,6 +86,11 @@ async function addToResend({ email, name }) {
       if (c && c.unsubscribed) return { ok: true, note: 'previously unsubscribed, left as is' };
       return { ok: true, note: 'already on the list' };
     }
+    // Kill switch: sequences only start once SEQUENCES_ENABLED=true is set on Netlify.
+    // A test address can be enrolled early with SEQUENCES_TEST_EMAIL.
+    const seqId = seq.MAGNET_TO_SEQUENCE[magnetKey];
+    const seqOn = process.env.SEQUENCES_ENABLED === 'true' || email === (process.env.SEQUENCES_TEST_EMAIL || '').toLowerCase();
+    if (seqId && seqOn) return await startSequence({ event, email, name, seqId });
     const res = await fetch(`${RESEND_API}/audiences/${audience}/contacts`, {
       method: 'POST',
       headers,
@@ -119,7 +149,7 @@ exports.handler = async (event) => {
 
   const cleanName = name && typeof name === 'string' ? name.trim().slice(0, 80) : '';
   const [resend, mailerlite] = await Promise.all([
-    addToResend({ email: v.email, name: cleanName }),
+    addToResend({ email: v.email, name: cleanName, magnetKey, event }),
     addToMailerLite({ email: v.email, name: cleanName, magnetKey }),
   ]);
 

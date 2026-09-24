@@ -22,3 +22,14 @@
   to = "/.netlify/functions/lead-magnet-subscribe"
   status = 200
   force = true
+
+# Unsubscribe link in sequence emails (GET = confirm page, POST = unsubscribe).
+[[redirects]]
+  from = "/api/unsubscribe"
+  to = "/.netlify/functions/unsubscribe"
+  status = 200
+  force = true
+
+# Email sequences: sends whatever is due, every hour.
+[functions."sequence-runner"]
+  schedule = "@hourly"
