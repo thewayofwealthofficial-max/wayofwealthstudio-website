@@ -1,28 +1,28 @@
-name: Daily Subscriber Email
+name: List Emails
 
-# Drafts today's email in Joel's voice, checks it automatically, and sends it to the list
-# through Resend. Fully automatic once switched on.
-#
-# SWITCH: scheduled runs only happen when the repo variable DAILY_EMAIL_ENABLED is 'true'
-# (Settings > Secrets and variables > Actions > Variables). Set it to anything else to pause.
-#
-# MANUAL RUNS (Actions tab > Run workflow) pick a mode:
-#   dry  = draft + check, print it, send nothing
-#   test = send to the private "Test" audience (Joel only)
-#   live = send to the real list now
-#
-# Runs 06:47 UTC (07:47 UK summer time) every day.
+# The rhythm Joel approved (2026-09-24), sent through Resend:
+#   Sun / Tue / Thu 13:40 UK  (Denise Duffield-Thomas's slot)   letter · letter · post
+#   Fri 07:47 UK              Finance Fridays
+# Scheduled runs happen only when the repo variable DAILY_EMAIL_ENABLED is 'true'.
+# Scheduled runs use the repo variable DAILY_EMAIL_MODE: 'review' (drafts to Joel only) or 'live' (the list).
+# Crons are UTC. 12:40 UTC = 13:40 UK in summer time, 12:40 in winter; 06:47 UTC = 07:47 / 06:47.
 
 on:
   schedule:
-    - cron: '47 6 * * *'
+    - cron: '40 12 * * 0,2,4'
+    - cron: '47 6 * * 5'
   workflow_dispatch:
     inputs:
       mode:
-        description: 'dry (send nothing), test (send to Joel only) or live (send to the list)'
+        description: 'dry (Telegram only), review (email Joel only) or live (send to the list)'
         type: choice
-        options: [dry, test, live]
+        options: [dry, review, live]
         default: dry
+      type:
+        description: 'Email type (auto = by weekday)'
+        type: choice
+        options: [auto, letter, post, fridays]
+        default: auto
 
 permissions:
   contents: read
@@ -50,11 +50,13 @@ jobs:
 
       - name: Draft, check and send
         env:
-          DAILY_EMAIL_MODE: ${{ github.event_name == 'schedule' && 'live' || inputs.mode }}
+          DAILY_EMAIL_MODE: ${{ github.event_name == 'schedule' && (vars.DAILY_EMAIL_MODE || 'review') || inputs.mode }}
+          EMAIL_TYPE: ${{ (github.event_name == 'workflow_dispatch' && inputs.type != 'auto') && inputs.type || '' }}
           TEST_EMAIL: joeleezekiel@gmail.com
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY || secrets.MAILERLITE_API }}
+          FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
