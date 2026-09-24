@@ -16,6 +16,18 @@ const RESEND = 'https://api.resend.com';
 const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8744-72085ceac3e7';
 const SITE = 'https://thewayofwealth.shop';
 const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
+// Joel's own domain takes over automatically once Resend has verified it.
+const PREFERRED_FROM = 'Joel from Way of Wealth <joel@joelezekiel.com>';
+let fromCache = null;
+async function fromAddress() {
+  if (fromCache) return fromCache;
+  try {
+    const r = await rs('/domains');
+    const ok = r.ok && (r.json.data || []).some((d) => d.name === 'joelezekiel.com' && d.status === 'verified');
+    fromCache = ok ? PREFERRED_FROM : FROM;
+  } catch { fromCache = FROM; }
+  return fromCache;
+}
 const REPLY_TO = 'joeleezekiel@gmail.com'; // thewayofwealth.shop can't receive mail
 const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, company no. 17214427';
 
@@ -143,7 +155,7 @@ async function sendEmail({ to, email, firstName, footerReason, tagSeq }) {
   const res = await rs('/emails', {
     method: 'POST',
     body: {
-      from: FROM,
+      from: await fromAddress(),
       to: [to],
       reply_to: REPLY_TO,
       subject: r.subject,

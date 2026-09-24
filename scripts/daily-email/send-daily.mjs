@@ -111,6 +111,16 @@ async function blogPosts() {
   return posts.sort((a, b) => b.date - a.date);
 }
 
+// Joel's own domain takes over automatically once Resend has verified it.
+async function senderEmail(key) {
+  try {
+    const res = await fetch('https://api.resend.com/domains', { headers: { Authorization: `Bearer ${key}` } });
+    const j = await res.json();
+    if ((j.data || []).some((d) => d.name === 'joelezekiel.com' && d.status === 'verified')) return 'joel@joelezekiel.com';
+  } catch { /* fall back */ }
+  return FROM_EMAIL;
+}
+
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function toHtml(body, footerAddress) {
@@ -218,7 +228,7 @@ async function main() {
 
   const id = await createBroadcast(resendKey, {
     audienceId,
-    from: `${FROM_NAME} <${FROM_EMAIL}>`,
+    from: `${FROM_NAME} <${await senderEmail(resendKey)}>`,
     replyTo: 'joeleezekiel@gmail.com', // thewayofwealth.shop can't receive mail
     subject: (MODE === 'review' ? `[DRAFT ${uk.weekday}] ` : '') + draft.subject,
     previewText: draft.preview,
