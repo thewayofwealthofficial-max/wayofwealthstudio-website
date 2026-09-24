@@ -17,6 +17,7 @@ const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8
 const SITE = 'https://thewayofwealth.shop';
 const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
 const REPLY_TO = 'joel@thewayofwealth.shop';
+const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, company no. 17214427';
 
 const SEQUENCES = {
   'welcome-newsletter': require('./sequences/welcome-newsletter'),
@@ -122,7 +123,7 @@ function render(email, { firstName, to, footerReason }) {
     return `<p style="${P}">${lines.map(inlineHtml).join('<br>')}</p>`;
   }).join('\n');
   const unsub = unsubUrl(to);
-  const footer = `You're getting this because ${footerReason}. <a href="${unsub}" style="color:#888;">Unsubscribe</a>`;
+  const footer = `You're getting this because ${footerReason}. <a href="${unsub}" style="color:#888;">Unsubscribe</a><br>${esc(COMPANY_LINE)}`;
   const preheader = email.preheader
     ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(fill(email.preheader))}</div>`
     : '';
@@ -133,7 +134,7 @@ ${html}
 <p style="margin:32px 0 0;font-size:12px;line-height:1.5;color:#888;">${footer}</p>
 </div></body></html>`;
   const text = blocks.map((b) => b.split('\n').map((l) => inlineText(l)).join('\n')).join('\n\n')
-    + `\n\n---\nYou're getting this because ${footerReason}. Unsubscribe: ${unsub}`;
+    + `\n\n---\nYou're getting this because ${footerReason}. Unsubscribe: ${unsub}\n${COMPANY_LINE}`;
   return { subject: fill(email.subject), html: fullHtml, text, unsub };
 }
 
