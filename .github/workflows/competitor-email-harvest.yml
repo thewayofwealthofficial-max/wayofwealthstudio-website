@@ -1,0 +1,33 @@
+name: Competitor Email Harvest
+
+# Manual run. Saves every competitor email (HTML + text) as a downloadable artifact.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Harvest
+        env:
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          OUT_DIR: competitor-emails
+        run: node scripts/harvest-competitor-emails.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: competitor-emails
+          path: competitor-emails
+          retention-days: 7
