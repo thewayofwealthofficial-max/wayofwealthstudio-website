@@ -17,11 +17,15 @@ const token = await getAccessToken({
 async function gmail(p, params = {}) {
   const url = new URL(`https://gmail.googleapis.com/gmail/v1/users/me${p}`);
   for (const [k, v] of Object.entries(params)) if (v != null) url.searchParams.set(k, v);
-  for (let attempt = 0; attempt < 4; attempt++) {
+  // Gmail allows 6,000 quota units per minute; a full message fetch costs 5. Pace to stay well under.
+  await new Promise((r) => setTimeout(r, 80));
+  for (let attempt = 0; attempt < 6; attempt++) {
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     if (res.ok) return res.json();
-    if (res.status === 429 || res.status >= 500) { await new Promise((r) => setTimeout(r, 1500 * (attempt + 1))); continue; }
-    throw new Error(`Gmail ${p} ${res.status} ${await res.text()}`);
+    const body = await res.text();
+    const rateLimited = res.status === 429 || (res.status === 403 && /rateLimitExceeded|RATE_LIMIT/i.test(body));
+    if (rateLimited || res.status >= 500) { await new Promise((r) => setTimeout(r, 20000)); continue; }
+    throw new Error(`Gmail ${p} ${res.status} ${body.slice(0, 200)}`);
   }
   throw new Error(`Gmail ${p} kept failing`);
 }
@@ -88,10 +92,12 @@ let pageToken, scanned = 0;
 do {
   const d = await gmail('/messages', { q: 'newer_than:180d -in:sent -in:chats', maxResults: 500, pageToken });
   for (const r of d.messages || []) {
-    const m = await gmail(`/messages/${r.id}`, { format: 'metadata', metadataHeaders: 'From' });
-    const f = m.payload?.headers?.find((x) => x.name === 'From')?.value || '?';
-    tally[f] = (tally[f] || 0) + 1;
-    scanned++;
+    try {
+      const m = await gmail(`/messages/${r.id}`, { format: 'metadata', metadataHeaders: 'From' });
+      const f = m.payload?.headers?.find((x) => x.name === 'From')?.value || '?';
+      tally[f] = (tally[f] || 0) + 1;
+      scanned++;
+    } catch { /* one unreadable message shouldn't stop the tally */ }
   }
   pageToken = d.nextPageToken;
 } while (pageToken && scanned < 3000);
