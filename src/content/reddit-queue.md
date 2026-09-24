@@ -83,6 +83,17 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 62 | 🔵 | What are some ways to make money through meditation? | money scripts (Klontz), identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
 | 63 | 🔵 | How much should I charge for workshops? | anchoring, planning fallacy | Self-employed | Wellness Practitioner, Self-Employed Stresser |
 | 64 | 🔵 | How to handle pricing as a freelance designer / "how do you guys handle your pricing? What kind of hourly rate is reasonable?" | anchoring, social comparison | Self-employed | Self-Employed Stresser |
+| 65 | 🔵 | Why do I spend money when I'm bored? | Hedonic adaptation, pain of paying | Spending & shame | All segments |
+| 66 | 🔵 | Why do I spend money when I'm sad? | Emotional regulation, money scripts (Klontz) | Spending & shame | All segments |
+| 67 | 🔵 | Why do I feel the need to spend all my money? | Present bias, money scripts (Klontz) | Spending & shame | All segments |
+| 68 | 🔵 | Why can't I save money? | Present bias, status quo bias | Budgeting that sticks | All segments |
+| 69 | 🔵 | Why do I feel guilty spending money on myself? | Money scripts (Klontz), pain of paying | Spending & shame | Wellness practitioners |
+| 70 | 🔵 | Why does money make me anxious? | Loss aversion, ostrich effect | Anxiety & avoidance | Anxious avoider |
+| 71 | 🔵 | How do I stop impulse spending with ADHD? | Present bias, implementation intentions | ADHD & money | ADHD |
+| 72 | 🔵 | Why do I feel broke even when I have money? | Mental accounting, social comparison | Anxiety & avoidance | All segments |
+| 73 | 🔵 | Why do I never feel like I have enough money? | Hedonic adaptation, scarcity mindset | Anxiety & avoidance | Self-employed |
+| 74 | 🔵 | What is one personal finance habit that has made the biggest difference for you? | Implementation intentions, law of least effort | Behavioural basics | All segments |
+| 75 | 🔵 | Why do I buy things I don't need? | Social comparison, hedonic adaptation | Spending & shame | All segments |
 
 ---
 
