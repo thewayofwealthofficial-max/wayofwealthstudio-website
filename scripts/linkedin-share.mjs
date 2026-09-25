@@ -77,17 +77,28 @@ async function main() {
   console.log(`Picked: ${pick.title}\n----- LinkedIn text -----\n${text}\n-------------------------`);
   if (DRY) { console.log('DRY RUN: not posted.'); return; }
 
-  const r = await fetch('https://api.linkedin.com/rest/posts', {
-    method: 'POST',
-    headers: { authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json', 'LinkedIn-Version': process.env.LINKEDIN_VERSION ?? '202509', 'X-Restli-Protocol-Version': '2.0.0' },
-    body: JSON.stringify({
-      author: AUTHOR, commentary: text, visibility: 'PUBLIC',
-      distribution: { feedDistribution: 'MAIN_FEED', targetEntities: [], thirdPartyDistributionChannels: [] },
-      content: { article: { source: url, title: pick.title, description: (pick.description || '').slice(0, 200) } },
-      lifecycleState: 'PUBLISHED', isReshareDisabledByAuthor: false,
-    }),
+  // LinkedIn retires API versions (YYYYMM) after about a year. Start from last month and step back
+  // until LinkedIn accepts one, so the script never breaks just because a version was retired.
+  const body = JSON.stringify({
+    author: AUTHOR, commentary: text, visibility: 'PUBLIC',
+    distribution: { feedDistribution: 'MAIN_FEED', targetEntities: [], thirdPartyDistributionChannels: [] },
+    content: { article: { source: url, title: pick.title, description: (pick.description || '').slice(0, 200) } },
+    lifecycleState: 'PUBLISHED', isReshareDisabledByAuthor: false,
   });
-  if (r.status !== 201) throw new Error(`LinkedIn API ${r.status}: ${(await r.text()).slice(0, 400)}`);
+  let r, version;
+  for (let back = 1; back <= 12; back++) {
+    const d = new Date(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() - back);
+    version = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    r = await fetch('https://api.linkedin.com/rest/posts', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${TOKEN}`, 'content-type': 'application/json', 'LinkedIn-Version': version, 'X-Restli-Protocol-Version': '2.0.0' },
+      body,
+    });
+    if (r.status !== 426) break;
+    console.log(`LinkedIn version ${version} not active, trying an older one.`);
+  }
+  if (r.status !== 201) throw new Error(`LinkedIn API ${r.status} (version ${version}): ${(await r.text()).slice(0, 400)}`);
+  console.log(`LinkedIn accepted version ${version}.`);
   const id = r.headers.get('x-restli-id') || '';
   console.log('Posted to LinkedIn: ' + id);
   shared.push({ slug: pick.slug, date: new Date().toISOString().slice(0, 10), id });
