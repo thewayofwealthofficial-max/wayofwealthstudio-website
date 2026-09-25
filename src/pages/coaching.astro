@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
+import { RESULT_CLIPS } from '../config/resultsClips';
 
 const title = "The Money Story Method | 12-Week 1:1 Coaching | Way of Wealth";
 const description = "A 12-week 1:1 programme for people who earn well but never feel like they keep it. Behavioural coaching, plus the money system built with you. MSc Behavioural Economics | Qualified Financial Planner.";
@@ -88,7 +89,7 @@ const PHASES = [
   },
 ];
 
-const VIDEOS = [
+const OLD_VIDEOS = [
   { slug: "josh-book-the-call", cap: "Book that first call with Joel. Just do it. One call is all it takes.", who: "Josh, yacht chef" },
   { slug: "josh-pedestal", cap: "You've taken money off the pedestal. Now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
   { slug: "alon-opportunity", cap: "From avoiding money as \"just status\" to seeing it as a tool for freedom.", who: "Alon, personal trainer" },
@@ -97,6 +98,13 @@ const VIDEOS = [
   { slug: "shira-breakthrough", cap: "A breakthrough moment: seeing what her money could actually build.", who: "Shira" },
   { slug: "jessica-leaks", cap: "Found exactly where her money was leaking, and started closing the gaps.", who: "Jessica" },
 ];
+
+// Existing wall first, then the raw call clips (all in /public/testimonials/results/).
+const VIDEOS = [
+  ...OLD_VIDEOS,
+  ...RESULT_CLIPS.map((c) => ({ slug: `results/${c.slug}`, cap: c.cap, who: c.who })),
+];
+const SHOW_FIRST = 9; // clips shown before the "See all" button; the rest load only when opened
 
 // The three reasons clients actually gave on their calls (Fathom check, 2026-09-24).
 const WINDOWS = [
@@ -324,7 +332,7 @@ const FAQS = [
 </section>
 
 <!-- 12 · VIDEO WALL -->
-<section class="sp-section sp-navy">
+<section class="sp-section sp-navy" id="results">
   <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <h2 class="sp-h2 sp-on-dark sp-center reveal">Wondering what<br /><em>results look like?</em></h2>
@@ -337,15 +345,29 @@ const FAQS = [
       </figcaption>
     </figure>
     <div class="sp-video-grid">
-      {VIDEOS.slice(1).map((v) => (
-        <figure class="sp-vcard reveal">
+      {VIDEOS.slice(1).map((v, i) => (
+        <figure class="sp-vcard reveal" data-extra={i >= SHOW_FIRST ? "1" : undefined} hidden={i >= SHOW_FIRST}>
           <video controls playsinline preload="none" poster={`/testimonials/${v.slug}.jpg`} src={`/testimonials/${v.slug}.mp4`}></video>
           <figcaption><p>{v.cap}</p><small>{v.who}</small></figcaption>
         </figure>
       ))}
     </div>
+    {VIDEOS.length - 1 > SHOW_FIRST && (
+      <div class="sp-center sp-more-wrap">
+        <button type="button" id="sp-more" class="sp-btn sp-btn-gold">See all {VIDEOS.length} client clips</button>
+      </div>
+    )}
   </div>
 </section>
+<script>
+  const btn = document.getElementById('sp-more');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sp-vcard[data-extra]').forEach((el) => el.removeAttribute('hidden'));
+      btn.parentElement?.remove();
+    });
+  }
+</script>
 
 <!-- 13 · WHICH ONE IS YOU (tabs) -->
 <section class="sp-section sp-white">
@@ -748,6 +770,7 @@ const FAQS = [
 .sp-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
 .sp-vcard figcaption p { font-size: 0.98rem !important; line-height: 1.5 !important; color: var(--color-cream); margin: 0 0 0.5rem !important; }
 .sp-vcard figcaption small { color: var(--color-gold-subtle); font-size: 0.82rem; }
+.sp-more-wrap { margin-top: 2.2rem; }
 
 /* ---------- pricing ---------- */
 .sp-price-grid { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }

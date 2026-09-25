@@ -176,6 +176,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
         </figure>
       ))}
     </div>
+    <p class="hm-vmore reveal"><a href={`${LINKS.coaching}#results`}>See all client clips</a></p>
   </div>
 </section>
 
@@ -290,6 +291,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   .hm-qcard small { color: var(--color-slate); font-size: 0.82rem; }
   .hm-vgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; text-align: left; }
   .hm-vcard { margin: 0; background: rgba(245,240,232,0.05); border: 1px solid rgba(196,162,101,0.2); border-radius: 8px; padding: 1rem; }
+  .hm-vmore { text-align: center; margin: 2rem 0 0; }
+  .hm-vmore a { color: var(--color-navy); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
   .hm-vcard video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
   .hm-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
   .hm-vcard figcaption p { font-size: 0.95rem; line-height: 1.5; color: var(--color-cream); margin: 0 0 0.5rem; }
