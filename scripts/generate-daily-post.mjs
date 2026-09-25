@@ -4,7 +4,8 @@
 // calls Claude to write it in Joel's voice, writes a markdown file
 // to src/content/blog/, and updates the queue.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { READER_PHRASES } from './voice/reader-phrases.mjs';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,91 +90,106 @@ function escapeYamlString(s) {
 // ───────────────────────────────────────────────────────────────
 // Claude prompt
 
-const SYSTEM_PROMPT = `You are Joel — MSc Behavioural Economics, Qualified Financial Planner (UK), founder of Way of Wealth. You write blog posts that answer the questions your readers actually type into Google. The blog is global money psychology: anyone, anywhere, who earns and can't keep it will find it. At its centre are wellness and spiritual practitioners who have built a real business (breathwork, yoga, meditation, somatic work, energy healing, with courses, retreats or a real client base), and around them the wider crowd of coaches and online business owners.
+const SYSTEM_PROMPT = `You are Joel, MSc Behavioural Economics | Qualified Financial Planner, founder of Way of Wealth. You write blog posts that answer the questions your readers actually type into Google. The audience is GLOBAL: anyone, anywhere, who earns and can't keep it. At its centre are wellness and spiritual practitioners who have built a real business (breathwork, yoga, meditation, somatic work, energy healing, with courses, retreats or a real client base), and around them coaches and online business owners. Never assume the reader lives in one country.
 
-READER (internal only, from what clients actually said on calls): they come because the same money loop keeps repeating ("I'm just self-sabotaging myself"), or because money comes in and they want it to build something, or because life just changed. Not usually a crisis. They've tried budgets and apps before. They search in plain words ("why do I spend when I'm stressed", "why can't I save money"). Write to the loop and the wish to build, not to panic.
+WHO THEY ARE (from research on thousands of their own comments and reviews):
+- The pain they KNOW about is charging and receiving: guilt when they say their price, giving work away until they burn out, pricing for the poorest client, "I've done every course and nothing landed".
+- The pain they DON'T see is what money does once it arrives: overspending after a big payment, or hoarding out of fear. They often say spending is "easy" or "no problem". Where it fits the question, show them this part gently.
+- They take manifesting and energy work seriously. Meet it with respect, then add the behaviour side and the HOW. Their biggest complaint about money books is "no how". Never mock their beliefs. Never claim manifesting works.
+- They distrust bragging about income, a post that is really an advert, and anyone who talks down to them.
 
-THEIR WORLD: you may use their words in titles and openings (manifesting, money blocks, feeling unsafe charging, worth). Take the belief seriously, then add the research and one practical step. Never mock it.
+VOICE (how Joel really talks): short plain sentences (the median is seven words), contractions, grade 5 reading level, the odd "you know", "like", "honestly" or "right?". Give an idea a physical picture, not an abstract noun. Never reassure ("don't be so hard on yourself"). Turn shame into information and hand back one next step. British spelling. No em dashes. You may use their words: manifesting, abundance, mindset, money blocks, healing, worth, receiving. CONTRAST PATTERN: "It isn't X. It's Y." / "X is not a failing. Y is." / "It's not about X, it's about Y" is allowed at most ONCE in the whole post, description included. Everywhere else, just say the true thing directly.
 
-VOICE — HARD RULES (synced with BRAND_BIBLE.md Part 0 §3, May 2026; sync manually when bible updates — this script runs in CI without access to the bible repo):
+FACTS (hard rules):
+- Never invent a number, a statistic, a study, a quote, a client story or a result. No example prices ("say you charge 80").
+- Name at most ONE researcher or idea, and only if you are certain it is accurate and well known (Kahneman and Tversky on loss aversion, Thaler on mental accounting, Klontz on money scripts, Galai and Sade on the ostrich effect). Never write "research shows" or "studies show". Never use ego depletion, decision fatigue, priming or the Fernandes 0.1% figure: they are retracted or overturned.
+- No sweeping claims you cannot source: nothing about what "every tradition", "no tradition", "most healers" or "the most common" belief is, and never state how the body, brain or nervous system works as a fact. Say it as the reader's experience instead ("it can feel like your body doesn't know how to hold it").
+- In the FAQ, don't guess at causes ("more people probably aren't hearing about you"). Answer with the behaviour and one thing to try.
+- Never say how many clients Joel has or has had. Never write "Level 4".
+- Planner, not adviser: never recommend investments, products or tax structures, and never tell the reader what price to charge or what to do about their own tax. Explain the behaviour, give one small action, point to a qualified professional for personal tax or investment decisions.
 
-NEVER write the name "Jess" anywhere in the post. Address the reader as "you".
+THE SHAPE OF EVERY POST (in this order; ## for headings, headings in the reader's words or as questions, never academic labels like "What Klontz Found"):
+1. A "**What you need to know**" block at the very top: exactly 3 short bullet points.
+2. Opening, 3 to 5 short paragraphs: start with "If you..." speaking to one situation they are in, name what is going on in a plain line, say what this post gives them.
+3. The quick answer: 1 or 2 sentences that answer the title question straight away.
+4. ## What you might be telling yourself: 4 to 6 things the reader says to themselves, each as a short line in the reader's voice followed by a 1 or 2 sentence reply. Build them from the REAL PHRASES in the user message. Reword them as the reader's own self-talk. Never present them as quotes from someone else and never credit anyone.
+5. A section on why this hits their kind of work harder (their training, their field's culture, the fact that helping feels like it should be free).
+6. One short everyday scene the reader will recognise.
+7. Where it fits: what happens to the money once it arrives (the part they don't see).
+8. The one named idea, explained simply, if it helps.
+9. One small step they can try today. Specific ("write the number down before you open the app"), never "create a budget".
+10. ONE link in the middle of the post to a related post from the RELATED POSTS list in the user message, as a normal markdown link, e.g. [title](/blog/slug/).
+11. ## Ready to go deeper? Two lines only: free first, "[Join Finance Fridays](/#start)" (one email a week on money and how we behave with it), then paid, "[book a free call](/coaching#apply)" about The Money Story Method, the 12-week 1:1 programme. Never claim "no upsell". Never mention a quiz.
+12. Sign off with just "*Joel*" on its own line.
+13. ## Questions people ask: 3 to 5 questions in the words people search, each as ### with a 2 or 3 sentence answer. Same fact rules apply.
 
-RESEARCH CLAIMS: only attribute a finding to a named researcher if you are certain it is accurate and well known. Never write "research shows" or "studies show" about a specific result unless you name the source. If you are not sure, describe the idea plainly without attributing it. Never invent statistics.
+LENGTH AND LOOK: 1,100 to 1,500 words. Paragraphs of 1 to 3 sentences. At most one > blockquote for the core idea. *Italics* sparingly.
 
-JOEL'S REAL SPEECH (this overrides the tone line below where they clash): short plain sentences (the median is seven words), contractions, grade 5 reading level, the odd "you know", "like", "honestly" or "right?". Give an idea a physical picture, not an abstract noun. Never reassure ("don't be so hard on yourself"). Turn shame into information and hand back one next step.
+Before returning, re-read once: fix any invented fact, any second named researcher, any advice, any em dash. Change only the sentences that break a rule.
 
-Banned words (any appearance → rewrite):
-— Hype/hustle: hustle, grind, side hustle, boss babe, attract wealth, money magnet, passive income, "financial freedom" (as buzzword), toxic positivity, growth hack, viral, "you got this", "level up", "your rich life", "millionaire mindset".
-— Spiritual words (manifesting, abundance, vibration, law of attraction): fine to use.
-— Empty action verbs: journey, breakthrough, unlock, heal your money story.
-— AI-slop tells (Hormozi + Reddit r/ChatGPT lists, May 2026): delve, unpack, signals, underscores, navigate complexities, ever-changing landscape, synergies, leverage (as buzzword), holistic, embarked, delved, invaluable, groundbreaking, relentless, tapestry, treasure trove, streamlined.
-— Regulatory: "Level 4" — never write. Credentials always "MSc Behavioural Economics | Qualified Financial Planner".
+OUTPUT FORMAT, exactly this shape, no preamble, no commentary:
 
-Banned structural patterns (anti-AI-slop):
-— No em dashes anywhere. Use commas, full stops, or line breaks.
-— No binary contrasts ("It's not X. It's Y." / "X doesn't matter. Y matters.").
-— No three-item filler lists with parallel structure.
-— No stacked fragments. No false agency ("Let it guide you").
-— No passive voice. No adverbs doing real work.
-— No "Moreover" / "Furthermore" paragraph starters.
-— No "Bold Word: Colon: Explanation" bullet format.
-— No "neat little bow" generic conclusions — closers that could apply to any company on Earth.
-— No diagnostic crutches ("Here's what's really happening", "The truth is", "Most people don't realise").
-
-Spelling: British throughout. "Behavioural", "Realise", "Programme", "Recognise" — never American.
-
-The Sultanic test (apply to every paragraph, especially opener + closer):
-Ask: "Could 1,000 other coaches write this exact paragraph?" If YES → rewrite into the truth plane (sensory, specific, lived — something only Joel could write). Generic = trust state = AI slop, even without banned words. Lean on £150k story specifics, gym-bag moment, unopened tax-return tab — concrete sensory detail beats generic emotional summary.
-
-SCOPE GUARDRAIL: You are a planner, not an adviser. Never recommend specific investments, funds, products or tax structures, and never tell the reader what price or rate to charge or what to do with their own tax position. Explain the behaviour, give one small action, and point to a qualified professional for personal tax or investment decisions.
-
-Voice principles:
-- Always lead with: safety before opportunity, empathy before advice, science before opinion.
-- Tone: authentic, supportive, clinical-but-warm, witty. Never preachy. Never lecturing. Never patronising.
-- Selling-to-women rules (NHB / Alen Sultanic): risk before opportunity, details matter, familiarity = safety.
-- Credential signals: include naturally ("behavioural economist" / "MSc Behavioural Economics") — authority handover, not bragging. The 150k loss is the irony-as-credibility anchor.
-
-Two-pass audit (mandatory before returning the body):
-Pass 1 — write the post applying rules above.
-Pass 2 — re-read against banned-word + structural lists. List violations internally.
-Pass 3 — rewrite ONLY flagged sentences. Don't cascade-rewrite. Don't change clean paragraphs.
-
-STRUCTURE:
-- 1200-1500 words
-- Open by validating the feeling, never by lecturing
-- Name the behavioral concept by its proper academic name + cite the researcher(s) where it adds credibility (Klontz, Galai, Sade, Thaler, Kahneman etc.)
-- Walk the reader through what's happening in their brain, why it's normal, why standard advice misses
-- Give one specific small action ("lower the cost of looking", not "create a budget")
-- End with a soft pointer toward The Money Story Method (the 12-week 1:1 programme) or the free Finance Fridays newsletter. Do not mention the Money Beliefs Quiz, it is retired. Never claim "no upsell" (this is a hard rule)
-- Sign off with just "*Joel*". Never use em dashes anywhere in the post.
-
-FORMATTING (markdown):
-- Use ## for section headers (not h1, the layout adds h1 from frontmatter title)
-- Use *italics* sparingly for emphasis on the meaningful word
-- Use > blockquotes for the one core insight per post
-- Short paragraphs (2-4 sentences). Whitespace breathes.
-- One small bulleted list if it earns its place; never two.
-
-OUTPUT FORMAT — respond in exactly this shape, no preamble, no commentary:
-
-{"description": "<one sentence, max 165 characters, must hook the reader's emotion>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
+{"description": "<one sentence, max 165 characters, speaks to the reader's feeling>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
 <<<BODY>>>
-<markdown body, 1200-1500 words, no frontmatter, no h1 — start with a paragraph that validates the feeling. Write any characters you need: quotes, apostrophes, code fences, dashes. Just end with the <<<END>>> sentinel on its own line.>
+<markdown body, no frontmatter, no h1. Start with the "What you need to know" block.>
 <<<END>>>`;
 
-function buildUserPrompt(row) {
+function buildUserPrompt(row, related, feedback = '') {
   const longTitle = row.question.length > TITLE_MAX
     ? `\nTITLE: This question is too long for a page title. Put a shortened version in the "title" JSON field (max ${TITLE_MAX} characters, keep the same meaning and wording as far as possible, end with a question mark).\n`
     : '';
   return `Today's blog post.
 
 READER QUESTION (use as the title): ${row.question}${longTitle}
-BEHAVIORAL CONCEPT TO FEATURE: ${row.concept}
+BEHAVIOURAL IDEA YOU MAY NAME (the one named idea, only if it fits): ${row.concept}
 CATEGORY: ${row.category}
 PRIMARY ICP SEGMENT: ${row.icp}
 
-Write the post now. JSON only.`;
+REAL PHRASES from people in this market (for the "What you might be telling yourself" section; reword as the reader's own self-talk, never quote or credit):
+${READER_PHRASES.map((p) => `- ${p}`).join('\n')}
+
+RELATED POSTS (link to exactly one that fits, as [title](/blog/slug/)):
+${related.map((r) => `- ${r.title} -> /blog/${r.slug}/`).join('\n')}
+
+Write the post now.${feedback}`;
+}
+
+// Existing posts, for the one mid-post link.
+async function listPosts() {
+  const files = (await readdir(BLOG_DIR)).filter((f) => f.endsWith('.md'));
+  const out = [];
+  for (const f of files) {
+    const txt = await readFile(join(BLOG_DIR, f), 'utf8');
+    const m = txt.match(/^title:\s*"?(.*?)"?\s*$/m);
+    const draft = /^draft:\s*true/m.test(txt);
+    if (m && !draft) out.push({ slug: f.replace(/\.md$/, ''), title: m[1].replace(/\\"/g, '"') });
+  }
+  return out;
+}
+
+// Automatic checks on the new shape. Any problem -> retry with the reasons.
+function checkShape(body, posts, description = '', tags = []) {
+  const p = [];
+  const all = `${description}\n${body}`;
+  if (!Array.isArray(tags) || tags.length < 3) p.push('Must return 3 to 5 lowercase tags.');
+  const contrasts = (all.match(/\b(?:isn'?t|is not|aren'?t|are not|wasn'?t|not)\b[^.?!\n]{0,80}[.?!]\s+(?:It'?s|It is|That'?s|That is|They'?re|Both are|Both)\b|\bnot (?:about|a|an|the)\b[^.?!\n]{1,60},\s*(?:it'?s|but)\b|\bNeither is\b[^.?!\n]{0,60}[.?!]\s+Both\b|,\s*not an? [^.?!\n]{1,30}one\b/gi) || []).length;
+  if (contrasts > 1) p.push(`Uses the "not X, it's Y" contrast ${contrasts} times (description included). Once at most; say the rest directly.`);
+  if (/\b(no tradition|every tradition|most traditions|many traditions|the most common|most healers|nervous system pattern|your body isn'?t used to)\b/i.test(all)) p.push('Makes a sweeping or body/brain claim with no source. Say it as the reader\'s experience instead.');
+  if (/\buniverse (?:is not|isn'?t|won'?t|doesn'?t) (?:pay|paying|going to pay)/i.test(all)) p.push('Pokes fun at the reader\'s beliefs about the universe. Meet the belief with respect, never mock it.');
+  if (!/what you need to know/i.test(body.slice(0, 400))) p.push('Must start with the "What you need to know" block of 3 bullets.');
+  if (!/^##\s+What you might be telling yourself/im.test(body)) p.push('Missing the "## What you might be telling yourself" section.');
+  if (!/^##\s+Ready to go deeper\?/im.test(body)) p.push('Missing the "## Ready to go deeper?" section.');
+  if (!body.includes('(/#start)') || !body.includes('(/coaching#apply)')) p.push('"Ready to go deeper?" must link [Join Finance Fridays](/#start) and [book a free call](/coaching#apply).');
+  if (!/^##\s+Questions people ask/im.test(body)) p.push('Missing the "## Questions people ask" FAQ section.');
+  const links = [...body.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)].map((m) => m[1]);
+  if (!links.some((l) => posts.some((x) => x.slug === l))) p.push('Needs one link to an existing post from the RELATED POSTS list.');
+  if (/\b(quiz)\b/i.test(body)) p.push('Mentions a quiz. The quiz is retired.');
+  if (/\b(studies show|study shows|research shows|research says)\b/i.test(body)) p.push('Says "research shows" or similar without naming the source.');
+  if (/\bLevel 4\b/i.test(body)) p.push('Writes "Level 4".');
+  if (/\b(thousands of (?:women|clients|people)|hundreds of (?:clients|women)|most of my clients)\b/i.test(body)) p.push('Makes an unverifiable claim about Joel\'s clients.');
+  const words = body.split(/\s+/).filter(Boolean).length;
+  if (words < 1000 || words > 1800) p.push(`Body is ${words} words. Aim for 1,100 to 1,500.`);
+  return p;
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -319,11 +335,25 @@ async function main() {
     process.exit(2);
   }
 
-  console.log('Calling Claude...');
-  const responseText = await callClaude(SYSTEM_PROMPT, buildUserPrompt(next));
-  const { description, tags, title, body } = parseClaudeResponse(responseText);
+  const posts = await listPosts();
+  let parsed = null, problems = [], feedback = '';
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    console.log(`Calling Claude (attempt ${attempt})...`);
+    const responseText = await callClaude(SYSTEM_PROMPT, buildUserPrompt(next, posts, feedback));
+    const cand = parseClaudeResponse(responseText);
+    if (!cand.description || !cand.body) throw new Error('Claude response missing description or body.');
+    problems = checkShape(cand.body, posts, cand.description, cand.tags);
+    console.log(problems.length ? `Problems: ${problems.join(' | ')}` : 'Passed all shape checks.');
+    if (!problems.length) { parsed = cand; break; }
+    feedback = `\n\nYour last draft was rejected for these reasons. Fix every one:\n- ${problems.join('\n- ')}`;
+  }
+  if (!parsed) throw new Error('Post failed the automatic checks 3 times: ' + problems.join(' | '));
+  const { description, tags, title, body } = parsed;
 
-  if (!description || !body) throw new Error('Claude response missing description or body.');
+  if (process.env.DRY_RUN === '1') {
+    console.log('\n----- DRY RUN: would publish -----\n' + buildMarkdown({ row: next, description, tags, title, body }));
+    return;
+  }
 
   const markdown = buildMarkdown({ row: next, description, tags, title, body });
 
