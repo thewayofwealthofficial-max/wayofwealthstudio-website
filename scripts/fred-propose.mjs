@@ -622,20 +622,39 @@ function buildTelegramMessage(proposals) {
   return msg;
 }
 
+// Telegram rejects messages over 4,096 characters (that broke Fred on 24 Sep 2026).
+// Split at blank lines, i.e. between proposals, so no link or formatting is cut in half.
+function splitForTelegram(text, max = 3900) {
+  const parts = [];
+  let cur = '';
+  for (const block of text.split('\n\n')) {
+    const next = cur ? `${cur}\n\n${block}` : block;
+    if (next.length <= max) { cur = next; continue; }
+    if (cur) parts.push(cur);
+    cur = block.length <= max ? block : block.slice(0, max); // a single block this long is not expected
+  }
+  if (cur) parts.push(cur);
+  return parts;
+}
+
 async function sendTelegram(text) {
-  const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
-      text,
-      parse_mode: 'MarkdownV2',
-      disable_web_page_preview: true,
-    }),
-  });
-  const json = await res.json();
-  if (!json.ok) throw new Error(`Telegram: ${json.description}`);
-  return json.result.message_id;
+  let firstId = null;
+  for (const part of splitForTelegram(text)) {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: part,
+        parse_mode: 'MarkdownV2',
+        disable_web_page_preview: true,
+      }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(`Telegram: ${json.description}`);
+    firstId ??= json.result.message_id;
+  }
+  return firstId;
 }
 
 async function safeFailNotify(reason) {
