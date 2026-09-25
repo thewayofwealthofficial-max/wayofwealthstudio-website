@@ -1,0 +1,90 @@
+name: LinkedIn Share
+
+# Shares the best-fit blog post from the last 7 days to Joel's LinkedIn profile, 3 times a week
+# (Joel, 25 Sep 2026: "best of 3"). Tue / Thu / Sat at 07:43 UTC, off-peak minute.
+# Also warns Joel on Telegram (Fred) when the LinkedIn login is within 7 days of expiring.
+# Manual run: tick dry_run to see the text without posting; force_slug shares a specific post.
+
+on:
+  schedule:
+    - cron: '43 7 * * 2,4,6'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only show the text, do not post'
+        type: boolean
+        default: true
+      force_slug:
+        description: 'Share this post slug instead of picking'
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: linkedin-share
+  cancel-in-progress: false
+
+jobs:
+  share:
+    # Scheduled runs only happen once Joel flips the repo variable LINKEDIN_SHARE_ENABLED to true.
+    if: github.event_name == 'workflow_dispatch' || vars.LINKEDIN_SHARE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Warn if the LinkedIn login is about to expire
+        env:
+          EXPIRES: ${{ secrets.LINKEDIN_TOKEN_EXPIRES }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DAYS=$(( ( $(date -d "$EXPIRES" +%s) - $(date +%s) ) / 86400 ))
+          echo "LinkedIn login expires $EXPIRES ($DAYS days)."
+          if [ "$DAYS" -le 7 ]; then
+            node scripts/telegram-notify.mjs --emoji "🔑" --title "LinkedIn login expires in $DAYS days" --body "Blog posts stop going to LinkedIn on $EXPIRES. Open Claude and say: reconnect LinkedIn. It takes one click on Allow."
+          fi
+
+      - name: Share one post
+        id: share
+        env:
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_PERSON_URN: ${{ secrets.LINKEDIN_PERSON_URN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '1' || '0' }}
+          FORCE_SLUG: ${{ inputs.force_slug }}
+        run: node scripts/linkedin-share.mjs
+
+      - name: Save what was shared
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-shared.json 2>/dev/null || true
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "linkedin: shared ${{ steps.share.outputs.title }}"
+          git pull --rebase -q && git push
+
+      - name: Tell Joel
+        if: success() && steps.share.outputs.url != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TITLE: ${{ steps.share.outputs.title }}
+          URL: ${{ steps.share.outputs.url }}
+        run: node scripts/telegram-notify.mjs --emoji "💼" --title "Shared on LinkedIn" --body "$TITLE" --silent
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn share failed" --body "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
