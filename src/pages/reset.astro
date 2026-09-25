@@ -137,7 +137,7 @@ const description = "Find out where your money is actually going in under 3 minu
       </div>
 
       <div class="rs-pot">
-        <p class="rs-pot-k">🏢 Work & Studio Bills</p>
+        <p class="rs-pot-k">🏢 Business Overheads</p>
         <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-run">0</span><span class="rs-pot-per">/mo</span></p>
         <p class="rs-pot-n">Room hire, booking tools, and business overhead ring-fenced.</p>
       </div>
@@ -162,11 +162,12 @@ const description = "Find out where your money is actually going in under 3 minu
     </p>
     <div class="rs-actions">
       <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer">
-        Book a 15-Minute Bank Setup Call →
+        Book a Free Consultation →
       </a>
-      <button type="button" class="rs-btn rs-btn-ghost" id="rs-copy">Copy my breakdown</button>
+      <a class="rs-btn rs-btn-ghost" href={LINKS.skool} target="_blank" rel="noopener noreferrer">
+        Join the Skool Community →
+      </a>
     </div>
-    <p class="rs-micro" id="rs-copied" aria-live="polite"></p>
   </div>
 
   </div><!-- /#rs-locked -->
@@ -186,10 +187,6 @@ const description = "Find out where your money is actually going in under 3 minu
 
 <script>
   const $ = (id) => document.getElementById(id);
-
-  // The URL this tool is served from. Appears in the copied breakdown, so it has to match
-  // where it actually goes live. The domain is .shop, not .com. One line to change.
-  const TOOL_URL = 'thewayofwealth.shop/reset';
 
   const state = {
     cur: '£',
@@ -399,36 +396,6 @@ const description = "Find out where your money is actually going in under 3 minu
 
     btn.disabled = false;
     btn.textContent = label;
-  });
-
-  /* ---------- copy ---------- */
-  $('rs-copy').addEventListener('click', async () => {
-    const c = calc();
-    const cur = state.cur;
-
-    const lines = [
-      '--- MY MONEY RESET BREAKDOWN ---',
-      '',
-      'Money in:                 ' + cur + fmt(c.rev) + '/mo',
-      '',
-      'Taxes (untouchable):      ' + cur + fmt(c.tax) + '/mo (' + (state.taxPct ?? 0) + '% sweep)',
-      'Work & studio bills:      ' + cur + fmt(c.run) + '/mo',
-      'What’s mine to keep:      ' + cur + fmt(c.payMonth) + '/mo (' + cur + fmt(c.payWeek) + '/wk)',
-      'Slow-month buffer:        ' + cur + fmt(c.buffer) + '/mo',
-      '',
-      'Ran via ' + TOOL_URL,
-    ];
-
-    const text = lines.join('\n');
-
-    const note = $('rs-copied');
-    try {
-      await navigator.clipboard.writeText(text);
-      note.textContent = '✓ Copied. Paste it straight into the DM.';
-    } catch (err) {
-      // Some in-app browsers block the clipboard. Say so rather than failing quietly.
-      note.textContent = 'Your browser blocked the copy. Screenshot this page and send that instead.';
-    }
   });
 
   paintGate();

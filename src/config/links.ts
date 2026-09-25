@@ -22,6 +22,8 @@ export const LINKS = {
   // -> calendly-webhook -> MailerLite booked state -> prep sequence. Lives on the
   // diagnostic site (discover.thewayofwealth.shop), NOT this one.
   vsl: 'https://discover.thewayofwealth.shop/vsl',
+  // The free Way of Wealth community on Skool.
+  skool: 'https://www.skool.com/way-of-wealth-4394',
   // Instagram DM deep link for the RESET trigger word.
   // NOTE: ig.me does NOT support a prefilled ?text= message — Instagram ignores it and
   // opens an empty thread. That is why /reset copies to the clipboard instead.
