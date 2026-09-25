@@ -89,21 +89,10 @@ const PHASES = [
   },
 ];
 
-const OLD_VIDEOS = [
-  { slug: "josh-book-the-call", cap: "Book that first call with Joel. Just do it. One call is all it takes.", who: "Josh, yacht chef" },
-  { slug: "josh-pedestal", cap: "You've taken money off the pedestal. Now it's a tool I'm in control of, not the other way round.", who: "Josh, yacht chef" },
-  { slug: "alon-opportunity", cap: "From avoiding money as \"just status\" to seeing it as a tool for freedom.", who: "Alon, personal trainer" },
-  { slug: "shambhavi-worth", cap: "Calmer about money, and clear on her worth.", who: "Shambhavi, finishing her master's" },
-  { slug: "lynton-autopilot", cap: "Spotted the autopilot spending quietly draining him, and built a system to stop it.", who: "Lynton, personal trainer" },
-  { slug: "shira-breakthrough", cap: "A breakthrough moment: seeing what her money could actually build.", who: "Shira" },
-  { slug: "jessica-leaks", cap: "Found exactly where her money was leaking, and started closing the gaps.", who: "Jessica" },
-];
 
-// Existing wall first, then the raw call clips (all in /public/testimonials/results/).
-const VIDEOS = [
-  ...OLD_VIDEOS,
-  ...RESULT_CLIPS.map((c) => ({ slug: `results/${c.slug}`, cap: c.cap, who: c.who })),
-];
+
+// Raw call clips only (max 2 per client, mixed order). Files in /public/testimonials/results/.
+const VIDEOS = RESULT_CLIPS.map((c) => ({ slug: `results/${c.slug}`, cap: c.cap, who: c.who }));
 const SHOW_FIRST = 9; // clips shown before the "See all" button; the rest load only when opened
 
 // The three reasons clients actually gave on their calls (Fathom check, 2026-09-24).
