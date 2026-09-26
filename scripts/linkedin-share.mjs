@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BLOG_DIR = join(ROOT, 'src', 'content', 'blog');
 const STATE = join(ROOT, 'scripts', 'state', 'linkedin-shared.json');
-const SITE = 'https://thewayofwealth.shop';
+const SITE = 'https://wayofwealthcoaching.com';
 const DRY = process.env.DRY_RUN === '1';
 const { LINKEDIN_ACCESS_TOKEN: TOKEN, LINKEDIN_PERSON_URN: AUTHOR, ANTHROPIC_API_KEY: KEY, FORCE_SLUG } = process.env;
 if (!DRY && (!TOKEN || !AUTHOR)) { console.error('FATAL: LINKEDIN_ACCESS_TOKEN / LINKEDIN_PERSON_URN not set'); process.exit(1); }

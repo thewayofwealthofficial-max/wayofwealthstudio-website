@@ -130,7 +130,7 @@ function toHtml(body, footerAddress) {
     return `<p style="margin:0 0 16px;line-height:1.6;">${h}</p>`;
   }).join('\n');
   const foot = [
-    'You are getting this because you signed up at thewayofwealth.shop.',
+    'You are getting this because you signed up at wayofwealthcoaching.com.',
     '<a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Unsubscribe</a>',
     footerAddress ? esc(footerAddress) : '',
   ].filter(Boolean).join('<br>');
@@ -138,7 +138,7 @@ function toHtml(body, footerAddress) {
 }
 
 function toText(body, footerAddress) {
-  return `${body}\n\n--\nYou are getting this because you signed up at thewayofwealth.shop.\nUnsubscribe: {{{RESEND_UNSUBSCRIBE_URL}}}${footerAddress ? '\n' + footerAddress : ''}`;
+  return `${body}\n\n--\nYou are getting this because you signed up at wayofwealthcoaching.com.\nUnsubscribe: {{{RESEND_UNSUBSCRIBE_URL}}}${footerAddress ? '\n' + footerAddress : ''}`;
 }
 
 async function main() {
@@ -229,7 +229,7 @@ async function main() {
   const id = await createBroadcast(resendKey, {
     audienceId,
     from: `${FROM_NAME} <${await senderEmail(resendKey)}>`,
-    replyTo: 'joeleezekiel@gmail.com', // thewayofwealth.shop can't receive mail
+    replyTo: 'joeleezekiel@gmail.com', // wayofwealthcoaching.com can't receive mail
     subject: (MODE === 'review' ? `[DRAFT ${uk.weekday}] ` : '') + draft.subject,
     previewText: draft.preview,
     html: toHtml(draft.body_plain, footerAddress),

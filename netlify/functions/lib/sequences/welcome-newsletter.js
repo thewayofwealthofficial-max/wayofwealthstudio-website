@@ -7,10 +7,10 @@
 // afterHours = hours after sign-up. Email 1 goes instantly from the sign-up form.
 
 const CALL = 'https://calendly.com/thewayofwealth-official/20min';
-const RESET = 'https://thewayofwealth.shop/reset';
+const RESET = 'https://wayofwealthcoaching.com/reset';
 
 module.exports = {
-  footerReason: 'you signed up for Finance Fridays at thewayofwealth.shop',
+  footerReason: 'you signed up for Finance Fridays at wayofwealthcoaching.com',
   emails: [
     {
       id: '01-welcome',
@@ -166,7 +166,7 @@ For a lot of us, money sits up on a pedestal. It's scary, or it's sacred, or it'
 
 Taking it off the pedestal doesn't mean caring less about money. You just get to be the one in charge of it.
 
-[Watch Josh say it himself here](https://thewayofwealth.shop/testimonials/josh-pedestal.mp4).
+[Watch Josh say it himself here](https://wayofwealthcoaching.com/testimonials/josh-pedestal.mp4).
 
 If you want to work on this with me, one to one, [book a free 20-minute call](${CALL}). I take on five people a month.
 

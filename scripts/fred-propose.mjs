@@ -66,7 +66,7 @@ const {
 } = process.env;
 
 const MODEL = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-6';
-const APPROVE_BASE_URL = 'https://thewayofwealth.shop/api/fred/approve';
+const APPROVE_BASE_URL = 'https://wayofwealthcoaching.com/api/fred/approve';
 const PROPOSAL_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 const DAY_MS = 24 * 60 * 60 * 1000;
 

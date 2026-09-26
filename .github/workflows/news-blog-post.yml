@@ -76,7 +76,7 @@ jobs:
         run: |
           node scripts/telegram-notify.mjs --emoji "📰" --title "New trending post live" --body "$TITLE
 
-          https://thewayofwealth.shop/blog/$SLUG
+          https://wayofwealthcoaching.com/blog/$SLUG
 
           Based on: $SOURCE"
 

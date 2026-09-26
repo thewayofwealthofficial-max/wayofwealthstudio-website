@@ -14,7 +14,7 @@ const { createHmac } = require('node:crypto');
 
 const RESEND = 'https://api.resend.com';
 const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8744-72085ceac3e7';
-const SITE = 'https://thewayofwealth.shop';
+const SITE = 'https://wayofwealthcoaching.com';
 const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
 // Joel's own domain takes over automatically once Resend has verified it.
 const PREFERRED_FROM = 'Joel from Way of Wealth <joel@joelezekiel.com>';
@@ -28,7 +28,7 @@ async function fromAddress() {
   } catch { fromCache = FROM; }
   return fromCache;
 }
-const REPLY_TO = 'joeleezekiel@gmail.com'; // thewayofwealth.shop can't receive mail
+const REPLY_TO = 'joeleezekiel@gmail.com'; // wayofwealthcoaching.com can't receive mail
 const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, company no. 17214427';
 
 const SEQUENCES = {

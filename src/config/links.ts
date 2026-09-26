@@ -1,7 +1,7 @@
 // Canonical site constants. Single source of truth.
 // If you change a URL here it propagates to every component that imports LINKS.
 export const LINKS = {
-  siteUrl: 'https://thewayofwealth.shop',
+  siteUrl: 'https://wayofwealthcoaching.com',
   siteName: 'Way of Wealth',
   quiz: 'https://money-beliefs-quiz.netlify.app',
   etsy: 'https://www.etsy.com/shop/WayofWealthStudio',

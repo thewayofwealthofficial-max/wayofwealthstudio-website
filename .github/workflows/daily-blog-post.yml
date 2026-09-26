@@ -67,7 +67,7 @@ jobs:
         run: |
           node scripts/telegram-notify.mjs --emoji "📝" --title "New blog post live" --body "$QUESTION
 
-          https://thewayofwealth.shop/blog/$SLUG"
+          https://wayofwealthcoaching.com/blog/$SLUG"
 
       - name: Notify Telegram on failure
         if: failure()

@@ -27,7 +27,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
-const SITE_URL = 'https://thewayofwealth.shop';
+const SITE_URL = 'https://wayofwealthcoaching.com';
 const CANARY_DELAY_MS = 2 * 60 * 1000; // 2 minutes
 
 const {

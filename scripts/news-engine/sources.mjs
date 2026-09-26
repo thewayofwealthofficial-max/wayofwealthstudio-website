@@ -2,7 +2,7 @@
 // No API keys, no scraping of sites that block bots. Every source is optional: one failing never
 // stops the run.
 
-const UA = 'Mozilla/5.0 (compatible; WayOfWealthBot/1.0; +https://thewayofwealth.shop)';
+const UA = 'Mozilla/5.0 (compatible; WayOfWealthBot/1.0; +https://wayofwealthcoaching.com)';
 
 const FEEDS = [
   { name: 'Guardian Money', url: 'https://www.theguardian.com/money/rss' },

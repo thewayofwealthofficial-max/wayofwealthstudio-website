@@ -10,9 +10,9 @@ export const FROM_EMAIL = 'joel@thewayofwealth.shop';
 
 export const LINKS = {
   call: 'https://calendly.com/thewayofwealth-official/20min',
-  reset: 'https://thewayofwealth.shop/reset',
-  blog: 'https://thewayofwealth.shop/blog',
-  site: 'https://thewayofwealth.shop',
+  reset: 'https://wayofwealthcoaching.com/reset',
+  blog: 'https://wayofwealthcoaching.com/blog',
+  site: 'https://wayofwealthcoaching.com',
 };
 
 // One theme a month (Denise's cycle). The free resource is always the Money Reset Tool.
@@ -27,7 +27,7 @@ export const THEMES = {
 export const DEFAULT_THEME = 'the belief underneath the money habit';
 
 // Facts Joel has given that may appear in any email. Numbers not here or in the input are blocked.
-export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. The first step is a free 20-minute call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Week 4 goes deep on their money story. Week 5 is their Behavioural Pattern Report. Price: £1,000, or 2 × £500, or 3 × £334. The price is ONLY ever mentioned in the Sunday push invitation, in the P.S. Free tool: the Money Reset Tool at thewayofwealth.shop/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
+export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. The first step is a free 20-minute call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Week 4 goes deep on their money story. Week 5 is their Behavioural Pattern Report. Price: £1,000, or 2 × £500, or 3 × £334. The price is ONLY ever mentioned in the Sunday push invitation, in the P.S. Free tool: the Money Reset Tool at wayofwealthcoaching.com/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
 
 const CORE = `You write ONE email from Joel Ezekiel (Way of Wealth) to his list.
 
