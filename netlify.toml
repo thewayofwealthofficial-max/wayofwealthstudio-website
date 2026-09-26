@@ -33,3 +33,21 @@
 # Email sequences: sends whatever is due, every hour.
 [functions."sequence-runner"]
   schedule = "@hourly"
+
+# Retired pages (Joel, 2026-09-26): old tools and funnels, sent to the live pages
+[[redirects]]
+  from = "/budget-tracker"
+  to = "/reset"
+  status = 301
+[[redirects]]
+  from = "/thanks/budget-tracker"
+  to = "/reset"
+  status = 301
+[[redirects]]
+  from = "/cash-flow-model"
+  to = "/reset"
+  status = 301
+[[redirects]]
+  from = "/cash-flow-booking"
+  to = "/coaching#apply"
+  status = 301
