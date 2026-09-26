@@ -9,6 +9,20 @@
 
 # Route Fred's approve link to the function. Keeps the site pure-SSG
 # (Astro output stays in dist/) while giving us one dynamic endpoint.
+# Domain move (Joel, 2026-09-26): every old .shop address 301s to the same page on the .com.
+# Must stay ABOVE all other redirects. Netlify function paths (/api/*) are matched first by host here too,
+# so they move with it; the .com serves the same functions.
+[[redirects]]
+  from = "https://thewayofwealth.shop/*"
+  to = "https://wayofwealthcoaching.com/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://www.thewayofwealth.shop/*"
+  to = "https://wayofwealthcoaching.com/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/api/fred/approve"
   to = "/.netlify/functions/fred-approve"
