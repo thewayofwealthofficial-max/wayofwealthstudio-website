@@ -94,6 +94,31 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 73 | 🔵 | Why do I never feel like I have enough money? | Hedonic adaptation, scarcity mindset | Anxiety & avoidance | Self-employed |
 | 74 | 🔵 | What is one personal finance habit that has made the biggest difference for you? | Implementation intentions, law of least effort | Behavioural basics | All segments |
 | 75 | 🔵 | Why do I buy things I don't need? | Social comparison, hedonic adaptation | Spending & shame | All segments |
+| 76 | 🔵 | So where does one draw the "free" content line? | social norms vs market norms (Heyman & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 77 | 🔵 | what if you’re an over giver and you provide tonnes of value for free and people keep expecting everything for free? | zero-price effect (Shampanier, Mazar & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 78 | 🔵 | But if someone is not to charge for their spiritual service, where is the money to come from? | money scripts (Klontz), money avoidance | Self-employed | Wellness Practitioner |
+| 79 | 🔵 | Why not make it affordable for everyone? | price-quality heuristic | Self-employed | Wellness Practitioner |
+| 80 | 🔵 | If a spiritual provider does not trust its customers to pay a fair amount, then why would they expect their customers to start trusting them first? | pay-what-you-want pricing (Gneezy et al.) | Self-employed | Wellness Practitioner |
+| 81 | 🔵 | I feel no one will pay those prices how do you educate clients on the cost? | false consensus effect (Ross) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
+| 82 | 🔵 | How would you approach this if you client based is outside US and cost of living is different? | reference dependence (Kahneman & Tversky) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
+| 83 | 🔵 | How do you handle clients who might question the new price considering what they paid last time? | anchoring (Tversky & Kahneman) | Self-employed | Self-Employed Stresser |
+| 84 | 🔵 | I assume we can't / shouldn't charge as much if the topic isn't about making more income? | mental accounting (Thaler) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 85 | 🔵 | Do I make money or do I help or love people? | money scripts (Klontz) | Self-employed | Wellness Practitioner |
+| 86 | 🔵 | Is it normal for me to feel offput that this revolves around making money? | cognitive dissonance (Festinger) | Self-employed | Wellness Practitioner |
+| 87 | 🔵 | How do I lern to receive? | money scripts (Klontz), money avoidance | Behavioural basics | Wellness Practitioner, All segments |
+| 88 | 🔵 | What if you do get paid well but there are a series of events that keep happening that bring about unexpected expenses that eat up the money? | planning fallacy (Kahneman & Tversky) | Budgeting that sticks | Self-Employed Stresser, All segments |
+| 89 | 🔵 | What should we do to come out of living in a “financial emergency” cycle ? | scarcity and tunnelling (Mullainathan & Shafir), as an illustration only: mixed replication record, state no numbers | Anxiety & avoidance | Self-Employed Stresser, All segments |
+| 90 | 🔵 | how do you recommend changing the mindset of “I can just spend this cause I will make it back anyway” mentality? | mental accounting (Thaler): money that feels like extra gets spent differently | Spending & shame | Self-Employed Stresser |
+| 91 | 🔵 | How important is it to create personal financial  instruments, accounts, and/or systems in advance of  receiving  large sums? | commitment devices (Ashraf, Karlan & Yin) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
+| 92 | 🔵 | More money started coming in but bills got higher so how do I get money to flow that I can enjoy? | hedonic adaptation (Brickman & Campbell) | Spending & shame | All segments |
+| 93 | 🔵 | Does anyone else struggle with this 'extreme saving' mindset too?? | money scripts (Klontz), money vigilance | Anxiety & avoidance | Anxious Avoider, All segments |
+| 94 | 🔵 | What’s the difference between having the scarcity issue and really despising  wastefulness? | tightwads and spendthrifts, pain of paying (Rick, Cryder & Loewenstein) | Behavioural basics | All segments |
+| 95 | 🔵 | So HOW do you actually "decide" that you are wealthy? | if-then plans (implementation intentions); name no effect size | Behavioural basics | All segments |
+| 96 | 🔵 | i decide the Money is in my account but when i need to pay bills i see it is not yet, so what do you do and  think in These Moments? | mental contrasting (Oettingen) | Anxiety & avoidance | All segments |
+| 97 | 🔵 | Is there anyone out there that doesn't have their own business, that paid for these courses and actually manifested a large amount of money? | survivorship bias | Behavioural basics | All segments |
+| 98 | 🔵 | Has anyone else noticed specific "money blocks" that seem to run in their family? | money scripts (Klontz) | Behavioural basics | All segments |
+| 99 | 🔵 | I can't seem to hold money, is that because my vessel can't hold it? | present bias | Spending & shame | All segments |
+| 100 | 🔵 | How does one live in the wish fulfilled as far as financial abundance when it comes to spending? | positive fantasies (Oettingen) | Spending & shame | All segments |
 
 ---
 

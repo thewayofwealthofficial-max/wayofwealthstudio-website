@@ -10,26 +10,13 @@ const VSL_SRC = 'https://discover.thewayofwealth.shop/vsl/vsl.mp4';
 const VSL_POSTER = 'https://discover.thewayofwealth.shop/vsl/vsl-poster.jpg';
 
 const PAIN_CARDS = [
-  { n: '01', t: "One account for everything. A £5,000 invoice lands and you spend money that was never yours." },
-  { n: '02', t: "The tax bill arrives and there isn't enough in the account to pay it." },
-  { n: '03', t: "You check your balance at 2am, or you don't check it at all." },
-  { n: '04', t: "Good months disappear into gear and lifestyle. Quiet months arrive with nothing behind them." },
-  { n: '05', t: "\"What should I actually charge?\" Never really answered. You picked a number and hoped nobody would ask why." },
-  { n: '06', t: "A flicker of guilt every time you charge good money for work that also means something to you." },
-  { n: '07', t: "Eight to fifteen subscriptions quietly running while you're not looking." },
-  { n: '08', t: "You've tried the apps, the budgets and the spreadsheets. None of them stuck." },
-];
-
-const RING_QUOTES = [
-  "I just invoiced £14,000 this month, which sounds amazing on LinkedIn, but after paying my sub-contractors, my SaaS stack, and looking at the corporation tax I owe, I literally feel broke.",
-  "Xero tells me I had an £80k year, but my personal savings account has £4,200 in it. Where on earth did all that cash actually go?",
-  "I feel like a child playing with a business bank account. I just pull random chunks of £2,000 out when my personal credit card needs paying, and cross my fingers for tax season.",
-];
-
-const STATS = [
-  { big: "19%", text: "would rather pay a £100 fine than face filing their tax return on time.", src: "Taxfix, Jan 2026" },
-  { big: "1.5 million", text: "self-employed people have less than three months of savings.", src: "IPSE" },
-  { big: "50.7%", text: "of 1,060 self-employed professionals considered going back into employment in the last year.", src: "The Accountancy Partnership" },
+  { n: '01', t: "\"What should I actually charge?\" Never really answered. You picked a number and hoped nobody would ask why." },
+  { n: '02', t: "A flicker of guilt every time you charge good money for work that also means something to you." },
+  { n: '03', t: "One account for everything. A £5,000 invoice lands and you spend money that was never yours." },
+  { n: '04', t: "The tax bill arrives and there isn't enough in the account to pay it." },
+  { n: '05', t: "You check your balance at 2am, or you don't check it at all." },
+  { n: '06', t: "Good months disappear into gear and lifestyle. Quiet months arrive with nothing behind them." },
+  { n: '07', t: "You've tried the apps, the budgets and the spreadsheets. None of them stuck." },
 ];
 
 const CLIENT_QUOTES = [
@@ -63,9 +50,8 @@ const PHASES = [
   {
     tab: "Weeks 4–5", name: "Understand why",
     body: [
-      "We go deep on where your money story comes from and what money means to you.",
-      "You get your Money Story Profile.",
-      "Then your Behavioural Pattern Report: your patterns, with proof from your own spending.",
+      "Week 4: we go deep on where your money story comes from and what money means to you. Your Money Story Profile follows as a document.",
+      "Week 5: your Behavioural Pattern Report. Your patterns, with proof from your own spending.",
     ],
     quote: "I feel seen and called out at the same time.",
   },
@@ -206,7 +192,7 @@ const FAQS = [
 <!-- 6 · RING A BELL -->
 <section class="sp-section sp-white">
   <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-wide sp-two reveal">
+  <div class="sp-narrow reveal">
     <div>
       <h2 class="sp-h2">Do any of these<br /><em>ring a bell?</em></h2>
       <ul class="sp-tick">
@@ -219,23 +205,6 @@ const FAQS = [
       </ul>
       <p class="sp-strong">If two or three of those hit home, you're in the right place.</p>
     </div>
-    <div class="sp-quote-stack">
-      {RING_QUOTES.map((q, i) => (
-        i !== 1 && <blockquote class="sp-card-quote">"{q}"<cite>Self-employed professional, in their own words</cite></blockquote>
-      ))}
-    </div>
-  </div>
-</section>
-
-<!-- 7 · NOT JUST YOU (stats) -->
-<section class="sp-section sp-cream">
-  <div class="sp-wide">
-    <h2 class="sp-h2 sp-center reveal">It's not just you.<br /><em>Here's what the research says.</em></h2>
-    <ul class="sp-stats">
-      {STATS.map((s) => (
-        <li class="sp-stat reveal"><span class="sp-stat-big">{s.big}</span><p>{s.text}</p><small>{s.src}</small></li>
-      ))}
-    </ul>
   </div>
 </section>
 
@@ -407,7 +376,7 @@ const FAQS = [
   <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <h2 class="sp-h2 sp-on-dark sp-center reveal">Choose how you'd like<br /><em>to pay.</em></h2>
-    <p class="sp-on-dark sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call.</p>
+    <p class="sp-on-dark sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call. I take on 5 people a month.</p>
     <ul class="sp-price-grid">
       {PRICES.map((p) => (
         <li class="sp-price reveal">

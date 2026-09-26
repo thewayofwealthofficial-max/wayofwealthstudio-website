@@ -27,7 +27,7 @@ export const THEMES = {
 export const DEFAULT_THEME = 'the belief underneath the money habit';
 
 // Facts Joel has given that may appear in any email. Numbers not here or in the input are blocked.
-export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. The first step is a free 20-minute call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Free tool: the Money Reset Tool at thewayofwealth.shop/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
+export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. The first step is a free 20-minute call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Week 4 goes deep on their money story. Week 5 is their Behavioural Pattern Report. Price: £1,000, or 2 × £500, or 3 × £334. The price is ONLY ever mentioned in the Sunday push invitation, in the P.S. Free tool: the Money Reset Tool at thewayofwealth.shop/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
 
 const CORE = `You write ONE email from Joel Ezekiel (Way of Wealth) to his list.
 
@@ -86,7 +86,7 @@ const PHASE_RULES = {
   teach: 'MONTH PHASE: teaching week. A story or a lesson on the theme. The P.S. (if any) points to the Money Reset Tool.',
   checkin: 'MONTH PHASE: halfway check-in. Ask how they are getting on with the theme and invite a reply. The P.S. can mention the free 20-minute call softly.',
   push: 'MONTH PHASE: the last days of the month, when Joel fills his coaching places. The ask is the free 20-minute call. The only real scarcity is that Joel takes 5 people a month. Name the objection as part of the pattern, never pressure. No invented deadlines, bonuses or discounts.',
-  push_pitch: 'MONTH PHASE: the push, Sunday. This is the full invitation: who the 12 weeks are for, what changes (money moves by week 3), the 5 places a month, the Three-Session Promise, and the free call link. Warm and honest, never pushy.',
+  push_pitch: 'MONTH PHASE: the push, Sunday. This is the full invitation: who the 12 weeks are for, what changes (money moves by week 3), the 5 places a month, the Three-Session Promise, and the free call link. Put the price (£1,000, or 2 × £500, or 3 × £334) in the P.S. Warm and honest, never pushy.',
   push_case: 'MONTH PHASE: the push, Tuesday. A client case study built ONLY from the PUBLIC TESTIMONIALS in the input (name and their exact words), then one line of lesson from Joel, then the call link.',
 };
 
