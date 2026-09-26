@@ -7,7 +7,7 @@ name: Daily Blog Post
 
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '17 3 * * 2,4,6'  # Tue/Thu/Sat: 3 strong posts a week (Joel, 26 Sep: quality over quantity)
   workflow_dispatch:
 
 permissions:
