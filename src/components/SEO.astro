@@ -22,7 +22,12 @@ const {
   noindex = false,
 } = Astro.props;
 
-const canonicalUrl = canonical ?? new URL(Astro.url.pathname, SITE).toString();
+// Netlify serves every page at a URL ending in "/" and 301s the version without it,
+// so the canonical must end in "/" or Google sees it as a redirect and won't index the page.
+const rawCanonical = canonical ?? new URL(Astro.url.pathname, SITE).toString();
+const cu = new URL(rawCanonical);
+if (!cu.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(cu.pathname)) cu.pathname += '/';
+const canonicalUrl = cu.toString();
 const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE}${ogImage}`;
 ---
 <title>{title}</title>
