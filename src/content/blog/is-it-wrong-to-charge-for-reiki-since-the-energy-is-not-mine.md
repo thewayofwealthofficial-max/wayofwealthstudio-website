@@ -1,5 +1,5 @@
 ---
-title: "Why people who care deeply about their work are the most likely to underprice it"
+title: "Is it wrong to charge for Reiki since the energy is not mine?"
 description: "Charging for Reiki feels spiritually wrong to many practitioners. Here's what behavioural science says is actually happening in your head."
 pubDate: 2026-09-23
 category: "Self-employed"
