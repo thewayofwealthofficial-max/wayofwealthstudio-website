@@ -206,9 +206,24 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   </div>
 </section>
 
+<!-- 9 · FINAL ASK: book a call -->
+<section class="hm-final">
+  <div class="hm-final-inner reveal">
+    <h2>Book your free <em>20-minute call</em></h2>
+    <p>Twelve weeks, one to one, just you and me. I take on 5 people a month.</p>
+    <a href={`${LINKS.coaching}#apply`} class="btn-primary">Book your free 20-minute call</a>
+  </div>
+</section>
+
 </Layout>
 
 <style>
+  /* ---------- FINAL ASK ---------- */
+  .hm-final { padding: 5rem 2rem; background: var(--color-navy-deep); text-align: center; }
+  .hm-final-inner { max-width: 640px; margin: 0 auto; }
+  .hm-final h2 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(1.9rem, 3.4vw, 2.6rem); color: var(--color-cream); margin: 0 0 1rem; }
+  .hm-final h2 em { color: var(--color-gold); }
+  .hm-final p { color: rgba(245,240,232,0.85); font-size: 1.08rem; line-height: 1.7; margin: 0 0 1.8rem; }
   /* ---------- HERO (photo + overlay card) ---------- */
   .hm-hero { position: relative; min-height: 92vh; background: var(--color-navy-deep); display: flex; align-items: center; overflow: hidden; padding: 9rem 2rem 5rem; }
   .hm-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--color-gold); z-index: 3; }

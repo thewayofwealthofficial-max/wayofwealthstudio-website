@@ -164,19 +164,9 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 4 · THE TURN -->
-<section class="sp-section sp-white">
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">Working harder won't fix this.<br /><em>Changing where the money goes will.</em></h2>
-    <p>Earning more doesn't fix a leak. It just makes the leak bigger.</p>
-    <p>The people who seem calm about money aren't more disciplined than you. They've just set things up so the easy thing is also the right thing. So they don't need willpower.</p>
-    <p>That's what we build together, so it keeps working when you're tired and can't be bothered.</p>
-  </div>
-</section>
-
 <!-- 5 · PAIN CARDS -->
 <section class="sp-section sp-navy">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <h2 class="sp-h2 sp-on-dark reveal">Which of these do you<br /><em>know too well?</em></h2>
     <ul class="sp-pain-grid">
@@ -188,9 +178,19 @@ const FAQS = [
   </div>
 </section>
 
+<!-- 4 · THE TURN -->
+<section class="sp-section sp-white">
+  <div class="sp-narrow reveal">
+    <h2 class="sp-h2">Working harder won't fix this.<br /><em>Changing where the money goes will.</em></h2>
+    <p>Earning more doesn't fix a leak. It just makes the leak bigger.</p>
+    <p>The people who seem calm about money aren't more disciplined than you. They've just set things up so the easy thing is also the right thing. So they don't need willpower.</p>
+    <p>That's what we build together, so it keeps working when you're tired and can't be bothered.</p>
+  </div>
+</section>
+
 <!-- 6 · RING A BELL -->
 <section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
   <div class="sp-narrow reveal">
     <div>
       <h2 class="sp-h2">Do any of these<br /><em>ring a bell?</em></h2>
@@ -288,6 +288,46 @@ const FAQS = [
   </div>
 </section>
 
+<!-- 13 · WHICH ONE IS YOU (tabs) -->
+<section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+  <div class="sp-wide">
+    <h2 class="sp-h2 sp-center reveal">Most people reach out<br /><em>for one of three reasons.</em></h2>
+    <p class="sp-center sp-sub reveal">Which one is closest to yours?</p>
+    <div class="sp-tabs" data-tabs>
+      <div class="sp-tablist sp-tablist-3" role="tablist">
+        {WINDOWS.map((w, i) => (
+          <button role="tab" class={`sp-tab${i === 0 ? ' active' : ''}`} aria-selected={i === 0 ? 'true' : 'false'} data-i={i}><span>{w.tab}</span></button>
+        ))}
+      </div>
+      {WINDOWS.map((w, i) => (
+        <div class={`sp-panel${i === 0 ? ' active' : ''}`} role="tabpanel" data-i={i}>
+          <div class="sp-panel-head"><small>This might be you</small><h3>{w.head}</h3></div>
+          <div class="sp-panel-body">
+            <div>
+              <p class="sp-mini">This is you if:</p>
+              <ul class="sp-tick sp-tick-tight">{w.you.map((y) => <li>{y}</li>)}</ul>
+            </div>
+            <div class="sp-we"><p class="sp-mini">What we'd do:</p><p>{w.we}</p></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 13b · NOT FOR YOU -->
+<section class="sp-section sp-cream">
+  <div class="sp-narrow reveal">
+    <h2 class="sp-h2">This isn't for you <em>if…</em></h2>
+    <ul class="sp-tick">
+      <li>You want someone to tell you what to invest in. I'm a planner, not an adviser. I don't tell you what to buy.</li>
+      <li>You want a course or a PDF. This is twelve weeks, one to one. It's not a course, it's not a community and it's not a PDF.</li>
+      <li>You'd rather not look at your real numbers. Every week we look at your real accounts. Not theory.</li>
+    </ul>
+  </div>
+</section>
+
 <!-- 12 · VIDEO WALL -->
 <section class="sp-section sp-navy" id="results">
   <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
@@ -326,53 +366,9 @@ const FAQS = [
   }
 </script>
 
-<!-- 13 · WHICH ONE IS YOU (tabs) -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-wide">
-    <h2 class="sp-h2 sp-center reveal">Most people reach out<br /><em>for one of three reasons.</em></h2>
-    <p class="sp-center sp-sub reveal">Which one is closest to yours?</p>
-    <div class="sp-tabs" data-tabs>
-      <div class="sp-tablist sp-tablist-3" role="tablist">
-        {WINDOWS.map((w, i) => (
-          <button role="tab" class={`sp-tab${i === 0 ? ' active' : ''}`} aria-selected={i === 0 ? 'true' : 'false'} data-i={i}><span>{w.tab}</span></button>
-        ))}
-      </div>
-      {WINDOWS.map((w, i) => (
-        <div class={`sp-panel${i === 0 ? ' active' : ''}`} role="tabpanel" data-i={i}>
-          <div class="sp-panel-head"><small>This might be you</small><h3>{w.head}</h3></div>
-          <div class="sp-panel-body">
-            <div>
-              <p class="sp-mini">This is you if:</p>
-              <ul class="sp-tick sp-tick-tight">{w.you.map((y) => <li>{y}</li>)}</ul>
-            </div>
-            <div class="sp-we"><p class="sp-mini">What we'd do:</p><p>{w.we}</p></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-<!-- 14 · WHAT'S IT WORTH -->
-<section class="sp-section sp-cream">
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">What would it be worth<br /><em>to feel calm about money?</em></h2>
-    <p>Picture a normal Tuesday.</p>
-    <ul class="sp-tick">
-      <li>You open your banking app and you know what's yours.</li>
-      <li>The tax is already set aside. No dread when the bill comes.</li>
-      <li>A quiet month is a quiet month, not a crisis.</li>
-      <li>You charge what the work is worth, without the flinch.</li>
-      <li>You stop thinking about money at 2am.</li>
-    </ul>
-    <p class="sp-strong">That's it. That's what the twelve weeks are for.</p>
-  </div>
-</section>
-
 <!-- 15 · PRICING -->
 <section class="sp-section sp-navy" id="price">
-  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <h2 class="sp-h2 sp-on-dark sp-center reveal">Choose how you'd like<br /><em>to pay.</em></h2>
     <p class="sp-on-dark sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call. I take on 5 people a month.</p>
