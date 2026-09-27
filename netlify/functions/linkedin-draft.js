@@ -40,15 +40,15 @@ exports.handler = async (event) => {
   if (q.action) {
     if (!robot) return json(401, { error: 'unauthorised' });
     if (q.action === 'create' && event.httpMethod === 'POST') {
-      const { text, angle } = JSON.parse(event.body || '{}');
+      const { text, angle, passage, problem, pursuit, payoff } = JSON.parse(event.body || '{}');
       if (!text || text.length > 3000) return json(400, { error: 'text missing or over 3000 characters' });
       const id = crypto.randomBytes(8).toString('hex');
-      await store.setJSON(id, { text, angle, createdAt: Date.now(), status: 'pending' });
+      await store.setJSON(id, { text, angle, passage, problem, pursuit, payoff, createdAt: Date.now(), status: 'pending' });
       return json(200, { id, sig: sign(id) });
     }
     const d = q.id && (await store.get(q.id, { type: 'json' }));
     if (!d) return json(404, { error: 'not found' });
-    if (q.action === 'fetch') return json(200, { text: d.text, status: d.status });
+    if (q.action === 'fetch') return json(200, d);
     if (q.action === 'done' && event.httpMethod === 'POST') {
       await store.setJSON(q.id, { ...d, status: 'posted', postedAt: Date.now() });
       return json(200, { ok: true });
@@ -62,18 +62,37 @@ exports.handler = async (event) => {
   if (!d) return html(404, '<h1>⛔ Draft not found</h1>');
   if (d.status === 'posted') return html(200, '<h1>✅ Already posted</h1><p>This one is on LinkedIn.</p>');
   if (d.status === 'approved') return html(200, '<h1>⏳ Already approved</h1><p>It is posting now. Fred will confirm.</p>');
+  if (d.status === 'revising') return html(200, '<h1>✏️ Being rewritten</h1><p>Fred will send the new version. Use the link on that one.</p>');
   if (Date.now() - d.createdAt > TTL_MS) return html(410, '<h1>⌛ Expired</h1><p>Drafts last 48 hours. Nothing was posted.</p>');
 
-  if (event.httpMethod === 'POST') {
+  const dispatch = async (event_type) => {
     const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/dispatches`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${GITHUB_DISPATCH_PAT}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event_type: 'linkedin-post-approved', client_payload: { id: q.id } }),
+      body: JSON.stringify({ event_type, client_payload: { id: q.id } }),
     });
-    if (!r.ok) return html(502, `<h1>❌ Couldn't reach GitHub</h1><p>${esc((await r.text()).slice(0, 200))}</p><p>Nothing was posted. Try again.</p>`);
+    return r.ok ? null : (await r.text()).slice(0, 200);
+  };
+
+  if (event.httpMethod === 'POST') {
+    const form = new URLSearchParams(event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf8') : event.body || '');
+    if (form.get('do') === 'revise') {
+      const fix = String(form.get('fix') || '').trim();
+      if (fix.length < 3) return html(400, '<h1>Write what needs fixing</h1><p>Go back and type it in the box.</p>');
+      await store.setJSON(q.id, { ...d, status: 'revising', feedback: fix.slice(0, 2000), revisedAt: Date.now() });
+      const err = await dispatch('linkedin-post-revise');
+      if (err) { await store.setJSON(q.id, d); return html(502, `<h1>❌ Couldn't reach GitHub</h1><p>${esc(err)}</p><p>Nothing changed. Try again.</p>`); }
+      return html(200, '<h1>✏️ Got it</h1><p>Rewriting with your fixes now. Fred will send the new version in a few minutes.</p>');
+    }
+    const err = await dispatch('linkedin-post-approved');
+    if (err) return html(502, `<h1>❌ Couldn't reach GitHub</h1><p>${esc(err)}</p><p>Nothing was posted. Try again.</p>`);
     await store.setJSON(q.id, { ...d, status: 'approved', approvedAt: Date.now() });
-    return html(200, '<h1>✅ Approved</h1><p>Posting to LinkedIn now. Fred will confirm in a minute or two.</p>');
+    return html(200, '<h1>✅ Approved</h1><p>Posting to your LinkedIn now. Fred will confirm in a minute or two.</p>');
   }
 
-  return html(200, `<h1>LinkedIn post, ready to go</h1><pre>${esc(d.text)}</pre><form method="POST" action="/api/linkedin/draft?id=${esc(q.id)}&sig=${esc(q.sig)}"><button type="submit">Approve and post</button></form><p style="color:#888;font-size:.85rem">Don't want it? Just ignore it. It expires in 48 hours and nothing is posted.</p>`);
+  const action = `/api/linkedin/draft?id=${esc(q.id)}&sig=${esc(q.sig)}`;
+  return html(200, `<h1>LinkedIn post, ready to go</h1><pre>${esc(d.text)}</pre>`
+    + `<form method="POST" action="${action}"><input type="hidden" name="do" value="approve"><button type="submit">Approve and post</button></form>`
+    + `<h1 style="margin-top:2rem">Or: what needs fixing?</h1><form method="POST" action="${action}"><input type="hidden" name="do" value="revise"><textarea name="fix" rows="5" style="width:100%;box-sizing:border-box;font:inherit;padding:.6rem;border-radius:8px;border:1px solid #ccc" placeholder="e.g. Cut the last line. Open on the moment I lost it. That bit about my clients isn't true."></textarea><button type="submit" style="margin-top:.6rem;background:#8a6d3b">Rewrite it</button></form>`
+    + `<p style="color:#888;font-size:.85rem">Don't want it? Just ignore it. It expires in 48 hours and nothing is posted.</p>`);
 };

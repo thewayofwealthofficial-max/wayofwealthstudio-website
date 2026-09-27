@@ -1,0 +1,46 @@
+name: LinkedIn Post (rewrite with Joel's fixes)
+
+# Triggered only by Joel pressing "Rewrite it" on the draft page (netlify/functions/linkedin-draft.js).
+# The dispatch carries the draft id only; his fixes and the draft are fetched privately and never printed.
+
+on:
+  repository_dispatch:
+    types: [linkedin-post-revise]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linkedin-post-revise-${{ github.event.client_payload.id }}
+  cancel-in-progress: false
+
+jobs:
+  revise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Rewrite the draft and send it to Joel
+        env:
+          REVISE_ID: ${{ github.event.client_payload.id }}
+          FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/linkedin-post.mjs
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn rewrite failed" --body "Nothing was posted. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

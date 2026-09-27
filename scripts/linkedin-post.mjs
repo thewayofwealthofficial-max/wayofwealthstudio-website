@@ -192,15 +192,30 @@ async function main() {
   if (!DRY && (!FRED_SECRET || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID)) throw new Error('FRED_SECRET / TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set');
   const state = existsSync(STATE) ? JSON.parse(await readFile(STATE, 'utf8')) : [];
   const { passages: all, names } = await recentJoelWords({ key: FATHOM_API_KEY, days: 60, maxPassages: 30 });
-  const passages = all.filter((p) => !state.some((s) => s.passage === hash(p.text))).slice(0, 12);
-  if (!passages.length) throw new Error('No unused story passages in the last 60 days of Fathom calls. Nothing written.');
-  const recentAngles = state.slice(-3).map((s) => s.angle);
-  const angles = Object.fromEntries(Object.entries(ANGLES).filter(([n]) => !recentAngles.includes(Number(n))));
+
+  // REVISE_ID: Joel wrote what to fix on the approve page. Rewrite the SAME story and angle with his fixes first.
+  const REVISE_ID = process.env.REVISE_ID;
+  let orig = null;
+  if (REVISE_ID) {
+    if (!/^[0-9a-f]{16}$/.test(REVISE_ID)) throw new Error('bad REVISE_ID');
+    const f = await fetch(`${SITE}/api/linkedin/draft?action=fetch&id=${REVISE_ID}`, { headers: { 'x-fred-secret': FRED_SECRET } });
+    if (!f.ok) throw new Error(`Draft fetch ${f.status}`);
+    orig = await f.json();
+    if (!orig.feedback) throw new Error('No fixes stored for this draft.');
+  }
+  const passages = orig
+    ? all.filter((p) => hash(p.text) === orig.passage)
+    : all.filter((p) => !state.some((s) => s.passage === hash(p.text))).slice(0, 12);
+  if (!passages.length) throw new Error(orig ? 'The story this draft came from is no longer in the last 60 days of calls.' : 'No unused story passages in the last 60 days of Fathom calls. Nothing written.');
+  const recentAngles = orig ? [] : state.slice(-3).map((s) => s.angle);
+  const angles = orig ? { [orig.angle]: ANGLES[orig.angle] } : Object.fromEntries(Object.entries(ANGLES).filter(([n]) => !recentAngles.includes(Number(n))));
+  const joelFix = orig ? [`JOEL'S OWN FIXES (do these first, exactly as he asks; the hard rules still apply): ${orig.feedback}`] : [];
 
   // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
   // fact-check flags is sent with those flags on top: he approves every post anyway (first 2 weeks).
   const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle \d+ is not|Passage \d+ does not|Story post is missing)/;
-  let feedback = null, draft = null, last = null, best = null, flags = [];
+  let feedback = orig ? joelFix : null, draft = null, best = null, flags = [];
+  let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
     try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last), 2000); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
@@ -213,7 +228,7 @@ async function main() {
     if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s).`);
     if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n[PROBLEM]\n${d.problem}\n[PURSUIT]\n${d.pursuit}\n[PAYOFF]\n${d.payoff}\n`);
-    feedback = problems;
+    feedback = joelFix.concat(problems);
     last = d;
   }
   if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the closest draft with ${flags.length} flag(s) for Joel to judge.`); }
@@ -229,7 +244,7 @@ async function main() {
   // Store the draft privately on Netlify, then Fred sends it to Joel with the Approve button. Never logged.
   const r = await fetch(`${SITE}/api/linkedin/draft?action=create`, {
     method: 'POST', headers: { 'content-type': 'application/json', 'x-fred-secret': FRED_SECRET },
-    body: JSON.stringify({ text: draft.post, angle: Number(draft.angle) }),
+    body: JSON.stringify({ text: draft.post, angle: Number(draft.angle), passage: hash(passages[draft.passage].text), problem: draft.problem, pursuit: draft.pursuit, payoff: draft.payoff }),
   });
   if (!r.ok) throw new Error(`Draft store ${r.status}: ${(await r.text()).slice(0, 120)}`);
   const { id, sig } = await r.json();
@@ -237,11 +252,12 @@ async function main() {
   const shown = STORY.has(Number(draft.angle))
     ? `<b>[PROBLEM]</b>\n${esc(draft.problem)}\n\n<b>[PURSUIT]</b>\n${esc(draft.pursuit)}\n\n<b>[PAYOFF]</b>\n${esc(draft.payoff)}`
     : esc(draft.post);
-  await telegram(`💼 <b>LinkedIn draft</b> · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
-  await telegram('Happy with it? Tap below, then "Approve and post". Ignore it and nothing is posted (expires in 48 hours).', {
+  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
+  await telegram('Tap below. On that page you can "Approve and post", or write what needs fixing and it gets rewritten. Ignore it and nothing is posted (expires in 48 hours).', {
     inline_keyboard: [[{ text: '✅ Review & approve', url: `${SITE}/api/linkedin/draft?id=${id}&sig=${sig}` }]],
   });
   console.log('Draft stored and sent to Joel on Telegram.');
+  if (orig) return; // Same story as before; it's already recorded as used.
   state.push({ date: new Date().toISOString().slice(0, 10), angle: Number(draft.angle), passage: hash(passages[draft.passage].text) });
   await mkdir(dirname(STATE), { recursive: true });
   await writeFile(STATE, JSON.stringify(state, null, 2) + '\n');
