@@ -39,6 +39,13 @@
   status = 200
   force = true
 
+# LinkedIn native-post drafts: stored privately, approved by Joel from Fred's link.
+[[redirects]]
+  from = "/api/linkedin/draft"
+  to = "/.netlify/functions/linkedin-draft"
+  status = 200
+  force = true
+
 # Lead-magnet email-capture endpoint. POST { email, name, magnet, honeypot }.
 # Adds to the matching MailerLite group (per MAGNET_GROUP_MAP in the function).
 [[redirects]]

@@ -1,0 +1,59 @@
+name: LinkedIn Post (draft for approval)
+
+# Writes ONE native LinkedIn post from Joel's own Fathom words and sends it to him on Telegram (Fred) with an
+# Approve button. Mon / Wed / Fri / Sun at 06:23 UTC (Joel, 2026-09-27). Nothing is posted until he approves;
+# the posting happens in linkedin-post-approved.yml.
+# PRIVACY: the draft is never printed here. This repo and its logs are public.
+
+on:
+  schedule:
+    - cron: '23 6 * * 0,1,3,5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: linkedin-post
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    # Scheduled runs only happen once the repo variable LINKEDIN_POST_ENABLED is true.
+    if: github.event_name == 'workflow_dispatch' || vars.LINKEDIN_POST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Write the draft and send it to Joel
+        env:
+          FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/linkedin-post.mjs
+
+      - name: Save which story and angle were used
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-native.json 2>/dev/null || true
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "linkedin: native draft sent for approval"
+          git pull --rebase -q && git push
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn draft failed" --body "No draft today, nothing was posted. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
