@@ -42,6 +42,19 @@ jobs:
           MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API }}
         run: node scripts/daily-brief.mjs
 
+      # Daily, from 14 days out (audit, 27 Sep). Blog shares AND native posts both stop when the login expires.
+      - name: Warn if the LinkedIn login is about to expire
+        env:
+          EXPIRES: ${{ secrets.LINKEDIN_TOKEN_EXPIRES }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DAYS=$(( ( $(date -d "$EXPIRES" +%s) - $(date +%s) ) / 86400 ))
+          echo "LinkedIn login expires in $DAYS days."
+          if [ "$DAYS" -le 14 ]; then
+            node scripts/telegram-notify.mjs --emoji "🔑" --title "LinkedIn login expires in $DAYS days" --body "All LinkedIn posting stops when it does. Open Claude and say: reconnect LinkedIn. It takes one click on Allow."
+          fi
+
       - name: Tell Joel it failed
         if: failure()
         env:
