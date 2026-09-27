@@ -69,7 +69,7 @@ const RESEARCH = [
   { key: /save more tomorrow/i, line: 'Save More Tomorrow (Thaler & Benartzi): people commit to saving more later, out of money they haven\'t got yet.' },
   { key: /commitment device/i, line: 'Commitment devices (Ashraf, Karlan & Yin): making it harder for your future self to touch the money helps more of it stay.' },
   { key: /if[- ]then|implementation intention/i, line: 'If-then plans (implementation intentions): "when an invoice lands, 30% moves to the tax pot" beats a goal. Name no effect size.' },
-  { key: /loss aversion/i, line: 'Loss aversion: losses tend to hit harder than the same-sized gain. NEVER say "twice".' },
+  { key: /loss aversion/i, line: 'Loss aversion: losses tend to hit harder than the same-sized gain, about twice as hard. Never "exactly twice" or "proven".' },
   { key: /money script|klontz/i, line: 'Money scripts (Klontz): the beliefs about money we picked up young. A conversation opener, never a diagnosis.' },
   { key: /positive fantas|oettingen|mental contrast/i, line: 'Positive fantasies (Oettingen): picturing only the dream outcome can drain the energy to act on it. Pair the dream with the obstacle.' },
   { key: /ostrich/i, line: 'The ostrich effect (Karlsson, Loewenstein & Seppi): people look at their accounts less when things are bad. "You check on payday. You stop checking when you owe."' },
@@ -210,7 +210,7 @@ function check(d, passages, names, recentAngles) {
   }
   const used = RESEARCH.filter((r) => r.key.test(post)).length;
   if (['reach', 'positioning'].includes(jobOf(d.angle)) && used !== 1) problems.push(`A ${jobOf(d.angle)} post needs exactly ONE research idea from RESEARCH IDEAS (it has ${used}).`);
-  if (/\btwice as (?:much|hard|bad)\b/i.test(post)) problems.push('Says losses hurt "twice as much". TEACHING_SCOPE.md: never state the multiplier.');
+  if (/\b(?:exactly|precisely|proven to be) twice\b/i.test(post)) problems.push('Says "exactly twice". TEACHING_SCOPE.md §2.2: "about twice" is fine, "exactly twice" is not.');
   const b = norm(post).split(' '), p = ` ${norm(passage.text)} `;
   let kept = false;
   for (let i = 0; i + 5 <= b.length && !kept; i++) if (p.includes(` ${b.slice(i, i + 5).join(' ')} `)) kept = true;
