@@ -10,16 +10,36 @@
 const MAGNET_LABELS = {
   'cashflow-model': 'Cash Flow Model',
   'budget-tracker': 'Budget Tracker',
+  'cash-reset': 'Money Reset Tool',
+  'finance-fridays': 'Finance Fridays',
+  sequences: 'Welcome emails',
 };
 
 function label(magnetKey) {
   return MAGNET_LABELS[magnetKey] || magnetKey || 'unknown magnet';
 }
 
+// Joel, 27 Sep: alerts go to Fred (Telegram), where every other robot already reports. Slack is only used if
+// Fred's variables are missing and a Slack webhook is set.
 async function post(body) {
+  const { TELEGRAM_BOT_TOKEN: tg, TELEGRAM_CHAT_ID: chat } = process.env;
+  if (tg && chat) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${tg}/sendMessage`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat, text: body.text, disable_web_page_preview: true }),
+      });
+      if (!res.ok) console.error(`[fred] ${res.status}: ${(await res.text()).slice(0, 200)}`);
+      return { ok: res.ok };
+    } catch (err) {
+      console.error('[fred] network error:', err.message);
+      return { ok: false, error: err.message };
+    }
+  }
   const url = process.env.SLACK_WEBHOOK_URL;
   if (!url) {
-    console.warn('[slack] SLACK_WEBHOOK_URL not set — skipping notification.');
+    console.warn('[alerts] Neither Fred nor Slack is set, skipping notification.');
     return { ok: false, skipped: true };
   }
   try {
@@ -64,7 +84,9 @@ async function notifyLeadCaptured({ email, name, magnet }) {
 async function notifyCaptureFailed({ email, magnet, reason, detail }) {
   const magnetName = label(magnet);
   return post({
-    text: `⚠️ ${magnetName} capture FAILED for ${email || 'unknown email'}`,
+    text: `⚠️ ${magnetName} FAILED for ${email || 'unknown email'}
+Reason: ${reason}
+Detail: ${String(detail || '—').slice(0, 400)}`,
     blocks: [
       { type: 'header', text: { type: 'plain_text', text: `⚠️ ${magnetName} capture failed` } },
       {
