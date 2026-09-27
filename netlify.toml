@@ -78,6 +78,11 @@
   from = "/cash-flow-model"
   to = "/reset"
   status = 301
+# The old cash flow tool. Google's one 404 (Search Console, 27 Sep); old IG posts link here too.
+[[redirects]]
+  from = "/cash-flow"
+  to = "/reset"
+  status = 301
 [[redirects]]
   from = "/cash-flow-booking"
   to = "/coaching#apply"
