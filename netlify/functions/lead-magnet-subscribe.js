@@ -50,11 +50,45 @@ function validateEmail(s) {
   return { ok: true, email };
 }
 
+// The Money Reset Tool (/reset). The person may tick "Email me my numbers too"; only then do figures arrive here.
+// They are turned into text for email 1 and never stored anywhere (Joel, 27 Sep).
+const CURRENCIES = new Set(['£', '$', '€', 'C$', 'R', '₪']);
+function breakdownText(b) {
+  if (!b || typeof b !== 'object') return null;
+  const cur = CURRENCIES.has(b.cur) ? b.cur : '£';
+  const n = (k) => (Number.isFinite(Number(b[k])) && Number(b[k]) >= 0 && Number(b[k]) < 1e8 ? Math.round(Number(b[k])) : null);
+  const [rev, tax, run, buffer, payMonth, payWeek, taxPct] = ['rev', 'tax', 'run', 'buffer', 'payMonth', 'payWeek', 'taxPct'].map(n);
+  if ([rev, tax, run, buffer, payMonth, payWeek, taxPct].some((x) => x === null)) return null;
+  const m = (x) => `${cur}${x.toLocaleString('en-GB')}`;
+  return [
+    'Each month, roughly:',
+    `- **Coming in:** ${m(rev)}`,
+    `- **Tax (${taxPct}%):** ${m(tax)}. Swept the day money lands, so the tax money is put aside before you can spend it.`,
+    `- **Work bills:** ${m(run)}. What your work costs to run, ring-fenced.`,
+    `- **Slow-month buffer:** ${m(buffer)}. Builds up during strong months to protect your pay when you take time off.`,
+    `- **Yours to keep:** ${m(payWeek)} a week (${m(payMonth)} a month). A steady wage that stays the same whether you had a big month or a quiet one.`,
+  ].join('\n').replace(/\n- /, '\n\n- ');
+}
+
+// Sends /reset email 1 on its own: to people already on the list, or running the tool again. They asked for it.
+async function sendResetEmail({ email, name, vars }) {
+  const def = seq.SEQUENCES['money-reset'];
+  try {
+    await seq.sendEmail({ to: email, email: def.emails[0], firstName: name, footerReason: def.footerReason, tagSeq: 'money-reset_01-your-numbers', vars });
+  } catch (e) {
+    // The sign-up itself is saved; tell Joel the email didn't go.
+    await notifyCaptureFailed({ email, magnet: 'cash-reset', reason: 'Saved, but the breakdown email did not send', detail: e.message });
+  }
+}
+
 // New person on a form that has a welcome sequence: enrol them and send email 1 now.
 // They join the main list when the sequence ends (see lib/sequence-core.js).
-async function startSequence({ event, email, name, seqId }) {
+async function startSequence({ event, email, name, seqId, vars = {} }) {
   const aud = await seq.sequenceAudienceId(seqId);
-  if (await seq.getContact(aud, email)) return { ok: true, note: 'already in this sequence' };
+  if (await seq.getContact(aud, email)) {
+    if (seqId === 'money-reset') await sendResetEmail({ email, name, vars });
+    return { ok: true, note: 'already in this sequence' };
+  }
   const made = await seq.rs(`/audiences/${aud}/contacts`, {
     method: 'POST',
     body: { email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false },
@@ -63,7 +97,7 @@ async function startSequence({ event, email, name, seqId }) {
   const def = seq.SEQUENCES[seqId];
   const first = def.emails[0];
   try {
-    await seq.sendEmail({ to: email, email: first, firstName: name, footerReason: def.footerReason, tagSeq: `${seqId}_${first.id}` });
+    await seq.sendEmail({ to: email, email: first, firstName: name, footerReason: def.footerReason, tagSeq: `${seqId}_${first.id}`, vars });
     connectLambda(event);
     await getStore('sequences').setJSON(`${seqId}/${email}`, { sent: [first.id], lastSentAt: new Date().toISOString() });
   } catch (e) {
@@ -73,7 +107,8 @@ async function startSequence({ event, email, name, seqId }) {
   return { ok: true, note: `enrolled in ${seqId}` };
 }
 
-async function addToResend({ email, name, magnetKey, event }) {
+async function addToResend({ email, name, magnetKey, event, vars = {} }) {
+  const isReset = magnetKey === 'cash-reset';
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, skipped: true, detail: 'RESEND_API_KEY not set' };
   const audience = process.env.RESEND_AUDIENCE_ID || DEFAULT_AUDIENCE;
@@ -83,6 +118,9 @@ async function addToResend({ email, name, magnetKey, event }) {
     const found = await fetch(`${RESEND_API}/audiences/${audience}/contacts/${encodeURIComponent(email)}`, { headers });
     if (found.ok) {
       const c = await found.json().catch(() => ({}));
+      // They asked for their breakdown, so /reset email 1 goes even to people already on the list (no re-enrolling,
+      // and an unsubscribed person stays unsubscribed).
+      if (isReset) await sendResetEmail({ email, name, vars });
       if (c && c.unsubscribed) return { ok: true, note: 'previously unsubscribed, left as is' };
       return { ok: true, note: 'already on the list' };
     }
@@ -90,13 +128,16 @@ async function addToResend({ email, name, magnetKey, event }) {
     // A test address can be enrolled early with SEQUENCES_TEST_EMAIL.
     const seqId = seq.MAGNET_TO_SEQUENCE[magnetKey];
     const seqOn = process.env.SEQUENCES_ENABLED === 'true' || email === (process.env.SEQUENCES_TEST_EMAIL || '').toLowerCase();
-    if (seqId && seqOn) return await startSequence({ event, email, name, seqId });
+    if (seqId && seqOn) return await startSequence({ event, email, name, seqId, vars });
     const res = await fetch(`${RESEND_API}/audiences/${audience}/contacts`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false }),
     });
-    if (res.ok) return { ok: true };
+    if (res.ok) {
+      if (isReset) await sendResetEmail({ email, name, vars });
+      return { ok: true };
+    }
     const text = await res.text().catch(() => '');
     return { ok: false, detail: `Resend ${res.status} ${text.slice(0, 160)}` };
   } catch (e) {
@@ -136,7 +177,10 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { email, name, magnet, honeypot } = payload;
+  const { email, name, magnet, honeypot, breakdown } = payload;
+  // Only present when the person ticked "Email me my numbers too" on /reset. Used for email 1, never stored.
+  const bd = magnet === 'cash-reset' ? breakdownText(breakdown) : null;
+  const vars = bd ? { breakdown: bd } : {};
 
   // Honeypot: if filled, silently drop (return 200 so the bot thinks it worked)
   if (honeypot) return { statusCode: 200, body: JSON.stringify({ ok: true }) };
@@ -149,7 +193,7 @@ exports.handler = async (event) => {
 
   const cleanName = name && typeof name === 'string' ? name.trim().slice(0, 80) : '';
   const [resend, mailerlite] = await Promise.all([
-    addToResend({ email: v.email, name: cleanName, magnetKey, event }),
+    addToResend({ email: v.email, name: cleanName, magnetKey, event, vars }),
     addToMailerLite({ email: v.email, name: cleanName, magnetKey }),
   ]);
 

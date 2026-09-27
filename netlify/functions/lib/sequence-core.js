@@ -35,11 +35,13 @@ const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, comp
 
 const SEQUENCES = {
   'welcome-newsletter': require('./sequences/welcome-newsletter'),
+  'money-reset': require('./sequences/money-reset'),
 };
 
 // Which sign-up form starts which sequence.
 const MAGNET_TO_SEQUENCE = {
   'finance-fridays': 'welcome-newsletter',
+  'cash-reset': 'money-reset',
 };
 
 let lastCall = 0;
@@ -124,9 +126,10 @@ function inlineText(s) {
   return s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '$1 ( $2 )').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1');
 }
 
-function render(email, { firstName, to, footerReason }) {
+// vars: extra {{placeholders}} filled at send time only (e.g. the /reset breakdown). Never stored.
+function render(email, { firstName, to, footerReason, vars = {} }) {
   const name = (firstName || '').trim().split(/\s+/)[0] || 'there';
-  const fill = (s) => s.replace(/\{\{name\}\}/g, name);
+  const fill = (s) => s.replace(/\{\{name\}\}/g, name).replace(/\{\{(\w+)\}\}/g, (m, k) => (vars[k] != null ? vars[k] : (email.defaults || {})[k] || ''));
   const blocks = fill(email.body).trim().split(/\n\s*\n/);
   const P = 'margin:0 0 18px;';
   const html = blocks.map((b) => {
@@ -152,8 +155,8 @@ ${html}
   return { subject: fill(email.subject), html: fullHtml, text, unsub };
 }
 
-async function sendEmail({ to, email, firstName, footerReason, tagSeq }) {
-  const r = render(email, { firstName, to, footerReason });
+async function sendEmail({ to, email, firstName, footerReason, tagSeq, vars }) {
+  const r = render(email, { firstName, to, footerReason, vars });
   const res = await rs('/emails', {
     method: 'POST',
     body: {

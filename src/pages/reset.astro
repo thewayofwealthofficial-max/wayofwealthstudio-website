@@ -24,7 +24,7 @@ const description = "Find out where your money is actually going in under 3 minu
       Stop doing mental math every time you open your banking app. It splits what comes in into
       tax, work bills, a slow-month buffer and a steady weekly wage, so you know what’s yours to keep.
     </p>
-    <p class="rs-conf">🔒 Free. Your figures never leave this page, and we can’t see them. One email opens the rest.</p>
+    <p class="rs-conf">🔒 Free. Your figures stay on this page unless you tick the box to email them to yourself. We don’t keep them. One email opens the rest.</p>
   </header>
 
   <!-- ============================================================
@@ -109,7 +109,9 @@ const description = "Find out where your money is actually going in under 3 minu
       <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
     </div>
     <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
-    <p class="rs-micro">Free. No spam, and you can unsubscribe any time.</p>
+    <!-- Unticked by default: figures only leave the page if the person chooses (Joel, 27 Sep). -->
+    <label class="rs-tick"><input type="checkbox" id="rs-send-numbers" /> Email me my numbers too</label>
+    <p class="rs-micro">Free. No spam, and you can unsubscribe any time. We don’t keep your numbers.</p>
   </form>
 
   <div id="rs-locked" hidden>
@@ -380,6 +382,10 @@ const description = "Find out where your money is actually going in under 3 minu
           name,
           magnet: 'cash-reset',
           honeypot: form.querySelector('[name="website"]').value || null,
+          // Only sent when the person ticked the box. Used for their email, never stored.
+          breakdown: $('rs-send-numbers').checked
+            ? (() => { const c = calc(); return { cur: state.cur, rev: c.rev, tax: c.tax, run: c.run, buffer: c.buffer, payMonth: c.payMonth, payWeek: c.payWeek, taxPct: state.taxPct }; })()
+            : null,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -491,6 +497,8 @@ const description = "Find out where your money is actually going in under 3 minu
   .rs-help b { color: var(--d-text); font-weight: 600; }
   .rs-help-tight { margin-top: 0.4rem; }
   .rs-micro { font-family: var(--font-ui); font-size: 12px; color: var(--d-mute); margin-top: 0.6rem; }
+  .rs-tick { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-family: var(--font-ui); font-size: 0.92rem; color: var(--d-mute); cursor: pointer; }
+  .rs-tick input { width: 1.1rem; height: 1.1rem; accent-color: currentColor; margin: 0; }
   .rs-label {
     display: block; font-family: var(--font-ui); font-size: 11px; font-weight: 600;
     letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); margin-top: 1.9rem; margin-bottom: 0.7rem;
