@@ -80,6 +80,14 @@ jobs:
 
           Medium: tap the link below to copy it, then tap the button and paste it." --copy "https://wayofwealthcoaching.com/blog/$SLUG/" --button "Open Medium import|https://medium.com/p/import"
 
+      # A day with no fitting story used to look exactly like a day where everything worked (audit, 27 Sep).
+      - name: Tell Joel quietly when no story fitted
+        if: success() && steps.generate.outputs.slug == ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/telegram-notify.mjs --emoji "📰" --title "No news post today" --body "Nothing in today's news was a good fit for your readers, so nothing was written. That's fine now and then; if it happens every time, tell Claude." --silent
+
       - name: Notify Telegram on failure
         if: failure()
         env:

@@ -106,6 +106,7 @@ function autoApply(proposal) {
     const diff = sh('git diff --staged --name-only');
     if (!diff) throw new Error('Edit made but no diff staged.');
     sh(`git commit -m "fred: apply ${id}" -m "Auto-applied via Fred approve link."`);
+    sh('git pull --rebase -q origin main');
     sh('git push');
     const sha = sh('git rev-parse HEAD');
     return { mode: 'commit', sha, branch: defaultBranch };
@@ -200,6 +201,7 @@ async function revert(sha) {
   configFredBot();
   try {
     sh(`git revert --no-edit ${sha}`);
+    sh('git pull --rebase -q origin main');
     sh('git push');
     return true;
   } catch (err) {

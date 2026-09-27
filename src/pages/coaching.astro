@@ -550,7 +550,7 @@ const FAQS = [
         const data = await res.json();
         if (!res.ok) {
           status.className = 'form-status error';
-          status.textContent = data.error || 'Something went wrong. Please email joel@thewayofwealth.shop directly.';
+          status.textContent = data.error || 'Something went wrong. Please email joel@wayofwealthcoaching.com directly.';
           return;
         }
         status.className = 'form-status';
@@ -558,7 +558,7 @@ const FAQS = [
         showCalendly(name, email);
       } catch {
         status.className = 'form-status error';
-        status.textContent = 'Could not submit. Please email joel@thewayofwealth.shop and I will reply directly.';
+        status.textContent = 'Could not submit. Please email joel@wayofwealthcoaching.com and I will reply directly.';
       }
     });
   })();

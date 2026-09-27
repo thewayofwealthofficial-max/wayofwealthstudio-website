@@ -80,4 +80,4 @@ And boring — as any behavioural economist will tell you — is the highest com
 
 ---
 
-*If irregular income is one of your stressors, try the [Money Beliefs Quiz](https://money-beliefs-quiz.netlify.app) — it takes 2 minutes and shows you which money script is running underneath the surface. It's free, and it might explain more than the income volatility does.*
+*If irregular income is one of your stressors, try the [Money Story Diagnostic](https://discover.thewayofwealth.shop/). It's a free 3-minute conversation that names the money script running underneath, and it might explain more than the income swings do.*

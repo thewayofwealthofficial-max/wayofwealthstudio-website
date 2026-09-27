@@ -55,7 +55,7 @@ jobs:
             exit 0
           fi
           git commit -m "blog: ${QUESTION:-daily post}" -m "Auto-published from reddit-queue.md (slug: ${SLUG})."
-          git push
+          git pull --rebase -q origin main && git push
 
       - name: Notify Telegram on success
         if: success()

@@ -58,7 +58,7 @@ jobs:
             exit 0
           fi
           git commit -m "chore(state): update quiz-last-seen cursor"
-          git push
+          git pull --rebase -q origin main && git push
 
       - name: Notify Telegram on failure
         if: failure()

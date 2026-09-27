@@ -9,7 +9,7 @@ export const LINKS = {
   cheatSheet: 'https://preview.mailerlite.io/forms/1977493/184455001091867806/share',
   // Finance Fridays newsletter form (separate MailerLite group, ID 185123527460914938)
   newsletter: 'https://preview.mailerlite.io/forms/1977493/185123534091060787/share',
-  contactEmail: 'mailto:joel@thewayofwealth.shop',
+  contactEmail: 'mailto:joel@wayofwealthcoaching.com',
   coaching: '/coaching',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
   // Lead-magnet funnel pages

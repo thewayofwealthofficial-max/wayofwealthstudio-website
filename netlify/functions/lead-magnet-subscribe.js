@@ -165,6 +165,6 @@ exports.handler = async (event) => {
   await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Could not save the signup anywhere', detail: `${resend.detail} | ${mailerlite.detail}` });
   return {
     statusCode: 503,
-    body: JSON.stringify({ error: "Something went wrong on my side. Please email joel@thewayofwealth.shop and I'll add you by hand." }),
+    body: JSON.stringify({ error: "Something went wrong on my side. Please email joel@wayofwealthcoaching.com and I'll add you by hand." }),
   };
 };

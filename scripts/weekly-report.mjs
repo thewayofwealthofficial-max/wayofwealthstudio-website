@@ -128,7 +128,16 @@ async function sendTelegram(text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, parse_mode: 'MarkdownV2' }),
   });
-  const json = await res.json();
+  let json = await res.json();
+  // One unescaped character used to kill every report since April (audit, 27 Sep). If Telegram rejects the
+  // formatting, send the same report as plain text rather than nothing.
+  if (!json.ok && /parse entities/i.test(json.description || '')) {
+    const plain = text.replace(/\\([_*\[\]()~`>#+\-=|{}.!\\])/g, '$1').replace(/[*_]/g, '');
+    json = await (await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: plain }),
+    })).json();
+  }
   if (!json.ok) { console.error('Telegram error:', json.description); process.exit(1); }
   console.log(`✓ Sent (message_id: ${json.result.message_id})`);
 }

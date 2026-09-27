@@ -27,7 +27,7 @@ const SUBREDDITS = [
   'ADHD',
 ];
 
-const USER_AGENT = 'thewayofwealth-queue-topup/1.2 (by /u/thewayofwealth; contact joel@thewayofwealth.shop)';
+const USER_AGENT = 'thewayofwealth-queue-topup/1.2 (by /u/thewayofwealth; contact joel@wayofwealthcoaching.com)';
 
 // ───────────────────────────────────────────────────────────────
 // Reddit fetch

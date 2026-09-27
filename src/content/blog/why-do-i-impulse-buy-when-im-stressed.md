@@ -106,7 +106,7 @@ Knowing that doesn't fix it. But it does shift the shame. This isn't about you b
 
 ## Where to start
 
-If this pattern feels familiar and you're ready to understand *your* specific money wiring, the [Money Beliefs Quiz](https://money-beliefs-quiz.netlify.app) will show you which behavioral patterns are running your financial decisions — including whether emotional regulation via consumption is your brain's go-to move.
+If this pattern feels familiar and you want to understand *your* money wiring, the [Money Story Diagnostic](https://discover.thewayofwealth.shop/) is a free 3-minute conversation that names the money script running underneath.
 
 It's free. Takes 3 minutes. And it's built by a behavioral economist who actually understands that "just budget better" is not advice, it's gaslighting.
 

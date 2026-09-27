@@ -21,7 +21,7 @@ This is mental accounting, a concept developed by the economist Richard Thaler. 
 
 A couple of bucks more per month for Disney+? Barely registers. A few dollars more for Peacock? You shrug and move on. But those small bumps stack up across multiple services, month after month, and the total in that mental envelope quietly swells without you ever consciously deciding to spend more.
 
-The Guardian reports that the annual price for Disney+ at launch was 70. Now it's 190, an increase of 170%. That is not a small change. But because it arrived in slow increments, spread across years, it probably never felt like a decision. It just happened.
+The Guardian reports that the annual price for Disney+ at launch was $70. Now it's $190, an increase of 170%. That is not a small change. But because it arrived in slow increments, spread across years, it probably never felt like a decision. It just happened.
 
 ## The boiling frog version of your finances
 
