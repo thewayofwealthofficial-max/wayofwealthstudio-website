@@ -7,7 +7,7 @@ name: Fred Propose
 
 on:
   schedule:
-    - cron: '37 21 * * *'
+    - cron: '37 17 * * *'  # was 21:37; lands in the evening, not after midnight
   workflow_dispatch:
 
 permissions:

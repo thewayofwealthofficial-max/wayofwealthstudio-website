@@ -7,7 +7,7 @@ name: Daily Morning Brief
 
 on:
   schedule:
-    - cron: '23 5 * * *'
+    - cron: '23 2 * * *'  # was 05:23; GitHub runs ~4h late, so this lands ~06:00-08:00 UK
   workflow_dispatch:
 
 permissions:

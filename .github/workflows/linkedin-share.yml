@@ -7,7 +7,7 @@ name: LinkedIn Share
 
 on:
   schedule:
-    - cron: '43 7 * * 2,4,6'
+    - cron: '43 4 * * 2,4,6'  # was 07:43; GitHub runs ~4h late, so this lands ~08:00-10:00 UK
   workflow_dispatch:
     inputs:
       dry_run:
