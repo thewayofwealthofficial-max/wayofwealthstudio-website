@@ -49,5 +49,35 @@ MSc Behavioural Economics | Qualified Financial Planner
 P.S. Want this set up in your actual bank accounts? We set up these exact sub-accounts and automated transfers together. [Book a free 20-minute call](${CALL}).
 `,
     },
+    {
+      // Approved by Joel 27 Sep. Pot wording = his "tax wall" step (diagnostic dossier.js); P.S. = live welcome email 2.
+      id: '02-one-pot',
+      afterHours: 20,
+      subject: '3 minutes, one pot',
+      preheader: 'The one pot to set up first.',
+      body: `
+Hey {{name}},
+
+Yesterday I sent you your four pots. Today, just one. It takes about three minutes.
+
+Open your banking app today and make one new pot. Name it **TAX. NOT MINE.**
+
+Every time a client payment lands, move the tax % you picked in the tool straight in. Not sure of your real figure? Your accountant can tell you.
+
+That's it. The name is doing the work: money you have labelled as not yours stops feeling spendable, which is the whole point.
+
+There's a name for this, by the way. Researchers call it earmarking: money that's labelled for something gets spent less.
+
+If your bank doesn't do pots, a second account works the same way.
+
+Hit reply when it's done and tell me: **did you make it?** Even a one-word "done" is fine.
+
+Tomorrow I'll show you why earning more doesn't fix this on its own.
+
+Joel
+
+P.S. One of my clients, Jessica, found exactly where her money was leaking when we worked together, and started closing the gaps. That's where it starts.
+`,
+    },
   ],
 };
