@@ -34,6 +34,8 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE}${ogImage}`;
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalUrl} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
+<!-- Pinterest website claim (Joel's business account, 27 Sep 2026) -->
+<meta name="p:domain_verify" content="f6fbaef0feb7290bfedc887add1d239c" />
 
 <!-- Open Graph -->
 <meta property="og:type" content={articleSchema ? 'article' : 'website'} />
