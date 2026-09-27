@@ -3,7 +3,9 @@
 //   Thu        "post"     shape of Denise's Thursday podcast email, pointing at this week's blog post
 //   Fri        "fridays"  Finance Fridays, shape of Mind Money Balance's weekly newsletter
 // Each month follows Denise's cycle: open the theme, teach, check in, then push the call in the last 9 days.
-// We copy SHAPE only. Words come from Joel (Fathom passages), facts only from the input.
+// Competitor emails are CONTEXT (Joel, 2026-09-27: "we are copying what they are doing since it is what is working"):
+// copy their shape AND their topic when it fits Joel's readers. Words come from Joel (Fathom passages), facts only
+// from the input. Their sentences, facts, stories, testimonials and offer are never copied.
 
 export const FROM_NAME = 'Joel from Way of Wealth';
 export const FROM_EMAIL = 'joel@thewayofwealth.shop';
@@ -48,7 +50,7 @@ HARD RULES (a draft that breaks any of these is rejected):
 - Never reveal client numbers or business size.
 - When Joel's words say "I", "me" or "my", it is JOEL'S OWN story. Tell it as his ("I was scrolling..."). Never turn his story into a client's, and never turn a client's into his.
 - Never name or describe anyone else Joel mentions (partners, exes, friends, family, colleagues, employers, firms). Never mention anyone else's suicide, self-harm, drugs, drinking, health or legal trouble. Joel's own past with drinking and trading he talks about publicly; everyone else's stays private.
-- The SHAPE REFERENCE is another coach's email. Copy its structure, length, pacing, subject style, where the link sits and how the P.S. works. NEVER copy its words, sentences, facts, stories, numbers or offer.
+- The COMPETITOR REFERENCE is a recent email from a coach whose marketing is working. Use it as context: copy its structure, length, pacing, subject style, where the link sits and how the P.S. works, AND its topic or angle when that topic fits Joel's readers (people who earn and can't keep it). Tie it to this month's theme where that's natural; if its topic doesn't fit, use this month's theme instead. Then write it entirely with Joel's own story, facts, voice and offer. NEVER copy its sentences or wording, its facts, stories, numbers, testimonials or offer. (On Thursdays the topic is this week's blog post.)
 - Links: only the ones given in the input, written out in full.
 - The blog post is only something to link to. Never build the story or the opening scene from the post.
 - Never say how many coaching places are left or that "spots are open". The only true line is that Joel takes on 5 people a month.
@@ -103,7 +105,7 @@ export function userPrompt({ type, phase, theme, dateStr, shape, passages, post,
   L.push(`LINKS YOU MAY USE: call ${LINKS.call} · Money Reset Tool ${LINKS.reset}${post ? ` · this week's post ${post.url}` : ''}`);
   if (shape) {
     L.push('');
-    L.push(`SHAPE REFERENCE (another coach, ${shape.date}). Structure only, never words:`);
+    L.push(`COMPETITOR REFERENCE (another coach, ${shape.date}). Copy its shape, and its topic if it fits; never its words:`);
     L.push(`Subject: ${shape.subject}`);
     L.push(shape.body.slice(0, 3500));
   }
