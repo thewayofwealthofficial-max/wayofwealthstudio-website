@@ -22,6 +22,16 @@
   to = "https://wayofwealthcoaching.com/:splat"
   status = 301
   force = true
+[[redirects]]
+  from = "http://thewayofwealth.shop/*"
+  to = "https://wayofwealthcoaching.com/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "http://www.thewayofwealth.shop/*"
+  to = "https://wayofwealthcoaching.com/:splat"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/api/fred/approve"
