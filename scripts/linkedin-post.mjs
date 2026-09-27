@@ -197,25 +197,32 @@ async function main() {
   const recentAngles = state.slice(-3).map((s) => s.angle);
   const angles = Object.fromEntries(Object.entries(ANGLES).filter(([n]) => !recentAngles.includes(Number(n))));
 
-  let feedback = null, draft = null, last = null;
+  // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
+  // fact-check flags is sent with those flags on top: he approves every post anyway (first 2 weeks).
+  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle \d+ is not|Passage \d+ does not|Story post is missing)/;
+  let feedback = null, draft = null, last = null, best = null, flags = [];
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
     try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last), 2000); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
     for (const k of ['problem', 'pursuit', 'payoff']) d[k] = String(d[k] || '').replace(/\s*[—–]\s*/g, ', ').trim();
     d.post = [d.problem, d.pursuit, d.payoff].filter(Boolean).join('\n\n');
     let problems = check(d, passages, names, recentAngles);
-    if (!problems.length) { try { problems = await audit(d.post, passages[d.passage]); } catch (e) { problems = ['The fact check could not read its own reply. Try again.']; } }
+    const hard = problems.some((p) => HARD.test(p));
+    if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage])); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
+    if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s).`);
     if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n[PROBLEM]\n${d.problem}\n[PURSUIT]\n${d.pursuit}\n[PAYOFF]\n${d.payoff}\n`);
     feedback = problems;
     last = d;
   }
-  if (!draft) throw new Error('Failed the checks 5 times. Nothing written.');
+  if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the closest draft with ${flags.length} flag(s) for Joel to judge.`); }
+  if (!draft) throw new Error('Every attempt failed a hard safety check. Nothing written.');
 
   const words = draft.post.split(/\s+/).length;
   console.log(`Draft ready: angle ${draft.angle} (${ANGLES[draft.angle].name}), ${words} words.`);
   if (DRY) {
+    if (flags.length) console.log('FLAGS:\n  - ' + flags.join('\n  - '));
     console.log(`\n----- PASSAGE USED (${passages[draft.passage].date}) -----\n${passages[draft.passage].text}\n\n----- LINKEDIN POST -----\n` + (STORY.has(Number(draft.angle)) ? `[PROBLEM]\n${draft.problem}\n\n[PURSUIT]\n${draft.pursuit}\n\n[PAYOFF]\n${draft.payoff}` : draft.post) + `\n-------------------------`);
     return;
   }
@@ -230,7 +237,7 @@ async function main() {
   const shown = STORY.has(Number(draft.angle))
     ? `<b>[PROBLEM]</b>\n${esc(draft.problem)}\n\n<b>[PURSUIT]</b>\n${esc(draft.pursuit)}\n\n<b>[PAYOFF]</b>\n${esc(draft.payoff)}`
     : esc(draft.post);
-  await telegram(`💼 <b>LinkedIn draft</b> · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n${shown}`);
+  await telegram(`💼 <b>LinkedIn draft</b> · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
   await telegram('Happy with it? Tap below, then "Approve and post". Ignore it and nothing is posted (expires in 48 hours).', {
     inline_keyboard: [[{ text: '✅ Review & approve', url: `${SITE}/api/linkedin/draft?id=${id}&sig=${sig}` }]],
   });
