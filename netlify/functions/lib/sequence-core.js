@@ -16,19 +16,21 @@ const RESEND = 'https://api.resend.com';
 const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8744-72085ceac3e7';
 const SITE = 'https://wayofwealthcoaching.com';
 const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
-// Joel's own domain takes over automatically once Resend has verified it.
-const PREFERRED_FROM = 'Joel from Way of Wealth <joel@joelezekiel.com>';
+// Joel, 27 Sep: send from joel@wayofwealthcoaching.com. Each address takes over automatically once Resend has
+// verified its domain, in this order of preference.
+const PREFERRED = ['wayofwealthcoaching.com', 'joelezekiel.com'];
 let fromCache = null;
 async function fromAddress() {
   if (fromCache) return fromCache;
   try {
     const r = await rs('/domains');
-    const ok = r.ok && (r.json.data || []).some((d) => d.name === 'joelezekiel.com' && d.status === 'verified');
-    fromCache = ok ? PREFERRED_FROM : FROM;
+    const verified = new Set((r.ok ? r.json.data || [] : []).filter((d) => d.status === 'verified').map((d) => d.name));
+    const pick = PREFERRED.find((d) => verified.has(d));
+    fromCache = pick ? `Joel from Way of Wealth <joel@${pick}>` : FROM;
   } catch { fromCache = FROM; }
   return fromCache;
 }
-const REPLY_TO = 'joeleezekiel@gmail.com'; // wayofwealthcoaching.com can't receive mail
+const REPLY_TO = 'joel@wayofwealthcoaching.com'; // forwards to Joel's Gmail (Namecheap, set up 27 Sep)
 const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, company no. 17214427';
 
 const SEQUENCES = {

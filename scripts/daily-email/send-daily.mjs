@@ -116,7 +116,10 @@ async function senderEmail(key) {
   try {
     const res = await fetch('https://api.resend.com/domains', { headers: { Authorization: `Bearer ${key}` } });
     const j = await res.json();
-    if ((j.data || []).some((d) => d.name === 'joelezekiel.com' && d.status === 'verified')) return 'joel@joelezekiel.com';
+    // Joel, 27 Sep: joel@wayofwealthcoaching.com once Resend has verified it; until then joelezekiel.com.
+    const verified = new Set((j.data || []).filter((d) => d.status === 'verified').map((d) => d.name));
+    const pick = ['wayofwealthcoaching.com', 'joelezekiel.com'].find((d) => verified.has(d));
+    if (pick) return `joel@${pick}`;
   } catch { /* fall back */ }
   return FROM_EMAIL;
 }
