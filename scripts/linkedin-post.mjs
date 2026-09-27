@@ -42,7 +42,7 @@ const ANGLES = {
   2: { name: 'Full diary, empty account', hook: 'a personal or client story: how it looked from the outside', shape: 'outside vs inside → the warning signs → what actually changed', words: [280, 550] },
   3: { name: 'The money moment with no tidy lesson', hook: 'a confession that he has avoided telling this', shape: 'Joel\'s own low point with money, dated, specific moments, says outright there is no neat takeaway. No ask.', words: [280, 550] },
   4: { name: 'Why a 60-minute session isn\'t 60 minutes of work', hook: 'a question comparing two prices', shape: 'explainer comparing two ways of working, step by step, no lecture', words: [350, 450] },
-  5: { name: '"Shouldn\'t healing be free?"', hook: 'a quoted objection someone has really said', shape: 'the line → the reply → short reframe lines, one per paragraph → end on a line that lands. Never a "5 signs you\'re undercharging" list.', words: [150, 230] },
+  5: { name: '"Shouldn\'t healing be free?"', hook: 'the objection they carry, said as a plain "you" line, never in quote marks (their words become "you" lines, never quotes)', shape: 'the line → the reply → short reframe lines, one per paragraph → end on a line that lands. Never a "5 signs you\'re undercharging" list.', words: [150, 230] },
   6: { name: 'Mindset and behaviour', hook: 'a myth line', shape: 'myth → "In reality..." → 4–5 short lines on what else has to happen → one-line close. Take manifesting seriously; never claim it works.', words: [40, 90] },
   8: { name: 'Why a money person works with healers (Joel\'s origin)', hook: 'personal: why he walked away from something', shape: 'origin story with a lesson: the win, the loss, then the MSc and QFP (in that order), then why practitioners', words: [300, 400] },
   9: { name: 'How a money coach looks after his own money', hook: 'a plain statement of the topic', shape: 'his personal routine, the why behind it, who taught him', words: [230, 290] },
@@ -50,6 +50,30 @@ const ANGLES = {
   11: { name: 'Proud of a client\'s small behaviour win', hook: 'personal: proud of someone he works with', shape: 'short client win → it doesn\'t have to be a big number → what the win really was', words: [80, 130] },
   12: { name: '"Pay me when you can"', hook: 'a call-out plus his own story', shape: 'call-out → what happened → how it felt → 3 changes. Tone hurt, not angry.', words: [270, 340] },
 };
+
+// THE MIX (IDEATION.md: 3 reach / 2 positioning / 1 nurture / 1 convert), fitted to 4 LinkedIn days (Joel, 2026-09-27):
+// Mon reach · Wed positioning · Fri reach · Sun nurture and convert in turn. Each job has its own angles.
+const JOBS = {
+  reach: { angles: [5, 2, 4, 12], brief: 'REACH (attract): mindset through psychology: worth, guilt about charging, receiving, giving work away. Told through their situation (an earning practitioner) and Joel\'s words. Carries ONE research line from RESEARCH IDEAS.' },
+  positioning: { angles: [6, 10], brief: 'POSITIONING: "there\'s a name for this". A money habit they recognise, the research name for it (ONE idea from RESEARCH IDEAS), and the practical how: real tactics and expertise, not just the insight.' },
+  nurture: { angles: [3, 8, 9], brief: 'NURTURE: Joel\'s own story. If it is the £150k story: £3,000 → £150,000 → lost it all → that sent him to study why (MSc, then QFP), always in that order, and always say what changed. Or his own current struggle or routine, warts and all.' },
+  convert: { angles: [1, 11], brief: 'CONVERT: the pain they don\'t see, what money does once it lands (the month after a big payment), then the practical fix (separate pots, paying yourself a steady wage). No link, no ask, no product name.' },
+};
+const jobOf = (angle) => Object.keys(JOBS).find((j) => JOBS[j].angles.includes(Number(angle)));
+
+// Research ideas the robot may name: ONLY these, said the way TEACHING_SCOPE.md allows (it owns what is true).
+const RESEARCH = [
+  { key: /mental account/i, line: 'Mental accounting (Thaler): we put money into mental boxes, and money in one box gets spent differently from money in another.' },
+  { key: /earmark/i, line: 'Earmarking (Soman & Cheema): money that is labelled for something is spent less. No numbers.' },
+  { key: /default/i, line: 'Defaults (Madrian & Shea): people tend to stick with whatever happens automatically.' },
+  { key: /save more tomorrow/i, line: 'Save More Tomorrow (Thaler & Benartzi): people commit to saving more later, out of money they haven\'t got yet.' },
+  { key: /commitment device/i, line: 'Commitment devices (Ashraf, Karlan & Yin): making it harder for your future self to touch the money helps more of it stay.' },
+  { key: /if[- ]then|implementation intention/i, line: 'If-then plans (implementation intentions): "when an invoice lands, 30% moves to the tax pot" beats a goal. Name no effect size.' },
+  { key: /loss aversion/i, line: 'Loss aversion: losses tend to hit harder than the same-sized gain. NEVER say "twice".' },
+  { key: /money script|klontz/i, line: 'Money scripts (Klontz): the beliefs about money we picked up young. A conversation opener, never a diagnosis.' },
+  { key: /positive fantas|oettingen|mental contrast/i, line: 'Positive fantasies (Oettingen): picturing only the dream outcome can drain the energy to act on it. Pair the dream with the obstacle.' },
+  { key: /ostrich/i, line: 'The ostrich effect (Karlsson, Loewenstein & Seppi): people look at their accounts less when things are bad. "You check on payday. You stop checking when you owe."' },
+];
 
 // Story angles follow Problem → Pursuit → Payoff (SCRIPTING.md §4; Joel, 2026-09-27: "any storytelling posts should follow the three Ps").
 const STORY = new Set([1, 2, 3, 8, 9, 11, 12]);
@@ -90,7 +114,7 @@ HARD RULES (a draft that breaks any is rejected):
 - Never mention anyone else's health, drinking, drugs, self-harm or legal trouble.
 - Never mention drugs at all, including Joel's own past (Joel, 2026-09-27).
 - Never mention the price, how many people he works with, or places left.
-- No research claims unless the passage makes them.
+- No research claims except ONE idea from RESEARCH IDEAS when the job asks for it, worded as given there ("there's a name for this", "researchers call this"). Never "studies show", "research shows" or "a recent study", and never add a number or detail that isn't written there.
 
 THEIR WORDS: the READER PHRASES are real things strangers in this market have written. You may turn one into a "you" line. Never quote them, never credit them.
 
@@ -98,10 +122,11 @@ OUTPUT: only valid JSON, no fences:
 {"passage": <number of the passage you used>, "angle": <angle number>, "problem": "...", "pursuit": "...", "payoff": "..."}
 Each part holds its paragraphs, separated by \\n\\n; the post is the three joined in that order. For a non-story angle, put the whole post in "problem" and leave the other two empty.`;
 
-function userPrompt(passages, angles, feedback, last) {
+function userPrompt(passages, angles, feedback, last, job) {
   const a = Object.entries(angles).map(([n, x]) => `${n}. ${x.name}\n   First line: ${x.hook}\n   Shape: ${x.shape}\n   Length: ${x.words[0]}–${x.words[1]} words`).join('\n');
   const p = passages.map((x, i) => `[${i}] (${x.date})\n${x.text}`).join('\n\n');
-  return `ANGLES (pick the one the passage truly supports; if the passage is Joel's own story, prefer 3, 8, 9 or 2):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
+  const research = ['reach', 'positioning'].includes(job) ? `\n\nRESEARCH IDEAS (use exactly ONE, as worded here):\n${RESEARCH.map((r) => '- ' + r.line).join('\n')}` : '';
+  return `THIS POST'S JOB: ${JOBS[job].brief}${research}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
 }
 
 async function claude(system, user, maxTokens) {
@@ -112,8 +137,17 @@ async function claude(system, user, maxTokens) {
   });
   if (!r.ok) throw new Error(`Anthropic ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const text = ((await r.json()).content || []).map((b) => b.text || '').join('').trim();
-  const s = text.indexOf('{'), e = text.lastIndexOf('}');
-  return JSON.parse(text.slice(s, e + 1));
+  // Take the first complete {...} object, so any words the model adds after it are ignored.
+  const s = text.indexOf('{');
+  let depth = 0, inStr = false, esc = false;
+  for (let i = s; s >= 0 && i < text.length; i++) {
+    const c = text[i];
+    if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+    if (c === '"') inStr = true;
+    else if (c === '{') depth++;
+    else if (c === '}' && --depth === 0) return JSON.parse(text.slice(s, i + 1));
+  }
+  throw new Error('No complete JSON object in the reply');
 }
 
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9£$€% ]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -137,7 +171,7 @@ function check(d, passages, names, recentAngles) {
     if (!pr || !pu || !pa) problems.push('Story post is missing one of Problem, Pursuit or Payoff. The payoff is never missing.');
     else if (pa >= pr || pa >= pu) problems.push(`The payoff (${pa} words) must be the shortest part (problem ${pr}, pursuit ${pu}).`);
   }
-  if (/\b(?:isn['’]t|wasn['’]t|not) (?:about |just |really |a |an )?[^.!?\n]{1,40}[.!?]\s+(?:It['’]s|It is|It was|That['’]s)\b/i.test(post)) problems.push('Uses the "That\'s not X. It\'s Y." pattern, which reads as AI. Say the point once, plainly.');
+  if (/\b(?:isn['’]t|wasn['’]t|not) (?:about |just |really |a |an )?[^.!?\n]{1,40}[.!?]\s+(?:It['’]s|It is|It was|That['’]s|You['’]re|You are|I['’]m|I am)\b/i.test(post)) problems.push('Uses the "That\'s not X. It\'s Y." pattern, which reads as AI. Say the point once, plainly.');
   // Joel, 2026-09-27: no neat three-part lines ("Not a plan. Not a pivot. Just honesty.").
   const triplet = post.split(/\n\s*\n/).find((para) => { const s = para.trim().split(/(?<=[.!?])\s+/); return s.length === 3 && s.every((x) => x.split(/\s+/).length <= 4); });
   if (triplet) problems.push(`Neat three-part line ("${triplet.trim()}"), which reads as AI. Say it once, in one plain sentence.`);
@@ -146,8 +180,9 @@ function check(d, passages, names, recentAngles) {
   const sents = post.split(/\n+/).flatMap((x) => x.split(/(?<=[.!?])\s+/)).filter((x) => /[a-z]/i.test(x));
   const lens = sents.map((x) => x.split(/\s+/).length);
   const long = lens.filter((l) => l >= 20).length / lens.length, tiny = lens.filter((l) => l <= 4).length / lens.length;
-  if (long < 0.1) problems.push(`Too clean: only ${Math.round(long * 100)}% of sentences run past 20 words (the real posts: about 1 in 5). Let some sentences roll on with commas and "and", like talking.`);
-  if (tiny < 0.08) problems.push(`Too even: only ${Math.round(tiny * 100)}% of sentences are 1 to 4 word fragments (the real posts: about 1 in 5).`);
+  // Rhythm targets come from 150+ word story posts, so only apply them at that length.
+  if (words >= 150 && long < 0.1) problems.push(`Too clean: only ${Math.round(long * 100)}% of sentences run past 20 words (the real posts: about 1 in 5). Let some sentences roll on with commas and "and", like talking.`);
+  if (words >= 150 && tiny < 0.08) problems.push(`Too even: only ${Math.round(tiny * 100)}% of sentences are 1 to 4 word fragments (the real posts: about 1 in 5).`);
   if (/[—–]/.test(post)) problems.push('Contains an em or en dash.');
   if (/https?:\/\/|www\.|\.com\b|\.shop\b/i.test(post)) problems.push('Contains a link. LinkedIn native posts carry no link.');
   if (/#\w/.test(post)) problems.push('Contains a hashtag.');
@@ -173,6 +208,9 @@ function check(d, passages, names, recentAngles) {
   if ((post.match(/\b(clients?|someone I work with|people I work with)\b[\s\S]{0,120}/gi) || []).some((s) => practice.test(s)) && !practice.test(passage.text)) {
     problems.push('Implies a client of Joel\'s is a practitioner. His words don\'t say so.');
   }
+  const used = RESEARCH.filter((r) => r.key.test(post)).length;
+  if (['reach', 'positioning'].includes(jobOf(d.angle)) && used !== 1) problems.push(`A ${jobOf(d.angle)} post needs exactly ONE research idea from RESEARCH IDEAS (it has ${used}).`);
+  if (/\btwice as (?:much|hard|bad)\b/i.test(post)) problems.push('Says losses hurt "twice as much". TEACHING_SCOPE.md: never state the multiplier.');
   const b = norm(post).split(' '), p = ` ${norm(passage.text)} `;
   let kept = false;
   for (let i = 0; i + 5 <= b.length && !kept; i++) if (p.includes(` ${b.slice(i, i + 5).join(' ')} `)) kept = true;
@@ -181,8 +219,8 @@ function check(d, passages, names, recentAngles) {
 }
 
 // Separate pass: a fresh call that only compares claims with the source. Draft first, audit second.
-async function audit(post, passage) {
-  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. For a story post, also flag if the opening is background rather than the problem, or if there is no payoff. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
+async function audit(post, passage, isStory) {
+  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. ${isStory ? 'This is a story post: also flag if the opening is background rather than the problem, or if there is no payoff.' : 'This is NOT a story post (an explainer or myth post): never flag it for a missing payoff or a background opening.'} A named research idea that matches one of these is fine: ${RESEARCH.map((r) => r.line.split(':')[0]).join('; ')}. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
   const r = await claude(system, `FACTS:\n${JOEL_FACTS}\n\nPASSAGE:\n${passage.text}\n\nPOST:\n${post}`, 1600);
   return (r.items || []).filter((i) => i.real_problem === true).map((i) => `Not in Joel's words: ${i.issue}`);
 }
@@ -207,8 +245,15 @@ async function main() {
     ? all.filter((p) => hash(p.text) === orig.passage)
     : all.filter((p) => !state.some((s) => s.passage === hash(p.text))).slice(0, 12);
   if (!passages.length) throw new Error(orig ? 'The story this draft came from is no longer in the last 60 days of calls.' : 'No unused story passages in the last 60 days of Fathom calls. Nothing written.');
+  // Which job today: Mon reach, Wed positioning, Fri reach, Sun nurture/convert in turn. JOB=... overrides; other days reach.
+  const lastSunday = [...state].reverse().find((s) => s.job === 'nurture' || s.job === 'convert');
+  const byDay = { 1: 'reach', 3: 'positioning', 5: 'reach', 0: lastSunday?.job === 'nurture' ? 'convert' : 'nurture' };
+  const job = orig ? jobOf(orig.angle) : (JOBS[process.env.JOB] ? process.env.JOB : byDay[new Date().getUTCDay()] || 'reach');
   const recentAngles = orig ? [] : state.slice(-3).map((s) => s.angle);
-  const angles = orig ? { [orig.angle]: ANGLES[orig.angle] } : Object.fromEntries(Object.entries(ANGLES).filter(([n]) => !recentAngles.includes(Number(n))));
+  const fresh = JOBS[job].angles.filter((n) => !recentAngles.includes(n));
+  const pool = orig ? [Number(orig.angle)] : (fresh.length ? fresh : JOBS[job].angles);
+  const angles = Object.fromEntries(pool.map((n) => [n, ANGLES[n]]));
+  console.log(`Job: ${job}.`);
   const joelFix = orig ? [`JOEL'S OWN FIXES (do these first, exactly as he asks; the hard rules still apply): ${orig.feedback}`] : [];
 
   // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
@@ -218,12 +263,14 @@ async function main() {
   let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
-    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last), 2000); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
+    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last, job), 2000); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
     for (const k of ['problem', 'pursuit', 'payoff']) d[k] = String(d[k] || '').replace(/\s*[—–]\s*/g, ', ').trim();
     d.post = [d.problem, d.pursuit, d.payoff].filter(Boolean).join('\n\n');
-    let problems = check(d, passages, names, recentAngles);
+    let problems = pool.includes(Number(d.angle))
+      ? check(d, passages, names, fresh.length ? recentAngles : [])
+      : [`Angle ${d.angle} is not on the list for today's ${job} post. Use one of: ${pool.join(', ')}.`];
     const hard = problems.some((p) => HARD.test(p));
-    if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage])); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
+    if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], STORY.has(Number(d.angle)))); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
     if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s).`);
@@ -252,13 +299,13 @@ async function main() {
   const shown = STORY.has(Number(draft.angle))
     ? `<b>[PROBLEM]</b>\n${esc(draft.problem)}\n\n<b>[PURSUIT]</b>\n${esc(draft.pursuit)}\n\n<b>[PAYOFF]</b>\n${esc(draft.payoff)}`
     : esc(draft.post);
-  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
+  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · ${job} · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
   await telegram('Tap below. On that page you can "Approve and post", or write what needs fixing and it gets rewritten. Ignore it and nothing is posted (expires in 48 hours).', {
     inline_keyboard: [[{ text: '✅ Review & approve', url: `${SITE}/api/linkedin/draft?id=${id}&sig=${sig}` }]],
   });
   console.log('Draft stored and sent to Joel on Telegram.');
   if (orig) return; // Same story as before; it's already recorded as used.
-  state.push({ date: new Date().toISOString().slice(0, 10), angle: Number(draft.angle), passage: hash(passages[draft.passage].text) });
+  state.push({ date: new Date().toISOString().slice(0, 10), job, angle: Number(draft.angle), passage: hash(passages[draft.passage].text) });
   await mkdir(dirname(STATE), { recursive: true });
   await writeFile(STATE, JSON.stringify(state, null, 2) + '\n');
 }
