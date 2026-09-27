@@ -65,6 +65,10 @@
 [functions."sequence-runner"]
   schedule = "@hourly"
 
+# Starts the list emails on time (GitHub's own scheduler runs hours late). See the function for the times.
+[functions."email-dispatch"]
+  schedule = "40 * * * *"
+
 # Retired pages (Joel, 2026-09-26): old tools and funnels, sent to the live pages
 [[redirects]]
   from = "/budget-tracker"

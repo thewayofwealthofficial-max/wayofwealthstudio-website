@@ -11,6 +11,9 @@ on:
   schedule:
     - cron: '40 12 * * 0,2,4'
     - cron: '47 6 * * 5'
+  # Netlify's email-dispatch function starts it on time (GitHub's cron above runs hours late; kept as a backup).
+  repository_dispatch:
+    types: [daily-email]
   workflow_dispatch:
     inputs:
       mode:
@@ -33,7 +36,7 @@ concurrency:
 
 jobs:
   send:
-    if: github.event_name != 'schedule' || vars.DAILY_EMAIL_ENABLED == 'true'
+    if: github.event_name == 'workflow_dispatch' || vars.DAILY_EMAIL_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -50,7 +53,7 @@ jobs:
 
       - name: Draft, check and send
         env:
-          DAILY_EMAIL_MODE: ${{ github.event_name == 'schedule' && (vars.DAILY_EMAIL_MODE || 'review') || inputs.mode }}
+          DAILY_EMAIL_MODE: ${{ github.event_name != 'workflow_dispatch' && (vars.DAILY_EMAIL_MODE || 'review') || inputs.mode }}
           EMAIL_TYPE: ${{ (github.event_name == 'workflow_dispatch' && inputs.type != 'auto') && inputs.type || '' }}
           TEST_EMAIL: joeleezekiel@gmail.com
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
