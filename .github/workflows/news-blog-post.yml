@@ -76,9 +76,9 @@ jobs:
         run: |
           node scripts/telegram-notify.mjs --emoji "📰" --title "New trending post live" --body "$TITLE
 
-          https://wayofwealthcoaching.com/blog/$SLUG
+          Based on: $SOURCE
 
-          Based on: $SOURCE"
+          Medium: tap the link below to copy it, then tap the button and paste it." --copy "https://wayofwealthcoaching.com/blog/$SLUG/" --button "Open Medium import|https://medium.com/p/import"
 
       - name: Notify Telegram on failure
         if: failure()

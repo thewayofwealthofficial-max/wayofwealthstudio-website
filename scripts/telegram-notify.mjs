@@ -10,6 +10,8 @@
 //   node scripts/telegram-notify.mjs "Your message here"
 //   echo "Piped message" | node scripts/telegram-notify.mjs
 //   node scripts/telegram-notify.mjs --title "Morning brief" --body "..." --emoji "☕"
+//   --copy "text"            adds the text as a tap-to-copy line (Telegram copies inline code on tap)
+//   --button "Label|https://…"  adds a button under the message
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -24,9 +26,11 @@ if (!CHAT_ID) {
 }
 
 function parseArgs(argv) {
-  const args = { title: null, body: null, emoji: null, silent: false };
+  const args = { title: null, body: null, emoji: null, silent: false, copy: null, button: null };
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--title') args.title = argv[++i];
+    else if (argv[i] === '--copy') args.copy = argv[++i];
+    else if (argv[i] === '--button') args.button = argv[++i];
     else if (argv[i] === '--body') args.body = argv[++i];
     else if (argv[i] === '--emoji') args.emoji = argv[++i];
     else if (argv[i] === '--silent') args.silent = true;
@@ -46,11 +50,18 @@ function escapeMarkdownV2(text) {
   return text.replace(/[_*\[\]()~`>#+\-=|{}.!\\]/g, (c) => '\\' + c);
 }
 
-async function sendMessage({ title, body, emoji, silent }) {
+async function sendMessage({ title, body, emoji, silent, copy, button }) {
   let text = '';
   if (emoji) text += emoji + ' ';
   if (title) text += '*' + escapeMarkdownV2(title) + '*\n\n';
   if (body) text += escapeMarkdownV2(body);
+  // Inside `code`, MarkdownV2 only needs ` and \ escaped.
+  if (copy) text += '\n\n`' + copy.replace(/[`\\]/g, (c) => '\\' + c) + '`';
+  let reply_markup;
+  if (button) {
+    const [label, url] = button.split('|');
+    if (label && /^https:\/\//.test(url || '')) reply_markup = { inline_keyboard: [[{ text: label, url }]] };
+  }
 
   const res = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     method: 'POST',
@@ -60,6 +71,7 @@ async function sendMessage({ title, body, emoji, silent }) {
       text,
       parse_mode: 'MarkdownV2',
       disable_notification: silent,
+      ...(reply_markup ? { reply_markup } : {}),
     }),
   });
 
