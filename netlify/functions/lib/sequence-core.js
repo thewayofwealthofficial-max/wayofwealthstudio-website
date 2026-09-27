@@ -67,9 +67,14 @@ async function rs(path, { method = 'GET', body } = {}) {
 }
 
 const audienceCache = {};
-async function sequenceAudienceId(seqId) {
+// Every sequence shares ONE Resend list: the free plan allows only 3 lists and General, Test and this one use
+// them (found 27 Sep when "Seq · money-reset" was refused). Which sequence a person is in, and when they started,
+// lives in the Netlify Blobs store 'sequences' under `${seqId}/${email}`. The list keeps its original name.
+const SHARED_SEQ_LIST = 'Seq · welcome-newsletter';
+async function sequenceAudienceId() {
+  const seqId = 'shared';
   if (audienceCache[seqId]) return audienceCache[seqId];
-  const name = `Seq · ${seqId}`;
+  const name = SHARED_SEQ_LIST;
   const list = await rs('/audiences');
   if (!list.ok) throw new Error(`Resend audiences ${list.status}`);
   let hit = (list.json.data || []).find((a) => a.name === name);

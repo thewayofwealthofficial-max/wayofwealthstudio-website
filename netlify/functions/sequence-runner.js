@@ -30,7 +30,13 @@ exports.handler = async (event) => {
       if (Date.now() - started > BUDGET_MS) break;
       if (c.unsubscribed) continue;
       const key = `${seqId}/${c.email.toLowerCase()}`;
-      const state = (await store.get(key, { type: 'json' })) || { sent: [] };
+      // All sequences share one list, so a person is only in THIS sequence if its Blobs record exists.
+      // Before 28 Sep the list was welcome-only and a missing record meant "enrolled, email 1 failed".
+      let state = await store.get(key, { type: 'json' });
+      if (!state) {
+        if (seqId !== 'welcome-newsletter' || core.parseResendDate(c.created_at) >= Date.parse('2026-09-28T00:00:00Z')) continue;
+        state = { sent: [] };
+      }
       if (state.done) continue;
 
       const next = seq.emails.find((e) => !state.sent.includes(e.id));
@@ -49,7 +55,7 @@ exports.handler = async (event) => {
           continue;
         }
 
-        const enrolledAt = core.parseResendDate(c.created_at);
+        const enrolledAt = state.enrolledAt ? Date.parse(state.enrolledAt) : core.parseResendDate(c.created_at);
         if (Date.now() < enrolledAt + next.afterHours * HOUR) { report.skipped++; continue; }
 
         // Spacing guard, so a missed run never bunches emails into the same day.

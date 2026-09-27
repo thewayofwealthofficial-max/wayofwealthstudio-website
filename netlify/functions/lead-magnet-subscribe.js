@@ -84,22 +84,29 @@ async function sendResetEmail({ email, name, vars }) {
 // New person on a form that has a welcome sequence: enrol them and send email 1 now.
 // They join the main list when the sequence ends (see lib/sequence-core.js).
 async function startSequence({ event, email, name, seqId, vars = {} }) {
-  const aud = await seq.sequenceAudienceId(seqId);
-  if (await seq.getContact(aud, email)) {
+  connectLambda(event);
+  const store = getStore('sequences');
+  const key = `${seqId}/${email}`;
+  // Enrolment lives in Blobs; all sequences share one Resend list (see sequenceAudienceId).
+  if (await store.get(key, { type: 'json' })) {
     if (seqId === 'money-reset') await sendResetEmail({ email, name, vars });
     return { ok: true, note: 'already in this sequence' };
   }
-  const made = await seq.rs(`/audiences/${aud}/contacts`, {
-    method: 'POST',
-    body: { email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false },
-  });
-  if (!made.ok) return { ok: false, detail: `Resend enrol ${made.status} ${made.text.slice(0, 160)}` };
+  const aud = await seq.sequenceAudienceId();
+  if (!(await seq.getContact(aud, email))) {
+    const made = await seq.rs(`/audiences/${aud}/contacts`, {
+      method: 'POST',
+      body: { email, first_name: name ? String(name).trim().split(/\s+/)[0].slice(0, 60) : undefined, unsubscribed: false },
+    });
+    if (!made.ok) return { ok: false, detail: `Resend enrol ${made.status} ${made.text.slice(0, 160)}` };
+  }
+  const enrolledAt = new Date().toISOString();
+  await store.setJSON(key, { sent: [], enrolledAt });
   const def = seq.SEQUENCES[seqId];
   const first = def.emails[0];
   try {
     await seq.sendEmail({ to: email, email: first, firstName: name, footerReason: def.footerReason, tagSeq: `${seqId}_${first.id}`, vars });
-    connectLambda(event);
-    await getStore('sequences').setJSON(`${seqId}/${email}`, { sent: [first.id], lastSentAt: new Date().toISOString() });
+    await store.setJSON(key, { sent: [first.id], lastSentAt: new Date().toISOString(), enrolledAt });
   } catch (e) {
     // They are enrolled; the hourly runner will send email 1 if this failed.
     console.error('[lead-magnet-subscribe] email 1 not sent now:', e.message);
