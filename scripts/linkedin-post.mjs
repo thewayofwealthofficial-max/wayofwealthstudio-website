@@ -229,7 +229,7 @@ async function main() {
   if (!FATHOM_API_KEY || !ANTHROPIC_API_KEY) throw new Error('FATHOM_API_KEY / ANTHROPIC_API_KEY not set');
   if (!DRY && (!FRED_SECRET || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID)) throw new Error('FRED_SECRET / TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set');
   const state = existsSync(STATE) ? JSON.parse(await readFile(STATE, 'utf8')) : [];
-  const { passages: all, names } = await recentJoelWords({ key: FATHOM_API_KEY, days: 60, maxPassages: 30 });
+  const { passages: all, names } = await recentJoelWords({ key: FATHOM_API_KEY, days: 60, maxPassages: 500 });
 
   // REVISE_ID: Joel wrote what to fix on the approve page. Rewrite the SAME story and angle with his fixes first.
   const REVISE_ID = process.env.REVISE_ID;
@@ -243,7 +243,9 @@ async function main() {
   }
   const passages = orig
     ? all.filter((p) => hash(p.text) === orig.passage)
-    : all.filter((p) => !state.some((s) => s.passage === hash(p.text))).slice(0, 12);
+    // A story can be reused once 3 weeks have passed since it was last used (Joel, 27 Sep). Filter BEFORE taking
+    // the best 12, so used stories never crowd out unused ones (audit: the old top-30 cut would run dry by mid-Nov).
+    : all.filter((p) => !state.some((s) => s.passage === hash(p.text) && Date.now() - Date.parse(s.date) < 21 * 864e5)).slice(0, 12);
   if (!passages.length) throw new Error(orig ? 'The story this draft came from is no longer in the last 60 days of calls.' : 'No unused story passages in the last 60 days of Fathom calls. Nothing written.');
   // Which job today: Mon reach, Wed positioning, Fri reach, Sun nurture/convert in turn. JOB=... overrides; other days reach.
   const lastSunday = [...state].reverse().find((s) => s.job === 'nurture' || s.job === 'convert');
@@ -310,4 +312,10 @@ async function main() {
   await writeFile(STATE, JSON.stringify(state, null, 2) + '\n');
 }
 
-main().catch((e) => { console.error('FATAL:', e.message); process.exit(1); });
+main().catch(async (e) => {
+  console.error('FATAL:', e.message);
+  // Tell Joel the actual reason, not just "failed". Our own messages carry no private words.
+  if (!DRY && TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) { try { await telegram(`❌ <b>No LinkedIn draft this time</b>
+${e.message.replace(/&/g, '&amp;').replace(/</g, '&lt;')}`); } catch {} }
+  process.exit(1);
+});
