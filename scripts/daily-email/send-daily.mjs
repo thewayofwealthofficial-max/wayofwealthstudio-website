@@ -25,7 +25,7 @@ import { systemPrompt, userPrompt, FROM_NAME, FROM_EMAIL, LINKS, THEMES, DEFAULT
 import { draftEmail } from './anthropic.mjs';
 import { checkDraft, clean } from './safety.mjs';
 import { recentJoelWords } from './fathom.mjs';
-import { findOrCreateAudience, addContact, listContacts, listBroadcasts, createBroadcast, sendBroadcast } from './resend.mjs';
+import { findOrCreateAudience, addContact, listContacts, listBroadcasts, createBroadcast, sendBroadcast, setUnsubscribed } from './resend.mjs';
 import { syncList } from './sync-list.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -189,7 +189,7 @@ async function main() {
     });
     const candidate = { subject: clean(d.subject), preview: clean(d.preview), body_plain: clean(d.body_plain) };
     problems = checkDraft(candidate, {
-      type, allowedLinks, sourceText, blockedNames: names,
+      type, phase, allowedLinks, sourceText, blockedNames: names,
       shapeText: shape?.body || '', shapeSubject: shape?.subject || '',
       passagesText: passages.map((p) => p.text).join('\n'),
       requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
@@ -225,11 +225,21 @@ async function main() {
       syncNote = `List sync: +${s.added} new, ${s.markedUnsub + s.mlUnsubscribed} opt-outs applied. Sendable: ${s.sendableAfterSync}.`;
     } catch (e) { syncNote = 'List sync FAILED, sent to the list as it stood. ' + e.message.slice(0, 120); }
   }
+  // Resend refuses a whole broadcast if one contact is on a test domain (the 25 Sep Friday send died this way).
+  // Mark any such contact unsubscribed first, so one test sign-up can never block the list again.
+  if (MODE !== 'review') {
+    const TEST_DOMAINS = /@(example\.(com|org|net)|test\.com|mailinator\.com|yopmail\.com|asdf\.com|a\.com|b\.com)$/i;
+    let blocked = 0;
+    for (const c of await listContacts(resendKey, audienceId)) {
+      if (!c.unsubscribed && TEST_DOMAINS.test(String(c.email || ''))) { await setUnsubscribed(resendKey, audienceId, c.id); blocked++; }
+    }
+    if (blocked) syncNote += ` ${blocked} test-domain contact(s) skipped.`;
+  }
 
   const id = await createBroadcast(resendKey, {
     audienceId,
     from: `${FROM_NAME} <${await senderEmail(resendKey)}>`,
-    replyTo: 'joeleezekiel@gmail.com', // wayofwealthcoaching.com can't receive mail
+    replyTo: 'joel@wayofwealthcoaching.com', // forwards to Joel's Gmail (Namecheap, set up 27 Sep)
     subject: (MODE === 'review' ? `[DRAFT ${uk.weekday}] ` : '') + draft.subject,
     previewText: draft.preview,
     html: toHtml(draft.body_plain, footerAddress),

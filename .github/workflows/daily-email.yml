@@ -54,6 +54,8 @@ jobs:
           EMAIL_TYPE: ${{ (github.event_name == 'workflow_dispatch' && inputs.type != 'auto') && inputs.type || '' }}
           TEST_EMAIL: joeleezekiel@gmail.com
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # Copies MailerLite sign-ups and unsubscribes into Resend before each live send (audit fix, 27 Sep).
+          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

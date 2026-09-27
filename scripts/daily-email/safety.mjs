@@ -32,7 +32,7 @@ function copiedRun(body, shapeText) {
   return null;
 }
 
-export function checkDraft({ subject, preview, body_plain }, { type, allowedLinks = [], sourceText = '', shapeText = '', shapeSubject = '', blockedNames = new Set(), passagesText = '', requireJoelWords = false } = {}) {
+export function checkDraft({ subject, preview, body_plain }, { type, phase, allowedLinks = [], sourceText = '', shapeText = '', shapeSubject = '', blockedNames = new Set(), passagesText = '', requireJoelWords = false } = {}) {
   const problems = [];
   const all = `${subject}\n${preview}\n${body_plain}`;
   const lower = all.toLowerCase();
@@ -51,7 +51,9 @@ export function checkDraft({ subject, preview, body_plain }, { type, allowedLink
   if (/[A-Z]{4,}/.test(subject)) problems.push('Subject shouts in capitals.');
   if (/!/.test(subject)) problems.push('Subject uses an exclamation mark.');
 
-  if (type !== 'push_pitch' && /£\s?(1,?000|500|334)\b/.test(body_plain)) problems.push('Mentions the coaching price. The price only goes in the Sunday push email (Joel, 2026-09-25).');
+  // "push_pitch" is the PHASE (the Sunday invitation in a month's last 9 days), not the type. Checking
+  // type here blocked the one email the price belongs in (bug found 27 Sep).
+  if (phase !== 'push_pitch' && /£\s?(1,?000|500|334)\b/.test(body_plain)) problems.push('Mentions the coaching price. The price only goes in the Sunday push email (Joel, 2026-09-25).');
   if (RESEARCH_WORDS.test(body_plain)) problems.push('Makes a research or study claim, which is not allowed unless it came from the input.');
   const figures = body_plain.match(/(?:£|\$|€)\s?\d[\d,.]*k?|\d[\d,.]*\s?(?:%|per ?cent)/gi) || [];
   const src = norm(sourceText).replace(/,/g, '');
