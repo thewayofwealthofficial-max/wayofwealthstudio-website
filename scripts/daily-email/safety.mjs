@@ -20,15 +20,22 @@ export function clean(s) {
 
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9£$€% ]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-// Any run of 8 words copied from the competitor's email = copying, not shaping.
+// Joel, 27 Sep: borrowing the competitor's wording is fine up to about 15% of the email, with no single copied
+// stretch longer than 12 words (whole sentences and paragraphs are where copyright bites). Words count as
+// "copied" when they sit inside any 6-word run that also appears in the competitor email.
 function copiedRun(body, shapeText) {
   if (!shapeText) return null;
-  const b = norm(body).split(' ');
+  const b = norm(body).split(' ').filter(Boolean);
   const s = ` ${norm(shapeText)} `;
-  for (let i = 0; i + 8 <= b.length; i++) {
-    const run = b.slice(i, i + 8).join(' ');
-    if (s.includes(` ${run} `)) return run;
+  const covered = new Array(b.length).fill(false);
+  for (let i = 0; i + 6 <= b.length; i++) {
+    if (s.includes(` ${b.slice(i, i + 6).join(' ')} `)) for (let k = i; k < i + 6; k++) covered[k] = true;
   }
+  let longest = 0, cur = 0, start = 0, bestStart = 0;
+  covered.forEach((c, i) => { if (c) { if (!cur) start = i; cur++; if (cur > longest) { longest = cur; bestStart = start; } } else cur = 0; });
+  const share = b.length ? covered.filter(Boolean).length / b.length : 0;
+  if (longest > 12) return `a ${longest}-word stretch copied: "${b.slice(bestStart, bestStart + longest).join(' ')}"`;
+  if (share > 0.15) return `${Math.round(share * 100)}% of the words copied (limit 15%)`;
   return null;
 }
 
@@ -83,7 +90,7 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   }
 
   const copied = copiedRun(body_plain, shapeText);
-  if (copied) problems.push(`Copies the competitor's wording ("${copied}"). Copy the shape, write Joel's own words.`);
+  if (copied) problems.push(`Copies too much of the competitor's wording (${copied}). Short phrases are fine; keep at least 85% of the words Joel's own and no copied stretch over 12 words.`);
 
   if (/\b(I read every|I reply to every|thousands of|hundreds of|most of my clients|all of my clients|every client|guaranteed (?:results|to)|most people|one of the most common|I see (?:this|it) all the time|everyone I work with)\b/i.test(all)) problems.push('Makes an unverifiable claim about Joel, his clients, or "most people".');
   if (/\b(spots?|places?|spaces?)\b[^.\n]{0,25}\b(left|open|remaining|available)\b|\b(only|just) (?:a few|\d+|one|two|three) (?:spots?|places?|spaces?)\b|\b(?:just about|nearly|almost|close to) (?:at|full|there|booked)\b|\bat my (?:\d+|five) (?:people|clients|places)\b|\bfilling up\b|\bfully booked\b|\b(?:last|final) (?:spot|place|space)s?\b/i.test(all)) problems.push('States availability ("spots still open", "places left"). Only "I take on 5 people a month" is true; never say how many are left.');
@@ -103,7 +110,7 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   if (shapeSubject) {
     const s = norm(subject).split(' ');
     const ss = ` ${norm(shapeSubject)} `;
-    for (let i = 0; i + 4 <= s.length; i++) if (ss.includes(` ${s.slice(i, i + 4).join(' ')} `)) { problems.push("Subject reuses the competitor's subject wording. Write Joel's own subject in the same style."); break; }
+    for (let i = 0; i + 5 <= s.length; i++) if (ss.includes(` ${s.slice(i, i + 5).join(' ')} `)) { problems.push("Subject reuses the competitor's subject wording. Write Joel's own subject in the same style."); break; }
   }
   if (!/\bJoel\b/.test(body_plain)) problems.push('Must be signed off "Joel".');
   if (/\b(investment advice|you should invest|buy shares|buy (?:this )?fund|put your money in)\b/i.test(all)) problems.push('Reads like regulated investment advice.');
