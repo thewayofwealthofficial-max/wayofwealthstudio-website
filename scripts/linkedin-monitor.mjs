@@ -9,7 +9,7 @@
 //   5. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, patterns, first line only) for the
 //      LinkedIn writer to use as "what's working this week" context.
 //
-// ENV: BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
+// ENV: SERPER_API_KEY (preferred) or BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
 
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
@@ -18,21 +18,34 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'scripts', 'state', 'linkedin-monitor');
 const DRY = process.env.DRY_RUN === '1';
-const { BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
+const { BRAVE_API_KEY, SERPER_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // The three areas from the LinkedIn research: A money, B wellness, C the bridge.
 // Widened 28 Sep after the first run found only 2 on-topic posts in 23: phrases this room actually uses.
 // No quote marks: with Brave's past-year filter, quoted phrases return almost nothing (tested 28 Sep).
-// About 36 searches a week (~155 a month), well inside Brave's free $5 (1,000 searches) a month.
+// About 39 searches a week (~170 a month), well inside Brave's free $5 (1,000 searches) a month.
 const QUERIES = {
-  money: ['money mindset coach', 'relationship with money', 'money story', 'money script', 'money blocks', 'money wounds', 'financial trauma', 'money anxiety', 'emotional spending', 'scarcity mindset money', 'abundance mindset money', 'behavioural finance'],
-  wellness: ['breathwork facilitator money', 'yoga teacher pricing', 'yoga teacher income', 'energy healer money', 'reiki charging', 'wellness practitioner pricing', 'retreat pricing facilitator', 'holistic practitioner money', 'therapist private practice fees', 'sliding scale practitioner'],
-  bridge: ['undercharging', 'charging your worth', 'raise my prices coach', 'pricing my services guilt', 'free sessions burnout', 'giving it away for free coach', 'money and spirituality', 'worthy of receiving', 'receiving money', 'spiritual business money', 'money guilt', 'afraid to charge', 'hate talking about money', 'money and the nervous system'],
+  money: ['money mindset coach', 'relationship with money', 'money story', 'money script', 'money blocks', 'money anxiety', 'emotional spending', 'money psychology', 'money and emotions', 'financial wellbeing', 'behavioural finance', 'scarcity mindset money'],
+  wellness: ['breathwork facilitator money', 'yoga teacher pricing', 'yoga teacher income', 'energy healer money', 'reiki charging', 'wellness practitioner pricing', 'holistic practitioner money', 'therapist private practice fees', 'sliding scale practitioner'],
+  bridge: ['undercharging', 'charging your worth', 'raise my prices coach', 'pricing my services guilt', 'free sessions burnout', 'money guilt', 'afraid to charge', 'worthy of receiving money', 'spiritual business money'],
+  // Wider room (Joel, 28 Sep: "go a bit broader"): money coaches and the money side of solo businesses.
+  wider: ['money coach', 'financial coach', 'freelancer pricing', 'self-employed income', 'irregular income budgeting', 'pay yourself a salary business owner', 'solopreneur money', 'small business cash flow owner', 'coaching business pricing'],
 };
 
+// Google results via Serper.dev when SERPER_API_KEY is set (Google's own search API closed to new sign-ups in 2025);
+// otherwise Brave. Brave's LinkedIn coverage proved thin for this niche (28 Sep: 7 on-topic of 69).
 async function search(q) {
+  if (SERPER_API_KEY) {
+    const r = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: `site:linkedin.com/posts ${q}`, num: 20, tbs: 'qdr:y', gl: 'gb', hl: 'en' }),
+    });
+    if (!r.ok) throw new Error(`Serper ${r.status}`);
+    return ((await r.json()).organic || []).map((x) => x.link).filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
+  }
   const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(`site:linkedin.com/posts ${q}`)}&count=20&freshness=py`; // Brave indexes LinkedIn posts late: past week/month return nothing, past year works (28 Sep)
   const r = await fetch(url, { headers: { 'X-Subscription-Token': BRAVE_API_KEY, Accept: 'application/json' } });
   if (!r.ok) throw new Error(`Brave ${r.status}`);
@@ -78,7 +91,8 @@ async function telegram(text) {
 }
 
 async function main() {
-  if (!BRAVE_API_KEY) { console.log('BRAVE_API_KEY not set yet; skipping this week.'); return; }
+  if (!BRAVE_API_KEY && !SERPER_API_KEY) { console.log('No search key set yet; skipping this week.'); return; }
+  console.log(`Searching with ${SERPER_API_KEY ? 'Google (Serper)' : 'Brave'}.`);
   const found = new Map();
   for (const [area, qs] of Object.entries(QUERIES)) {
     for (const q of qs) {
@@ -107,7 +121,7 @@ async function main() {
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
-  const SCREEN = 'You screen and tag LinkedIn posts, judging only from the text. relevant = true ONLY if the post is genuinely about one of: money mindset or money beliefs, money behaviour (spending, saving, avoiding money, money stress), charging, pricing or receiving money for your work as a coach, therapist, healer or wellness practitioner, or the business/money side of wellness or coaching work. Awards, careers, recruiting, LinkedIn tips, corporate news, investing tips and product promos are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}';
+  const SCREEN = 'You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about one of: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); charging, pricing or receiving money for your own work; or the money side of running a solo or small business, coaching or wellness practice (pricing, cash flow, irregular income, paying yourself). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}';
   for (let start = 0; start < posts.length; start += 20) {
     const batch = posts.slice(start, start + 20);
     const tags = await claude(SCREEN, JSON.stringify(batch.map((p, i) => ({ i, text: p.body.slice(0, 1000) }))))
