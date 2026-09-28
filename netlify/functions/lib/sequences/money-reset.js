@@ -2,7 +2,7 @@
 // 27 Sep 2026. Shape: the lead-magnet welcome in BIG_SENDERS_SEQUENCES.md §5a (Ramit Sethi's welcome).
 // Email 1 delivers what the page promises. {{breakdown}} is filled at send time from the figures the person
 // chose to email themselves (the tick box on /reset), or with the no-numbers paragraph. Figures are NEVER stored.
-// Emails 2-7 are drafted one at a time for Joel's approval, then added here.
+// Emails 2-7 were approved one at a time by Joel on 27 Sep (mostly his live welcome emails, adapted).
 //
 // afterHours = hours after sign-up. Email 1 goes instantly from the sign-up form.
 
@@ -212,6 +212,34 @@ It's not a course or a PDF. It's the work on why it hasn't stuck before, plus th
 I take on five people a month. If you'd like to see if it's a fit, [book a free 20-minute call](${CALL}). We just talk about where you are and whether I can help.
 
 Joel
+`,
+    },
+    {
+      // Approved by Joel 27 Sep: welcome email 7 word for word (he confirmed he hears this objection a lot).
+      id: '07-not-ready',
+      afterHours: 188,
+      subject: '"what if I\'m not ready?"',
+      preheader: 'The thing I hear a lot.',
+      body: `
+Hey {{name}},
+
+Something I hear a lot is, "My income's too up and down for a system."
+
+I get it. When one month is great and the next is quiet, a system feels like it'll just break.
+
+But honestly, it feels up and down because of how you take money out. When there's no buffer, every quiet month feels like an emergency. Get a buffer in place and a big month pays for a small one.
+
+I learned something like this in the gym, of all places. On the days I didn't want to go, the best thing to do was just open the front door. As soon as I took that first step outside, my whole attitude changed. It taught me that the hardest step is leaving the door.
+
+So you don't need to wait for a calm month to start.
+
+If you want to do this properly, with me, [book a free 20-minute call](${CALL}). I take on five people a month.
+
+And if now's not the time, that's completely fine. From here you'll get Finance Fridays every Friday, and a few shorter emails in between. I'm really glad you're here.
+
+Joel
+
+P.S. Reply any time. Your replies come straight to me.
 `,
     },
   ],
