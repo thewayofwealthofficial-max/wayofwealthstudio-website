@@ -79,5 +79,38 @@ Joel
 P.S. One of my clients, Jessica, found exactly where her money was leaking when we worked together, and started closing the gaps. That's where it starts.
 `,
     },
+    {
+      // Approved by Joel 27 Sep: welcome email 3 word for word, except the £6,000 line (his wording), "what your
+      // work costs to run" (was "software and room hire") and "your four pots" (was "the tool from yesterday").
+      id: '03-more-money',
+      afterHours: 44,
+      subject: "more money won't fix it",
+      preheader: 'Earning more makes this bigger, not smaller.',
+      body: `
+Hey {{name}},
+
+This one might sting a little.
+
+A lot of people think the answer is more money. "When I'm earning more, I'll sort it out." I get it. I thought that too.
+
+But more money doesn't fix a leak. It makes it bigger.
+
+Think about a bucket with a hole in the bottom. Pouring water in faster doesn't fill it. It just means more water goes out the hole.
+
+Here's what that looks like in real life. Let's say you have a good month and you take home around £6,000. It lands in the same account as everything else, and your brain reads it as £6,000 you've got. But some of it is tax. Some of it is what your work costs to run. What's actually yours to spend could be a lot less than it looks.
+
+In behavioural economics this is called mental accounting. Richard Thaler did a lot of the work on it. Basically, our brains sort money into little boxes in our heads. If the box isn't there, the money all looks the same, and it all gets spent the same way.
+
+So the fix isn't earning more, and it isn't trying harder. It's giving your money walls, so it splits itself before you have to decide anything. That's what your four pots do, and it's what I help people set up properly.
+
+Does that make sense?
+
+Hit reply and tell me: **when a big payment lands, what's the first thing you do with it?** No judgement. I'm just curious.
+
+Joel
+
+P.S. Tomorrow, the story of how I learned all this the hard way. It involves £150,000 and about three months.
+`,
+    },
   ],
 };
