@@ -1,12 +1,13 @@
 name: LinkedIn Niche Monitor
 
-# Every Monday: the best-performing public LinkedIn posts of the past week in Joel's space, to Fred.
+# Once a month (the 1st): the best-performing public LinkedIn posts in Joel's space, to Fred (Joel, 28 Sep).
+# Searches with Claude's own web search (the existing Anthropic key); reads public pages logged out.
 # Reads public pages logged out; never uses Joel's account. See scripts/linkedin-monitor.mjs.
 # GitHub runs crons hours late, so 03:13 UTC lands in the morning UK.
 
 on:
   schedule:
-    - cron: '13 3 * * 1'
+    - cron: '13 3 1 * *'
   workflow_dispatch:
 
 permissions:
@@ -18,7 +19,6 @@ concurrency:
 
 jobs:
   monitor:
-    # Paused 28 Sep: Brave's LinkedIn index returns mostly off-topic posts for this niche (1-2 on-topic in 64).
     # Scheduled runs only when the repo variable LINKEDIN_MONITOR_ENABLED is 'true'; manual runs always work.
     if: github.event_name == 'workflow_dispatch' || vars.LINKEDIN_MONITOR_ENABLED == 'true'
     runs-on: ubuntu-latest

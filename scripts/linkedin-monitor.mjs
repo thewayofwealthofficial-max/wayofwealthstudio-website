@@ -90,15 +90,39 @@ async function telegram(text) {
   }
 }
 
+// Claude's own web search (the Anthropic key Joel already has). Tested 28 Sep: 12 searches found 101 LinkedIn posts,
+// where Brave's index gave 1-2 on-topic in 64. Each call runs up to 12 searches for one area's terms; only URLs
+// from the actual search results are used, never URLs the model writes itself.
+async function searchWithClaude(terms) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-6', max_tokens: 2000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: Math.min(12, terms.length) }],
+      messages: [{ role: 'user', content: `Run one web search per term below, each of the form: site:linkedin.com/posts <term>. Do not judge the results. Then reply "done".\n\n${terms.map((t) => '- ' + t).join('\n')}` }],
+    }),
+  });
+  if (!r.ok) throw new Error(`Anthropic search ${r.status}`);
+  const j = await r.json();
+  return (j.content || []).filter((b) => b.type === 'web_search_tool_result').flatMap((b) => (Array.isArray(b.content) ? b.content : []).map((x) => x.url || ''))
+    .filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
+}
+
 async function main() {
-  if (!BRAVE_API_KEY && !SERPER_API_KEY) { console.log('No search key set yet; skipping this week.'); return; }
-  console.log(`Searching with ${SERPER_API_KEY ? 'Google (Serper)' : 'Brave'}.`);
+  const via = SERPER_API_KEY ? 'Google (Serper)' : ANTHROPIC_API_KEY ? 'Claude web search' : BRAVE_API_KEY ? 'Brave' : null;
+  if (!via) { console.log('No search available; skipping.'); return; }
+  console.log(`Searching with ${via}.`);
   const found = new Map();
+  const add = (u, area) => { const url = u.split('?')[0].replace(/https?:\/\/[a-z]{2,3}\.linkedin/, 'https://www.linkedin'); if (!found.has(url)) found.set(url, area); };
   for (const [area, qs] of Object.entries(QUERIES)) {
+    if (via === 'Claude web search') {
+      try { for (const u of await searchWithClaude(qs)) add(u, area); } catch (e) { console.log(`search failed (${area}): ${e.message}`); }
+      continue;
+    }
     for (const q of qs) {
-      try { for (const u of await search(q)) { const url = u.split('?')[0].replace(/https?:\/\/[a-z]{2,3}\.linkedin/, 'https://www.linkedin'); if (!found.has(url)) found.set(url, area); } }
-      catch (e) { console.log(`search failed (${area}): ${e.message}`); }
-      await sleep(1100); // free plan: 1 request a second
+      try { for (const u of await search(q)) add(u, area); } catch (e) { console.log(`search failed (${area}): ${e.message}`); }
+      await sleep(1100); // Brave free plan: 1 request a second
     }
   }
   console.log(`${found.size} candidate posts found.`);
@@ -132,11 +156,11 @@ async function main() {
   const relevant = posts.filter((p) => p.relevant === true).sort((a, b) => b.per1k - a.per1k);
   const top = relevant.slice(0, 10);
   console.log(`${posts.length} readable new posts from the last 12 months; ${relevant.length} on-topic; top ${top.length} kept.`);
-  if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this week. Nothing to report.'); return; }
+  if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this month. Nothing to report.'); return; }
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
   const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
-  await telegram(`📊 LinkedIn: what's working in your space (new this week) (${relevant.length} on-topic of ${posts.length} read)\n\n${lines.join('\n\n')}`);
+  await telegram(`📊 LinkedIn: what's working in your space (this month) (${relevant.length} on-topic of ${posts.length} read)\n\n${lines.join('\n\n')}`);
 
   // Saved for the LinkedIn writer. Links, numbers, patterns and the first line only; never the whole post.
   await mkdir(OUT, { recursive: true });
