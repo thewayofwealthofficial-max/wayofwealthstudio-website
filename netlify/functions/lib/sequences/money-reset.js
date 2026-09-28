@@ -112,5 +112,45 @@ Joel
 P.S. Tomorrow, the story of how I learned all this the hard way. It involves £150,000 and about three months.
 `,
     },
+    {
+      // Approved by Joel 27 Sep: welcome email 4 word for word (his dictated £150k story).
+      id: '04-my-story',
+      afterHours: 68,
+      subject: 'two messages',
+      preheader: 'The morning I found out.',
+      body: `
+Hey {{name}},
+
+I remember it like it was yesterday, honestly.
+
+I was teaching myself to trade. No degree. I was buying on leverage and adding more almost every week. Add more. Add more.
+
+Then around February 2021, my account started to blow up. It was growing by ten grand every other day. It went from three grand, to ten k, all the way to one fifty k by around May. I was like, oh my god, I'm going to the moon. I thought I was a genius.
+
+Then it crashed. I told myself it's fine, it's fine, it's just a little bump. It went down to a hundred k. Maybe eighty. Three months of panic.
+
+And then, as fast as I'd made the one fifty k, I lost it even faster.
+
+I remember waking up the next morning and meditating for twenty minutes to calm my mind down. Then I looked at my phone. Two messages.
+
+The first one said: your account has been liquidated.
+
+The second was from the girl I was seeing, saying she couldn't do this anymore.
+
+I didn't just get punched in the face once. I got punched in the face twice. I was numb. I literally couldn't speak.
+
+That day I said to myself, I will do whatever it takes to make sure this never happens again. So I went and got my master's in behavioural economics, and then I became a financial planner. I wanted to understand what had actually happened to me.
+
+Because one fifty k in three months is life-changing money. And I didn't realise it then. Looking back, I realise all the psychological biases that stopped me from pushing the sell button.
+
+That's the stuff I help people with now, the stuff underneath the numbers.
+
+More of my story soon.
+
+Joel
+
+P.S. I'm so grateful for that morning now, because it changed my life. But wow, did I drop the ball on life-changing money.
+`,
+    },
   ],
 };
