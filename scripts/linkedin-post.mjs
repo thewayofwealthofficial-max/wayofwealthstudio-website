@@ -12,7 +12,7 @@
 // ENV: FATHOM_API_KEY, ANTHROPIC_API_KEY. DRY_RUN=1 prints the draft instead of sending it on.
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -126,7 +126,15 @@ function userPrompt(passages, angles, feedback, last, job) {
   const a = Object.entries(angles).map(([n, x]) => `${n}. ${x.name}\n   First line: ${x.hook}\n   Shape: ${x.shape}\n   Length: ${x.words[0]}–${x.words[1]} words`).join('\n');
   const p = passages.map((x, i) => `[${i}] (${x.date})\n${x.text}`).join('\n\n');
   const research = ['reach', 'positioning'].includes(job) ? `\n\nRESEARCH IDEAS (use exactly ONE, as worded here):\n${RESEARCH.map((r) => '- ' + r.line).join('\n')}` : '';
-  return `THIS POST'S JOB: ${JOBS[job].brief}${research}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
+  // What's working on LinkedIn this week (scripts/linkedin-monitor.mjs, Mondays). Patterns only, never their words.
+  let working = '';
+  try {
+    const m = JSON.parse(readFileSync(join(ROOT, 'scripts', 'state', 'linkedin-monitor', 'latest.json'), 'utf8'));
+    if (Date.now() - Date.parse(m.date) < 14 * 864e5 && m.posts?.length) {
+      working = `\n\nWHAT'S WORKING ON LINKEDIN THIS WEEK (top public posts in Joel's space; copy the pattern if it fits, never their words):\n${m.posts.slice(0, 5).map((x) => `- ${x.hook} · ${x.structure}: ${x.why}`).join('\n')}`;
+    }
+  } catch { /* no monitor data yet */ }
+  return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
 }
 
 async function claude(system, user, maxTokens) {
