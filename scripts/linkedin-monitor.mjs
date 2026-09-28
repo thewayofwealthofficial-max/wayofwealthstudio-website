@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // LinkedIn niche monitor (Joel, 28 Sep 2026): every Monday, find the best-performing PUBLIC LinkedIn posts from the
-// past week in Joel's space, so his own posts can copy what's working.
+// last 6 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
 //   1. Brave Search (past week) for public LinkedIn posts: money, wellness, and the bridge between them.
 //   2. Read each post's public page LOGGED OUT, the same method as research/2026-09-25-linkedin/v2 (JSON-LD counts).
 //      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 60 reads, 2.5-4 s apart).
@@ -11,7 +11,7 @@
 //
 // ENV: BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
 
-import { writeFile, mkdir } from 'node:fs/promises';
+import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -30,7 +30,7 @@ const QUERIES = {
 };
 
 async function search(q) {
-  const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(`site:linkedin.com/posts ${q}`)}&count=20&freshness=pw`;
+  const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(`site:linkedin.com/posts ${q}`)}&count=20&freshness=py`; // Brave indexes LinkedIn posts late: past week/month return nothing, past year works (28 Sep)
   const r = await fetch(url, { headers: { 'X-Subscription-Token': BRAVE_API_KEY, Accept: 'application/json' } });
   if (!r.ok) throw new Error(`Brave ${r.status}`);
   return ((await r.json()).web?.results || []).map((x) => x.url).filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
@@ -86,9 +86,12 @@ async function main() {
   }
   console.log(`${found.size} candidate posts found.`);
 
-  const since = Date.now() - 14 * 864e5;
+  // Posts from the last 6 months that haven't been reported before, so each week only shows new winners.
+  let seen = [];
+  try { seen = JSON.parse(await readFile(join(OUT, 'seen.json'), 'utf8')); } catch { /* first run */ }
+  const since = Date.now() - 183 * 864e5;
   const posts = [];
-  for (const [url, area] of [...found].slice(0, 60)) {
+  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 60)) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-GB,en;q=0.9' }, redirect: 'follow' });
       const p = r.ok ? parse(await r.text()) : null;
@@ -100,7 +103,7 @@ async function main() {
   }
   posts.sort((a, b) => b.per1k - a.per1k);
   const top = posts.slice(0, 10);
-  console.log(`${posts.length} readable posts from the last 14 days; top ${top.length} kept.`);
+  console.log(`${posts.length} readable new posts from the last 6 months; top ${top.length} kept.`);
   if (!top.length) { await telegram('📊 LinkedIn niche monitor: no readable posts from the past week this time. Nothing to report.'); return; }
 
   const tags = await claude(
@@ -111,10 +114,11 @@ async function main() {
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
   const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
-  await telegram(`📊 LinkedIn: what's working this week (${posts.length} public posts read)\n\n${lines.join('\n\n')}`);
+  await telegram(`📊 LinkedIn: what's working in your space (new this week) (${posts.length} public posts read)\n\n${lines.join('\n\n')}`);
 
   // Saved for the LinkedIn writer. Links, numbers, patterns and the first line only; never the whole post.
   await mkdir(OUT, { recursive: true });
+  await writeFile(join(OUT, 'seen.json'), JSON.stringify([...seen, ...top.map((p) => p.url)].slice(-2000)) + '\n');
   await writeFile(join(OUT, 'latest.json'), JSON.stringify({
     date: new Date().toISOString().slice(0, 10),
     posts: top.map(({ url, area, author, followers, reactions, comments, per1k, hook, structure, why, body }) => ({ url, area, author, followers, reactions, comments, per1k, hook, structure, why, firstLine: firstLine(body) })),
