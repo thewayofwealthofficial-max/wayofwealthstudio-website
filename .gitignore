@@ -33,3 +33,6 @@ Thumbs.db
 
 # One-time OAuth setup script — contains Google client secret, never commit
 scripts/gmail-auth-setup.mjs
+
+# title cards, made at build time by scripts/title-cards.mjs
+public/cards/

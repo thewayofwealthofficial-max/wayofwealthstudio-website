@@ -11,7 +11,8 @@ interface Props {
 }
 
 const SITE = LINKS.siteUrl;
-const DEFAULT_OG = `${SITE}/og-default.svg`;
+// PNG, because LinkedIn/Facebook don't show SVG share images (the old og-default.svg showed nothing).
+const DEFAULT_OG = `${SITE}/cards/og-default.png`;
 
 const {
   title,
