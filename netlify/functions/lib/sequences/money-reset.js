@@ -152,5 +152,34 @@ Joel
 P.S. I'm so grateful for that morning now, because it changed my life. But wow, did I drop the ball on life-changing money.
 `,
     },
+    {
+      // Approved by Joel 27 Sep: welcome email 5, with Josh's real words (22 May graduation call, verbatim) and
+      // "head chef on a yacht" (Joel, 27 Sep).
+      id: '05-meet-josh',
+      afterHours: 92,
+      subject: 'Meet Josh',
+      preheader: 'In his own words.',
+      body: `
+Hey {{name}},
+
+I want you to meet Josh.
+
+Josh is a head chef on a yacht, and he worked with me one to one. Here's how he put it, in his own words:
+
+*"You've removed money from the pedestal for me. You've put me back on the pedestal. Now it's just a tool. I am in control of it. It is not in control of me."*
+
+I love that line, because that's like the whole thing, right?
+
+For a lot of us, money sits up on a pedestal. It's scary, or it's sacred, or it's something other people are good at. So we avoid it, or we chase it, and either way it's the one running the show.
+
+Taking it off the pedestal doesn't mean caring less about money. You just get to be the one in charge of it.
+
+[Watch Josh say it himself here](https://wayofwealthcoaching.com/testimonials/josh-pedestal.mp4).
+
+If you want to work on this with me, one to one, [book a free 20-minute call](${CALL}). I take on five people a month.
+
+Joel
+`,
+    },
   ],
 };
