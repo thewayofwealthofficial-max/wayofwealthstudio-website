@@ -101,20 +101,21 @@ async function main() {
     } catch { /* one unreadable page never stops the run */ }
     await sleep(2500 + Math.random() * 1500);
   }
-  posts.sort((a, b) => b.per1k - a.per1k);
-  const top = posts.slice(0, 10);
-  console.log(`${posts.length} readable new posts from the last 6 months; top ${top.length} kept.`);
-  if (!top.length) { await telegram('📊 LinkedIn niche monitor: no readable posts from the past week this time. Nothing to report.'); return; }
-
+  // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
+  // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   const tags = await claude(
-    'You tag LinkedIn posts by their pattern, judging only from the text. For each post give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"hook":"","structure":"","why":""}]}',
-    JSON.stringify(top.map((p, i) => ({ i, text: p.body.slice(0, 1500) }))),
+    'You screen and tag LinkedIn posts, judging only from the text. relevant = true ONLY if the post is genuinely about one of: money mindset or money beliefs, money behaviour (spending, saving, avoiding money, money stress), charging, pricing or receiving money for your work as a coach, therapist, healer or wellness practitioner, or the business/money side of wellness or coaching work. Awards, careers, recruiting, LinkedIn tips, corporate news, investing tips and product promos are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}',
+    JSON.stringify(posts.map((p, i) => ({ i, text: p.body.slice(0, 1200) }))),
   ).catch(() => ({ items: [] }));
-  top.forEach((p, i) => Object.assign(p, (tags.items || []).find((t) => t.i === i) || {}));
+  posts.forEach((p, i) => Object.assign(p, (tags.items || []).find((t) => t.i === i) || {}));
+  const relevant = posts.filter((p) => p.relevant === true).sort((a, b) => b.per1k - a.per1k);
+  const top = relevant.slice(0, 10);
+  console.log(`${posts.length} readable new posts from the last 6 months; ${relevant.length} on-topic; top ${top.length} kept.`);
+  if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this week. Nothing to report.'); return; }
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
   const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
-  await telegram(`📊 LinkedIn: what's working in your space (new this week) (${posts.length} public posts read)\n\n${lines.join('\n\n')}`);
+  await telegram(`📊 LinkedIn: what's working in your space (new this week) (${relevant.length} on-topic of ${posts.length} read)\n\n${lines.join('\n\n')}`);
 
   // Saved for the LinkedIn writer. Links, numbers, patterns and the first line only; never the whole post.
   await mkdir(OUT, { recursive: true });
