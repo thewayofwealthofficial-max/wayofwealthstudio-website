@@ -22,7 +22,7 @@ jobs:
     # Scheduled runs only when the repo variable LINKEDIN_MONITOR_ENABLED is 'true'; manual runs always work.
     if: github.event_name == 'workflow_dispatch' || vars.LINKEDIN_MONITOR_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:

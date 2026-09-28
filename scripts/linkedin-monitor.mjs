@@ -3,7 +3,7 @@
 // last 12 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
 //   1. Brave Search (past week) for public LinkedIn posts: money, wellness, and the bridge between them.
 //   2. Read each post's public page LOGGED OUT, the same method as research/2026-09-25-linkedin/v2 (JSON-LD counts).
-//      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 90 reads, 2.5-4 s apart).
+//      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 180 reads, monthly, 2.5-4 s apart).
 //   3. Rank by engagement per 1,000 followers (so small accounts that punch above their weight show up).
 //   4. Claude tags each top post's pattern from its text (hook type, structure). Top 10 go to Fred.
 //   5. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, patterns, first line only) for the
@@ -127,13 +127,13 @@ async function main() {
   }
   console.log(`${found.size} candidate posts found.`);
 
-  // Posts from the last 12 months that haven't been reported before, so each week only shows new winners.
+  // Posts from the last 2 years that haven't been reported before, so each week only shows new winners.
   let seen = [];
   try { seen = JSON.parse(await readFile(join(OUT, 'seen.json'), 'utf8')); } catch { /* first run */ }
-  const since = Date.now() - 365 * 864e5;
+  const since = Date.now() - 730 * 864e5; // 2 years: web search favours older posts (28 Sep: 71 of 90 were over a year old)
   const posts = [];
   const why = { blocked: 0, unreadable: 0, tooOld: 0, under5Reactions: 0, noFollowers: 0, kept: 0 };
-  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 90)) {
+  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 180)) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-GB,en;q=0.9' }, redirect: 'follow' });
       const p = r.ok ? parse(await r.text()) : null;
@@ -160,7 +160,7 @@ async function main() {
   if (process.env.DEBUG_SCREEN) posts.forEach((p) => console.log(`[${p.relevant ? 'KEEP' : 'drop'}] ${p.area} | ${(p.body.split('\n').find((l) => l.trim()) || '').slice(0, 90)}`));
   const relevant = posts.filter((p) => p.relevant === true).sort((a, b) => b.per1k - a.per1k);
   const top = relevant.slice(0, 10);
-  console.log(`${posts.length} readable new posts from the last 12 months; ${relevant.length} on-topic; top ${top.length} kept.`);
+  console.log(`${posts.length} readable new posts from the last 2 years; ${relevant.length} on-topic; top ${top.length} kept.`);
   if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this month. Nothing to report.'); return; }
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
