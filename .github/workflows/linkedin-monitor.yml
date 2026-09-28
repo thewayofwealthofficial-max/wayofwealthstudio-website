@@ -1,0 +1,55 @@
+name: LinkedIn Niche Monitor
+
+# Every Monday: the best-performing public LinkedIn posts of the past week in Joel's space, to Fred.
+# Reads public pages logged out; never uses Joel's account. See scripts/linkedin-monitor.mjs.
+# GitHub runs crons hours late, so 03:13 UTC lands in the morning UK.
+
+on:
+  schedule:
+    - cron: '13 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: linkedin-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Find and rank this week's posts
+        env:
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/linkedin-monitor.mjs
+
+      - name: Save the list for the LinkedIn writer
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-monitor/ 2>/dev/null || true
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "linkedin monitor: this week's top posts"
+          git pull --rebase -q origin main && git push
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn monitor failed" --body "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
