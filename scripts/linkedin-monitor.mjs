@@ -132,16 +132,21 @@ async function main() {
   try { seen = JSON.parse(await readFile(join(OUT, 'seen.json'), 'utf8')); } catch { /* first run */ }
   const since = Date.now() - 365 * 864e5;
   const posts = [];
+  const why = { blocked: 0, unreadable: 0, tooOld: 0, under5Reactions: 0, noFollowers: 0, kept: 0 };
   for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 90)) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-GB,en;q=0.9' }, redirect: 'follow' });
       const p = r.ok ? parse(await r.text()) : null;
-      if (p && Number.isInteger(p.reactions) && p.reactions >= 5 && Number.isInteger(p.followers) && p.followers > 0 && (!p.date || Date.parse(p.date) >= since)) {
-        posts.push({ url, area, ...p, per1k: Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 });
-      }
-    } catch { /* one unreadable page never stops the run */ }
+      if (!r.ok) why.blocked++;
+      else if (!p) why.unreadable++;
+      else if (p.date && Date.parse(p.date) < since) why.tooOld++;
+      else if (!Number.isInteger(p.reactions) || p.reactions < 5) why.under5Reactions++;
+      else if (!Number.isInteger(p.followers) || p.followers <= 0) why.noFollowers++;
+      else { why.kept++; posts.push({ url, area, ...p, per1k: Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 }); }
+    } catch { why.blocked++; /* one unreadable page never stops the run */ }
     await sleep(2500 + Math.random() * 1500);
   }
+  console.log('Why posts dropped out:', JSON.stringify(why));
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
