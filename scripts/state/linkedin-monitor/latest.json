@@ -11,7 +11,7 @@
       "per1k": 27.3,
       "hook": "news",
       "structure": "list",
-      "why": "The opening anchors the post in a real event and large attendance, lending credibility before delivering practical financial wellbeing takeaways.",
+      "why": "Opening with a specific event and large attendance number immediately establishes credibility and scale.",
       "firstLine": "Last week at Insignia Financial, as part of our 'Your Mind Matters' Wellbeing Program, we hosted a Financial Wellbeing W"
     },
     {
@@ -24,7 +24,7 @@
       "per1k": 2.13,
       "hook": "question",
       "structure": "call-out",
-      "why": "The opening question immediately prompts personal reflection by connecting childhood memory to lasting money beliefs.",
+      "why": "The opening question immediately invites personal reflection on a formative money experience, making it feel inclusive and conversational.",
       "firstLine": "What's the first money lesson you remember being taught?"
     }
   ]
