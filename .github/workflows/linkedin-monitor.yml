@@ -18,8 +18,11 @@ concurrency:
 
 jobs:
   monitor:
+    # Paused 28 Sep: Brave's LinkedIn index returns mostly off-topic posts for this niche (1-2 on-topic in 64).
+    # Scheduled runs only when the repo variable LINKEDIN_MONITOR_ENABLED is 'true'; manual runs always work.
+    if: github.event_name == 'workflow_dispatch' || vars.LINKEDIN_MONITOR_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:

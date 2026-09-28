@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // LinkedIn niche monitor (Joel, 28 Sep 2026): every Monday, find the best-performing PUBLIC LinkedIn posts from the
-// last 6 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
+// last 12 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
 //   1. Brave Search (past week) for public LinkedIn posts: money, wellness, and the bridge between them.
 //   2. Read each post's public page LOGGED OUT, the same method as research/2026-09-25-linkedin/v2 (JSON-LD counts).
-//      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 60 reads, 2.5-4 s apart).
+//      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 90 reads, 2.5-4 s apart).
 //   3. Rank by engagement per 1,000 followers (so small accounts that punch above their weight show up).
 //   4. Claude tags each top post's pattern from its text (hook type, structure). Top 10 go to Fred.
 //   5. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, patterns, first line only) for the
@@ -23,10 +23,13 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // The three areas from the LinkedIn research: A money, B wellness, C the bridge.
+// Widened 28 Sep after the first run found only 2 on-topic posts in 23: phrases this room actually uses.
+// No quote marks: with Brave's past-year filter, quoted phrases return almost nothing (tested 28 Sep).
+// About 36 searches a week (~155 a month), well inside Brave's free $5 (1,000 searches) a month.
 const QUERIES = {
-  money: ['"money mindset"', '"relationship with money"', '"money story"', 'overspending habits', '"self-employed" money', '"financial wellbeing"'],
-  wellness: ['breathwork practitioner business', 'yoga teacher income', 'healer charging', '"wellness practitioner" money', 'retreat leader pricing', 'coach undercharging'],
-  bridge: ['"money blocks"', 'charging your worth coach', 'guilt charging clients', '"money and the nervous system"', 'manifesting money behaviour', 'pricing guilt wellness'],
+  money: ['money mindset coach', 'relationship with money', 'money story', 'money script', 'money blocks', 'money wounds', 'financial trauma', 'money anxiety', 'emotional spending', 'scarcity mindset money', 'abundance mindset money', 'behavioural finance'],
+  wellness: ['breathwork facilitator money', 'yoga teacher pricing', 'yoga teacher income', 'energy healer money', 'reiki charging', 'wellness practitioner pricing', 'retreat pricing facilitator', 'holistic practitioner money', 'therapist private practice fees', 'sliding scale practitioner'],
+  bridge: ['undercharging', 'charging your worth', 'raise my prices coach', 'pricing my services guilt', 'free sessions burnout', 'giving it away for free coach', 'money and spirituality', 'worthy of receiving', 'receiving money', 'spiritual business money', 'money guilt', 'afraid to charge', 'hate talking about money', 'money and the nervous system'],
 };
 
 async function search(q) {
@@ -86,12 +89,12 @@ async function main() {
   }
   console.log(`${found.size} candidate posts found.`);
 
-  // Posts from the last 6 months that haven't been reported before, so each week only shows new winners.
+  // Posts from the last 12 months that haven't been reported before, so each week only shows new winners.
   let seen = [];
   try { seen = JSON.parse(await readFile(join(OUT, 'seen.json'), 'utf8')); } catch { /* first run */ }
-  const since = Date.now() - 183 * 864e5;
+  const since = Date.now() - 365 * 864e5;
   const posts = [];
-  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 60)) {
+  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 90)) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-GB,en;q=0.9' }, redirect: 'follow' });
       const p = r.ok ? parse(await r.text()) : null;
@@ -103,14 +106,18 @@ async function main() {
   }
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
-  const tags = await claude(
-    'You screen and tag LinkedIn posts, judging only from the text. relevant = true ONLY if the post is genuinely about one of: money mindset or money beliefs, money behaviour (spending, saving, avoiding money, money stress), charging, pricing or receiving money for your work as a coach, therapist, healer or wellness practitioner, or the business/money side of wellness or coaching work. Awards, careers, recruiting, LinkedIn tips, corporate news, investing tips and product promos are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}',
-    JSON.stringify(posts.map((p, i) => ({ i, text: p.body.slice(0, 1200) }))),
-  ).catch(() => ({ items: [] }));
-  posts.forEach((p, i) => Object.assign(p, (tags.items || []).find((t) => t.i === i) || {}));
+  // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
+  const SCREEN = 'You screen and tag LinkedIn posts, judging only from the text. relevant = true ONLY if the post is genuinely about one of: money mindset or money beliefs, money behaviour (spending, saving, avoiding money, money stress), charging, pricing or receiving money for your work as a coach, therapist, healer or wellness practitioner, or the business/money side of wellness or coaching work. Awards, careers, recruiting, LinkedIn tips, corporate news, investing tips and product promos are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}';
+  for (let start = 0; start < posts.length; start += 20) {
+    const batch = posts.slice(start, start + 20);
+    const tags = await claude(SCREEN, JSON.stringify(batch.map((p, i) => ({ i, text: p.body.slice(0, 1000) }))))
+      .catch((e) => { console.log(`Screening batch failed: ${e.message}`); return { items: [] }; });
+    batch.forEach((p, i) => Object.assign(p, (tags.items || []).find((t) => t.i === i) || {}));
+  }
+  if (process.env.DEBUG_SCREEN) posts.forEach((p) => console.log(`[${p.relevant ? 'KEEP' : 'drop'}] ${p.area} | ${(p.body.split('\n').find((l) => l.trim()) || '').slice(0, 90)}`));
   const relevant = posts.filter((p) => p.relevant === true).sort((a, b) => b.per1k - a.per1k);
   const top = relevant.slice(0, 10);
-  console.log(`${posts.length} readable new posts from the last 6 months; ${relevant.length} on-topic; top ${top.length} kept.`);
+  console.log(`${posts.length} readable new posts from the last 12 months; ${relevant.length} on-topic; top ${top.length} kept.`);
   if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this week. Nothing to report.'); return; }
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
