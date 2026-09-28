@@ -18,14 +18,15 @@ exports.handler = async (event) => {
 
   if (hour < 8 || hour > 20) return { statusCode: 200, body: JSON.stringify({ ...report, note: 'outside sending hours' }) };
 
+  // Every sequence shares one list (see sequence-core.js), so fetch it once per run.
+  let contacts;
+  try {
+    contacts = await core.listContacts(await core.sequenceAudienceId());
+  } catch (e) {
+    report.errors.push(`list: ${e.message}`);
+    contacts = [];
+  }
   for (const [seqId, seq] of Object.entries(core.SEQUENCES)) {
-    let contacts;
-    try {
-      contacts = await core.listContacts(await core.sequenceAudienceId(seqId));
-    } catch (e) {
-      report.errors.push(`${seqId}: ${e.message}`);
-      continue;
-    }
     for (const c of contacts) {
       if (Date.now() - started > BUDGET_MS) break;
       if (c.unsubscribed) continue;
@@ -54,6 +55,9 @@ exports.handler = async (event) => {
           report.graduated++;
           continue;
         }
+
+        // Diagnostic series pause while a call is booked (sequence-booked.js), like MailerLite's call_booked check.
+        if (seqId.startsWith('diagnostic-') && (await store.get(`booked/${c.email.toLowerCase()}`, { type: 'json' }))) { report.skipped++; continue; }
 
         const enrolledAt = state.enrolledAt ? Date.parse(state.enrolledAt) : core.parseResendDate(c.created_at);
         if (Date.now() < enrolledAt + next.afterHours * HOUR) { report.skipped++; continue; }

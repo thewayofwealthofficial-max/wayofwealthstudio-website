@@ -156,9 +156,9 @@ Hey {{name}},
 
 I want you to meet Josh.
 
-Josh is a yacht chef, and he worked with me one to one. Here's how he put it, in his own words:
+Josh is a head chef on a yacht, and he worked with me one to one. Here's how he put it, in his own words:
 
-*"You've taken money off the pedestal. Now it's just a tool. I'm in control of it, not it in control of me."*
+*"You've removed money from the pedestal for me. You've put me back on the pedestal. Now it's just a tool. I am in control of it. It is not in control of me."*
 
 I love that line, because that's like the whole thing, right?
 

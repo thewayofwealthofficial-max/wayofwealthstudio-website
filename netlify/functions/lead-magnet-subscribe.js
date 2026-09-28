@@ -27,6 +27,13 @@ const MAGNET_GROUP_MAP = {
   'cashflow-model': 'MAILERLITE_GROUP_CASHFLOW_MODEL',
   // The Cashflow Shield at /reset. Gates the annual leak figure only.
   'cash-reset': 'MAILERLITE_GROUP_CASH_RESET',
+  // Money Story Diagnostic: no MailerLite copy (these env vars are deliberately not set on this site).
+  diagnostic: 'MAILERLITE_GROUP_DIAGNOSTIC',
+  'diagnostic-qualified': 'MAILERLITE_GROUP_DIAGNOSTIC',
+  'diagnostic-avoidance': 'MAILERLITE_GROUP_DIAGNOSTIC',
+  'diagnostic-worship': 'MAILERLITE_GROUP_DIAGNOSTIC',
+  'diagnostic-status': 'MAILERLITE_GROUP_DIAGNOSTIC',
+  'diagnostic-vigilance': 'MAILERLITE_GROUP_DIAGNOSTIC',
 };
 
 const BAD_DOMAINS = new Set([
@@ -129,7 +136,9 @@ async function addToResend({ email, name, magnetKey, event, vars = {} }) {
       // and an unsubscribed person stays unsubscribed).
       if (isReset) await sendResetEmail({ email, name, vars });
       if (c && c.unsubscribed) return { ok: true, note: 'previously unsubscribed, left as is' };
-      return { ok: true, note: 'already on the list' };
+      // The diagnostic's series is their report and what it means, so it runs even for people already on the list.
+      // (Its safety-net capture adds them to the list seconds before this call.)
+      if (!magnetKey.startsWith('diagnostic-')) return { ok: true, note: 'already on the list' };
     }
     // Kill switch: sequences only start once SEQUENCES_ENABLED=true is set on Netlify.
     // A test address can be enrolled early with SEQUENCES_TEST_EMAIL.
@@ -188,6 +197,10 @@ exports.handler = async (event) => {
   // Only present when the person ticked "Email me my numbers too" on /reset. Used for email 1, never stored.
   const bd = magnet === 'cash-reset' ? breakdownText(breakdown) : null;
   const vars = bd ? { breakdown: bd } : {};
+  // The diagnostic sends the person's own report link for its day-1 email. Only its own report links are accepted.
+  if (typeof payload.report_url === 'string' && payload.report_url.startsWith('https://discover.thewayofwealth.shop/.netlify/functions/report?') && payload.report_url.length < 600) {
+    vars.report_line = `Your full Money Story Report is ready, the whole thing in one place: [open your report](${payload.report_url})`;
+  }
 
   // Honeypot: if filled, silently drop (return 200 so the bot thinks it worked)
   if (honeypot) return { statusCode: 200, body: JSON.stringify({ ok: true }) };
@@ -208,7 +221,8 @@ exports.handler = async (event) => {
     if (!resend.ok && !resend.skipped) {
       await notifyCaptureFailed({ email: v.email, magnet: magnetKey, reason: 'Saved to MailerLite but NOT to Resend', detail: resend.detail });
     }
-    await notifyLeadCaptured({ email: v.email, name: cleanName, magnet: magnetKey });
+    // The diagnostic calls twice (a safety net, then the routed one); one alert per lead is enough.
+    if (magnetKey !== 'diagnostic') await notifyLeadCaptured({ email: v.email, name: cleanName, magnet: magnetKey });
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 

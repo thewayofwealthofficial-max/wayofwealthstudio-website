@@ -36,12 +36,23 @@ const COMPANY_LINE = 'Way of Wealth LTD · Registered in England and Wales, comp
 const SEQUENCES = {
   'welcome-newsletter': require('./sequences/welcome-newsletter'),
   'money-reset': require('./sequences/money-reset'),
+  'diagnostic-qualified': require('./sequences/diagnostic-qualified'),
+  'diagnostic-avoidance': require('./sequences/diagnostic-avoidance'),
+  'diagnostic-worship': require('./sequences/diagnostic-worship'),
+  'diagnostic-status': require('./sequences/diagnostic-status'),
+  'diagnostic-vigilance': require('./sequences/diagnostic-vigilance'),
 };
 
 // Which sign-up form starts which sequence.
 const MAGNET_TO_SEQUENCE = {
   'finance-fridays': 'welcome-newsletter',
   'cash-reset': 'money-reset',
+  // The Money Story Diagnostic (discover.thewayofwealth.shop) posts here after the result (28 Sep).
+  'diagnostic-qualified': 'diagnostic-qualified',
+  'diagnostic-avoidance': 'diagnostic-avoidance',
+  'diagnostic-worship': 'diagnostic-worship',
+  'diagnostic-status': 'diagnostic-status',
+  'diagnostic-vigilance': 'diagnostic-vigilance',
 };
 
 let lastCall = 0;

@@ -39,6 +39,13 @@
   status = 200
   force = true
 
+# The Money Story Diagnostic's Calendly webhook tells the email robot when someone books or cancels.
+[[redirects]]
+  from = "/api/sequence/booked"
+  to = "/.netlify/functions/sequence-booked"
+  status = 200
+  force = true
+
 # LinkedIn native-post drafts: stored privately, approved by Joel from Fred's link.
 [[redirects]]
   from = "/api/linkedin/draft"
