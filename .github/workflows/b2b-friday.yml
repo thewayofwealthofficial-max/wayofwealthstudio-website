@@ -1,0 +1,56 @@
+name: Friday Big Swing (B2B)
+
+# Every Friday: 5 practitioner-training organisations + a ready pitch each + one bold idea, to Fred.
+# Joel sends them himself; nothing is sent automatically. See scripts/b2b-friday.mjs.
+# GitHub runs crons hours late, so 04:07 UTC lands in the morning UK.
+
+on:
+  schedule:
+    - cron: '7 4 * * 5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: b2b-friday
+  cancel-in-progress: false
+
+jobs:
+  swing:
+    # Scheduled runs only when the repo variable B2B_FRIDAY_ENABLED is 'true'.
+    if: github.event_name == 'workflow_dispatch' || vars.B2B_FRIDAY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Find organisations and write pitches
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/b2b-friday.mjs
+
+      - name: Remember who was suggested (never repeat)
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/b2b/ 2>/dev/null || true
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "b2b friday: this week's organisations"
+          git pull --rebase -q origin main && git push
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "Friday big swing failed" --body "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
