@@ -181,5 +181,38 @@ If you want to work on this with me, one to one, [book a free 20-minute call](${
 Joel
 `,
     },
+    {
+      // Approved by Joel 27 Sep: welcome email 6 word for word, recap list adapted to this series.
+      id: '06-recap-offer',
+      afterHours: 140,
+      subject: "what you've done this week",
+      preheader: 'And what most people do next.',
+      body: `
+Hey {{name}},
+
+Quick look back. In under a week, you've:
+
+- seen what's actually yours to keep, with your four pots
+- set up your TAX. NOT MINE. pot (or at least thought about it)
+- learned why earning more doesn't fix a leak on its own
+- heard how I lost £150k, and what it taught me
+- met Josh, who took money off the pedestal
+
+Now, most people stop here. They read the emails, they nod, they think "yeah, that's me", and then nothing changes. Not because they're lazy. Because knowing isn't the same as doing. I know that one personally.
+
+So here's what working together actually looks like. It's called the Money Story Method. Twelve weeks, one to one, just you and me.
+
+- **Weeks 1 to 3:** we find your money script, the one running the show. You put 90 days of statements through a leak sheet, and we compare what you think you spend with what you really spend. By week 3 the money moves: we set up your pots and the standing orders that fill them.
+- **Weeks 4 and 5:** we go deep on where your money story comes from and what money means to you. You get your Money Story Profile, then your Behavioural Pattern Report, which is your patterns with proof from your own spending.
+- **Weeks 6 to 8:** we pick the belief holding you back the most and rewrite it. Then we set up guardrails for the moments you usually slip.
+- **Weeks 9 to 12:** goal planning, mapping out your cash flow with the new system in place, where you go from here, and graduation.
+
+It's not a course or a PDF. It's the work on why it hasn't stuck before, plus the system, set up with you.
+
+I take on five people a month. If you'd like to see if it's a fit, [book a free 20-minute call](${CALL}). We just talk about where you are and whether I can help.
+
+Joel
+`,
+    },
   ],
 };
