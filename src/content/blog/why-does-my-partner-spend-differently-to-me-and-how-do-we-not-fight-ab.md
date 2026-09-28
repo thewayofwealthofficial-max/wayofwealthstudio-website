@@ -1,5 +1,6 @@
 ---
 title: "Why my partner and I spend differently — and how we stop fighting"
+pinTitle: "Why my partner and I spend differently, and how we stop fighting"
 description: "Your partner isn't broken and neither are you. Here's the behavioral science behind why couples fight about money — and what actually helps."
 pubDate: 2026-04-18
 category: "Behavioural basics"

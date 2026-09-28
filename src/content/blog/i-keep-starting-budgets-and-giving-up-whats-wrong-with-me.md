@@ -1,5 +1,6 @@
 ---
 title: "I keep starting budgets and giving up — what's wrong with me?"
+pinTitle: "I keep starting budgets and giving up. What's wrong with me?"
 description: "You're not failing at budgets because you lack willpower. You're fighting your brain's wiring. Here's what behavioral science says about why budgets collapse."
 pubDate: 2026-04-15
 category: "Budgeting that sticks"

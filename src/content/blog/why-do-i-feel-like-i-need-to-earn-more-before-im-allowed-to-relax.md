@@ -1,5 +1,6 @@
 ---
 title: "Why do I feel like I need to earn more before I'm allowed to relax?"
+pinTitle: "Why do I need to earn more before I'm allowed to relax?"
 description: "That 'I'll relax when I earn more' feeling has a name — and understanding it might be the most useful thing you do today."
 pubDate: 2026-06-02
 category: "Behavioural basics"

@@ -1,5 +1,6 @@
 ---
 title: "I have ADHD — why is every budgeting app I try useless after a week?"
+pinTitle: "I have ADHD. Why is every budgeting app I try useless?"
 description: "ADHD brains don't fail budgeting apps — the apps fail ADHD brains. Here's the neuroscience of why, and what actually works."
 pubDate: 2026-04-19
 category: "ADHD & money"

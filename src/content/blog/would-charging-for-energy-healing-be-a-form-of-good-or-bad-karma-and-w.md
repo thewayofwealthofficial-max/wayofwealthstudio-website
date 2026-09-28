@@ -1,5 +1,6 @@
 ---
 title: "Would charging for energy healing be a form of good or bad Karma and why do think so?"
+pinTitle: "Would charging for energy healing be good or bad karma?"
 description: "Charging for energy healing feels like a spiritual question. Here's what's actually driving the guilt, and one thing to try today."
 pubDate: 2026-09-26
 category: "Self-employed"

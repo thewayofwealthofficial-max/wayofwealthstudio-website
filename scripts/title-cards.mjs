@@ -21,7 +21,7 @@ const opt = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : nu
 const ONLY = opt('--only');
 const OUT = opt('--out') || join(ROOT, 'public', 'cards');
 const FORCE = args.includes('--force');
-// Pins wait for Joel's go after the Pinterest research (28 Sep); until then only link-preview cards are made.
+// Pins (--pins) use the layout from the Pinterest research; Joel said go on 28 Sep.
 const PINS = args.includes('--pins');
 
 const C = { navy: '#1C2A3A', cream: '#F5F0E8', gold: '#C4A265', brown: '#5C4E3C', brownLight: '#7A6B57', border: '#D4C9B8' };
@@ -48,21 +48,47 @@ function og(title) {
       h('div', {}, CRED), h('div', { color: C.brownLight }, 'wayofwealthcoaching.com')));
 }
 
-function pin(title, description) {
-  return h('div', { width: 1000, height: 1500, background: C.navy, padding: '96px 84px', flexDirection: 'column', justifyContent: 'space-between' },
-    h('div', { fontFamily: 'Playfair', fontSize: 30, letterSpacing: 7, color: C.cream }, 'WAY OF WEALTH'),
-    h('div', { flexDirection: 'column' },
-      h('div', { fontFamily: 'Playfair', fontWeight: 700, fontSize: size(title, 84, 72, 60), lineHeight: 1.12, color: C.cream }, title),
-      h('div', { width: 120, height: 5, background: C.gold, marginTop: 48, marginBottom: 48 }),
-      description ? h('div', { fontFamily: 'Lora', fontStyle: 'italic', fontSize: 36, lineHeight: 1.45, color: C.border }, description) : null),
-    h('div', { flexDirection: 'column', fontFamily: 'Inter', fontSize: 25, color: C.border },
-      h('div', {}, 'Joel Ezekiel'), h('div', { marginTop: 6 }, 'MSc Behavioural Economics | Qualified Financial Planner'),
-      h('div', { marginTop: 22, color: C.cream }, 'wayofwealthcoaching.com')));
+// Pin layout copied from the most-saved blog pins in this niche (research/2026-09-28-pinterest-pins/FINDINGS.md):
+// 2:3, light background, a big bold 5-10 word headline in the top half, a soft photo with no face below,
+// the web address small at the very bottom, 2-3 bits of text, no "save this" and no button.
+const PHOTOS = ['0EFDQKW84D', 'JHJH4PS68L', 'YR1I6HCCOP', '8Y0EDX4VP9', 'DPKNIIN5X3']; // CC0, see pin-photos/LICENSE.txt
+const photoCache = {};
+async function photoFor(slug) {
+  let n = 0; for (const ch of slug) n = (n * 31 + ch.charCodeAt(0)) >>> 0;
+  const id = PHOTOS[n % PHOTOS.length];
+  if (!photoCache[id]) {
+    const buf = await sharp(join(ROOT, 'scripts', 'pin-photos', `${id}.jpg`)).resize(1000, 690, { fit: 'cover' }).jpeg({ quality: 86 }).toBuffer();
+    photoCache[id] = `data:image/jpeg;base64,${buf.toString('base64')}`;
+  }
+  return photoCache[id];
+}
+
+// 5-10 words is what most top pins use; Joel (28 Sep) chose to keep readers' full questions up to 14 words. A post can set `pinTitle:` in its front matter; otherwise the title is used
+// if it's short enough, or its first clause (the words before the first comma or question mark).
+function pinHeadline(fm, title) {
+  const set = field(fm, 'pinTitle');
+  if (set) return set;
+  const words = (s) => s.trim().split(/\s+/).length;
+  if (words(title) <= 14 && !/[—–]/.test(title)) return title; // Joel, 28 Sep: keep the reader's full question up to 14 words
+  const first = (title.match(/^[^,?:;]+[?]?/) || [title])[0].trim();
+  return words(first) >= 4 && words(first) <= 14 ? first : title;
+}
+
+function pin(headline, photo) {
+  return h('div', { width: 1000, height: 1500, background: C.cream, flexDirection: 'column' },
+    h('div', { height: 740, padding: '90px 80px 0', flexDirection: 'column', justifyContent: 'center' },
+      h('div', { fontFamily: 'Playfair', fontSize: 26, letterSpacing: 6, color: C.navy, marginBottom: 44 }, 'WAY OF WEALTH'),
+      h('div', { fontFamily: 'Playfair', fontWeight: 700, fontSize: size(headline, 92, 78, 64), lineHeight: 1.1, color: C.navy }, headline),
+      h('div', { width: 120, height: 5, background: C.gold, marginTop: 44 })),
+    { type: 'img', props: { src: photo, width: 1000, height: 690, style: { width: 1000, height: 690, objectFit: 'cover' } } },
+    h('div', { height: 70, alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter', fontSize: 26, color: C.brown }, 'wayofwealthcoaching.com'));
 }
 
 async function render(tree, width, height, file) {
   const svg = await satori(tree, { width, height, fonts: FONTS });
-  await writeFile(file, await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer());
+  const img = sharp(Buffer.from(svg));
+  // Pins carry a photo, so JPEG (about a fifth of the PNG size); text-only cards stay PNG.
+  await writeFile(file, await (file.endsWith('.jpg') ? img.jpeg({ quality: 88, mozjpeg: true }) : img.png({ compressionLevel: 9 })).toBuffer());
 }
 const exists = (p) => access(p).then(() => true, () => false);
 
@@ -78,8 +104,8 @@ for (const f of (await readdir(BLOG)).filter((x) => x.endsWith('.md'))) {
   if (/^draft:\s*true/m.test(fm)) continue;
   const title = field(fm, 'title') || slug;
   const description = field(fm, 'description') || '';
-  const ogFile = join(OUT, 'og', `${slug}.png`), pinFile = join(OUT, 'pin', `${slug}.png`);
+  const ogFile = join(OUT, 'og', `${slug}.png`), pinFile = join(OUT, 'pin', `${slug}.jpg`);
   if (FORCE || !(await exists(ogFile))) { await render(og(title), 1200, 630, ogFile); made++; }
-  if (PINS && (FORCE || !(await exists(pinFile)))) { await render(pin(title, description), 1000, 1500, pinFile); made++; }
+  if (PINS && (FORCE || !(await exists(pinFile)))) { await render(pin(pinHeadline(fm, title), await photoFor(slug)), 1000, 1500, pinFile); made++; }
 }
 console.log(`title cards: ${made} made`);

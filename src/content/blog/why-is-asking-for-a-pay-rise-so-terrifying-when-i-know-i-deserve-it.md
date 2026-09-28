@@ -1,5 +1,6 @@
 ---
 title: "Why is asking for a pay rise so terrifying when I know I deserve it?"
+pinTitle: "Why is asking for a pay rise so terrifying when I deserve it?"
 description: "You know you deserve more money. So why can't you ask? The answer isn't weakness — it's three specific brain quirks working against you."
 pubDate: 2026-05-07
 category: "Anxiety & avoidance"

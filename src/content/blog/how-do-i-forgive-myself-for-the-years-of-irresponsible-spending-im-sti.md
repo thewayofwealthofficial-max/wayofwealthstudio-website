@@ -1,5 +1,6 @@
 ---
 title: "How do I forgive myself for the years of irresponsible spending I'm still paying for?"
+pinTitle: "How do I forgive myself for years of irresponsible spending?"
 description: "Still paying for past spending mistakes? Your brain is wired to punish you for them — here's why that's making everything worse."
 pubDate: 2026-05-19
 category: "Spending & shame"

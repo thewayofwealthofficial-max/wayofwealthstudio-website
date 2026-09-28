@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "prebuild": "node scripts/title-cards.mjs",
+    "prebuild": "node scripts/title-cards.mjs --pins",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

@@ -1,5 +1,6 @@
 ---
 title: "Why do I freeze when I've got too many money decisions to make at once?"
+pinTitle: "Why do I freeze with too many money decisions at once?"
 description: "Freezing when money decisions pile up isn't weakness — it's your brain hitting a hard limit. Here's the science behind why, and one way out."
 pubDate: 2026-05-27
 category: "Anxiety & avoidance"
