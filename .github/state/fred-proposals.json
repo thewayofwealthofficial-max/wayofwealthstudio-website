@@ -1,48 +1,5 @@
 {
-  "generated_at": "2026-09-28T22:38:24.607Z",
+  "generated_at": "2026-09-29T21:32:18.142Z",
   "ttl_ms": 86400000,
-  "proposals": [
-    {
-      "id": "quiz-intro-cta",
-      "file": "src/pages/quiz/index.astro",
-      "impact": "recover the one session that landed on intro_load and never started",
-      "risk": "low",
-      "observation": "One session hit the quiz intro in the last 48 hours. It loaded and stopped. The furthest_step_distribution shows only \"intro_load: 1\" — no one pressed start. That is a one-person sample, but it is the only quiz signal available, and the pattern (load, freeze, leave) is the classic cold-feet drop: the page asks for a decision before it has earned it. If the intro screen's first sentence is abstract or generic, someone arriving from direct traffic has no reason to continue.",
-      "proposal": "Rewrite the quiz intro screen's opening copy so the first sentence does specific, sensory work that the ICP recognises before they click Start. The current text (reproduced below from the codebase) opens with a purpose statement about the quiz. Replace it with the felt experience that brings a wellness practitioner to this page in the first place: the gap between what they charge and what they believe they deserve. No new UI, no new logic — one text node changed.",
-      "current_text": "Discover your money personality and understand how it shapes your financial decisions.",
-      "new_text": "You set your rate, then felt your stomach drop when someone actually said yes. This takes four minutes and shows you exactly what's happening underneath that.",
-      "signed_id": "dbba666cd0bedf28.1790635104606",
-      "created_at": 1790635104606,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "money-worship-subject",
-      "file": "src/content/emails/money-worship/email-01.md",
-      "impact": "lift Money Worship open rate from 37.5% toward the 66% Money Vigilance benchmark",
-      "risk": "low",
-      "observation": "Money Worship sits at 37.5% open rate against Money Avoidance at 52.6% and Money Vigilance at 66.7%. All three automations are live and sending. The subject line and preview text on email 1 of the Money Worship sequence is the most probable cause: it is the first gate. Money Worship in the Klontz framework means \"money will solve everything\" — the ICP version of this is not greed, it is the quiet belief that hitting a revenue number will finally make them feel okay. A subject line that names that specific belief, rather than the label \"Money Worship,\" will earn the open.",
-      "proposal": "Change the subject line (and preview text if set) of Money Worship email 1. The current subject line uses the script-pattern name or a generic teaser. Replace it with a line that names the felt thought the Money Worship profile actually has — the one they have not said aloud. Single file, subject frontmatter field only.",
-      "current_text": "subject: Your Money Worship results are inside",
-      "new_text": "subject: \"Once I hit £X, everything will calm down\" — let's look at that",
-      "signed_id": "c9d942d5aeb246d3.1790635104606",
-      "created_at": 1790635104606,
-      "requires_manual": false,
-      "block_reason": null
-    },
-    {
-      "id": "fuel-prices-internal-link",
-      "file": "src/content/blog/fuel-prices-just-spiked-hard-heres-what-that-does-to-your-brain.md",
-      "impact": "turn topical traffic into quiz entries or /reset sign-ups",
-      "risk": "low",
-      "observation": "The fuel-prices blog post published today (2026-09-28) and is the freshest page on the site. It will catch topical search traffic and any social share from a timely subject. The commit shows it was written as a standalone post. The /reset sequence was fully approved by Joel on 27 Sep and is live. The post has no internal link to the quiz or to /reset, so readers who finish the article have no obvious next step inside the site. Adding one specific, earned internal link at the close of the post captures the moment when the reader's attention is highest.",
-      "proposal": "Add a single closing paragraph to the fuel-prices post that links to the quiz. It must earn the link by connecting the post's subject (financial stress response to price spikes) to what the quiz actually measures. No call-to-action box, no new component — plain prose with one inline anchor, appended after the existing final paragraph.",
-      "current_text": "",
-      "new_text": "If your first instinct when fuel prices spiked was to refresh the bank app three times, or to spend something completely unrelated because the anxiety needed somewhere to go, that reaction has a pattern behind it. The free quiz at wayofwealth.co/quiz takes four minutes and names it clearly.",
-      "signed_id": "a00c6b462317db0a.1790635104606",
-      "created_at": 1790635104606,
-      "requires_manual": false,
-      "block_reason": null
-    }
-  ]
+  "proposals": []
 }
