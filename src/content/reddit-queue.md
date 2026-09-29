@@ -68,7 +68,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 47 | ✅ | Is it wrong to charge for Reiki since the energy is not mine? | money scripts (Klontz), money avoidance, identity threat | Self-employed | Wellness Practitioner |
 | 48 | ✅ | Can someone make a living by leading spiritual retreats, such as yoga and meditation? | planning fallacy, income volatility, identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
 | 49 | ✅ | Would charging for energy healing be a form of good or bad Karma and why do think so? | money scripts (Klontz), moral identity | Self-employed | Wellness Practitioner |
-| 50 | 🔵 | Why do some meditation teachers charge money while others offer it for free? | social norms vs market norms (Heyman & Ariely), money scripts | Self-employed | Wellness Practitioner |
+| 50 | ✅ | Why do some meditation teachers charge money while others offer it for free? | social norms vs market norms (Heyman & Ariely), money scripts | Self-employed | Wellness Practitioner |
 | 51 | 🔵 | Why do you charge for your energy healing services (healing sessions, instruction, attunement, etc.)? | money scripts (Klontz), cognitive dissonance | Self-employed | Wellness Practitioner |
 | 52 | 🔵 | Are there energy healers who offer their services for free? | social norms vs market norms, identity | Self-employed | Wellness Practitioner |
 | 53 | 🔵 | How can I charge $100 an hour as a yoga instructor? | anchoring, self-worth and price fusion | Self-employed | Wellness Practitioner, Self-Employed Stresser |
