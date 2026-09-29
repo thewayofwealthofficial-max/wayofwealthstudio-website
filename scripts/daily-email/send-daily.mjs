@@ -31,7 +31,7 @@ import { syncList } from './sync-list.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MODE = (process.env.DAILY_EMAIL_MODE || 'dry').toLowerCase().replace('test', 'review');
 const MODEL = process.env.DAILY_EMAIL_MODEL || 'claude-sonnet-4-6';
-const MAX_TRIES = 3;
+const MAX_TRIES = 6; // 1 draft + 5 repairs
 const DENISE = 'denisedt@c.kajabimail.net';
 const MMB = 'lindsay@mindmoneybalance.com';
 
@@ -183,13 +183,23 @@ async function main() {
   const sourceText = [JOEL_FACTS, ...passages.map((p) => p.text), post ? `${post.title} ${post.body}` : '', ...testimonials.map((t) => t.quote)].join('\n');
 
   // Draft + checks.
-  let draft = null, problems = [], feedback = '';
+  // One full draft, then repairs that change ONLY what the checks flagged, starting from the best draft so far.
+  // Writing a fresh email each time kept creating new problems (same fix as the blog robots, 29 Sep).
+  let draft = null, problems = [], feedback = '', best = null, bestProblems = null;
   for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
-    const d = await draftEmail({
-      apiKey: anthropicKey, model: MODEL, maxTokens: 2200,
-      system: systemPrompt(type),
-      user: userPrompt({ type, phase, theme, dateStr: uk.iso, shape, passages, post, testimonials }) + feedback,
-    });
+    if (best) feedback = `\n\nHere is your previous draft. It failed these checks:\n- ${bestProblems.join('\n- ')}\n\nFix ONLY those problems. Keep every other sentence exactly as it is. Return the whole email as the same JSON.\n\n${JSON.stringify(best)}`;
+    let d;
+    try {
+      d = await draftEmail({
+        apiKey: anthropicKey, model: MODEL, maxTokens: 2200,
+        system: systemPrompt(type),
+        user: userPrompt({ type, phase, theme, dateStr: uk.iso, shape, passages, post, testimonials }) + feedback,
+      });
+    } catch (err) {
+      if (/Anthropic API failed/.test(err.message)) throw err; // bad key or outage: stop and alert
+      console.log(`Attempt ${attempt}: unreadable reply. Trying again.`);
+      continue;
+    }
     const candidate = { subject: clean(d.subject), preview: clean(d.preview), body_plain: clean(d.body_plain) };
     problems = checkDraft(candidate, {
       type, phase, allowedLinks, sourceText, blockedNames: names,
@@ -200,10 +210,10 @@ async function main() {
     // Quoted parts can hold client names or private words, so they're blanked in the public log.
     console.log(`Attempt ${attempt}: ${problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
-    feedback = `\n\nYour previous draft was rejected for these reasons. Fix every one and write a fresh email:\n- ${problems.join('\n- ')}`;
+    if (!best || problems.length <= bestProblems.length) { best = candidate; bestProblems = problems; }
   }
   if (!draft) {
-    await telegram(`⏭ ${type} email for ${uk.iso} SKIPPED. It failed the safety checks 3 times:\n- ${problems.join('\n- ')}\n\nNothing was sent.`);
+    await telegram(`⏭ ${type} email for ${uk.iso} SKIPPED. It failed the safety checks after 1 draft and ${MAX_TRIES - 1} repairs:\n- ${(bestProblems || problems).join('\n- ')}\n\nNothing was sent.`);
     process.exit(1);
   }
 
