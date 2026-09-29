@@ -154,6 +154,22 @@ ${related.map((r) => `- ${r.title} -> /blog/${r.slug}/`).join('\n')}
 Write the post now.${feedback}`;
 }
 
+// Repair: hand back the draft and change only what the checks flagged, so fixes don't create new problems.
+function buildRepairPrompt(draft, problems) {
+  const header = JSON.stringify({ description: draft.description, tags: draft.tags, ...(draft.title ? { title: draft.title } : {}) });
+  return `Below is your draft blog post. It failed these automatic checks:
+- ${problems.join('\n- ')}
+
+Fix ONLY those problems. Rewrite the quoted lines (and the description if a quoted line is in it). Keep every other sentence, heading, link and section exactly as it is. Do not add new sentences anywhere else. Where a line leans on "research shows", either name the real source from the ideas you were given or say it as the reader's experience. Where a line uses "not X, it's Y", just say the Y directly.
+
+Return the whole post in the same format as before: the one-line JSON header, then <<<BODY>>>, the full body, <<<END>>>.
+
+${header}
+<<<BODY>>>
+${draft.body}
+<<<END>>>`;
+}
+
 // Existing posts, for the one mid-post link.
 async function listPosts() {
   const files = (await readdir(BLOG_DIR)).filter((f) => f.endsWith('.md'));
@@ -167,14 +183,35 @@ async function listPosts() {
   return out;
 }
 
-// Automatic checks on the new shape. Any problem -> retry with the reasons.
+// Automatic checks on the new shape. Any problem -> repair the flagged sentences (see main).
+const CONTRAST_RE = /\b(?:isn'?t|is not|aren'?t|are not|wasn'?t|not)\b[^.?!\n]{0,80}[.?!]\s+(?:It'?s|It is|That'?s|That is|They'?re|Both are|Both)\b|\bnot (?:about|a|an|the)\b[^.?!\n]{1,60},\s*(?:it'?s|but)\b|\bNeither is\b[^.?!\n]{0,60}[.?!]\s+Both\b|,\s*not an? [^.?!\n]{1,30}one\b/gi;
+const SWEEPING_RE = /\b(?:no tradition|every tradition|most traditions|many traditions|the most common|most healers|nervous system pattern|your body isn'?t used to)\b/gi;
+const VAGUE_RE = /\b(?:studies show|study shows|research shows|research says)\b/gi;
+
+// Quote the whole sentence around each hit, so a repair knows exactly which lines to rewrite.
+function quoteHits(text, hits) {
+  const out = new Set();
+  let from = 0;
+  for (const h of hits) {
+    const i = text.indexOf(h, from);
+    if (i < 0) continue;
+    from = i + h.length;
+    const start = Math.max(text.lastIndexOf('\n', i), text.lastIndexOf('. ', i) + 1, text.lastIndexOf('? ', i) + 1, text.lastIndexOf('! ', i) + 1, 0);
+    const endRel = text.slice(i + h.length).search(/[.?!](?:\s|$)|\n/);
+    const end = endRel < 0 ? text.length : i + h.length + endRel + 1;
+    out.add(`"${text.slice(start, end).trim()}"`);
+  }
+  return [...out].join(' ');
+}
+
 function checkShape(body, posts, description = '', tags = []) {
   const p = [];
   const all = `${description}\n${body}`;
   if (!Array.isArray(tags) || tags.length < 3) p.push('Must return 3 to 5 lowercase tags.');
-  const contrasts = (all.match(/\b(?:isn'?t|is not|aren'?t|are not|wasn'?t|not)\b[^.?!\n]{0,80}[.?!]\s+(?:It'?s|It is|That'?s|That is|They'?re|Both are|Both)\b|\bnot (?:about|a|an|the)\b[^.?!\n]{1,60},\s*(?:it'?s|but)\b|\bNeither is\b[^.?!\n]{0,60}[.?!]\s+Both\b|,\s*not an? [^.?!\n]{1,30}one\b/gi) || []).length;
-  if (contrasts > 1) p.push(`Uses the "not X, it's Y" contrast ${contrasts} times (description included). Once at most; say the rest directly.`);
-  if (/\b(no tradition|every tradition|most traditions|many traditions|the most common|most healers|nervous system pattern|your body isn'?t used to)\b/i.test(all)) p.push('Makes a sweeping or body/brain claim with no source. Say it as the reader\'s experience instead.');
+  const contrastHits = all.match(CONTRAST_RE) || [];
+  if (contrastHits.length > 1) p.push(`Uses the "not X, it's Y" contrast ${contrastHits.length} times (description included). Once at most; say the rest directly. The lines: ${quoteHits(all, contrastHits)}`);
+  const sweeping = all.match(SWEEPING_RE) || [];
+  if (sweeping.length) p.push(`Makes a sweeping or body/brain claim with no source. Say it as the reader's experience instead. The lines: ${quoteHits(all, sweeping)}`);
   if (/\buniverse (?:is not|isn'?t|won'?t|doesn'?t) (?:pay|paying|going to pay)/i.test(all)) p.push('Pokes fun at the reader\'s beliefs about the universe. Meet the belief with respect, never mock it.');
   if (!/what you need to know/i.test(body.slice(0, 400))) p.push('Must start with the "What you need to know" block of 3 bullets.');
   if (!/^##\s+What you might be telling yourself/im.test(body)) p.push('Missing the "## What you might be telling yourself" section.');
@@ -184,7 +221,8 @@ function checkShape(body, posts, description = '', tags = []) {
   const links = [...body.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)].map((m) => m[1]);
   if (!links.some((l) => posts.some((x) => x.slug === l))) p.push('Needs one link to an existing post from the RELATED POSTS list.');
   if (/\b(quiz)\b/i.test(body)) p.push('Mentions a quiz. The quiz is retired.');
-  if (/\b(studies show|study shows|research shows|research says)\b/i.test(body)) p.push('Says "research shows" or similar without naming the source.');
+  const vague = body.match(VAGUE_RE) || [];
+  if (vague.length) p.push(`Says "research shows" or similar without naming the source. Name the researcher from the list you were given, or say it as the reader's experience. The lines: ${quoteHits(body, vague)}`);
   if (/\bLevel 4\b/i.test(body)) p.push('Writes "Level 4".');
   if (/\b(thousands of (?:women|clients|people)|hundreds of (?:clients|women)|most of my clients)\b/i.test(body)) p.push('Makes an unverifiable claim about Joel\'s clients.');
   const words = body.split(/\s+/).filter(Boolean).length;
@@ -336,18 +374,30 @@ async function main() {
   }
 
   const posts = await listPosts();
-  let parsed = null, problems = [], feedback = '';
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    console.log(`Calling Claude (attempt ${attempt})...`);
-    const responseText = await callClaude(SYSTEM_PROMPT, buildUserPrompt(next, posts, feedback));
-    const cand = parseClaudeResponse(responseText);
-    if (!cand.description || !cand.body) throw new Error('Claude response missing description or body.');
+  // One full draft, then up to 5 repairs that rewrite ONLY the flagged sentences. Rewriting the whole
+  // post each time kept creating new problems (3 failed days out of 7 in late Sep 2026). The checks
+  // themselves are unchanged. If a repair makes things worse, the next repair starts from the best draft.
+  let parsed = null, problems = [], best = null, bestProblems = null;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    const repairing = !!best;
+    console.log(`Calling Claude (${repairing ? `repair ${attempt - 1}` : 'first draft'})...`);
+    const prompt = repairing ? buildRepairPrompt(best, bestProblems) : buildUserPrompt(next, posts, '');
+    const responseText = await callClaude(SYSTEM_PROMPT, prompt); // API errors (bad key, outage) stop the run
+    let cand;
+    try {
+      cand = parseClaudeResponse(responseText);
+    } catch (err) {
+      if (/Jess/.test(err.message)) throw err;
+      console.log(`Unreadable reply (${err.message.slice(0, 120)}). Trying again.`);
+      continue;
+    }
+    if (!cand.description || !cand.body) { console.log('Reply missing description or body. Trying again.'); continue; }
     problems = checkShape(cand.body, posts, cand.description, cand.tags);
     console.log(problems.length ? `Problems: ${problems.join(' | ')}` : 'Passed all shape checks.');
     if (!problems.length) { parsed = cand; break; }
-    feedback = `\n\nYour last draft was rejected for these reasons. Fix every one:\n- ${problems.join('\n- ')}`;
+    if (!best || problems.length <= bestProblems.length) { best = cand; bestProblems = problems; }
   }
-  if (!parsed) throw new Error('Post failed the automatic checks 3 times: ' + problems.join(' | '));
+  if (!parsed) throw new Error('Post failed the automatic checks after 1 draft and 5 repairs: ' + (bestProblems || problems).join(' | '));
   const { description, tags, title, body } = parsed;
 
   if (process.env.DRY_RUN === '1') {
