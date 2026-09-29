@@ -151,16 +151,24 @@ async function main() {
   if (!pick) throw new Error('Could not read the article for any of the top stories. Feeds or sites may be blocking the bot.');
   console.log(`Source text: ${source.length} characters from ${url}`);
 
-  let post = null, problems = [], feedback = '';
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    const user = `NEWS ITEM: ${pick.item.title}\nPUBLISHER: ${pick.item.source}\nURL: ${url}\nBEHAVIOURAL IDEA TO USE: ${pick.concept}\nWHY IT MATTERS TO THE READER: ${pick.why}\n\nSOURCE TEXT (the only facts you may state about the news):\n${source}\n\nWrite the post now.${feedback}`;
-    const cand = parse(await claude(WRITER_SYSTEM, user));
+  // One full draft, then up to 5 repairs that change ONLY what the checks flagged, starting from the best
+  // draft so far. Rewriting the whole post each time kept creating new problems (daily blog, Sep 2026).
+  // API errors still stop the run; only an unreadable reply is retried.
+  const brief = `NEWS ITEM: ${pick.item.title}\nPUBLISHER: ${pick.item.source}\nURL: ${url}\nBEHAVIOURAL IDEA TO USE: ${pick.concept}\nWHY IT MATTERS TO THE READER: ${pick.why}\n\nSOURCE TEXT (the only facts you may state about the news):\n${source}`;
+  let post = null, problems = [], best = null, bestProblems = null;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    const user = best
+      ? `${brief}\n\nBelow is your draft. It failed these automatic checks:\n- ${bestProblems.join('\n- ')}\n\nFix ONLY those problems. Keep every other sentence, heading and link exactly as it is. Return the whole post in the same output shape.\n\n${JSON.stringify({ title: best.title, description: best.description, tags: best.tags })}\n<<<BODY>>>\n${best.body}\n<<<END>>>`
+      : `${brief}\n\nWrite the post now.`;
+    const reply = await claude(WRITER_SYSTEM, user);
+    let cand;
+    try { cand = parse(reply); } catch (err) { console.log(`Attempt ${attempt}: unreadable reply (${err.message.slice(0, 100)}). Trying again.`); continue; }
     problems = check(cand, source, url);
-    console.log(`Attempt ${attempt}: "${cand.title}" -> ${problems.length ? problems.join(' | ') : 'passed all checks'}`);
+    console.log(`Attempt ${attempt}${best ? ' (repair)' : ''}: "${cand.title}" -> ${problems.length ? problems.join(' | ') : 'passed all checks'}`);
     if (!problems.length) { post = cand; break; }
-    feedback = `\n\nYour last draft was rejected for these reasons. Fix every one:\n- ${problems.join('\n- ')}`;
+    if (!best || problems.length <= bestProblems.length) { best = cand; bestProblems = problems; }
   }
-  if (!post) throw new Error('Post failed the automatic checks 3 times: ' + problems.join(' | '));
+  if (!post) throw new Error('Post failed the automatic checks after 1 draft and 5 repairs: ' + (bestProblems || problems).join(' | '));
 
   const slug = slugify(post.title);
   const target = join(BLOG_DIR, `${slug}.md`);

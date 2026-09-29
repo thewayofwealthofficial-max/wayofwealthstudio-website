@@ -39,7 +39,7 @@
 // TEST: trigger manually via Actions tab → "Fred Propose" → Run workflow.
 
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -538,6 +538,12 @@ function validateProposals(list) {
   const createdAt = Date.now();
   for (const p of list) {
     if (!p || !p.id || !p.file || !p.proposal) continue;
+    // Only offer a proposal that can actually be applied: fred-apply needs current_text to appear exactly once
+    // (26 Sep: three Approve taps failed on a snippet that appeared twice).
+    let fileText = '';
+    try { fileText = readFileSync(join(REPO_ROOT, p.file), 'utf8'); } catch { console.log('Dropped ' + p.id + ': file not found (' + p.file + ').'); continue; }
+    const hits = p.current_text ? fileText.split(p.current_text).length - 1 : 0;
+    if (hits !== 1) { console.log('Dropped ' + p.id + ': current_text found ' + hits + ' times in ' + p.file + ', needs exactly 1.'); continue; }
     const blocked = isBlockedPath(p.file) || touchesPricing(p);
     // Short slug id for humans; signed token for HMAC.
     const signed = signId(p.id, createdAt);
@@ -711,7 +717,7 @@ async function main() {
         'package.json / package-lock.json',
         '.github/workflows/*',
         'src/content.config.ts',
-        'coaching.astro pricing lines (£597/£847/£997/£299/£219)',
+        'coaching.astro pricing lines (£1,000 / £500 / £334)',
       ],
     },
   };
