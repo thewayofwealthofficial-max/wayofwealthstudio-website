@@ -244,10 +244,18 @@ async function main() {
   let orig = null;
   if (REVISE_ID) {
     if (!/^[0-9a-f]{16}$/.test(REVISE_ID)) throw new Error('bad REVISE_ID');
-    const f = await fetch(`${SITE}/api/linkedin/draft?action=fetch&id=${REVISE_ID}`, { headers: { 'x-fred-secret': FRED_SECRET } });
-    if (!f.ok) throw new Error(`Draft fetch ${f.status}`);
-    orig = await f.json();
-    if (!orig.feedback) throw new Error('No fixes stored for this draft.');
+    // Netlify Blobs reads can lag a fresh save by up to ~60s, and this run starts seconds after Joel presses
+    // "Rewrite it". So wait for his fixes to show up (every 10s, up to 2 min) before giving up.
+    // 30 Sep 2026: the first rewrite failed because it read the draft 20s after the save and got the old copy.
+    for (let tries = 1; ; tries++) {
+      const f = await fetch(`${SITE}/api/linkedin/draft?action=fetch&id=${REVISE_ID}`, { headers: { 'x-fred-secret': FRED_SECRET } });
+      if (!f.ok) throw new Error(`Draft fetch ${f.status}`);
+      orig = await f.json();
+      if (orig.feedback) break;
+      if (tries === 12) throw new Error('No fixes stored for this draft (still missing after 2 minutes of retries).');
+      console.log(`Fixes not visible yet (try ${tries}/12). Waiting 10s for storage to catch up.`);
+      await new Promise((r) => setTimeout(r, 10_000));
+    }
   }
   const passages = orig
     ? all.filter((p) => hash(p.text) === orig.passage)
