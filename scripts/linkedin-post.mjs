@@ -132,9 +132,18 @@ function userPrompt(passages, angles, feedback, last, job) {
   try {
     const m = JSON.parse(readFileSync(join(ROOT, 'scripts', 'state', 'linkedin-monitor', 'latest.json'), 'utf8'));
     if (Date.now() - Date.parse(m.date) < 35 * 864e5 && m.posts?.length) {
-      working = `\n\nWHAT'S WORKING ON LINKEDIN THIS WEEK (top public posts in Joel's space; copy the pattern if it fits, never their words):\n${m.posts.slice(0, 5).map((x) => `- ${x.hook} · ${x.structure}: ${x.why}`).join('\n')}`;
+      working = `\n\nWHAT'S WORKING ON LINKEDIN THIS MONTH (top public posts in Joel's space; copy the pattern if it fits, never their words):\n${m.posts.slice(0, 5).map((x) => `- ${x.topic ? `[${x.topic}] ` : ''}${x.hook} · ${x.structure}: ${x.why}`).join('\n')}`;
     }
   } catch { /* no monitor data yet */ }
+  // Proven over months (scripts/linkedin-bank.mjs): won in 2+ months from 3+ different people. Stronger than the above.
+  try {
+    const b = JSON.parse(readFileSync(join(ROOT, 'scripts', 'state', 'linkedin-monitor', 'bank.json'), 'utf8'));
+    const { patterns = [], topics = [] } = b.promoted || {};
+    if (patterns.length || topics.length) {
+      working += `\n\nPROVEN IN JOEL'S SPACE (won across several months, from different people; lean on these):${patterns.length ? `\n- Shapes: ${patterns.join('; ')}` : ''}${topics.length ? `\n- Topics: ${topics.join('; ')}` : ''}`;
+    }
+  } catch { /* no bank yet */ }
+  if (working) working += `\n\nTOPICS: if one of Joel's passages below genuinely speaks to a topic named above, prefer that passage. Never stretch a passage to fit a topic, and never add a claim he didn't make.`;
   return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
 }
 

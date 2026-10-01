@@ -1,0 +1,152 @@
+{
+  "patterns": {
+    "confession · story with lesson": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Theresa Sansome",
+          "per1k": 14.44,
+          "url": "https://www.linkedin.com/posts/theresa-sansome-30537012_many-of-the-people-i-work-with-would-say-activity-7467507733433573376-CAYV",
+          "firstLine": "Many of the people I work with would say they have a difficult relationship with money - one that shows up in scarcity-t",
+          "why": "Opens with a vulnerable admission about clients that immediately signals authenticity and depth."
+        },
+        {
+          "month": "2026-10",
+          "author": "Hammaad Siddeeqee",
+          "per1k": 12.36,
+          "url": "https://www.linkedin.com/posts/hammaadsiddeeqee_i-spent-1500-on-iman-gadzhis-program-2-activity-7363149945907859458-roOa",
+          "firstLine": "I spent $1,500 on Iman Gadzhi's program 2 years ago.",
+          "why": "Opens with a specific dollar amount spent on a named program, immediately signalling a personal financial risk and payoff story."
+        }
+      ],
+      "months": 2,
+      "authors": 2
+    },
+    "list · list": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Terrence Porter",
+          "per1k": 9.41,
+          "url": "https://www.linkedin.com/posts/terrence-porter_7-ways-emotions-affect-your-money-1-fomo-activity-7282607183815475200-QoX_",
+          "firstLine": "7 ways emotions affect your money:",
+          "why": "A bold numbered list promises concrete, immediately usable insights about a relatable topic."
+        },
+        {
+          "month": "2026-10",
+          "author": "Caroline Cookson",
+          "per1k": 12.96,
+          "url": "https://www.linkedin.com/posts/caroline-cookson_im-in-a-bit-of-an-inexplicable-grump-this-activity-7442846917119590400-bAmE",
+          "firstLine": "I'm in a bit of an inexplicable grump* this week. So I'm channelling that energy into today's post: my top 10 pricing pe",
+          "why": "Opens with a relatable admission of being in a grump, making the numbered pricing complaints feel personal rather than academic."
+        }
+      ],
+      "months": 2,
+      "authors": 2
+    },
+    "question · story with lesson": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Jill Shah",
+          "per1k": 7.3,
+          "url": "https://www.linkedin.com/posts/jillshah03_finfluence75-fromwallettowallst-moneypsychology-activity-7469486898642616320-0VHr",
+          "firstLine": "Put yourself in these two situations,",
+          "why": "A simple two-scenario setup creates instant curiosity by challenging an assumption most readers hold."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "myth · story with lesson": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Sayanta Goswami",
+          "per1k": 2.89,
+          "url": "https://www.linkedin.com/posts/sayanta-goswami_the-common-notion-around-undercharging-activity-7280908287959556096-HDQT",
+          "firstLine": "The common notion around undercharging,",
+          "why": "Opening by challenging a widely held belief about undercharging immediately creates tension and signals a counterintuitive perspective on pricing strategy."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "question · call-out": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Money Ready",
+          "per1k": 2.13,
+          "url": "https://www.linkedin.com/posts/getmoneyready_money-ready-staff-stories-activity-7462426985328435200-2nKq",
+          "firstLine": "What's the first money lesson you remember being taught?",
+          "why": "A nostalgic personal question invites immediate emotional engagement and reflection."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "hot take · story with lesson": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Rick Kahler, MS, CFP®, CFT™, CeFT®",
+          "per1k": 2.02,
+          "url": "https://www.linkedin.com/posts/rickkahler_moneymindset-financialwellbeing-personalfinance-activity-7432500159084756992-5YK-",
+          "firstLine": "We’re told to live within our means.",
+          "why": "Challenges a widely accepted financial virtue by reframing frugality as potential fear, which creates immediate tension."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "question · explainer": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Rebekah Radice",
+          "per1k": 1.18,
+          "url": "https://www.linkedin.com/posts/rebekahradice_how-do-i-know-if-im-undercharging-or-overcharging-activity-7297767117574086656-MnVC",
+          "firstLine": "How do I know if I’m undercharging or overcharging?",
+          "why": "The self-directed question mirrors the reader's own internal doubt, making the opening line feel like a direct, personalised challenge about pricing confidence."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "story · story with lesson": {
+      "wins": [
+        {
+          "month": "2026-09",
+          "author": "Alex Berman®",
+          "per1k": 0.45,
+          "url": "https://www.linkedin.com/posts/alexanderberman_youre-undercharging-lets-fix-that-i-activity-7290745617364963328-bHAe",
+          "firstLine": "You're undercharging. Let's fix that:",
+          "why": "The concrete coffee-shop anecdote with specific numbers pulls the reader in and grounds an abstract pricing lesson in a relatable, real-world scenario."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "hot take · explainer": {
+      "wins": [
+        {
+          "month": "2026-10",
+          "author": "James Smith",
+          "per1k": 2.03,
+          "url": "https://www.linkedin.com/posts/jamessmithlinkedin_heres-one-of-my-golden-rules-of-marketing-activity-7350553272795000832-AY_4",
+          "firstLine": "Here's one of my golden rules of marketing when it comes to pricing.",
+          "why": "Opens with a confident binary rule about pricing that makes readers immediately want to know which state they are in."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    }
+  },
+  "topics": {},
+  "promoted": {
+    "patterns": [],
+    "topics": []
+  },
+  "blocked": []
+}

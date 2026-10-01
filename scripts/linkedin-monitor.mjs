@@ -8,12 +8,15 @@
 //   4. Claude tags each top post's pattern from its text (hook type, structure). Top 10 go to Fred.
 //   5. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, patterns, first line only) for the
 //      LinkedIn writer to use as "what's working this week" context.
+//   6. Adds the month to scripts/state/linkedin-monitor/bank.json (linkedin-bank.mjs), the running memory of shapes
+//      and topics. Anything that wins across months from different people is promoted, and Joel gets a note.
 //
 // ENV: SERPER_API_KEY (preferred) or BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
 
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { TOPICS, PROMOTE, emptyBank, addRun } from './linkedin-bank.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'scripts', 'state', 'linkedin-monitor');
@@ -150,7 +153,7 @@ async function main() {
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
-  const SCREEN = 'You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about one of: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); charging, pricing or receiving money for your own work; or the money side of running a solo or small business, coaching or wellness practice (pricing, cash flow, irregular income, paying yourself). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","why":""}]}';
+  const SCREEN = `You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about one of: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); charging, pricing or receiving money for your own work; or the money side of running a solo or small business, coaching or wellness practice (pricing, cash flow, irregular income, paying yourself). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), topic (exactly one of: ${TOPICS.join(' | ')}), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","topic":"","why":""}]}`;
   for (let start = 0; start < posts.length; start += 20) {
     const batch = posts.slice(start, start + 20);
     const tags = await claude(SCREEN, JSON.stringify(batch.map((p, i) => ({ i, text: p.body.slice(0, 1000) }))))
@@ -164,7 +167,7 @@ async function main() {
   if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this month. Nothing to report.'); return; }
 
   const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
-  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
+  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.topic ? p.topic + ' · ' : ''}${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
   await telegram(`📊 LinkedIn: what's working in your space (this month) (${relevant.length} on-topic of ${posts.length} read)\n\n${lines.join('\n\n')}`);
 
   // Saved for the LinkedIn writer. Links, numbers, patterns and the first line only; never the whole post.
@@ -172,8 +175,18 @@ async function main() {
   await writeFile(join(OUT, 'seen.json'), JSON.stringify([...seen, ...top.map((p) => p.url)].slice(-2000)) + '\n');
   await writeFile(join(OUT, 'latest.json'), JSON.stringify({
     date: new Date().toISOString().slice(0, 10),
-    posts: top.map(({ url, area, author, followers, reactions, comments, per1k, hook, structure, why, body }) => ({ url, area, author, followers, reactions, comments, per1k, hook, structure, why, firstLine: firstLine(body) })),
+    posts: top.map(({ url, area, author, followers, reactions, comments, per1k, hook, structure, topic, why, body }) => ({ url, area, author, followers, reactions, comments, per1k, hook, structure, topic: TOPICS.includes(topic) ? topic : null, why, firstLine: firstLine(body) })),
   }, null, 2) + '\n');
+
+  // The running memory. Every on-topic winner this month counts, not just the top 10.
+  let bank = emptyBank();
+  try { bank = JSON.parse(await readFile(join(OUT, 'bank.json'), 'utf8')); } catch { /* first run */ }
+  const fresh = addRun(bank, new Date().toISOString().slice(0, 7), relevant.map((p) => ({ ...p, topic: TOPICS.includes(p.topic) ? p.topic : null, firstLine: firstLine(p.body) })));
+  await writeFile(join(OUT, 'bank.json'), JSON.stringify(bank, null, 2) + '\n');
+  const learned = [...fresh.patterns.map((k) => `shape: ${k}`), ...fresh.topics.map((k) => `topic: ${k}`)];
+  if (learned.length) {
+    await telegram(`📈 Fred learned something (won in ${PROMOTE.months}+ months, from ${PROMOTE.authors}+ different people):\n${learned.map((l) => '• ' + l).join('\n')}\n\nYour LinkedIn drafts will now lean on this. To stop one, tell Claude to block it.`);
+  }
 }
 
 main().catch(async (e) => { console.error('FATAL:', e.message); process.exit(1); });
