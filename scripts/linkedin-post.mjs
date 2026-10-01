@@ -126,11 +126,12 @@ function userPrompt(passages, angles, feedback, last, job) {
   const a = Object.entries(angles).map(([n, x]) => `${n}. ${x.name}\n   First line: ${x.hook}\n   Shape: ${x.shape}\n   Length: ${x.words[0]}–${x.words[1]} words`).join('\n');
   const p = passages.map((x, i) => `[${i}] (${x.date})\n${x.text}`).join('\n\n');
   const research = ['reach', 'positioning'].includes(job) ? `\n\nRESEARCH IDEAS (use exactly ONE, as worded here):\n${RESEARCH.map((r) => '- ' + r.line).join('\n')}` : '';
-  // What's working on LinkedIn this week (scripts/linkedin-monitor.mjs, Mondays). Patterns only, never their words.
+  // What's working on LinkedIn (scripts/linkedin-monitor.mjs, monthly on the 1st). Patterns only, never their words.
+  // Used for 35 days so it covers the whole month (was 14, which left Fred with nothing from about the 15th; 1 Oct 2026).
   let working = '';
   try {
     const m = JSON.parse(readFileSync(join(ROOT, 'scripts', 'state', 'linkedin-monitor', 'latest.json'), 'utf8'));
-    if (Date.now() - Date.parse(m.date) < 14 * 864e5 && m.posts?.length) {
+    if (Date.now() - Date.parse(m.date) < 35 * 864e5 && m.posts?.length) {
       working = `\n\nWHAT'S WORKING ON LINKEDIN THIS WEEK (top public posts in Joel's space; copy the pattern if it fits, never their words):\n${m.posts.slice(0, 5).map((x) => `- ${x.hook} · ${x.structure}: ${x.why}`).join('\n')}`;
     }
   } catch { /* no monitor data yet */ }
