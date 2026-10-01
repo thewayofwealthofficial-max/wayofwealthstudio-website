@@ -50,7 +50,7 @@ jobs:
         run: |
           git config user.name "Way of Wealth Bot"
           git config user.email "bot@thewayofwealth.shop"
-          git add scripts/state/linkedin-posted.json
+          git add scripts/state/linkedin-posted.json scripts/state/linkedin-own.json
           git commit -m "linkedin: posted draft recorded"
           for i in 1 2 3; do git pull --rebase -q origin main && git push && exit 0; sleep 5; done
           exit 1

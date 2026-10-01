@@ -7,6 +7,7 @@
 
 import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
+import { readOwn, writeOwn } from './linkedin-own.mjs';
 
 const SITE = 'https://wayofwealthcoaching.com';
 const { DRAFT_ID: ID, FRED_SECRET, LINKEDIN_ACCESS_TOKEN: TOKEN, LINKEDIN_PERSON_URN: AUTHOR } = process.env;
@@ -31,7 +32,7 @@ async function main() {
   if (ids.includes(ID)) { console.log('Already posted (git record). Nothing to do.'); return; }
   const f = await fetch(`${SITE}/api/linkedin/draft?action=fetch&id=${ID}`, { headers: { 'x-fred-secret': FRED_SECRET } });
   if (!f.ok) throw new Error(`Draft fetch ${f.status}`);
-  const { text, status } = await f.json();
+  const { text, status, angle } = await f.json();
   if (status === 'posted') { console.log('Already posted. Nothing to do.'); return; }
 
   // Same version fallback as linkedin-share.mjs: LinkedIn retires API versions after about a year.
@@ -55,6 +56,10 @@ async function main() {
   const urn = r.headers.get('x-restli-id') || '';
   console.log(`Posted to LinkedIn (version ${version}): ${urn}`);
   writeFileSync(POSTED, JSON.stringify([...ids, ID].slice(-200), null, 2) + '\n'); // committed by the workflow
+  // Recorded for scoring 7 days from now (linkedin-own.mjs). Id, link and post type only; never the text.
+  const own = readOwn();
+  own.posts.push({ id: ID, urn, angle: Number(angle) || null, postedAt: new Date().toISOString() });
+  writeOwn(own);
 
   const done = await fetch(`${SITE}/api/linkedin/draft?action=done&id=${ID}`, { method: 'POST', headers: { 'x-fred-secret': FRED_SECRET } });
   if (!done.ok) console.log(`Warning: posted, but could not mark the draft done (${done.status}).`);

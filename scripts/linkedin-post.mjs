@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { recentJoelWords } from './daily-email/fathom.mjs';
 import { JOEL_FACTS } from './daily-email/voice.mjs';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
+import { readOwn, ranking as ownRanking } from './linkedin-own.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STATE = join(ROOT, 'scripts', 'state', 'linkedin-native.json');
@@ -143,6 +144,14 @@ function userPrompt(passages, angles, feedback, last, job) {
       working += `\n\nPROVEN IN JOEL'S SPACE (won across several months, from different people; lean on these):${patterns.length ? `\n- Shapes: ${patterns.join('; ')}` : ''}${topics.length ? `\n- Topics: ${topics.join('; ')}` : ''}`;
     }
   } catch { /* no bank yet */ }
+  // Joel's OWN results (scripts/linkedin-own.mjs): post types and topics with 3+ scored posts, vs his average.
+  try {
+    const r = ownRanking(readOwn());
+    const line = (xs, name) => xs.map((x) => `${name(x.key)} ${x.avg} per 1k over ${x.n} posts (${x.avg >= r.overall ? 'above' : 'below'} his average)`).join('; ');
+    if (r.angles.length || r.topics.length) {
+      working += `\n\nJOEL'S OWN RESULTS (his average: ${r.overall} reactions+comments per 1k followers):${r.angles.length ? `\n- Angles: ${line(r.angles, (k) => `angle ${k}`)}` : ''}${r.topics.length ? `\n- Topics: ${line(r.topics, (k) => k)}` : ''}\nWhen a passage fits more than one angle or topic, prefer the one that has done better for HIM. His own results count for more than the market's.`;
+    }
+  } catch { /* no own results yet */ }
   if (working) working += `\n\nTOPICS: if one of Joel's passages below genuinely speaks to a topic named above, prefer that passage. Never stretch a passage to fit a topic, and never add a claim he didn't make.`;
   return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
 }

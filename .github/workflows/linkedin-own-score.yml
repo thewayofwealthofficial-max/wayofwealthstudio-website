@@ -1,0 +1,57 @@
+name: LinkedIn Own Results
+
+# Daily: scores each of Joel's LinkedIn posts once it is 7 days old (reactions + comments per 1k followers, read from
+# the public page logged out) and tells him. The LinkedIn writer learns from these. See scripts/linkedin-own.mjs.
+# Usually 0 or 1 page reads a day. GitHub runs crons hours late, so 05:27 UTC lands mid-morning UK.
+
+on:
+  schedule:
+    - cron: '27 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: linkedin-own-score
+  cancel-in-progress: false
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Score posts that are 7 days old
+        env:
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/linkedin-own.mjs
+
+      - name: Save the scores
+        if: always()
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-own.json
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "linkedin: own post scores"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push && exit 0; sleep 5; done
+          exit 1
+
+      - name: Tell Joel it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn scoring failed" --body "Nothing is lost; it tries again tomorrow. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
