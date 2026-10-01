@@ -76,6 +76,17 @@
 [functions."email-dispatch"]
   schedule = "40 * * * *"
 
+# Free-tool tracking (replaces the retired quiz job, 1 Oct 2026). Steps come in from /reset and the diagnostic.
+[[redirects]]
+  from = "/api/magnet/track"
+  to = "/.netlify/functions/magnet-track"
+  status = 200
+  force = true
+
+# 20:00 UK round-up of the free tools. Runs hourly; the function only sends in the 20:00 UK hour.
+[functions."magnet-report"]
+  schedule = "5 * * * *"
+
 # Retired pages (Joel, 2026-09-26): old tools and funnels, sent to the live pages
 [[redirects]]
   from = "/budget-tracker"

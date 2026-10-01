@@ -162,10 +162,10 @@ const description = "Find out where your money is actually going in under 3 minu
       We set up these exact sub-accounts and automated transfers together.
     </p>
     <div class="rs-actions">
-      <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer">
+      <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer" data-track="book">
         Book a Free Consultation →
       </a>
-      <a class="rs-btn rs-btn-ghost" href={LINKS.skool} target="_blank" rel="noopener noreferrer">
+      <a class="rs-btn rs-btn-ghost" href={LINKS.skool} target="_blank" rel="noopener noreferrer" data-track="skool">
         Join the Skool Community →
       </a>
     </div>
@@ -188,6 +188,32 @@ const description = "Find out where your money is actually going in under 3 minu
 
 <script>
   const $ = (id) => document.getElementById(id);
+
+  /* ---------- step tracking ----------
+     Tells netlify/functions/magnet-track.js how far people get, so Joel sees drop-off (1 Oct 2026).
+     No names, no emails, no numbers: just the step and a random id for this browser tab. */
+  const visitor = (() => {
+    try {
+      let v = sessionStorage.getItem('wow_mv');
+      if (!v) { v = Math.random().toString(36).slice(2, 14).padEnd(12, '0'); sessionStorage.setItem('wow_mv', v); }
+      return v;
+    } catch (err) { return Math.random().toString(36).slice(2, 14).padEnd(12, '0'); }
+  })();
+  const tracked = new Set();
+  function track(step) {
+    if (tracked.has(step)) return;
+    tracked.add(step);
+    const body = JSON.stringify({ t: 'reset', s: step, v: visitor });
+    try {
+      if (!navigator.sendBeacon || !navigator.sendBeacon('/api/magnet/track', new Blob([body], { type: 'text/plain' }))) {
+        fetch('/api/magnet/track', { method: 'POST', body, keepalive: true }).catch(() => {});
+      }
+    } catch (err) { /* tracking never gets in the way of the tool */ }
+  }
+  track('opened');
+  $('rs-rev').addEventListener('input', () => track('started'));
+  document.querySelectorAll('.rs-chip, [data-cur]').forEach((b) => b.addEventListener('click', () => track('started')));
+  document.querySelectorAll('[data-track]').forEach((a) => a.addEventListener('click', () => track(a.getAttribute('data-track'))));
 
   const state = {
     cur: '£',
@@ -312,6 +338,7 @@ const description = "Find out where your money is actually going in under 3 minu
 
   /* ---------- reveal ---------- */
   $('rs-reveal-btn').addEventListener('click', () => {
+    track('reveal');
     if (state.unlocked) {
       paint();
       $('rs-locked').hidden = false;
@@ -390,6 +417,7 @@ const description = "Find out where your money is actually going in under 3 minu
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        track('email');
         unlock();
         return;
       }
