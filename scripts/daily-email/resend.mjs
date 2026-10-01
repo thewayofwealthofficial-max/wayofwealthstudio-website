@@ -7,7 +7,24 @@ let last = 0;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Resend's own outages (500s) get retried on reads only: 1 Oct 2026 the list email died on two GETs during a
+// Resend "partial degradation". Writes are never retried on a 500, because a send that errored may still have
+// gone out, and a retry could send the email twice.
+const OUTAGE_WAITS_MS = [10e3, 30e3, 60e3, 120e3];
+
 export async function rs(apiKey, path, { method = 'GET', body } = {}) {
+  for (let outage = 0; ; outage++) {
+    try {
+      return await rsOnce(apiKey, path, { method, body });
+    } catch (e) {
+      if (method !== 'GET' || !(e.status >= 500) || outage >= OUTAGE_WAITS_MS.length) throw e;
+      console.log(`Resend ${e.status} on GET ${path}; their side. Waiting ${OUTAGE_WAITS_MS[outage] / 1000}s and trying again.`);
+      await sleep(OUTAGE_WAITS_MS[outage]);
+    }
+  }
+}
+
+async function rsOnce(apiKey, path, { method, body }) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const wait = last + GAP_MS - Date.now();
     if (wait > 0) await sleep(wait);
@@ -24,7 +41,7 @@ export async function rs(apiKey, path, { method = 'GET', body } = {}) {
     const text = await res.text();
     let json = null;
     try { json = text ? JSON.parse(text) : null; } catch { /* leave null */ }
-    if (!res.ok) throw new Error(`Resend ${method} ${path} failed: ${res.status} ${text.slice(0, 300)}`);
+    if (!res.ok) throw Object.assign(new Error(`Resend ${method} ${path} failed: ${res.status} ${text.slice(0, 300)}`), { status: res.status });
     return json;
   }
   throw new Error(`Resend ${method} ${path} still rate limited after retries`);
