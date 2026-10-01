@@ -5,12 +5,30 @@
 //
 // ENV: DRAFT_ID, FRED_SECRET, LINKEDIN_ACCESS_TOKEN, LINKEDIN_PERSON_URN.
 
+import { execSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
+
 const SITE = 'https://wayofwealthcoaching.com';
 const { DRAFT_ID: ID, FRED_SECRET, LINKEDIN_ACCESS_TOKEN: TOKEN, LINKEDIN_PERSON_URN: AUTHOR } = process.env;
 if (!/^[0-9a-f]{16}$/.test(ID || '')) { console.error('FATAL: bad DRAFT_ID'); process.exit(1); }
 if (!FRED_SECRET || !TOKEN || !AUTHOR) { console.error('FATAL: FRED_SECRET / LINKEDIN_ACCESS_TOKEN / LINKEDIN_PERSON_URN not set'); process.exit(1); }
 
+// Ids already posted, kept in git because git always reads back the newest copy. Netlify Blobs can lag a save by
+// up to ~60s, so two quick taps on "Approve" could both read "not posted" and post twice (found 1 Oct 2026).
+// The workflow queues runs per id, and this reads origin/main fresh, so the second run sees the first one's commit.
+const POSTED = 'scripts/state/linkedin-posted.json';
+function postedIds() {
+  execSync('git fetch -q origin main'); // a failed fetch stops the run: never post without checking
+  try {
+    return JSON.parse(execSync(`git show origin/main:${POSTED}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
+  } catch {
+    return []; // file not created yet
+  }
+}
+
 async function main() {
+  const ids = postedIds();
+  if (ids.includes(ID)) { console.log('Already posted (git record). Nothing to do.'); return; }
   const f = await fetch(`${SITE}/api/linkedin/draft?action=fetch&id=${ID}`, { headers: { 'x-fred-secret': FRED_SECRET } });
   if (!f.ok) throw new Error(`Draft fetch ${f.status}`);
   const { text, status } = await f.json();
@@ -36,6 +54,7 @@ async function main() {
   if (r.status !== 201) throw new Error(`LinkedIn API ${r.status} (version ${version}): ${(await r.text()).slice(0, 300)}`);
   const urn = r.headers.get('x-restli-id') || '';
   console.log(`Posted to LinkedIn (version ${version}): ${urn}`);
+  writeFileSync(POSTED, JSON.stringify([...ids, ID].slice(-200), null, 2) + '\n'); // committed by the workflow
 
   const done = await fetch(`${SITE}/api/linkedin/draft?action=done&id=${ID}`, { method: 'POST', headers: { 'x-fred-secret': FRED_SECRET } });
   if (!done.ok) console.log(`Warning: posted, but could not mark the draft done (${done.status}).`);

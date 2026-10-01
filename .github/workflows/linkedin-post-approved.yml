@@ -8,7 +8,7 @@ on:
     types: [linkedin-post-approved]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: linkedin-post-approved-${{ github.event.client_payload.id }}
@@ -44,10 +44,29 @@ jobs:
           URL: ${{ steps.post.outputs.url }}
         run: node scripts/telegram-notify.mjs --emoji "✅" --title "Posted on LinkedIn" --body "$URL"
 
+      # Record the id so a second tap on "Approve" can't post it twice (linkedin-publish.mjs reads this first).
+      - name: Save the posted id
+        if: success() && steps.post.outputs.url != ''
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-posted.json
+          git commit -m "linkedin: posted draft recorded"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push && exit 0; sleep 5; done
+          exit 1
+
       - name: Tell Joel it failed
-        if: failure()
+        if: failure() && steps.post.outcome != 'success'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           node scripts/telegram-notify.mjs --emoji "❌" --title "LinkedIn post failed" --body "Your approved post did not go up. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Warn Joel the record didn't save
+        if: failure() && steps.post.outcome == 'success'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/telegram-notify.mjs --emoji "⚠️" --title "Posted, but not recorded" --body "Your post IS live. Don't tap Approve on it again. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
