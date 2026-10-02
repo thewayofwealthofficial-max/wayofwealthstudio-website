@@ -14,6 +14,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gatherItems, fetchArticleText } from './sources.mjs';
+import { joelVoice, leaksName } from '../voice/joel-voice.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = join(__dirname, '..', '..', 'src', 'content', 'blog');
@@ -155,15 +156,19 @@ async function main() {
   // draft so far. Rewriting the whole post each time kept creating new problems (daily blog, Sep 2026).
   // API errors still stop the run; only an unreadable reply is retried.
   const brief = `NEWS ITEM: ${pick.item.title}\nPUBLISHER: ${pick.item.source}\nURL: ${url}\nBEHAVIOURAL IDEA TO USE: ${pick.concept}\nWHY IT MATTERS TO THE READER: ${pick.why}\n\nSOURCE TEXT (the only facts you may state about the news):\n${source}`;
+  // Joel's voice from his Fathom calls (scripts/voice/joel-voice.mjs), for the draft AND every repair (2 Oct 2026).
+  const voice = await joelVoice();
   let post = null, problems = [], best = null, bestProblems = null;
   for (let attempt = 1; attempt <= 6; attempt++) {
     const user = best
       ? `${brief}\n\nBelow is your draft. It failed these automatic checks:\n- ${bestProblems.join('\n- ')}\n\nFix ONLY those problems. Keep every other sentence, heading and link exactly as it is. Return the whole post in the same output shape.\n\n${JSON.stringify({ title: best.title, description: best.description, tags: best.tags })}\n<<<BODY>>>\n${best.body}\n<<<END>>>`
       : `${brief}\n\nWrite the post now.`;
-    const reply = await claude(WRITER_SYSTEM, user);
+    const reply = await claude(WRITER_SYSTEM + voice.block, user);
     let cand;
     try { cand = parse(reply); } catch (err) { console.log(`Attempt ${attempt}: unreadable reply (${err.message.slice(0, 100)}). Trying again.`); continue; }
     problems = check(cand, source, url);
+    // Never name anyone from his private calls. The name itself is not logged: the logs are public.
+    if (leaksName(`${cand.title || ''} ${cand.description || ''} ${cand.body || ''}`, [...voice.names].filter((n) => !source.includes(n)))) problems.push('Contains a first name of someone from Joel\'s private calls. Remove every person\'s name except Joel\'s and names from the news source.');
     console.log(`Attempt ${attempt}${best ? ' (repair)' : ''}: "${cand.title}" -> ${problems.length ? problems.join(' | ') : 'passed all checks'}`);
     if (!problems.length) { post = cand; break; }
     if (!best || problems.length <= bestProblems.length) { best = cand; bestProblems = problems; }

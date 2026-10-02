@@ -14,6 +14,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { joelVoice, leaksName } from './voice/joel-voice.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STATE = join(ROOT, 'scripts', 'state', 'b2b', 'suggested.json');
@@ -108,10 +109,10 @@ async function findPodcasts(exclude) {
   return (firstJson(text).orgs || []).filter((o) => o.url && seen.has(host(o.url)) && !platform.test(host(o.url)) && !exclude.includes(host(o.url)));
 }
 
-async function pitchFor(org) {
+async function pitchFor(org, voice) {
   const j = await claude({
     max_tokens: 700,
-    system: `You write ONE short outreach email from Joel to the ${org.type === 'podcast' ? 'host of a podcast' : 'founder or team of a practitioner-training organisation'}.\nWHO JOEL IS: ${JOEL}\nTHE OFFER: ${org.type === 'podcast' ? PODCAST_OFFER : OFFER}\nRULES: 90 to 130 words. Plain, warm, British spelling, no em dashes, short sentences. Open with one specific, TRUE detail from their own website text below (never invent one). Say who Joel is in one line. Make the offer. End with one easy question (e.g. would this be useful for your next intake? or, for a podcast, would this fit your show?).Describe Joel ONLY as "a Qualified Financial Planner with an MSc in Behavioural Economics who coaches self-employed people on the behaviour side of money"; NEVER say or imply he works with, specialises in, or has coached practitioners, healers, teachers or facilitators. Never guess or interpret anything about their students, listeners, business or graduates (no "that suggests", no "many new teachers struggle", no "exactly where X gets complicated"); only restate what their own site says. Never say or imply Joel has listened to, watched, read, enjoyed or loved anything of theirs (he has not); say "your site says" instead. No statistics, no client results, no claims about what "most" or "many" people feel, no price, no links. No dashes of any kind, in the subject or the body. Sign off "Joel". Output only JSON {"subject":"...","body":"..."}.`,
+    system: `You write ONE short outreach email from Joel to the ${org.type === 'podcast' ? 'host of a podcast' : 'founder or team of a practitioner-training organisation'}.\nWHO JOEL IS: ${JOEL}\nTHE OFFER: ${org.type === 'podcast' ? PODCAST_OFFER : OFFER}\nRULES: 90 to 130 words. Plain, warm, British spelling, no em dashes, short sentences. Open with one specific, TRUE detail from their own website text below (never invent one). Say who Joel is in one line. Make the offer. End with one easy question (e.g. would this be useful for your next intake? or, for a podcast, would this fit your show?).Describe Joel ONLY as "a Qualified Financial Planner with an MSc in Behavioural Economics who coaches self-employed people on the behaviour side of money"; NEVER say or imply he works with, specialises in, or has coached practitioners, healers, teachers or facilitators. Never guess or interpret anything about their students, listeners, business or graduates (no "that suggests", no "many new teachers struggle", no "exactly where X gets complicated"); only restate what their own site says. Never say or imply Joel has listened to, watched, read, enjoyed or loved anything of theirs (he has not); say "your site says" instead. No statistics, no client results, no claims about what "most" or "many" people feel, no price, no links. No dashes of any kind, in the subject or the body. Sign off "Joel". Output only JSON {"subject":"...","body":"..."}.${voice.block}\nThis is a first email to a stranger, so keep his voice but go light on "like" and "you know". The rules above still win.`,
     messages: [{ role: 'user', content: `ORGANISATION: ${org.name} (${org.type}, ${org.country})\nWHY THEY FIT: ${org.why}\nTHEIR OWN WEBSITE TEXT:\n${org.about}` }],
   });
   const p = firstJson((j.content || []).map((b) => b.text || '').join(''));
@@ -121,6 +122,7 @@ async function pitchFor(org) {
   if (/\b(?:work|works|working|specialis\w*|coach(?:es)?)\b[^.\n]{0,40}\b(?:practitioners?|healers?|teachers?|facilitators?)\b/i.test(p.body)) throw new Error('pitch implies Joel works with practitioners');
   if (/\bI(?:'ve| have)?\s+(?:just\s+)?(?:listened|watched|read|heard|enjoyed|loved|been listening|been following)\b/i.test(p.body)) throw new Error('pitch claims Joel consumed their content');
   if (/\b(?:many|most)\s+(?:new|newly)?\s*\w*\s*(?:teachers|facilitators|practitioners|graduates|students|listeners)\b|that suggests/i.test(p.body)) throw new Error('pitch makes a guessed claim');
+  if (leaksName(`${p.subject} ${p.body}`, [...voice.names].filter((n) => !org.about?.includes(n)))) throw new Error("pitch names someone from Joel's private calls");
   return p;
 }
 
@@ -139,6 +141,8 @@ async function main() {
   if (!ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY not set');
   let state = [];
   try { state = JSON.parse(await readFile(STATE, 'utf8')); } catch { /* first run */ }
+  // Joel's voice from his Fathom calls (scripts/voice/joel-voice.mjs), for every pitch (2 Oct 2026).
+  const voice = await joelVoice();
   const candidates = await findOrgs(state.map((s) => s.domain));
   console.log(`${candidates.length} organisations found in real search results.`);
   const picked = [];
@@ -148,7 +152,7 @@ async function main() {
       const c = await contactFor(o.url);
       if (!c || (!c.email && !c.contactPage)) continue; // no public way to reach them
       const org = { ...o, ...c };
-      org.pitch = await pitchFor(org);
+      org.pitch = await pitchFor(org, voice);
       picked.push(org);
     } catch { /* one bad site never stops the run */ }
   }
@@ -162,7 +166,7 @@ async function main() {
         const c = await contactFor(o.url);
         if (!c || (!c.email && !c.contactPage)) continue; // no public way to reach them
         const pod = { ...o, ...c, type: 'podcast' };
-        pod.pitch = await pitchFor(pod);
+        pod.pitch = await pitchFor(pod, voice);
         pods.push(pod);
       } catch { /* one bad site never stops the run */ }
     }

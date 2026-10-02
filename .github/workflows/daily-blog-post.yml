@@ -40,6 +40,7 @@ jobs:
         id: generate
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
         run: node scripts/generate-daily-post.mjs
 
       - name: Commit + push

@@ -6,6 +6,7 @@
 
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
+import { joelVoice, leaksName } from './voice/joel-voice.mjs';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -374,6 +375,9 @@ async function main() {
   }
 
   const posts = await listPosts();
+  // Joel's voice from his Fathom calls (scripts/voice/joel-voice.mjs), for the draft AND every repair (2 Oct 2026).
+  const voice = await joelVoice();
+  const system = SYSTEM_PROMPT + voice.block;
   // One full draft, then up to 5 repairs that rewrite ONLY the flagged sentences. Rewriting the whole
   // post each time kept creating new problems (3 failed days out of 7 in late Sep 2026). The checks
   // themselves are unchanged. If a repair makes things worse, the next repair starts from the best draft.
@@ -382,7 +386,7 @@ async function main() {
     const repairing = !!best;
     console.log(`Calling Claude (${repairing ? `repair ${attempt - 1}` : 'first draft'})...`);
     const prompt = repairing ? buildRepairPrompt(best, bestProblems) : buildUserPrompt(next, posts, '');
-    const responseText = await callClaude(SYSTEM_PROMPT, prompt); // API errors (bad key, outage) stop the run
+    const responseText = await callClaude(system, prompt); // API errors (bad key, outage) stop the run
     let cand;
     try {
       cand = parseClaudeResponse(responseText);
@@ -393,6 +397,8 @@ async function main() {
     }
     if (!cand.description || !cand.body) { console.log('Reply missing description or body. Trying again.'); continue; }
     problems = checkShape(cand.body, posts, cand.description, cand.tags);
+    // Never name anyone from his private calls. The name itself is not logged: the logs are public.
+    if (leaksName(`${cand.title || ''} ${cand.description} ${cand.body}`, voice.names)) problems.push('Contains a first name of someone from Joel\'s private calls. Remove every person\'s name except Joel\'s.');
     console.log(problems.length ? `Problems: ${problems.join(' | ')}` : 'Passed all shape checks.');
     if (!problems.length) { parsed = cand; break; }
     if (!best || problems.length <= bestProblems.length) { best = cand; bestProblems = problems; }
