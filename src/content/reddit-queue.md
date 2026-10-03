@@ -70,7 +70,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 49 | ✅ | Would charging for energy healing be a form of good or bad Karma and why do think so? | money scripts (Klontz), moral identity | Self-employed | Wellness Practitioner |
 | 50 | ✅ | Why do some meditation teachers charge money while others offer it for free? | social norms vs market norms (Heyman & Ariely), money scripts | Self-employed | Wellness Practitioner |
 | 51 | ✅ | Why do you charge for your energy healing services (healing sessions, instruction, attunement, etc.)? | money scripts (Klontz), cognitive dissonance | Self-employed | Wellness Practitioner |
-| 52 | 🔵 | Are there energy healers who offer their services for free? | social norms vs market norms, identity | Self-employed | Wellness Practitioner |
+| 52 | ✅ | Are there energy healers who offer their services for free? | social norms vs market norms, identity | Self-employed | Wellness Practitioner |
 | 53 | 🔵 | How can I charge $100 an hour as a yoga instructor? | anchoring, self-worth and price fusion | Self-employed | Wellness Practitioner, Self-Employed Stresser |
 | 54 | 🔵 | How much should I charge for a Reiki session? | anchoring, reference points | Self-employed | Wellness Practitioner |
 | 55 | 🔵 | How much should I charge for Reiki healing sessions? | social comparison, anchoring | Self-employed | Wellness Practitioner |
