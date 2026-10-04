@@ -40,13 +40,13 @@ When you imagine moving money from savings to pay off debt, your brain runs a ve
 
 The pain of watching savings go down is *felt* immediately. The relief of the debt going down is *processed* intellectually, later, if at all.
 
-So you leave both numbers where they are. The brain concludes this is the least painful option. And it's wrong — but not in a way that lecturing yourself about it will fix.
+So you leave both numbers where they are. The brain concludes this is the least painful option. Whether that's right for you is a separate question. But lecturing yourself won't settle it.
 
 ## Why Standard Advice Completely Misses This
 
 Most financial advice at this point would say: "Mathematically, you should pay off the higher-interest debt first. It doesn't make sense to save at 4% while paying 20% in interest."
 
-True. Completely true. Also completely useless for Jess.
+The arithmetic is true. It's also completely useless for Jess.
 
 Because Jess already *knows* this. She's worked it out on a spreadsheet. She's read the Reddit thread. She's had the conversation with herself at 11pm while the numbers glow at her from the screen.
 
@@ -71,7 +71,7 @@ Ask yourself, honestly:
 
 The answer changes the strategy.
 
-If the fear is about having no buffer, the fix isn't "be braver." It's structural — keep a specific, named emergency fund (Thaler's research suggests even *labelling* accounts differently changes behaviour) and move only the excess.
+If the fear is about having no buffer, the fix isn't "be braver." It's structural. A specific, named emergency pot can make the buffer feel solid (Thaler's research suggests even *labelling* accounts differently changes behaviour). Whether any of your savings should go towards the debt depends on your own numbers. StepChange, National Debtline and Citizens Advice give free debt advice and can look at them with you.
 
 If the fear is about identity — if that savings number is load-bearing in your sense of yourself as someone who's okay — that's worth sitting with before you make any moves. Because no spreadsheet decision will feel right until you've acknowledged what the number actually *means* to you.
 

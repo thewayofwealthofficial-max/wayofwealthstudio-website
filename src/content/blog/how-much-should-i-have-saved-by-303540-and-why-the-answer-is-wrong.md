@@ -66,8 +66,8 @@ Those are answerable questions. They belong to you.
 
 That said — some actual context is worth having:
 
-- **Emergency fund first.** Before retirement benchmarks mean anything, three months of essential expenses in an accessible account is the foundation that makes everything else possible. Not because it's a rule. Because without it, every unexpected cost becomes a crisis that unravels longer-term saving.
-- **Pension contributions and employer matching.** If your employer matches pension contributions and you're not taking the full match, that's the closest thing to free money in personal finance. The exact amount matters less than making sure you're not leaving matched contributions on the table.
+- **What a buffer does.** Having some money set aside for surprises changes how every other money decision feels. How much, and where, is yours to decide.
+- **Pension contributions and employer schemes.** Many employers pay into your pension when you pay in too. It's worth knowing how your own scheme works. MoneyHelper explains workplace pensions. It's free and backed by the government.
 - **The gap between "doing nothing" and "doing something" is enormous.** The difference between £0 saved and £50/month saved isn't just financial — it's psychological. It changes your relationship with your future self.
 
 None of those involve a specific number by a specific age.

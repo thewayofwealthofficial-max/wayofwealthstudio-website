@@ -46,7 +46,7 @@ Most budget advice is built on the assumption that you need better information a
 
 That model has a fundamental design flaw: it treats present bias as ignorance. As if the problem is that you don't know buying three candles on a Tuesday is slightly at odds with saving for a deposit. You know. Everyone knows. Knowing is not the bottleneck.
 
-The second problem with traditional budgeting is that it puts the decision point at the moment of maximum temptation — the point of purchase — and relies on willpower to win there. Willpower is a depletable resource (Baumeister's ego depletion research is contested in its specifics, but the general principle holds: making repeated decisions is tiring). Placing the entire weight of your financial life on a single tired "should I though?" in the checkout queue is not a robust system.
+The second problem with traditional budgeting is that it puts the decision point at the moment of maximum temptation — the point of purchase — and relies on willpower to win there. But the brain takes the easiest route it can find. Kahneman calls this the law of least effort. At the checkout, the easy route is to buy. Placing the entire weight of your financial life on a single tired "should I though?" in the checkout queue is not a robust system.
 
 What actually works is **pre-commitment** — designing the decision *before* you're in the emotionally activated state. Thaler and Shlomo Benartzi built the entire Save More Tomorrow (SMarT) programme on this insight. People who agreed in advance to save future pay rises ended up saving far more than people who were asked to save more right now. Same people. Completely different outcome. The architecture of the decision did the work, not the discipline.
 

@@ -8,7 +8,7 @@ redditQuestion: "Is it too late to fix my finances in my 40s?"
 readingTime: "6 min read"
 ---
 
-You typed that question into Google at, what, 11pm? Lying there running numbers in your head, calculating how far behind you are, wondering if the window has already closed. That feeling is real. It is also, I'd argue, one of the most predictable cognitive traps in all of behavioural economics — and I say that as someone with an MSc in it who still fell into the same trap while losing £150,000 in a business that was clearly failing.
+You typed that question into Google at, what, 11pm? Lying there running numbers in your head, calculating how far behind you are, wondering if the window has already closed. That feeling is real. It is also, I'd argue, one of the most predictable cognitive traps in all of behavioural economics. I say that as someone who has been caught by these traps. I once turned £3,000 into £150,000 trading, thought I was a genius, and lost all of it, with no degree at the time. That loss is what sent me to get my MSc in Behavioural Economics.
 
 So no, this is not a lecture. This is what's actually happening in your brain.
 
@@ -74,7 +74,7 @@ People in their 40s and 50s typically have higher earning potential than they di
 
 The maths is different from the maths at 25. It is not broken.
 
-The honest version of this, from someone who spent years as a financial planner before losing a significant amount of money in a business and having to reckon with my own sunk cost thinking: the people who did worst in their later years were not the ones who started late. They were the ones who let the shame of starting late stop them from starting at all.
+The honest version of this, from someone who lost £150,000 before I had any qualifications, and then had to reckon with my own thinking: the people who did worst in their later years were not the ones who started late. They were the ones who let the shame of starting late stop them from starting at all.
 
 Starting imperfectly, late, with incomplete information and an irregular income, is categorically better than not starting. The fresh start effect gives you the psychological permission slip to treat now as the beginning rather than the middle of something that already went wrong.
 

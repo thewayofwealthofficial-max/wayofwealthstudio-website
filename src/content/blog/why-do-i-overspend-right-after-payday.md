@@ -44,7 +44,7 @@ The advice usually goes:
 - Exercise willpower
 - "Pay yourself first"
 
-None of this addresses *why* fresh money feels different than old money. None of it addresses the emotional cycle of scarcity and relief. And none of it acknowledges that willpower is a finite resource that you've already depleted by the time payday arrives.
+None of this addresses *why* fresh money feels different than old money. None of it addresses the emotional cycle of scarcity and relief. And none of it accounts for how the brain works: it takes the easiest route it can find. On payday, the easy route is to spend. The fix is to make the good choice the easy one.
 
 Brad Klontz's research on money scripts shows that many of us operate with the unconscious belief that "I don't deserve to have money." When payday hits, the cognitive dissonance between "I have money" and "I don't deserve to have money" gets resolved by... spending the money. It's not logical, but it's psychologically coherent.
 

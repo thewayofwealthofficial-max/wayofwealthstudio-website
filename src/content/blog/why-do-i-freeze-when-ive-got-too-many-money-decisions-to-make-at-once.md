@@ -43,7 +43,7 @@ For anxious avoiders, that regret simulation starts earlier and runs louder than
 
 Most personal finance advice assumes that information is the problem. So it gives you more information. More frameworks. A six-step system. A 50/30/20 rule followed by a sinking fund method followed by a debt avalanche calculator.
 
-I did this too, for years. I have an MSc in Behavioural Economics and I still spent a period in my late twenties with £150,000 passing through my hands while I filed exactly zero tax returns, because the task felt so tangled that I couldn't find a way in. I am not writing this from a position of having always had it sorted.
+I did this too, for years. In my late twenties I turned £3,000 into £150,000 trading, thought I was a genius, and lost all of it, with no degree at the time. While that money was passing through my hands, I filed exactly zero tax returns, because the task felt so tangled that I couldn't find a way in. Losing it is what sent me to get my MSc in Behavioural Economics. I am not writing this from a position of having always had it sorted.
 
 The information wasn't my problem. The entry point was.
 

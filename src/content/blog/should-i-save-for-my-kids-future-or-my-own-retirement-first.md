@@ -28,7 +28,7 @@ Both scripts are in there. Both feel true. That's why the question feels impossi
 
 Most financial content will tell you the answer is obvious: prioritise your pension. Your kids can borrow for university; you can't borrow for retirement. Put on your own oxygen mask first.
 
-That advice is *correct*. And it still won't move you.
+Whether that fits you depends on your own situation. And either way, it won't move you.
 
 Here's why. When a decision feels identity-threatening — when it makes you feel like a bad mother, a selfish person, someone who got their priorities wrong — the rational part of your brain goes quiet and the emotional part takes over.
 
@@ -50,26 +50,26 @@ Your child's needs feel urgent right now, today, viscerally.
 
 This isn't a character flaw. It's a feature of human cognition that holds across cultures, income levels, and education. You are not the exception.
 
-But it does mean that any plan you make has to account for it. Relying on willpower — just deciding to prioritise your pension — almost never works long-term if the underlying identity script hasn't been examined.
+But it does mean that any plan you make has to account for it. Relying on willpower — just deciding to change what you save for — almost never works long-term if the underlying identity script hasn't been examined.
 
 ## What actually changes the equation
 
 Let me give you the structural facts, cleanly, because they matter.
 
-- **Your pension comes with money attached.** Employer contributions, tax relief at your marginal rate — a basic-rate taxpayer putting in £80 effectively contributes £100. That 25% uplift is immediate, guaranteed, and disappears if you don't use it.
+- **Pensions can come with money attached.** Many employers pay in when you do. Pensions also get tax relief, which means some of the tax you paid goes into the pot. How much depends on your scheme and your tax position.
 - **Your kids have options you don't.** Student loans in the UK are income-contingent and arguably more like a graduate tax than a traditional debt. Many graduates repay far less than they borrowed before the loan is written off. Your pension has no equivalent fallback.
-- **Delaying pension contributions is expensive.** Due to compounding, money invested in your 30s is worth significantly more at retirement than the same money invested in your 40s. This gap is real and it doesn't care how good your intentions were.
+- **Time matters with pensions.** Because of compounding, money put in earlier has longer to grow, if it grows. Investments can go down as well as up, so nothing here is promised.
 - **A financially secure parent is not a burden on their children.** This is the part the guilt script never shows you. The alternative — reaching retirement with insufficient savings and relying on your adult children — is a much heavier weight to place on them.
 
-None of this is to say *never* save for your kids. Junior ISAs, gifting, helping with a house deposit — these are all meaningful things. The structural argument is about *sequencing*: get the pension to a point where you're capturing employer contributions and tax relief in full, first.
+None of this is to say *never* save for your kids. Junior ISAs, gifting, helping with a house deposit — these are all meaningful things. What order is right for your family depends on your own numbers. MoneyHelper explains how pensions and saving for children work. It's free and backed by the government.
 
 ## The specific small action worth taking this week
 
 Don't overhaul everything. Don't build a spreadsheet. Don't set a budget.
 
-Just do this one thing: find out what your employer will match into your pension, and check whether you're currently contributing enough to get all of it.
+Just do this one thing: find out what your employer pays into your pension, and how it works.
 
-Log in to your payslip portal or email your HR team. One question: *"Am I currently receiving the maximum employer pension contribution available to me?"*
+Log in to your payslip portal or email your HR team. One question: *"What does my employer pay into my pension, and how does that work?"*
 
 That's it. No commitment to change anything yet. Just information.
 

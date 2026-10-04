@@ -40,7 +40,7 @@ This is why ThriftyDave83 sometimes feels more trustworthy than a qualified fina
 
 Tone and format are doing a lot of work that content doesn't deserve credit for.
 
-I'm not exempt from this, by the way. I have an MSc in Behavioural Economics and I'm a Qualified Financial Planner. I also once let £150,000 slip through my hands because I was too busy performing confidence to sit down and actually look at the numbers. The person most convinced they're immune to these biases is usually the most exposed to them. That's in the research too.
+I'm not exempt from this, by the way. I once turned £3,000 into £150,000 trading. I thought I was a genius, and I was too busy feeling confident to sit down and actually look at the numbers. Then I lost all of it. I had no degree at the time. That loss is what sent me to get my MSc in Behavioural Economics and become a Qualified Financial Planner. The person most convinced they're immune to these biases is usually the most exposed to them. That's in the research too.
 
 ## The small thing that actually helps
 

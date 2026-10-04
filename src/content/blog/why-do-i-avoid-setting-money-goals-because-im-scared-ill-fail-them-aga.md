@@ -76,7 +76,7 @@ Once looking doesn't cost you anything, you can start to use what you see. But n
 
 Every time you've beaten yourself up for not following through, you've been measuring the wrong thing.
 
-Willpower is a resource that depletes under stress. Financial anxiety is stressful. Asking someone under chronic financial anxiety to sustain willpower across a multi-week money goal is like asking someone running a fever to also run a 5K.
+Your brain takes the easiest route it can find. Kahneman calls this the law of least effort. When money feels stressful, the easy route is usually to look away. Asking someone under chronic financial anxiety to push against that, day after day, across a multi-week money goal is like asking someone running a fever to also run a 5K.
 
 The behavioural economists who study this — Shlomo Benartzi on commitment devices, Thaler and Sunstein on choice architecture — they don't design systems that require more willpower. They design systems that require less. They remove the decision, automate the behaviour, or make the default the right answer.
 

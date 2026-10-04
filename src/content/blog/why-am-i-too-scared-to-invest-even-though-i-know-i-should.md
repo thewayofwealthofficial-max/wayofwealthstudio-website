@@ -40,11 +40,11 @@ And the shame layer makes everything worse. If you've tried before — opened an
 
 ## What I noticed about my own freeze
 
-I have an MSc in Behavioural Economics and I've held financial planning qualifications for years. I also, at one point in my life, watched a business decision erode around £150,000 because I kept delaying a conversation I found too uncomfortable to start. I knew, intellectually, what was happening. I knew the numbers were going the wrong direction. I still found reasons not to look.
+I once turned £3,000 into £150,000 trading. I didn't know what I was doing. I got in at the right time and thought I was a genius. Then it started to fall, and I froze. I lost all of it. I had no degree at the time. That loss is what sent me to get my MSc in Behavioural Economics and qualify as a financial planner.
 
-That's not a failure of intelligence. It's what ambiguity aversion looks like when the stakes feel high and the path forward is genuinely unclear. Knowledge helps, but it doesn't switch off the emotional system that's running underneath.
+That's not a failure of intelligence. It's what freezing looks like when the stakes feel high and the path forward is genuinely unclear. Knowledge helps, but it doesn't switch off the emotional system that's running underneath.
 
-If I could freeze — someone whose entire postgraduate education was in exactly this — then the problem is definitely not that you haven't read enough articles.
+If I could freeze like that, the problem is definitely not that you haven't read enough articles.
 
 ## One thing that actually lowers the cost of looking
 
@@ -56,7 +56,7 @@ So the practical version of this isn't "just start." It's: lower the cost of loo
 
 Here's what that means concretely:
 
-- Spend 20 minutes reading the factsheet of one specific fund (a global index tracker is a reasonable starting point — the Vanguard FTSE Global All Cap is one many planners reference, though this isn't a personal recommendation for your situation).
+- Spend 20 minutes reading the factsheet of one fund you've already come across. This isn't about picking it. It's about seeing what one of these documents actually says.
 - Notice how many of your questions that one document answers.
 - Don't open the app. Don't invest yet. Just reduce one unknown.
 

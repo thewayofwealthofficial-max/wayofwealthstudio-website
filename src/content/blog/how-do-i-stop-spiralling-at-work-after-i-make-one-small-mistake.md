@@ -76,7 +76,7 @@ The spiral isn't about the mistake. It's about what the mistake *means* — and 
 
 The unopened bank statement and the three-hour loop after a stumbled sentence at work are the same mechanism. Your brain treating a manageable fact as an existential verdict.
 
-I know this not because I studied it, though I did. I know it because I lost £150,000 in a business that I kept not looking at because looking felt worse than not knowing. My MSc in Behavioural Economics did not make me immune. It made me better at naming what was happening, slightly too late.
+I know this not because I studied it, though I did. I know it because I turned £3,000 into £150,000 trading, then lost all of it, with no degree at the time. As it fell, I froze and kept not looking, because looking felt worse than not knowing. Losing it is what sent me to do my MSc in Behavioural Economics. It gave me the words for what had happened, slightly too late.
 
 The naming matters, though. Even after the fact.
 

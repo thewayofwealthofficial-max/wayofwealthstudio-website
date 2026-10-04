@@ -48,7 +48,7 @@ Brad Klontz — one of the leading researchers in financial psychology — has w
 
 When you have nothing saved, every financial decision carries a threat charge. You're not just paying a bill — you're gambling that nothing will go wrong between now and next payday. That background anxiety makes it harder to stay consistent, harder to feel any progress, and much easier to give up.
 
-A small savings cushion — even £500 to £1,000 — removes that threat charge. It doesn't make mathematical sense as a first priority if you're carrying 30% APR credit card debt. But it makes *psychological* sense, because it's what allows you to actually follow through on the rest of the plan.
+A small savings cushion removes that threat charge. It may not be what the maths alone would put first if you're carrying expensive debt. But it makes *psychological* sense, because it's what allows you to actually follow through on the rest of the plan.
 
 This is loss framing in action. The frame shifts from "I'm depleting everything to pay debt" (scary) to "I have a buffer and I'm also paying down debt" (manageable). Same money. Different experience. Completely different follow-through rate.
 
@@ -56,10 +56,10 @@ This is loss framing in action. The frame shifts from "I'm depleting everything 
 
 Here's the honest version, not the simplified one:
 
-- **If you have no emergency buffer at all:** Build a small one first. Not a full three-to-six months. Just enough that an unexpected £300 expense doesn't derail everything. Then redirect to debt.
-- **If you have high-interest debt (credit cards, overdrafts, buy-now-pay-later):** After that buffer exists, yes — prioritise this over building larger savings. The maths genuinely wins here.
-- **If your debt is lower-interest (student loan, 0% deals, some car finance):** The calculus is less clear-cut, and it's worth looking at the actual numbers alongside how much psychological weight the debt is carrying for you.
-- **If you have a workplace pension with employer matching:** Always contribute enough to get the full match before doing anything else. That's a guaranteed 100% return. Nothing on this list beats it.
+- **How interest works:** debt with a higher rate grows faster than debt with a lower one. If you only pay the minimum, the interest keeps adding up. Your statements show the rate on each one.
+- **What a buffer does:** having some money set aside changes how every other money decision feels. How much, and where, is yours to decide.
+- **Workplace pensions:** many employers pay into your pension when you pay in too. How much they add, and the rules, depend on the scheme. MoneyHelper explains how this works. It's free and backed by the government.
+- **Your own debts:** which one to clear first, and whether to save or repay, depends on your whole picture. StepChange, National Debtline and Citizens Advice give free debt advice and can look at your numbers with you.
 
 None of this is one-size-fits-all. And anyone who tells you there's a single correct answer without knowing your numbers, your income stability, your debt types, or your mental relationship with money — is selling you simplicity you don't need.
 
@@ -69,7 +69,7 @@ You may have heard of the debt snowball method — paying off your smallest debt
 
 Why? Because early wins create the psychological experience of progress. Progress feels like safety. Safety reduces avoidance. Reduced avoidance means you actually keep going.
 
-This is the behavioural debt snowball in practice: it's not the optimal mathematical strategy. It's the optimal *human* strategy. And for most people, the human strategy wins, because the mathematical strategy doesn't account for the fact that you have to live inside it.
+This is the behavioural debt snowball in practice. It isn't built to win on the spreadsheet. It's built around the human who has to live inside it. Which order makes sense for your own debts is a question for one of the free debt services above.
 
 ## The one thing to do this week
 
