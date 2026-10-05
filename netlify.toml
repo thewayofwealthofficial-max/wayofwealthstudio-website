@@ -33,6 +33,13 @@
   status = 301
   force = true
 
+# 5 Oct 2026: the Triyoga news post was written for the old wellness audience and taken down (Joel).
+[[redirects]]
+  from = "/blog/when-the-studio-closes-overnight-what-triyoga-tells-you-about-your-own-cash-flow/*"
+  to = "/blog/mortgage-rates-hit-6-why-your-brain-is-making-this-harder-than-it-needs-to-be/"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/api/fred/approve"
   to = "/.netlify/functions/fred-approve"

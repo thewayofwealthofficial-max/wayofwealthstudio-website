@@ -83,7 +83,7 @@ jobs:
 
       # A day with no fitting story used to look exactly like a day where everything worked (audit, 27 Sep).
       - name: Tell Joel quietly when no story fitted
-        if: success() && steps.generate.outputs.slug == ''
+        if: success() && steps.generate.outputs.slug == '' && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
