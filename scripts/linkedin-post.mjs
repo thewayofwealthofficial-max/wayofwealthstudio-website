@@ -333,6 +333,8 @@ async function main() {
     if (!problems.length) { draft = d; break; }
     if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
+    // Kinds of problem only, cut before any quote or detail: the logs are public.
+    console.log('  kinds: ' + problems.map((p) => p.split(/[:("“]/)[0].trim().slice(0, 50)).join(' | '));
     if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n[PROBLEM]\n${d.problem}\n[PURSUIT]\n${d.pursuit}\n[PAYOFF]\n${d.payoff}\n`);
     feedback = joelFix.concat(problems);
     last = d;
