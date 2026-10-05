@@ -11,6 +11,7 @@ export const TOPICS = [
   'spending and saving habits',
   'irregular income and cash flow',
   'paying yourself',
+  'tax bills and saving for tax', // added 5 Oct 2026: tax is pain 5 for small business owners
   'other money',
 ];
 

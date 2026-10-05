@@ -43,11 +43,11 @@ const ANGLES = {
   2: { name: 'Full diary, empty account', hook: 'a personal or client story: how it looked from the outside', shape: 'outside vs inside → the warning signs → what actually changed', words: [280, 550] },
   3: { name: 'The money moment with no tidy lesson', hook: 'a confession that he has avoided telling this', shape: 'Joel\'s own low point with money, dated, specific moments, says outright there is no neat takeaway. No ask.', words: [280, 550] },
   4: { name: 'Why a 60-minute session isn\'t 60 minutes of work', hook: 'a question comparing two prices', shape: 'explainer comparing two ways of working, step by step, no lecture', words: [350, 450] },
-  5: { name: '"Shouldn\'t healing be free?"', hook: 'the objection they carry, said as a plain "you" line, never in quote marks (their words become "you" lines, never quotes)', shape: 'the line → the reply → short reframe lines, one per paragraph → end on a line that lands. Never a "5 signs you\'re undercharging" list.', words: [150, 230] },
+  5: { name: '"I can\'t pay myself, my income isn\'t consistent"', hook: 'the objection they carry, said as a plain "you" line, never in quote marks (their words become "you" lines, never quotes)', shape: 'the line → the reply → short reframe lines, one per paragraph → end on a line that lands. Never a "5 signs" list.', words: [150, 230] },
   6: { name: 'Mindset and behaviour', hook: 'a myth line', shape: 'myth → "In reality..." → 4–5 short lines on what else has to happen → one-line close. Take manifesting seriously; never claim it works.', words: [40, 90] },
-  8: { name: 'Why a money person works with healers (Joel\'s origin)', hook: 'personal: why he walked away from something', shape: 'origin story with a lesson: the win, the loss, then the MSc and QFP (in that order), then why practitioners', words: [300, 400] },
+  8: { name: 'Why a money person works with small business owners (Joel\'s origin)', hook: 'personal: why he walked away from something', shape: 'origin story with a lesson: the win, the loss, then the MSc and QFP (in that order), then why small business owners', words: [300, 400] },
   9: { name: 'How a money coach looks after his own money', hook: 'a plain statement of the topic', shape: 'his personal routine, the why behind it, who taught him', words: [230, 290] },
-  10: { name: 'Emergency fund vs runway for seasonal income', hook: 'a call-out to practitioner friends with a question', shape: 'why standard advice doesn\'t fit → a simple everyday comparison → how to work out your runway. Budgeting education only, no products.', words: [270, 340] },
+  10: { name: 'Emergency fund vs runway for income that swings', hook: 'a call-out to fellow small business owners with a question', shape: 'why standard advice doesn\'t fit → a simple everyday comparison → how to work out your runway. Budgeting education only, no products.', words: [270, 340] },
   11: { name: 'Proud of a client\'s small behaviour win', hook: 'personal: proud of someone he works with', shape: 'short client win → it doesn\'t have to be a big number → what the win really was', words: [80, 130] },
   12: { name: '"Pay me when you can"', hook: 'a call-out plus his own story', shape: 'call-out → what happened → how it felt → 3 changes. Tone hurt, not angry.', words: [270, 340] },
 };
@@ -55,10 +55,10 @@ const ANGLES = {
 // THE MIX (IDEATION.md: 3 reach / 2 positioning / 1 nurture / 1 convert), fitted to 4 LinkedIn days (Joel, 2026-09-27):
 // Mon reach · Wed positioning · Fri reach · Sun nurture and convert in turn. Each job has its own angles.
 const JOBS = {
-  reach: { angles: [5, 2, 4, 12], brief: 'REACH (attract): mindset through psychology: worth, guilt about charging, receiving, giving work away. Told through their situation (an earning practitioner) and Joel\'s words. Carries ONE research line from RESEARCH IDEAS.' },
+  reach: { angles: [5, 2, 4, 12], brief: 'REACH (attract): mindset through psychology: money stress, avoiding the numbers, always feeling behind, not paying yourself, working hard with nothing left. Told through their situation (a small business owner who earns decent money: clients, invoices, a slow month, the tax bill) and Joel\'s words. Carries ONE research line from RESEARCH IDEAS.' },
   positioning: { angles: [6, 10], brief: 'POSITIONING: "there\'s a name for this". A money habit they recognise, the research name for it (ONE idea from RESEARCH IDEAS), and the practical how: real tactics and expertise, not just the insight.' },
   nurture: { angles: [3, 8, 9], brief: 'NURTURE: Joel\'s own story. If it is the £150k story: £3,000 → £150,000 → lost it all → that sent him to study why (MSc, then QFP), always in that order, and always say what changed. Or his own current struggle or routine, warts and all.' },
-  convert: { angles: [1, 11], brief: 'CONVERT: the pain they don\'t see, what money does once it lands (the month after a big payment), then the practical fix (separate pots, paying yourself a steady wage). No link, no ask, no product name.' },
+  convert: { angles: [1, 11], brief: 'CONVERT: where the money goes once it lands (the month after a big payment, the tax bill that comes later, business and home money mixed together), then the practical fix (separate pots, a tax pot, paying yourself a steady wage). No link, no ask, no product name.' },
 };
 const jobOf = (angle) => Object.keys(JOBS).find((j) => JOBS[j].angles.includes(Number(angle)));
 
@@ -84,7 +84,7 @@ const SYSTEM = `You write ONE LinkedIn post for Joel Ezekiel (Way of Wealth), in
 WHO JOEL IS: ${JOEL_FACTS}
 He is a planner, not an adviser: never recommend investments, products, pensions, debt choices or tax moves.
 
-WHO READS IT: wellness and spiritual practitioners (breathwork, yoga, healers, retreat leaders), coaches and self-employed people. Global. They are brilliant at the work and find it hard to take money for it. They take manifesting and mindset seriously: so does Joel, and he adds the behaviour side. Never mock it, never claim it works.
+WHO READS IT: small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades). Global, UK first in tone. They earn decent money, but their money feels chaotic. Their pains, most common first: money stress, income that swings, not paying themselves, not knowing where the money goes, the tax bill shock, working hard with nothing left, burnout, and home bills tangled up with the business. What they want: calm first, then a steady wage, then a buffer, then tax sorted. Their own words: "pay myself", "struggle", "confused", "take home", "where my money is going", "always behind". If they take mindset or manifesting seriously, so does Joel, and he adds the behaviour side. Never mock it, never claim it works.
 Joel has NOT coached wellness practitioners yet. Never say or imply that a client of his is a healer, yoga teacher, breathwork facilitator or practitioner unless his own words say so.
 
 THE LINKEDIN SHAPE (from the research, applies to every angle):

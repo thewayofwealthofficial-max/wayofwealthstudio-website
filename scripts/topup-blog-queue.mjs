@@ -36,8 +36,12 @@ const SEEDS = [
   'how to manifest money', 'why does money make me anxious', 'how to stop living paycheck to paycheck',
   'why do i spend all my money', 'how to feel safe with money', 'why do i undercharge', 'how to charge more for',
   'how much should i charge for', 'self employed money', 'irregular income', 'how to pay yourself self employed',
-  'wellness practitioner money', 'yoga teacher income', 'how to price my coaching', 'how to price reiki',
-  'breathwork facilitator', 'is it wrong to charge for', 'why do i feel broke', 'lifestyle creep',
+  // 5 Oct 2026: wellness seeds swapped for small business owners' measured pains (BRAND.md §1).
+  'how to pay myself from my business', 'how much should i pay myself', 'how to price my coaching',
+  'how much to put aside for tax self employed', 'self assessment tax bill', 'small business cash flow',
+  'where is my money going business', 'always behind on money', 'business making money but no profit',
+  'small business money stress', 'feast or famine income', 'separate business and personal money',
+  'why do i feel broke', 'lifestyle creep',
   'emotional spending', 'money shame', 'money mindset', 'why do i give money away', 'how to stop being bad with money',
   'why do i buy things i don\'t need', 'money and adhd', 'why do i never have money',
 ];
@@ -98,13 +102,13 @@ async function publishedTitles() {
 }
 
 async function askClaude(candidates, existing, need) {
-  const system = `You pick blog topics for Joel Ezekiel (Way of Wealth): MSc Behavioural Economics, Qualified Financial Planner, a behavioural money coach. The blog is global money psychology. Its centre is wellness and spiritual practitioners who have built a real business, and around them coaches and online business owners who earn money and can't keep it.
+  const system = `You pick blog topics for Joel Ezekiel (Way of Wealth): MSc Behavioural Economics, Qualified Financial Planner, a behavioural money coach. The blog is global money psychology. Its readers are small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but whose money feels chaotic. Their pains, most common first: money stress, income that swings, not paying themselves, not knowing where the money goes, the tax bill shock, working hard with nothing left, burnout, home bills tangled up with the business. Prefer questions about those pains.
 
 Choose questions a real person typed, that Joel can answer with money psychology plus one practical step.
 
 REJECT anything that:
 - needs regulated advice: which investment, fund, pension, mortgage, ISA, debt to clear first, tax structure, or a specific product;
-- is a pure calculation or country-specific rules question (tax codes, benefits, US-only paperwork);
+- is a pure calculation or country-specific rules question (tax codes, benefits, US-only paperwork). Questions about the tax bill as a habit or a feeling (dreading it, not saving for it, how to set money aside for it) are welcome: Joel explains how it works and teaches a tax pot, never how to structure someone's tax;
 - is a near-duplicate of an existing topic (same underlying question in other words);
 - is hustle or get-rich content.
 
@@ -112,7 +116,7 @@ For each pick:
 - "question": the person's wording exactly. You may only fix capitalisation, spelling of "i" to "I", apostrophes, and add a question mark. Do not rephrase.
 - "concept": one or two established behavioural science concepts that genuinely explain it (e.g. ostrich effect, mental accounting, present bias, loss aversion, money scripts (Klontz), status quo bias, social comparison, hedonic adaptation, pain of paying, implementation intentions, law of least effort). Never use ego depletion, decision fatigue, priming or willpower as a resource.
 - "category": exactly one of ${CATEGORIES.join(' | ')}.
-- "segment": a short reader label, e.g. "Wellness practitioners", "Self-employed", "Anxious avoider", "ADHD", "All segments".
+- "segment": a short reader label, e.g. "Small business owners", "Self-employed", "Anxious avoider", "ADHD", "All segments".
 - "source": "google" or "stackexchange".
 
 Return ONLY a JSON array, no prose.`;

@@ -5,7 +5,56 @@
 //
 // HOW THE WRITERS USE THEM: to build the "What you might be telling yourself" section as plain "you" lines.
 // Never quote them, never credit them, never say "a reader told me". Joel's rule: their words become "you" lines.
+//
+// 5 Oct 2026: the live list is now SMALL BUSINESS OWNERS (BRAND.md §1). Taken from §8 of
+// research/2026-10-05-small-business-pains/SMALL_BUSINESS_PAINS.md: public YouTube comments, each checked
+// against the raw text by check_quotes.py. Left out on purpose: lines with a number, a time or a place in them
+// (the writers' number checks would block them, and a stranger's figure must never become Joel's).
+// The old wellness/charging list is kept below as WELLNESS_READER_PHRASES. Nothing imports it now.
 export const READER_PHRASES = [
+  "I'm so overwhelmed",
+  "We do make a good living, but it is be SO STRESSFUL.",
+  "I dread Tax season every year",
+  "For me, money is stress. I always feel like I'm in survival mode",
+  "I lived with a hum of money panic in the background.",
+  "I've never drawn a salary as my income has never been consistent",
+  "I don't have paychecks since my husband and I are both self-employed.",
+  "have been floundering as to how to pay myself",
+  "I'm still scared about paying myself and the whole comingling thing.",
+  "I was truly unsure how to pay myself",
+  "business owners who are feeding the business and not feeding themselves",
+  "some months I do have to empty my business account to pay all my bills",
+  "I never truly understood where my money was going and what I was making",
+  "feel like money is flying out without us knowing where it's really going",
+  "it won't be too much longer until I actually know where my money is going",
+  "I was ALWAYS behind",
+  "People see that they have positive net income, but don't know why they have no cash.",
+  "we're living paycheck to paycheck as a business",
+  "hard work with little ACTUAL profit in the end",
+  "I'm still struggling to turn a profit",
+  "I've made just enough money to keep it going",
+  "the more money i make the more money i owe",
+  "the money is gone",
+  "I have been blowing all of it and not even leaving enough money to pay taxes.",
+  "TODAY just found out i owe taxes and had no idea",
+  "been worried about doing my self assessment for last so many years",
+  "I have to work a week a month to just pay the tax man",
+  "I never know when I am going to have a down month",
+  "This last month is LEAN I'm telling you.",
+  "not having a steady income was a serious shock to my system",
+  "Terrible at book-keeping, deadlines and living month to month from the business.",
+  "I hate paperwork and I hate numbers even more",
+  "thinking about money and accounting makes me physically ill",
+  "Managing my finances as a freelancer is hard enough as is",
+  "We've been self employed for many years but were never good at managing it.",
+  "I just want to get a paycheck and go home. I don't want to worry about the business at home",
+  "it's the first time I've been able to save for taxes, pay myself & understand how my money is functioning.",
+  "I actually have money in my account and I'm not worried about the expenses",
+  "Never worked so hard for so little in my life.",
+];
+
+// The wellness / charging list (25 Sep 2026, research/2026-09-25-icp-deep-dive/). Kept, not used.
+export const WELLNESS_READER_PHRASES = [
   "I feel guilty every time I give a price",
   "I know deep down what I’m worth, but I feel guilty charging it",
   "I just wanna help people",

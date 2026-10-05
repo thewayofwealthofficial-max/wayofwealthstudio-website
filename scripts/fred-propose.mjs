@@ -385,7 +385,7 @@ In-bounds (Fred-specific allowed register — these phrases are encouraged): qui
 
 Two-pass audit: after drafting each proposal's NEW_TEXT, internally re-read against the banned-word + structural lists above. If a violation, rewrite ONLY that sentence. Don't cascade-rewrite. If a proposal cannot pass the audit, drop it and propose a different change instead — do not ship slop.
 
-ICP (BRAND.md §1): wellness and spiritual practitioners who have built a real business, plus the coaches and online business owners around them. Global. The pain they know: guilt charging, discounting, free work. The pain they don't see: what money does once it lands. Their words (manifesting, abundance, money blocks, healing) are fine: take the belief seriously, then add the behaviour side.
+ICP (BRAND.md §1, from 2026-10-05): small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but whose money feels chaotic. Global, UK first in tone. Their pains, most common first: money stress, income that swings, not paying themselves, cash flow confusion (not knowing where the money goes), the tax bill shock, working hard with nothing left, burnout, home bills tangled up with the business. Their dream: calm, then a steady wage, then a buffer, then tax sorted. Their words: "pay myself", "struggle", "confused", "take home", "where my money is going", "always behind". Tax is education only (how it works, a tax pot), never tax structuring and never a product.
 
 Each proposal must be:
 - Small enough to ship in ONE file edit

@@ -6,6 +6,10 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 
 **Source (rows 47 onward):** open forums, Quora and public advice columns (Alignable, Core77, Reiki Rays "Ask RMT"), hand-mined by Joel. Not Reddit. Question wording is kept verbatim from the source.
 
+**5 Oct 2026, audience changed to small business owners (BRAND.md §1):** queued wellness rows (53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 76, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87) are parked (⏸), not deleted; set them back to 🔵 to use them. Rows 101-105 are verbatim questions from small business owners' public YouTube comments (`research/2026-10-05-small-business-pains/pains.jsonl`, ids SB047, SB279, SB054, SB012, SB200).
+
+**5 Oct 2026 (later), new rows first (Joel):** the older general queued rows (64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 83, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100) are also parked (⏸) so rows 101+ go out next. Set them back to 🔵 to use them.
+
 **Workflow:**
 1. Top of queue → next blog post
 2. Pick the question → match to behavioral econ concept → 1200-1500 words → publish
@@ -71,54 +75,59 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 50 | ✅ | Why do some meditation teachers charge money while others offer it for free? | social norms vs market norms (Heyman & Ariely), money scripts | Self-employed | Wellness Practitioner |
 | 51 | ✅ | Why do you charge for your energy healing services (healing sessions, instruction, attunement, etc.)? | money scripts (Klontz), cognitive dissonance | Self-employed | Wellness Practitioner |
 | 52 | ✅ | Are there energy healers who offer their services for free? | social norms vs market norms, identity | Self-employed | Wellness Practitioner |
-| 53 | 🔵 | How can I charge $100 an hour as a yoga instructor? | anchoring, self-worth and price fusion | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 54 | 🔵 | How much should I charge for a Reiki session? | anchoring, reference points | Self-employed | Wellness Practitioner |
-| 55 | 🔵 | How much should I charge for Reiki healing sessions? | social comparison, anchoring | Self-employed | Wellness Practitioner |
-| 56 | 🔵 | What is the cost of a private distance healing session with Reiki Energy Healing? | price as a quality signal, anchoring | Behavioural basics | Wellness Practitioner |
-| 57 | 🔵 | How much do energy healers charge for readings? | price as a quality signal, social comparison | Self-employed | Wellness Practitioner |
-| 58 | 🔵 | How much do yoga instructors make per class? | reference point bias, social comparison | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 59 | 🔵 | Yoga Teachers: How much do you charge as an hourly rate teaching in-house corporate yoga classes to a large multi-national? | anchoring, status effects | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 60 | 🔵 | How much should I charge for a group yoga class? | anchoring, mental accounting | Self-employed | Wellness Practitioner |
-| 61 | 🔵 | How much would you charge for meditation session, or a package of 4? | mental accounting, pain of paying (Prelec & Loewenstein) | Self-employed | Wellness Practitioner |
-| 62 | 🔵 | What are some ways to make money through meditation? | money scripts (Klontz), identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 63 | 🔵 | How much should I charge for workshops? | anchoring, planning fallacy | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 64 | 🔵 | How to handle pricing as a freelance designer / "how do you guys handle your pricing? What kind of hourly rate is reasonable?" | anchoring, social comparison | Self-employed | Self-Employed Stresser |
-| 65 | 🔵 | Why do I spend money when I'm bored? | Hedonic adaptation, pain of paying | Spending & shame | All segments |
-| 66 | 🔵 | Why do I spend money when I'm sad? | Emotional regulation, money scripts (Klontz) | Spending & shame | All segments |
-| 67 | 🔵 | Why do I feel the need to spend all my money? | Present bias, money scripts (Klontz) | Spending & shame | All segments |
-| 68 | 🔵 | Why can't I save money? | Present bias, status quo bias | Budgeting that sticks | All segments |
-| 69 | 🔵 | Why do I feel guilty spending money on myself? | Money scripts (Klontz), pain of paying | Spending & shame | Wellness practitioners |
-| 70 | 🔵 | Why does money make me anxious? | Loss aversion, ostrich effect | Anxiety & avoidance | Anxious avoider |
-| 71 | 🔵 | How do I stop impulse spending with ADHD? | Present bias, implementation intentions | ADHD & money | ADHD |
-| 72 | 🔵 | Why do I feel broke even when I have money? | Mental accounting, social comparison | Anxiety & avoidance | All segments |
-| 73 | 🔵 | Why do I never feel like I have enough money? | Hedonic adaptation, scarcity mindset | Anxiety & avoidance | Self-employed |
-| 74 | 🔵 | What is one personal finance habit that has made the biggest difference for you? | Implementation intentions, law of least effort | Behavioural basics | All segments |
-| 75 | 🔵 | Why do I buy things I don't need? | Social comparison, hedonic adaptation | Spending & shame | All segments |
-| 76 | 🔵 | So where does one draw the "free" content line? | social norms vs market norms (Heyman & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 77 | 🔵 | what if you’re an over giver and you provide tonnes of value for free and people keep expecting everything for free? | zero-price effect (Shampanier, Mazar & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 78 | 🔵 | But if someone is not to charge for their spiritual service, where is the money to come from? | money scripts (Klontz), money avoidance | Self-employed | Wellness Practitioner |
-| 79 | 🔵 | Why not make it affordable for everyone? | price-quality heuristic | Self-employed | Wellness Practitioner |
-| 80 | 🔵 | If a spiritual provider does not trust its customers to pay a fair amount, then why would they expect their customers to start trusting them first? | pay-what-you-want pricing (Gneezy et al.) | Self-employed | Wellness Practitioner |
-| 81 | 🔵 | I feel no one will pay those prices how do you educate clients on the cost? | false consensus effect (Ross) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
-| 82 | 🔵 | How would you approach this if you client based is outside US and cost of living is different? | reference dependence (Kahneman & Tversky) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
-| 83 | 🔵 | How do you handle clients who might question the new price considering what they paid last time? | anchoring (Tversky & Kahneman) | Self-employed | Self-Employed Stresser |
-| 84 | 🔵 | I assume we can't / shouldn't charge as much if the topic isn't about making more income? | mental accounting (Thaler) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
-| 85 | 🔵 | Do I make money or do I help or love people? | money scripts (Klontz) | Self-employed | Wellness Practitioner |
-| 86 | 🔵 | Is it normal for me to feel offput that this revolves around making money? | cognitive dissonance (Festinger) | Self-employed | Wellness Practitioner |
-| 87 | 🔵 | How do I lern to receive? | money scripts (Klontz), money avoidance | Behavioural basics | Wellness Practitioner, All segments |
-| 88 | 🔵 | What if you do get paid well but there are a series of events that keep happening that bring about unexpected expenses that eat up the money? | planning fallacy (Kahneman & Tversky) | Budgeting that sticks | Self-Employed Stresser, All segments |
-| 89 | 🔵 | What should we do to come out of living in a “financial emergency” cycle ? | scarcity and tunnelling (Mullainathan & Shafir), as an illustration only: mixed replication record, state no numbers | Anxiety & avoidance | Self-Employed Stresser, All segments |
-| 90 | 🔵 | how do you recommend changing the mindset of “I can just spend this cause I will make it back anyway” mentality? | mental accounting (Thaler): money that feels like extra gets spent differently | Spending & shame | Self-Employed Stresser |
-| 91 | 🔵 | How important is it to create personal financial  instruments, accounts, and/or systems in advance of  receiving  large sums? | commitment devices (Ashraf, Karlan & Yin) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
-| 92 | 🔵 | More money started coming in but bills got higher so how do I get money to flow that I can enjoy? | hedonic adaptation (Brickman & Campbell) | Spending & shame | All segments |
-| 93 | 🔵 | Does anyone else struggle with this 'extreme saving' mindset too?? | money scripts (Klontz), money vigilance | Anxiety & avoidance | Anxious Avoider, All segments |
-| 94 | 🔵 | What’s the difference between having the scarcity issue and really despising  wastefulness? | tightwads and spendthrifts, pain of paying (Rick, Cryder & Loewenstein) | Behavioural basics | All segments |
-| 95 | 🔵 | So HOW do you actually "decide" that you are wealthy? | if-then plans (implementation intentions); name no effect size | Behavioural basics | All segments |
-| 96 | 🔵 | i decide the Money is in my account but when i need to pay bills i see it is not yet, so what do you do and  think in These Moments? | mental contrasting (Oettingen) | Anxiety & avoidance | All segments |
-| 97 | 🔵 | Is there anyone out there that doesn't have their own business, that paid for these courses and actually manifested a large amount of money? | survivorship bias | Behavioural basics | All segments |
-| 98 | 🔵 | Has anyone else noticed specific "money blocks" that seem to run in their family? | money scripts (Klontz) | Behavioural basics | All segments |
-| 99 | 🔵 | I can't seem to hold money, is that because my vessel can't hold it? | present bias | Spending & shame | All segments |
-| 100 | 🔵 | How does one live in the wish fulfilled as far as financial abundance when it comes to spending? | positive fantasies (Oettingen) | Spending & shame | All segments |
+| 53 | ⏸ | How can I charge $100 an hour as a yoga instructor? | anchoring, self-worth and price fusion | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 54 | ⏸ | How much should I charge for a Reiki session? | anchoring, reference points | Self-employed | Wellness Practitioner |
+| 55 | ⏸ | How much should I charge for Reiki healing sessions? | social comparison, anchoring | Self-employed | Wellness Practitioner |
+| 56 | ⏸ | What is the cost of a private distance healing session with Reiki Energy Healing? | price as a quality signal, anchoring | Behavioural basics | Wellness Practitioner |
+| 57 | ⏸ | How much do energy healers charge for readings? | price as a quality signal, social comparison | Self-employed | Wellness Practitioner |
+| 58 | ⏸ | How much do yoga instructors make per class? | reference point bias, social comparison | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 59 | ⏸ | Yoga Teachers: How much do you charge as an hourly rate teaching in-house corporate yoga classes to a large multi-national? | anchoring, status effects | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 60 | ⏸ | How much should I charge for a group yoga class? | anchoring, mental accounting | Self-employed | Wellness Practitioner |
+| 61 | ⏸ | How much would you charge for meditation session, or a package of 4? | mental accounting, pain of paying (Prelec & Loewenstein) | Self-employed | Wellness Practitioner |
+| 62 | ⏸ | What are some ways to make money through meditation? | money scripts (Klontz), identity vs activity | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 63 | ⏸ | How much should I charge for workshops? | anchoring, planning fallacy | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 64 | ⏸ | How to handle pricing as a freelance designer / "how do you guys handle your pricing? What kind of hourly rate is reasonable?" | anchoring, social comparison | Self-employed | Self-Employed Stresser |
+| 65 | ⏸ | Why do I spend money when I'm bored? | Hedonic adaptation, pain of paying | Spending & shame | All segments |
+| 66 | ⏸ | Why do I spend money when I'm sad? | Emotional regulation, money scripts (Klontz) | Spending & shame | All segments |
+| 67 | ⏸ | Why do I feel the need to spend all my money? | Present bias, money scripts (Klontz) | Spending & shame | All segments |
+| 68 | ⏸ | Why can't I save money? | Present bias, status quo bias | Budgeting that sticks | All segments |
+| 69 | ⏸ | Why do I feel guilty spending money on myself? | Money scripts (Klontz), pain of paying | Spending & shame | All segments |
+| 70 | ⏸ | Why does money make me anxious? | Loss aversion, ostrich effect | Anxiety & avoidance | Anxious avoider |
+| 71 | ⏸ | How do I stop impulse spending with ADHD? | Present bias, implementation intentions | ADHD & money | ADHD |
+| 72 | ⏸ | Why do I feel broke even when I have money? | Mental accounting, social comparison | Anxiety & avoidance | All segments |
+| 73 | ⏸ | Why do I never feel like I have enough money? | Hedonic adaptation, scarcity mindset | Anxiety & avoidance | Self-employed |
+| 74 | ⏸ | What is one personal finance habit that has made the biggest difference for you? | Implementation intentions, law of least effort | Behavioural basics | All segments |
+| 75 | ⏸ | Why do I buy things I don't need? | Social comparison, hedonic adaptation | Spending & shame | All segments |
+| 76 | ⏸ | So where does one draw the "free" content line? | social norms vs market norms (Heyman & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 77 | ⏸ | what if you’re an over giver and you provide tonnes of value for free and people keep expecting everything for free? | zero-price effect (Shampanier, Mazar & Ariely) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 78 | ⏸ | But if someone is not to charge for their spiritual service, where is the money to come from? | money scripts (Klontz), money avoidance | Self-employed | Wellness Practitioner |
+| 79 | ⏸ | Why not make it affordable for everyone? | price-quality heuristic | Self-employed | Wellness Practitioner |
+| 80 | ⏸ | If a spiritual provider does not trust its customers to pay a fair amount, then why would they expect their customers to start trusting them first? | pay-what-you-want pricing (Gneezy et al.) | Self-employed | Wellness Practitioner |
+| 81 | ⏸ | I feel no one will pay those prices how do you educate clients on the cost? | false consensus effect (Ross) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
+| 82 | ⏸ | How would you approach this if you client based is outside US and cost of living is different? | reference dependence (Kahneman & Tversky) | Self-employed | Self-Employed Stresser, Wellness Practitioner |
+| 83 | ⏸ | How do you handle clients who might question the new price considering what they paid last time? | anchoring (Tversky & Kahneman) | Self-employed | Self-Employed Stresser |
+| 84 | ⏸ | I assume we can't / shouldn't charge as much if the topic isn't about making more income? | mental accounting (Thaler) | Self-employed | Wellness Practitioner, Self-Employed Stresser |
+| 85 | ⏸ | Do I make money or do I help or love people? | money scripts (Klontz) | Self-employed | Wellness Practitioner |
+| 86 | ⏸ | Is it normal for me to feel offput that this revolves around making money? | cognitive dissonance (Festinger) | Self-employed | Wellness Practitioner |
+| 87 | ⏸ | How do I lern to receive? | money scripts (Klontz), money avoidance | Behavioural basics | Wellness Practitioner, All segments |
+| 88 | ⏸ | What if you do get paid well but there are a series of events that keep happening that bring about unexpected expenses that eat up the money? | planning fallacy (Kahneman & Tversky) | Budgeting that sticks | Self-Employed Stresser, All segments |
+| 89 | ⏸ | What should we do to come out of living in a “financial emergency” cycle ? | scarcity and tunnelling (Mullainathan & Shafir), as an illustration only: mixed replication record, state no numbers | Anxiety & avoidance | Self-Employed Stresser, All segments |
+| 90 | ⏸ | how do you recommend changing the mindset of “I can just spend this cause I will make it back anyway” mentality? | mental accounting (Thaler): money that feels like extra gets spent differently | Spending & shame | Self-Employed Stresser |
+| 91 | ⏸ | How important is it to create personal financial  instruments, accounts, and/or systems in advance of  receiving  large sums? | commitment devices (Ashraf, Karlan & Yin) | Self-employed | Self-Employed Stresser, Small business owners |
+| 92 | ⏸ | More money started coming in but bills got higher so how do I get money to flow that I can enjoy? | hedonic adaptation (Brickman & Campbell) | Spending & shame | All segments |
+| 93 | ⏸ | Does anyone else struggle with this 'extreme saving' mindset too?? | money scripts (Klontz), money vigilance | Anxiety & avoidance | Anxious Avoider, All segments |
+| 94 | ⏸ | What’s the difference between having the scarcity issue and really despising  wastefulness? | tightwads and spendthrifts, pain of paying (Rick, Cryder & Loewenstein) | Behavioural basics | All segments |
+| 95 | ⏸ | So HOW do you actually "decide" that you are wealthy? | if-then plans (implementation intentions); name no effect size | Behavioural basics | All segments |
+| 96 | ⏸ | i decide the Money is in my account but when i need to pay bills i see it is not yet, so what do you do and  think in These Moments? | mental contrasting (Oettingen) | Anxiety & avoidance | All segments |
+| 97 | ⏸ | Is there anyone out there that doesn't have their own business, that paid for these courses and actually manifested a large amount of money? | survivorship bias | Behavioural basics | All segments |
+| 98 | ⏸ | Has anyone else noticed specific "money blocks" that seem to run in their family? | money scripts (Klontz) | Behavioural basics | All segments |
+| 99 | ⏸ | I can't seem to hold money, is that because my vessel can't hold it? | present bias | Spending & shame | All segments |
+| 100 | ⏸ | How does one live in the wish fulfilled as far as financial abundance when it comes to spending? | positive fantasies (Oettingen) | Spending & shame | All segments |
+| 101 | 🔵 | How can I set a budget when there are months without significant income? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
+| 102 | 🔵 | The salaries of my employees will be paid out of the revenue, but what about my salary? | defaults (Madrian & Shea), mental accounting (Thaler) | Self-employed | Small business owners |
+| 103 | 🔵 | Should we set our income to the total of all our monthly expenses and then adjust from there? | commitment devices (Ashraf, Karlan & Yin), mental accounting (Thaler) | Self-employed | Small business owners |
+| 104 | 🔵 | Is profit something we put away for a rainy day and Owner's pay simply our paycheque? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
+| 105 | 🔵 | What percentage of my paychecks should I be setting aside for taxes? | if-then plans (implementation intentions), earmarking (Soman & Cheema); explain how a tax pot works, never give their percentage | Self-employed | Small business owners |
 
 ---
 

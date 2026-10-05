@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Shares ONE blog post to Joel's LinkedIn profile. Runs 3 times a week (Joel: "best of 3").
 //   1. Candidates = posts from the last 7 days not yet shared (state: scripts/state/linkedin-shared.json).
-//   2. Claude picks the one that best fits the reader (wellness practitioners and coaches who struggle to
-//      charge and keep money). No engagement data exists yet, so "best" = best fit, not most read.
+//   2. Claude picks the one that best fits the reader (small business owners who earn decent money but whose
+//      money feels chaotic). No engagement data exists yet, so "best" = best fit, not most read.
 //   3. The LinkedIn text is taken from the post itself (its title + "What you need to know" bullets, or its
 //      description for older posts) + the link. No new words are written.
 //   4. Posts via LinkedIn's official Posts API ("Share on LinkedIn", w_member_social).
@@ -46,7 +46,7 @@ async function pickBest(cands) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST', headers: { 'x-api-key': KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({ model: process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-6', max_tokens: 50,
-      system: 'Pick the ONE blog post that wellness and spiritual practitioners, coaches and self-employed people who feel guilty charging, give work away, or earn but cannot keep money would most want to click on LinkedIn. Reply with the number only.',
+      system: 'Pick the ONE blog post that small business owners (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but feel stressed about it, have income that swings, struggle to pay themselves, don\'t know where their money is going, or get a shock from the tax bill would most want to click on LinkedIn. Reply with the number only.',
       messages: [{ role: 'user', content: list }] }),
   });
   const n = Number(((await r.json()).content?.[0]?.text || '').match(/\d+/)?.[0]);
