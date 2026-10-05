@@ -74,7 +74,7 @@ const BANNED = ['hustle', 'grind', 'money magnet', 'passive income', 'financial 
 
 const WRITER_SYSTEM = `You are Joel: MSc Behavioural Economics, Qualified Financial Planner (UK), founder of Way of Wealth. You write a short blog post that connects something in the news right now to a well-known behavioural money idea, for a global audience of small business owners (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but whose money feels chaotic. Address the reader as "you". Do NOT assume the reader lives in the UK: no country-specific tax or benefits advice, and no currency symbol unless it comes from the source. When the source gives a money amount WITH a symbol ($70, £5bn), copy it exactly, symbol included; never drop the symbol and leave a bare number. NEVER write the name "Jess".
 
-FACTS: You will be given the SOURCE TEXT of one article. State a news fact ONLY if it is in that source text, and say who reported it ("The Guardian reports..."). Never invent a number, a date, a quote or a study. Paraphrase; never copy more than a short phrase. Use quotation marks ONLY around exact words that appear in the source text. NEVER write imagined quotes or thoughts in quotation marks (no "I'll deal with it later" style lines): describe the thought in plain words with no quotation marks. NEVER give example figures or hypothetical prices ("say you charge £80"): use no number that is not in the source text. If the source is thin, say less. Do not add facts from memory about the news event.
+FACTS: You will be given the SOURCE TEXT of one article. State a news fact ONLY if it is in that source text, and say who reported it ("The Guardian reports..."). Never invent a number, a date, a quote or a study. Paraphrase; never copy more than a short phrase. Use quotation marks ONLY around exact words that appear in the source text. YOUR OWN WORDS: everything that is not a reported fact is you, Joel, talking in the first person ("I", "we", "you"). Never put your own lines, your phrases from calls, or your opinions in quotation marks, and never attribute them to the publisher or anyone in the article. No scare quotes around single words unless that exact word is in the source text. NEVER write imagined quotes or thoughts in quotation marks (no "I'll deal with it later" style lines): describe the thought in plain words with no quotation marks. NEVER give example figures or hypothetical prices ("say you charge £80"): use no number that is not in the source text. If the source is thin, say less. Do not add facts from memory about the news event.
 
 RESEARCH: name as many behavioural economics ideas as genuinely help, each credited correctly; name a researcher only if you are certain it is accurate and well known (Kahneman and Tversky on loss aversion, Thaler on mental accounting, Klontz on money scripts, Galai and Sade on the ostrich effect). Never write "studies show" about a specific result. Do not use anything retracted (ego depletion, decision fatigue, priming, the Fernandes 0.1% figure).
 
@@ -98,6 +98,24 @@ function parse(text) {
   return { title: clean(meta.title).trim(), description: clean(meta.description).trim(), tags: meta.tags || [], body: clean(cleaned.slice(s + 10, e)).trim() };
 }
 
+const norm = (s) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+// Pair quotation marks in order, one paragraph at a time. Curly marks say which way they face; straight
+// marks alternate open, close. A paragraph that ends with a quote still open is reported, never guessed at.
+function quotedSpans(text) {
+  const spans = [], unclosed = [];
+  for (const para of text.split(/\n\s*\n/)) {
+    let open = -1;
+    for (let i = 0; i < para.length; i++) {
+      const c = para[i];
+      if (c === '“' || (c === '"' && open < 0)) { if (open < 0) open = i + 1; }
+      else if ((c === '”' || c === '"') && open >= 0) { spans.push(para.slice(open, i)); open = -1; }
+    }
+    if (open >= 0) unclosed.push(para.slice(open));
+  }
+  return { spans, unclosed };
+}
+
 function check(post, source, url) {
   const p = [];
   const all = `${post.title}\n${post.description}\n${post.body}`;
@@ -108,9 +126,13 @@ function check(post, source, url) {
   if (/\b(studies show|study shows|research shows|research says|scientists (?:say|found)|a recent study)\b/i.test(post.body)) p.push('Makes a research claim without naming a source.');
   const figs = post.body.match(/(?:£|\$|€)\s?\d[\d,.]*\s?(?:bn|m|k|billion|million)?|\d[\d,.]*\s?(?:%|per ?cent)/gi) || [];
   for (const f of figs) if (!source.includes(f.trim())) p.push(`Figure "${f.trim()}" is not in the source text.`);
-  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-  const quotes = (post.body.match(/["“]([^"”]{12,}?)["”]/g) || []).map((q) => q.slice(1, -1));
-  for (const q of quotes) if (!norm(source).includes(norm(q))) p.push(`Quoted text "${q.slice(0, 50)}" is not in the source. Only quote exact words from the source.`);
+  // Every quoted span, of any length, must be words copied from the source (5 Oct 2026). The old regex skipped
+  // quotes under 12 characters and then read the CLOSING mark as an opening one, so it "quoted" Joel's own
+  // sentence sitting between two real quotes. Every draft failed on words that were never in quote marks.
+  const { spans, unclosed } = quotedSpans([post.title, post.description, post.body].join('\n\n'));
+  const src = ` ${norm(source)} `;
+  for (const q of spans) if (norm(q) && !src.includes(` ${norm(q)} `)) p.push(`Quoted text "${q.slice(0, 80)}" is not in the source. Quotation marks are only for words copied exactly from the source. If these are your own words, write them as Joel in the first person with no quotation marks.`);
+  for (const u of unclosed) p.push(`Unclosed quotation mark near "${u.slice(0, 60)}". Close it, or remove it if these are your own words.`);
   if (!post.body.includes(url)) p.push('Must link to the source article URL.');
   if (post.title.length > TITLE_MAX || post.title.length < 15) p.push(`Title must be 15 to ${TITLE_MAX} characters.`);
   if (post.description.length > 165) p.push('Description over 165 characters.');

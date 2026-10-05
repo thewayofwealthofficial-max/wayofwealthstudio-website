@@ -1,6 +1,7 @@
 name: Friday Big Swing (B2B)
 
-# Every Friday: 5 practitioner-training organisations + a ready pitch each + one bold idea, to Fred.
+# Every Friday: 5 referral partners (accountants, bookkeepers, business networks, business coaches), 2 employers,
+# 3 small business podcasts or newsletters, a ready pitch each + one bold idea, to Fred (repointed 5 Oct 2026).
 # Joel sends them himself; nothing is sent automatically. See scripts/b2b-friday.mjs.
 # GitHub runs crons hours late, so 04:07 UTC lands in the morning UK.
 
