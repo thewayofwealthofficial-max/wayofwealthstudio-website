@@ -83,6 +83,13 @@
 [functions."email-dispatch"]
   schedule = "40 * * * *"
 
+# Booking on /your-number stops the booking reminders (5 Oct 2026).
+[[redirects]]
+  from = "/api/session/booked"
+  to = "/.netlify/functions/session-booked"
+  status = 200
+  force = true
+
 # Fact find for the paid Cash Flow Session (5 Oct 2026). Form at /your-number/fact-find.
 [[redirects]]
   from = "/api/fact-find"

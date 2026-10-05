@@ -36,6 +36,8 @@ const MAGNET_GROUP_MAP = {
   'diagnostic-vigilance': 'MAILERLITE_GROUP_DIAGNOSTIC',
   // The free 2.5-hour masterclass at /masterclass (2026-10-04). Main list only, no welcome sequence yet.
   masterclass: 'MAILERLITE_GROUP_MASTERCLASS',
+  // Step 1 of the booking box on /your-number (5 Oct 2026). Main list + the session-reminder sequence. No MailerLite copy.
+  'session-booking': 'MAILERLITE_GROUP_SESSION_BOOKING',
 };
 
 const BAD_DOMAINS = new Set([
@@ -113,6 +115,8 @@ async function startSequence({ event, email, name, seqId, vars = {} }) {
   await store.setJSON(key, { sent: [], enrolledAt });
   const def = seq.SEQUENCES[seqId];
   const first = def.emails[0];
+  // A sequence whose first email waits (the booking reminders) is left to the hourly runner.
+  if (first.afterHours > 0) return { ok: true, note: `enrolled in ${seqId}` };
   try {
     await seq.sendEmail({ to: email, email: first, firstName: name, footerReason: def.footerReason, tagSeq: `${seqId}_${first.id}`, vars });
     await store.setJSON(key, { sent: [first.id], lastSentAt: new Date().toISOString(), enrolledAt });
@@ -140,7 +144,8 @@ async function addToResend({ email, name, magnetKey, event, vars = {} }) {
       if (c && c.unsubscribed) return { ok: true, note: 'previously unsubscribed, left as is' };
       // The diagnostic's series is their report and what it means, so it runs even for people already on the list.
       // (Its safety-net capture adds them to the list seconds before this call.)
-      if (!magnetKey.startsWith('diagnostic-')) return { ok: true, note: 'already on the list' };
+      // The booking reminders are for anyone who starts booking, list members included (they're the warmest).
+      if (!magnetKey.startsWith('diagnostic-') && magnetKey !== 'session-booking') return { ok: true, note: 'already on the list' };
     }
     // Kill switch: sequences only start once SEQUENCES_ENABLED=true is set on Netlify.
     // A test address can be enrolled early with SEQUENCES_TEST_EMAIL.

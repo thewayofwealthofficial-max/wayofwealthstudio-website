@@ -27,6 +27,8 @@ exports.handler = async (event) => {
     contacts = [];
   }
   for (const [seqId, seq] of Object.entries(core.SEQUENCES)) {
+    // A sequence can be built but held back until Joel approves its emails (enabled: false). People still enrol.
+    if (seq.enabled === false) continue;
     for (const c of contacts) {
       if (Date.now() - started > BUDGET_MS) break;
       if (c.unsubscribed) continue;

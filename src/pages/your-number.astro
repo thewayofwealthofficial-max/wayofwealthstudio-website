@@ -1,9 +1,13 @@
 ---
 // "Your Cash Flow Session" booking page: the paid 75-minute session (Your Number), £179.99.
-// Shape copied from competitors' paid-session pages (research/2026-10-05-competitor-ads/BOOKING_PAGES.md):
-// three stages (Charelle Griffith), who it's for + prep form after booking (Jodi McLaren).
-// Words: the Calendly description Joel approved 2026-10-05, approved lines from /coaching,
-// and verbatim client clips from config/resultsClips. Styles copied from /coaching.
+// Rebuilt 5 Oct 2026 in the structure of Financially Savvy's /emm page
+// (research/2026-10-05-competitor-ads/financiallysavvy/ANALYSIS.md): who it's for above the headline,
+// a 2-step booking box in the hero (name + email first, then Calendly), a short founder letter, one numbered
+// "what you get" list, proof, one objection, the promise, FAQs, and a "that's everything" close with the box again.
+// NOT copied: their "was" price and their member numbers.
+// Words: Joel's approved Calendly description, /coaching, his live pitch, BRAND.md. Clips are verbatim.
+// Step 1 saves name + email (magnet "session-booking": list + booking reminders). Booking on this page stops
+// the reminders (/api/session/booked).
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 import { RESULT_CLIPS } from '../config/resultsClips';
@@ -13,106 +17,108 @@ const description = "75 minutes, live on screen. I build your cash flow model wi
 
 const CALENDLY_URL = 'https://calendly.com/thewayofwealth-official/your-cash-flow-session';
 
-const STAGES = [
-  { n: '1', t: "Your fact find", d: "Once you've booked, I'll send you a short form about your work, your money in and out, and your goal. Rough numbers are fine." },
-  { n: '2', t: "Your session", d: "75 minutes, live on screen. I build your cash flow model with you. We put your real numbers in, model different options, and see what each one actually looks like. Doing this, everything kind of falls into place." },
-  { n: '3', t: "Your report", d: "Within 48 hours you get your 9-page report to keep." },
+const GET = [
+  { t: "Your fact find", d: "Once you've booked, I'll send you a short form about your work, your money in and out, and your goal. Rough numbers are fine." },
+  { t: "75 minutes, live on screen", d: "I build your cash flow model with you. We put your real numbers in, model different options, and see what each one actually looks like." },
+  { t: "Your number", d: "What you need to earn each month and year." },
+  { t: "Your prices, clients and days", d: "What your number means for your prices, your clients and your days." },
+  { t: "Two futures", d: "Side by side, five years out." },
+  { t: "Your report", d: "Within 48 hours you get your 9-page report to keep, with your first three steps in your words." },
 ];
 
-const COVER = [
-  "Your goal",
-  "Where your money is today",
-  "Your number: what you need to earn each month and year",
-  "What that means for your prices, your clients and your days",
-  "Two futures, side by side, five years out",
-  "Your first three steps, in your words",
-];
-
-// Verbatim clips (captions word for word from the audio). These are 12-week coaching clients,
-// and the page says so: none of them has had this session yet.
-const CLIP_SLUGS = ['alon-2', 'lynt-3', 'jen-4'];
-const CLIPS = CLIP_SLUGS.map((s) => RESULT_CLIPS.find((c) => c.slug === s)).filter(Boolean);
+// Verbatim clips (captions word for word from the audio). These are 12-week coaching clients, and the page says so.
+const CLIPS = ['alon-2', 'lynt-3', 'jen-4'].map((s) => RESULT_CLIPS.find((c) => c.slug === s)).filter(Boolean);
+const HERO_QUOTE = CLIPS[0];
 
 const FAQS = [
   { q: "Is this financial advice?", a: "No. I'm a planner, not an adviser. I'm qualified but not FCA authorised. This session does not recommend any product, pension, investment, insurance or debt arrangement. Every figure is an illustration, not a forecast." },
-  { q: "I already have an accountant.", a: "Good. An accountant looks backwards to keep you legal. They don't tell you how much of today's invoice you can actually move to your own account. That's the gap we work on." },
   { q: "I'm not in the UK. Can I still book?", a: "Yes. Bring the tax figures your accountant uses for you and we work with those. I don't give tax advice. The price is £179.99, and your bank converts it to your currency." },
   { q: "What do I need to bring?", a: "Just the fact find, filled in before the call. Rough numbers are fine." },
-  { q: "What if I need to move my session?", a: "Reschedule free up to 24 hours before your session. No refunds after that. The one exception is my promise: if you don't leave knowing your number, I'll refund you." },
+  { q: "What if I need to move my session?", a: "Reschedule free up to 24 hours before your session. No refunds after that, apart from my promise." },
 ];
 ---
 <Layout title={title} description={description} canonical={`${LINKS.siteUrl}/your-number`}>
 
-<!-- 1 · HERO -->
-<section class="sp-hero" id="top">
-  <div class="sp-hero-inner sp-hero-single">
-    <div class="sp-hero-copy reveal">
-      <p class="sp-eyebrow">Your Cash Flow Session · 75 minutes, live</p>
+<!-- 1 · HERO with the booking box -->
+<section class="yn-hero" id="top">
+  <div class="yn-hero-inner">
+    <div class="yn-hero-copy">
+      <p class="yn-for">For self-employed people and small service-business owners who earn decent money, but whose money still feels chaotic</p>
       <h1>Find out your number. <em>Then see what it means for your prices and your week.</em></h1>
-      <p class="sp-lead">How much you actually need to earn, worked out live with you. For self-employed people and small service businesses, wherever you are: coaches, therapists, wellness practitioners, consultants, freelancers, creatives and trades.</p>
-      <div class="sp-cta-row">
-        <a href="#book" class="sp-btn sp-btn-gold">Book your session · £179.99</a>
-        <a href="#how" class="sp-link">See how it works ↓</a>
+      <p class="yn-lead">Your Cash Flow Session: 75 minutes, live on screen. I build your cash flow model with you, so you leave knowing how much you actually need to earn.</p>
+      <div class="yn-founder-line">
+        <img src="/images/joel-headshot-web.jpg" alt="" width="44" height="44" loading="eager" />
+        <p><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</p>
       </div>
-      <p class="sp-creds"><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</p>
+    </div>
+
+    <aside class="yn-box" aria-label="Book your session">
+      <div class="yn-box-head">
+        <span>Your Cash Flow Session</span>
+        <b>£179.99</b>
+      </div>
+      <p class="yn-box-sub">75 minutes, live · report within 48 hours</p>
+      <form class="yn-start" novalidate>
+        <p class="yn-step">Step 1 of 2. Your details</p>
+        <label><span>First name</span><input type="text" name="name" autocomplete="given-name" required /></label>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <div class="honeypot" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <button type="submit">Continue to pick a time →</button>
+        <p class="yn-status" aria-live="polite"></p>
+      </form>
+      <p class="yn-box-fine">Step 2 is picking your time. You pay when you book.</p>
+      <p class="yn-box-promise">If you don't leave knowing your number, I'll refund you.</p>
+    </aside>
+  </div>
+
+  {HERO_QUOTE && (
+    <blockquote class="yn-hero-quote">
+      <p>"{HERO_QUOTE.cap}"</p>
+      <cite>{HERO_QUOTE.who}, 12-week coaching client</cite>
+    </blockquote>
+  )}
+</section>
+
+<!-- 2 · A QUICK WORD -->
+<section class="sp-section sp-white">
+  <div class="sp-wide yn-letter">
+    <figure class="yn-letter-photo">
+      <img src="/images/joel-headshot-web.jpg" alt="Joel Ezekiel" loading="lazy" />
+    </figure>
+    <div>
+      <p class="yn-kicker">From Joel</p>
+      <h2 class="sp-h2">A quick word <em>before you decide</em></h2>
+      <p>Most of the people I work with earn decent money but still end up counting down to payday.</p>
+      <p>More revenue doesn't fix a leak. It scales it.</p>
+      <p>I turned £3,000 into £150,000 trading. I thought I was a genius. Then I lost all of it. That's what sent me off to go and study this properly. So now I've got an MSc in Behavioural Economics and I'm a Qualified Financial Planner.</p>
+      <p>This is what I love about financial planning: doing cash flow modelling. We put your real numbers in, and doing this, everything kind of falls into place.</p>
+      <p class="yn-sign">Joel</p>
     </div>
   </div>
 </section>
 
-<!-- 2 · HOW IT WORKS (three stages) -->
+<!-- 3 · WHAT YOU GET -->
 <section class="sp-section sp-cream" id="how">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
   <div class="sp-wide">
-    <h2 class="sp-h2 sp-center reveal">How it <em>works.</em></h2>
-    <ul class="sp-include-grid">
-      {STAGES.map((s) => (
-        <li class="sp-include reveal"><span class="yn-step">{s.n}</span><h4>{s.t}</h4><p>{s.d}</p></li>
+    <p class="yn-kicker">What you get</p>
+    <h2 class="sp-h2">Everything that comes <em>with your session</em></h2>
+    <ol class="yn-get">
+      {GET.map((g, i) => (
+        <li><span class="yn-get-n">{String(i + 1).padStart(2, '0')}</span><b>{g.t}</b><p>{g.d}</p></li>
       ))}
-    </ul>
+    </ol>
+    <p class="yn-anchor">In the UK, financial planners charge £500 to £1,500 to build a cash flow model. This session is £179.99.</p>
   </div>
 </section>
 
-<!-- 3 · WHAT WE COVER -->
-<section class="sp-section sp-white">
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">What we <em>cover.</em></h2>
-    <ul class="sp-tick">
-      {COVER.map((c) => <li>{c}</li>)}
-    </ul>
-  </div>
-</section>
-
-<!-- 4 · PRICE + PROMISE -->
-<section class="sp-section sp-navy" id="price">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
-  <div class="sp-narrow sp-center reveal">
-    <p class="sp-on-dark">In the UK, financial planners charge £500 to £1,500 to build a cash flow model.</p>
-    <div class="yn-price">£179.99</div>
-    <p class="sp-on-dark">This session. 75 minutes, live, plus your 9-page report.</p>
-    <p class="sp-on-dark yn-places">5 places a week.</p>
-    <a href="#book" class="sp-btn sp-btn-gold">Book your session</a>
-  </div>
-</section>
-
-<!-- 5 · PROMISE -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-narrow sp-center reveal">
-    <div class="sp-seal" aria-hidden="true">✓</div>
-    <h2 class="sp-h2">My <em>promise</em></h2>
-    <p class="sp-strong">If you don't leave knowing your number, I'll refund you.</p>
-  </div>
-</section>
-
-<!-- 6 · CLIENT CLIPS -->
+<!-- 4 · CLIENT CLIPS -->
 <section class="sp-section sp-navy" id="results">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
-    <h2 class="sp-h2 sp-on-dark sp-center reveal">What it's like when we<br /><em>look at the numbers together.</em></h2>
-    <p class="sp-on-dark sp-center sp-sub reveal">From my 12-week coaching clients, on our calls.</p>
+    <h2 class="sp-h2 sp-on-dark sp-center">What it's like when we<br /><em>look at the numbers together.</em></h2>
+    <p class="sp-on-dark sp-center sp-sub">From my 12-week coaching clients, on our calls.</p>
     <div class="sp-video-grid">
       {CLIPS.map((v) => (
-        <figure class="sp-vcard reveal">
+        <figure class="sp-vcard">
           <video controls playsinline preload="none" poster={`/testimonials/results/${v!.slug}.jpg`} src={`/testimonials/results/${v!.slug}.mp4`}></video>
           <figcaption><p>"{v!.cap}"</p><small>{v!.who}</small></figcaption>
         </figure>
@@ -121,38 +127,31 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 7 · FOUNDER -->
+<!-- 5 · ONE OBJECTION -->
 <section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-wide sp-founder reveal">
-    <figure class="sp-portrait">
-      <img src="/images/joel-headshot-web.jpg" alt="Joel Ezekiel" loading="lazy" />
-    </figure>
+  <div class="sp-narrow">
+    <h2 class="sp-h2">Why not just ask <em>my accountant?</em></h2>
+    <p>Good question. An accountant looks backwards to keep you legal. They don't tell you how much of today's invoice you can actually move to your own account. That's the gap we work on.</p>
+  </div>
+</section>
+
+<!-- 6 · PROMISE -->
+<section class="sp-section sp-cream">
+  <div class="sp-narrow yn-promise">
+    <div class="sp-seal" aria-hidden="true">✓</div>
     <div>
-      <h2 class="sp-h2">Hi, I'm <em>Joel.</em></h2>
-      <p>I turned £3,000 into £150,000 trading. I thought I was a genius. Then I lost all of it.</p>
-      <p>I didn't even have a degree back then. That's what sent me off to go and study this properly.</p>
-      <p>So now I've got an MSc in Behavioural Economics and I'm a Qualified Financial Planner. This is what I love about financial planning: doing cash flow modelling.</p>
+      <h2 class="sp-h2">My <em>promise</em></h2>
+      <p class="sp-strong">If you don't leave knowing your number, I'll refund you.</p>
+      <p>Reschedule free up to 24 hours before your session. No refunds after that, apart from my promise.</p>
     </div>
   </div>
 </section>
 
-<!-- 8 · NOT FOR YOU -->
-<section class="sp-section sp-cream">
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">This isn't for you <em>if…</em></h2>
-    <ul class="sp-tick">
-      <li>You want someone to tell you what to invest in. I'm a planner, not an adviser. I don't tell you what to buy.</li>
-      <li>You'd rather not look at your real numbers.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 9 · FAQ -->
+<!-- 7 · FAQ -->
 <section class="sp-section sp-white" id="faq">
   <div class="sp-narrow">
-    <h2 class="sp-h2 sp-center reveal">Commonly asked <em>questions</em></h2>
-    <div class="sp-faq reveal">
+    <h2 class="sp-h2">Questions people ask <em>before booking</em></h2>
+    <div class="sp-faq">
       {FAQS.map((f) => (
         <details><summary>{f.q}</summary><p>{f.a}</p></details>
       ))}
@@ -160,36 +159,111 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 10 · BOOK -->
+<!-- 8 · CLOSE + BOOK -->
 <section class="g-apply sp-apply" id="book">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
-  <div class="g-apply-inner yn-book">
-    <p class="sp-eyebrow reveal">Book your session</p>
-    <h2 class="g-apply-h2 reveal">Pick a time.<br /><em>Then we'll find your number.</em></h2>
-    <p class="g-apply-sub reveal">£179.99, paid when you book. 5 places a week.</p>
-    <div class="calendly-inline-widget" data-url={CALENDLY_URL} style="min-width:320px;height:900px;"></div>
-    <p class="sp-fine">Joel is qualified but not FCA authorised. This session does not recommend any product, pension, investment, insurance or debt arrangement. Every figure is an illustration, not a forecast. The client clips are real, from 12-week coaching clients. Results vary.</p>
+  <div class="g-apply-inner yn-close">
+    <div class="yn-close-copy">
+      <h2 class="g-apply-h2">Right, <em>that's everything.</em></h2>
+      <p class="g-apply-sub">It's £179.99 for 75 minutes, live, and your 9-page report within 48 hours. 5 places a week.</p>
+      <p class="g-apply-sub">If you don't leave knowing your number, I'll refund you.</p>
+      <p class="yn-sign yn-sign-dark">Joel</p>
+    </div>
+    <div class="yn-box yn-box-close">
+      <div class="yn-box-head"><span>Your Cash Flow Session</span><b>£179.99</b></div>
+      <form class="yn-start" novalidate>
+        <p class="yn-step">Step 1 of 2. Your details</p>
+        <label><span>First name</span><input type="text" name="name" autocomplete="given-name" required /></label>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <div class="honeypot" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <button type="submit">Continue to pick a time →</button>
+        <p class="yn-status" aria-live="polite"></p>
+      </form>
+      <p class="yn-box-fine">Step 2 is picking your time. You pay when you book.</p>
+    </div>
   </div>
+
+  <div id="yn-step2" class="yn-step2" hidden>
+    <p class="yn-step yn-step-dark">Step 2 of 2. Pick a time</p>
+    <div id="yn-calendly" class="yn-calendly"></div>
+  </div>
+
+  <p class="sp-fine">Joel is qualified but not FCA authorised. This session does not recommend any product, pension, investment, insurance or debt arrangement. Every figure is an illustration, not a forecast. The client clips are real, from 12-week coaching clients. Results vary.</p>
 </section>
 
 </Layout>
 
 <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script is:inline define:vars={{ calendlyUrl: CALENDLY_URL }}>
+  (function () {
+    var forms = document.querySelectorAll('form.yn-start');
+    var step2 = document.getElementById('yn-step2');
+    var holder = document.getElementById('yn-calendly');
+    var bookedEmail = '';
+    var shown = false;
+
+    function showCalendar(name, email) {
+      var url = calendlyUrl + '?hide_gdpr_banner=1&name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email);
+      document.querySelectorAll('.yn-box-close').forEach(function (b) { b.hidden = true; });
+      step2.hidden = false;
+      if (!shown) {
+        shown = true;
+        var start = function () {
+          if (window.Calendly && window.Calendly.initInlineWidget) {
+            window.Calendly.initInlineWidget({ url: url, parentElement: holder });
+          } else {
+            setTimeout(start, 200);
+          }
+        };
+        start();
+      }
+      step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    forms.forEach(function (form) {
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var status = form.querySelector('.yn-status');
+        var name = form.elements.namedItem('name').value.trim();
+        var email = form.elements.namedItem('email').value.trim();
+        if (!name || !email) { status.textContent = 'Please add your first name and email.'; return; }
+        status.textContent = 'One moment…';
+        var res = null, out = {};
+        try {
+          res = await fetch('/api/lead-magnet/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, magnet: 'session-booking', honeypot: form.elements.namedItem('website').value }),
+          });
+          out = await res.json().catch(function () { return {}; });
+        } catch (err) { res = null; }
+        // A typo in the email stops here so it can be fixed. Anything else on our side still lets them book.
+        if (res && res.status === 400) { status.textContent = out.error || 'Please check your email.'; return; }
+        status.textContent = '';
+        bookedEmail = email.toLowerCase();
+        showCalendar(name, email);
+      });
+    });
+
+    // Calendly tells the page when a booking is made: stop that person's reminder emails.
+    window.addEventListener('message', function (e) {
+      if (!/calendly\.com$/.test(new URL(e.origin).hostname)) return;
+      if (!e.data || e.data.event !== 'calendly.event_scheduled' || !bookedEmail) return;
+      fetch('/api/session/booked', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: bookedEmail }) });
+    });
+  })();
+</script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
 
-/* Copied from /coaching (sp-* look), only the parts this page uses. */
-.sp-hero, .sp-section, .sp-apply { font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-.sp-h2, .sp-hero h1, .g-apply-h2, .yn-price {
+/* Base look copied from /coaching (sp-*); yn-* pieces are this page's own. */
+.yn-hero, .sp-section, .sp-apply { font-family: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+.sp-h2, .yn-hero h1, .g-apply-h2 {
   font-family: 'Fraunces', 'Source Serif 4', Georgia, serif;
   font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
 }
-.sp-h2 em, .sp-hero h1 em, .g-apply-h2 em {
-  font-style: italic; font-weight: 500; color: var(--color-gold);
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
-}
-.sp-section { position: relative; padding: 7.5rem 1.5rem 6rem; }
+.sp-h2 em, .yn-hero h1 em, .g-apply-h2 em { font-style: italic; font-weight: 500; color: var(--color-gold); font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0; }
+.sp-section { position: relative; padding: 6.5rem 1.5rem 5.5rem; }
 .sp-cream { background: var(--color-cream); color: var(--color-charcoal); }
 .sp-white { background: var(--color-bg-white); color: var(--color-charcoal); }
 .sp-navy  { background: var(--color-navy-deep); color: var(--color-cream); }
@@ -197,56 +271,77 @@ const FAQS = [
 .sp-narrow { max-width: 720px; margin: 0 auto; position: relative; }
 .sp-center { text-align: center; }
 .sp-section .sp-sub { font-size: 1.1rem; margin: -0.5rem auto 2.5rem; max-width: 620px; opacity: 0.85; text-align: center; }
-.sp-h2 { font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.015em; margin: 0 0 1.6rem; color: var(--color-navy); }
+.sp-h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.015em; margin: 0 0 1.4rem; color: var(--color-navy); }
 .sp-on-dark, .sp-navy .sp-h2 { color: var(--color-cream); }
-.sp-section p { font-size: 1.1rem; line-height: 1.7; margin: 0 0 1.15rem; }
+.sp-section p { font-size: 1.1rem; line-height: 1.7; margin: 0 0 1.1rem; }
 .sp-strong { font-weight: 700; font-size: 1.2rem !important; }
-.sp-eyebrow { display: inline-block; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); margin: 0 0 1.4rem; }
-.sp-wave { position: absolute; top: -1px; left: 0; width: 100%; height: clamp(40px, 6vw, 90px); display: block; fill: var(--wave-fill); pointer-events: none; }
-.sp-btn { display: inline-block; text-decoration: none; font-weight: 600; font-size: 1rem; letter-spacing: 0.01em; padding: 1.1rem 2.2rem; border-radius: 4px; transition: transform .25s, background .25s, box-shadow .25s; text-align: center; }
-.sp-btn-gold { background: var(--color-gold); color: var(--color-navy-deep); }
-.sp-btn-gold:hover { background: var(--color-gold-hover); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.25); }
-.sp-link { color: var(--color-gold-subtle); font-size: 0.98rem; text-decoration: underline; text-underline-offset: 4px; }
+.yn-kicker { font-size: 0.78rem !important; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); margin: 0 0 0.8rem !important; }
 
-.sp-hero { background: var(--color-navy-deep); color: var(--color-cream); padding: 9.5rem 1.5rem 6rem; position: relative; overflow: hidden; }
-.sp-hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 75% 15%, rgba(196,162,101,0.13), transparent 55%), radial-gradient(circle at 15% 90%, rgba(196,162,101,0.05), transparent 55%); pointer-events: none; }
-.sp-hero-inner { max-width: 1180px; margin: 0 auto; position: relative; }
-.sp-hero-single { max-width: 820px; }
-.sp-hero h1 { font-size: clamp(2.1rem, 3.9vw, 3.4rem); line-height: 1.07; font-weight: 700; letter-spacing: -0.015em; color: var(--color-cream); margin: 0 0 1.5rem; }
-.sp-hero h1 em { display: block; margin-top: 0.4rem; }
-.sp-lead { font-size: 1.2rem; line-height: 1.6; color: rgba(245,240,232,0.85); margin: 0 0 2rem; }
-.sp-cta-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
-.sp-creds { font-size: 0.92rem; color: rgba(245,240,232,0.65); margin: 0; }
-.sp-creds b { color: var(--color-cream); }
+/* hero */
+.yn-hero { background: var(--color-navy-deep); color: var(--color-cream); padding: 8.5rem 1.5rem 4rem; position: relative; overflow: hidden; }
+.yn-hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 75% 15%, rgba(196,162,101,0.13), transparent 55%); pointer-events: none; }
+.yn-hero-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 3rem; align-items: start; position: relative; }
+.yn-for { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-gold); margin: 0 0 1.1rem; max-width: 46ch; }
+.yn-hero h1 { font-size: clamp(2.1rem, 3.8vw, 3.3rem); line-height: 1.07; font-weight: 700; letter-spacing: -0.015em; color: var(--color-cream); margin: 0 0 1.3rem; }
+.yn-hero h1 em { display: block; margin-top: 0.4rem; }
+.yn-lead { font-size: 1.18rem; line-height: 1.6; color: rgba(245,240,232,0.86); margin: 0 0 1.6rem; max-width: 52ch; }
+.yn-founder-line { display: flex; align-items: center; gap: 0.8rem; }
+.yn-founder-line img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.yn-founder-line p { margin: 0; font-size: 0.92rem; color: rgba(245,240,232,0.7); }
+.yn-founder-line b { color: var(--color-cream); }
+.yn-hero-quote { max-width: 1140px; margin: 3rem auto 0; position: relative; border-left: 3px solid var(--color-gold); padding: 0.3rem 0 0.3rem 1.4rem; }
+.yn-hero-quote p { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: clamp(1.2rem, 2.2vw, 1.55rem); line-height: 1.4; color: var(--color-cream); margin: 0 0 0.6rem; max-width: 60ch; }
+.yn-hero-quote cite { font-style: normal; font-size: 0.88rem; color: var(--color-gold-subtle); }
 
-.sp-tick { list-style: none; padding: 0; margin: 1.4rem 0; }
-.sp-tick li { position: relative; padding: 0.7rem 0 0.7rem 2.2rem; font-size: 1.08rem; line-height: 1.55; border-bottom: 1px dashed rgba(28,42,58,0.18); }
-.sp-tick li::before { content: "✓"; position: absolute; left: 0; top: 0.65rem; color: var(--color-gold); font-weight: 700; }
-.sp-tick li:last-child { border-bottom: none; }
+/* booking box */
+.yn-box { background: var(--color-cream); color: var(--color-charcoal); border-radius: 8px; padding: 1.6rem 1.5rem 1.3rem; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
+.yn-box-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.yn-box-head span { font-weight: 600; color: var(--color-navy); }
+.yn-box-head b { font-family: 'Fraunces', Georgia, serif; font-size: 1.9rem; color: var(--color-navy); }
+.yn-box-sub { font-size: 0.86rem; color: var(--color-slate); margin: 0.2rem 0 1rem; }
+.yn-step { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-gold); margin: 0 0 0.7rem; }
+.yn-step-dark { text-align: center; }
+.yn-start { display: grid; gap: 0.8rem; text-align: left; }
+.yn-start label span { display: block; font-size: 0.86rem; font-weight: 500; margin-bottom: 0.3rem; color: var(--color-charcoal); }
+.yn-start input { width: 100%; box-sizing: border-box; font: inherit; font-size: 1rem; padding: 0.75rem 0.9rem; border: 1px solid var(--color-border-warm); border-radius: 4px; background: var(--color-bg-white); color: var(--color-charcoal); }
+.yn-start input:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,162,101,0.2); }
+.yn-start button { margin-top: 0.3rem; padding: 0.95rem 1rem; background: var(--color-navy); color: var(--color-cream); border: 0; border-radius: 4px; font: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; }
+.yn-start button:hover { background: var(--color-navy-deep); }
+.yn-start button:focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; }
+.yn-status { min-height: 1.2em; font-size: 0.88rem; color: #B0413E; margin: 0; }
+.yn-box-fine { font-size: 0.82rem; color: var(--color-slate); margin: 0.6rem 0 0; text-align: center; }
+.yn-box-promise { font-size: 0.86rem; color: var(--color-navy); margin: 0.5rem 0 0; text-align: center; font-weight: 600; }
+.honeypot { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
 
-.sp-include-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
-.sp-include { background: var(--color-bg-white); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 1.8rem 1.6rem; }
-.sp-include h4 { font-family: 'Fraunces', serif; font-size: 1.2rem; color: var(--color-navy); margin: 0 0 0.6rem; }
-.sp-include p { font-size: 0.98rem !important; line-height: 1.6 !important; margin: 0 !important; color: var(--color-slate); }
-.yn-step { display: block; font-family: 'Fraunces', serif; font-size: 1.9rem; color: var(--color-gold); margin-bottom: 0.4rem; }
+/* letter */
+.yn-letter { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 3rem; align-items: start; }
+.yn-letter-photo { margin: 0; }
+.yn-letter-photo img { width: 100%; border-radius: 8px; display: block; }
+.yn-sign { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: 1.6rem !important; color: var(--color-navy); }
+.yn-sign-dark { color: var(--color-gold-subtle); }
 
-.yn-price { font-size: clamp(3.2rem, 7vw, 4.6rem); font-weight: 700; color: var(--color-gold); margin: 0.6rem 0 0.4rem; }
-.yn-places { font-weight: 700; }
+/* what you get */
+.yn-get { list-style: none; padding: 0; margin: 1rem 0 0; border-top: 1px solid var(--color-border-warm); }
+.yn-get li { display: grid; grid-template-columns: 3rem minmax(0, 15rem) minmax(0, 1fr); gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-border-warm); align-items: baseline; }
+.yn-get-n { font-family: 'Fraunces', Georgia, serif; color: var(--color-gold); font-variant-numeric: tabular-nums; }
+.yn-get b { font-family: 'Fraunces', Georgia, serif; font-size: 1.12rem; color: var(--color-navy); }
+.yn-get p { margin: 0 !important; font-size: 1rem !important; color: var(--color-slate); }
+.yn-anchor { margin-top: 1.6rem !important; font-weight: 600; color: var(--color-navy); }
 
-.sp-seal { width: 92px; height: 92px; border-radius: 50%; border: 3px double var(--color-gold); display: grid; place-items: center; margin: 0 auto 1.4rem; font-family: 'Fraunces', serif; font-size: 2.6rem; color: var(--color-gold); }
-
-.sp-founder { display: grid; grid-template-columns: 340px 1fr; gap: 3.5rem; align-items: start; }
-.sp-portrait { margin: 0; }
-.sp-portrait img { width: 100%; border-radius: 8px; display: block; }
-
-.sp-video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1rem; }
+/* clips */
+.sp-video-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1rem; }
 .sp-vcard { margin: 0; background: rgba(245,240,232,0.05); border: 1px solid rgba(196,162,101,0.2); border-radius: 8px; padding: 1rem; }
 .sp-vcard video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
 .sp-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
 .sp-vcard figcaption p { font-size: 0.98rem !important; line-height: 1.5 !important; color: var(--color-cream); margin: 0 0 0.5rem !important; }
 .sp-vcard figcaption small { color: var(--color-gold-subtle); font-size: 0.82rem; }
 
-.sp-faq { display: grid; gap: 0.8rem; margin-top: 2rem; }
+/* promise */
+.yn-promise { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2rem; align-items: center; }
+.sp-seal { width: 92px; height: 92px; border-radius: 50%; border: 3px double var(--color-gold); display: grid; place-items: center; font-family: 'Fraunces', serif; font-size: 2.6rem; color: var(--color-gold); }
+
+/* faq */
+.sp-faq { display: grid; gap: 0.8rem; margin-top: 1.4rem; }
 .sp-faq details { background: var(--color-bg-white); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 0 1.4rem; }
 .sp-faq summary { cursor: pointer; font-weight: 600; font-size: 1.05rem; padding: 1.15rem 2rem 1.15rem 0; list-style: none; position: relative; color: var(--color-navy); }
 .sp-faq summary::-webkit-details-marker { display: none; }
@@ -254,24 +349,28 @@ const FAQS = [
 .sp-faq details[open] summary::after { content: "–"; }
 .sp-faq details p { padding: 0 0 1.2rem; margin: 0; font-size: 1.02rem; color: var(--color-slate); }
 
-.g-apply { position: relative; padding: 8rem 1.5rem 6rem; background: var(--color-navy-deep); text-align: center; }
-.g-apply::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%), radial-gradient(circle at 20% 90%, rgba(196,162,101,0.04), transparent 55%); pointer-events: none; }
-.g-apply-inner { max-width: 720px; margin: 0 auto; position: relative; }
-.yn-book { max-width: 1000px; }
-.g-apply-h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.05; color: var(--color-cream); margin: 0 0 1.4rem; letter-spacing: -0.015em; }
-.g-apply-sub { font-size: 1.1rem; color: rgba(245,240,232,0.82); max-width: 640px; margin: 0 auto 2.4rem; line-height: 1.55; }
-.calendly-inline-widget { border-radius: 8px; overflow: hidden; background: var(--color-cream); }
-.sp-fine { margin: 2rem auto 0; max-width: 620px; font-size: 0.82rem; color: rgba(245,240,232,0.55); line-height: 1.6; }
+/* close */
+.g-apply { position: relative; padding: 6.5rem 1.5rem 5rem; background: var(--color-navy-deep); }
+.g-apply::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%); pointer-events: none; }
+.g-apply-inner { max-width: 1040px; margin: 0 auto; position: relative; }
+.yn-close { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr); gap: 3rem; align-items: center; }
+.g-apply-h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.05; color: var(--color-cream); margin: 0 0 1.2rem; letter-spacing: -0.015em; }
+.g-apply-sub { font-size: 1.1rem; color: rgba(245,240,232,0.85); margin: 0 0 0.9rem; line-height: 1.55; }
+.yn-step2 { max-width: 1040px; margin: 2.5rem auto 0; position: relative; }
+.yn-calendly { min-width: 320px; height: 980px; border-radius: 8px; overflow: hidden; background: var(--color-cream); }
+.sp-fine { margin: 2.5rem auto 0; max-width: 680px; font-size: 0.82rem; color: rgba(245,240,232,0.55); line-height: 1.6; text-align: center; position: relative; }
 
-@media (max-width: 1024px) {
-  .sp-founder { grid-template-columns: 1fr; gap: 2.2rem; }
-  .sp-portrait { max-width: 280px; }
-  .sp-include-grid, .sp-video-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) {
+  .yn-hero-inner, .yn-close, .yn-letter { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .yn-letter-photo { max-width: 240px; }
+  .sp-video-grid { grid-template-columns: minmax(0, 1fr); }
+  .yn-get li { grid-template-columns: 2.4rem minmax(0, 1fr); }
+  .yn-get li p { grid-column: 2; }
 }
-@media (max-width: 680px) {
-  .sp-section { padding: 6rem 1.2rem 4.5rem; }
-  .sp-hero { padding: 8rem 1.2rem 4.5rem; }
-  .sp-include-grid, .sp-video-grid { grid-template-columns: 1fr; }
-  .g-apply { padding: 6rem 1.2rem 4rem; }
+@media (max-width: 560px) {
+  .sp-section { padding: 5rem 1.1rem 4rem; }
+  .yn-hero { padding: 7rem 1.1rem 3rem; }
+  .g-apply { padding: 5rem 1.1rem 4rem; }
+  .yn-promise { grid-template-columns: minmax(0, 1fr); justify-items: start; }
 }
 </style>

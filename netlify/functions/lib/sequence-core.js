@@ -41,6 +41,7 @@ const SEQUENCES = {
   'diagnostic-worship': require('./sequences/diagnostic-worship'),
   'diagnostic-status': require('./sequences/diagnostic-status'),
   'diagnostic-vigilance': require('./sequences/diagnostic-vigilance'),
+  'session-reminder': require('./sequences/session-reminder'),
 };
 
 // Which sign-up form starts which sequence.
@@ -53,6 +54,9 @@ const MAGNET_TO_SEQUENCE = {
   'diagnostic-worship': 'diagnostic-worship',
   'diagnostic-status': 'diagnostic-status',
   'diagnostic-vigilance': 'diagnostic-vigilance',
+  // Step 1 of the booking box on /your-number (5 Oct): name + email, then Calendly. Reminders for anyone who
+  // doesn't book; booking on the page stops them (session-booked.js).
+  'session-booking': 'session-reminder',
 };
 
 let lastCall = 0;
