@@ -1,0 +1,188 @@
+---
+// Fact find for the paid Cash Flow Session (2026-10-05). Linked from the Calendly confirmation email.
+// Questions: research/2026-10-05-your-number-launch/FACT_FIND.md (shape from real pre-session forms,
+// research/2026-10-05-competitor-ads/INTAKE_FORMS.md). Answers go to netlify/functions/fact-find.js.
+// Form styles copied from the /coaching application form.
+import Layout from '../../layouts/Layout.astro';
+import { LINKS } from '../../config/links';
+
+type Q = { key: string; label: string; kind: 'text' | 'email' | 'area' | 'choice' | 'scale'; req: boolean; hint?: string; options?: string[] };
+type Section = { title: string; qs: Q[] };
+
+const SECTIONS: Section[] = [
+  { title: 'About you', qs: [
+    { key: 'name', label: 'Your name', kind: 'text', req: true },
+    { key: 'email', label: 'Your email', kind: 'email', req: true },
+    { key: 'country', label: 'Which country do you pay tax in, and what currency are you paid in?', kind: 'text', req: true },
+    { key: 'setup', label: 'How is your business set up?', kind: 'choice', req: true, options: ['Self-employed / sole trader', 'Limited company', 'Partnership', 'Employed, with a side business', 'Not sure'] },
+    { key: 'website', label: 'Your website or Instagram', kind: 'text', req: false },
+  ] },
+  { title: 'Your work', qs: [
+    { key: 'work', label: 'What do you do, and who do you do it for?', kind: 'area', req: true },
+    { key: 'charge', label: 'What do you charge now?', kind: 'area', req: true, hint: 'Per session or per job. If you sell packages: the price, how many sessions, and over how many weeks.' },
+    { key: 'days', label: 'How many days a week do you work, and how many clients or sessions in a day?', kind: 'text', req: true },
+    { key: 'weeksOff', label: 'How many weeks off do you take a year?', kind: 'text', req: true },
+    { key: 'diary', label: 'Roughly how full is your diary?', kind: 'choice', req: true, options: ['Almost always full', 'About three-quarters full', 'About half full', 'Less than half'] },
+  ] },
+  { title: 'Money in', qs: [
+    { key: 'moneyIn', label: 'Roughly what comes into the business each month?', kind: 'text', req: true, hint: 'An average of the last 3 months is fine.' },
+    { key: 'swing', label: 'How much does that change from month to month?', kind: 'choice', req: true, options: ['Steady', 'Some ups and downs', 'Big swings'] },
+  ] },
+  { title: 'Costs each month', qs: [
+    { key: 'businessCosts', label: 'Business costs each month', kind: 'area', req: true, hint: 'Software and subscriptions · Room hire or rent · Insurance · Training · Anything else.' },
+    { key: 'personalCosts', label: 'Personal costs each month', kind: 'area', req: true, hint: 'Rent or mortgage · Bills · Food · Transport · Everything else.' },
+  ] },
+  { title: 'Savings, debts and tax', qs: [
+    { key: 'savings', label: 'How much do you have in cash savings?', kind: 'text', req: true },
+    { key: 'debts', label: 'Any monthly debt payments?', kind: 'area', req: false, hint: "For each: what it's for, and how much a month." },
+    { key: 'taxAside', label: 'Do you put money aside for tax as it comes in?', kind: 'choice', req: true, options: ['Yes, every time', 'Sometimes', 'No'] },
+    { key: 'taxRate', label: 'Has your accountant given you a tax rate to set aside?', kind: 'text', req: false, hint: 'If so, what is it?' },
+    { key: 'payYourself', label: 'Do you pay yourself a set amount on a set day?', kind: 'choice', req: true, options: ['Yes', 'Sometimes', 'No'] },
+  ] },
+  { title: 'Your goal', qs: [
+    { key: 'enough', label: 'How much do you need to take home each month, after tax, for life to feel like enough?', kind: 'text', req: true },
+    { key: 'savingFor', label: "Is there something you're saving towards?", kind: 'area', req: false, hint: 'What is it, and how much do you need?' },
+    { key: 'calm', label: 'On a scale of 1 to 10, how calm do you feel about money right now?', kind: 'scale', req: true },
+  ] },
+  { title: 'Last one', qs: [
+    { key: 'anythingElse', label: "Is there anything else you'd like me to know before we speak?", kind: 'area', req: false },
+  ] },
+];
+---
+<Layout title="Your fact find | Cash Flow Session | Way of Wealth" description="The short form to fill in before your Cash Flow Session." canonical={`${LINKS.siteUrl}/your-number/fact-find`} noindex>
+
+<section class="g-apply ff" id="top">
+  <div class="g-apply-inner">
+    <p class="sp-eyebrow">Your Cash Flow Session</p>
+    <h1 class="g-apply-h2">Your <em>fact find</em></h1>
+    <p class="g-apply-sub">Thanks for booking your Cash Flow Session.</p>
+    <p class="g-apply-sub">This form lets me build your cash flow model before we speak, so we spend the 75 minutes on your numbers, not typing them in. Rough numbers are fine. Best guesses beat blanks.</p>
+    <p class="g-apply-sub">Your answers stay private. It takes about 15 minutes.</p>
+
+    <form id="ff-form" class="g-apply-form" novalidate>
+      {SECTIONS.map((s) => (
+        <fieldset class="ff-section">
+          <legend>{s.title}</legend>
+          {s.qs.map((q) => (
+            <div class="form-row">
+              {q.kind === 'choice' || q.kind === 'scale' ? (
+                <div class="ff-group" role="group" aria-label={q.label}>
+                  <span class="ff-label">{q.label}{q.req ? ' *' : ''}</span>
+                  {q.hint && <small class="ff-hint">{q.hint}</small>}
+                  <div class={q.kind === 'scale' ? 'ff-scale' : 'ff-options'}>
+                    {(q.kind === 'scale' ? ['1','2','3','4','5','6','7','8','9','10'] : q.options!).map((o) => (
+                      <label class="ff-option"><input type="radio" name={q.key} value={o} required={q.req} /><span>{o}</span></label>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <label>
+                  <span>{q.label}{q.req ? ' *' : ''}</span>
+                  {q.hint && <small class="ff-hint">{q.hint}</small>}
+                  {q.kind === 'area'
+                    ? <textarea name={q.key} rows="3" required={q.req}></textarea>
+                    : <input type={q.kind === 'email' ? 'email' : 'text'} name={q.key} required={q.req} autocomplete={q.key === 'name' ? 'name' : q.key === 'email' ? 'email' : 'off'} />}
+                </label>
+              )}
+            </div>
+          ))}
+        </fieldset>
+      ))}
+      <div class="honeypot" aria-hidden="true">
+        <label>Leave this field empty<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <button type="submit" class="g-submit">Send my answers →</button>
+      <div id="ff-status" class="form-status" aria-live="polite"></div>
+    </form>
+
+    <div id="ff-done" class="ff-done" hidden>
+      <p class="calendly-tick">✓</p>
+      <h2 class="g-apply-h2">Thank you.</h2>
+      <p class="g-apply-sub">I've got your answers and I'll start building your model.</p>
+      <p class="g-apply-sub">See you on the call.</p>
+    </div>
+  </div>
+</section>
+
+</Layout>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('ff-form');
+    var status = document.getElementById('ff-status');
+    var done = document.getElementById('ff-done');
+    if (!form || !status || !done) return;
+
+    // Prefill name and email if the link carries them (?name=…&email=…).
+    var p = new URLSearchParams(location.search);
+    ['name', 'email'].forEach(function (k) {
+      var el = form.elements.namedItem(k);
+      if (el && p.get(k)) el.value = p.get(k);
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        status.className = 'form-status error';
+        status.textContent = 'A few required answers are missing. They are marked with *.';
+        form.reportValidity();
+        return;
+      }
+      var data = {};
+      new FormData(form).forEach(function (v, k) { data[k] = v; });
+      status.className = 'form-status loading';
+      status.textContent = 'Sending…';
+      try {
+        var res = await fetch('/api/fact-find', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        var out = await res.json().catch(function () { return {}; });
+        if (!res.ok || !out.ok) throw new Error(out.error || 'Could not send.');
+        form.hidden = true;
+        done.hidden = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = err.message + ' If it keeps happening, email joel@wayofwealthcoaching.com.';
+      }
+    });
+  })();
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap');
+
+/* Copied from /coaching (application form), plus a few fact-find pieces. */
+.g-apply { position: relative; padding: 9rem 1.5rem 6rem; background: var(--color-navy-deep); text-align: center; font-family: 'Inter Tight', 'Inter', -apple-system, sans-serif; }
+.g-apply::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 70% 20%, rgba(196,162,101,0.10), transparent 55%); pointer-events: none; }
+.g-apply-inner { max-width: 760px; margin: 0 auto; position: relative; }
+.sp-eyebrow { display: inline-block; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); margin: 0 0 1.4rem; }
+.g-apply-h2 { font-family: 'Fraunces', Georgia, serif; font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.05; color: var(--color-cream); margin: 0 0 1.4rem; letter-spacing: -0.015em; }
+.g-apply-h2 em { font-style: italic; font-weight: 500; color: var(--color-gold); }
+.g-apply-sub { font-size: 1.08rem; color: rgba(245,240,232,0.82); max-width: 640px; margin: 0 auto 0.9rem; line-height: 1.55; }
+.g-apply-form { background: var(--color-cream); border: 1px solid rgba(196,162,101,0.30); border-radius: 6px; padding: 2.6rem 2.4rem; box-shadow: 0 10px 30px rgba(0,0,0,0.25); text-align: left; margin-top: 2.2rem; }
+.ff-section { border: 0; padding: 0; margin: 0 0 2rem; }
+.ff-section legend { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem; color: var(--color-navy); padding: 0 0 0.8rem; margin-bottom: 0.6rem; border-bottom: 1px solid var(--color-border-warm); width: 100%; }
+.form-row { margin-bottom: 1.3rem; }
+.form-row label, .ff-label { display: block; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 500; color: var(--color-charcoal); }
+.form-row label > span, .ff-label { display: block; margin-bottom: 0.35rem; }
+.ff-hint { display: block; font-family: var(--font-body); font-size: 0.84rem; color: var(--color-slate); margin: -0.1rem 0 0.45rem; font-style: italic; }
+.form-row input[type="text"], .form-row input[type="email"], .form-row textarea { width: 100%; font-family: var(--font-body); font-size: 1rem; color: var(--color-charcoal); padding: 0.75rem 0.95rem; border: 1px solid var(--color-border-warm); border-radius: 4px; background: var(--color-bg-white); box-sizing: border-box; }
+.form-row input:focus, .form-row textarea:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgba(196,162,101,0.18); }
+.form-row textarea { resize: vertical; min-height: 80px; }
+.ff-options { display: grid; gap: 0.45rem; }
+.ff-scale { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ff-option { display: flex !important; align-items: center; gap: 0.55rem; font-family: var(--font-body); font-size: 0.98rem; font-weight: 400; cursor: pointer; background: var(--color-bg-white); border: 1px solid var(--color-border-warm); border-radius: 4px; padding: 0.55rem 0.8rem; }
+.ff-scale .ff-option { padding: 0.5rem 0.7rem; min-width: 2.6rem; justify-content: center; }
+.ff-option input { accent-color: var(--color-gold); margin: 0; }
+.honeypot { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
+.g-submit { width: 100%; padding: 1rem 2rem; background: var(--color-navy); color: var(--color-cream); border: none; border-radius: 4px; font-family: var(--font-ui); font-size: 0.98rem; font-weight: 500; cursor: pointer; margin-top: 0.6rem; }
+.g-submit:hover { background: var(--color-navy-deep); }
+.form-status { margin-top: 1rem; min-height: 1.2rem; font-family: var(--font-ui); font-size: 0.92rem; text-align: center; }
+.form-status.loading { color: var(--color-slate); }
+.form-status.error { color: #B0413E; }
+.ff-done { margin-top: 2.5rem; }
+.calendly-tick { font-size: 2.4rem; color: var(--color-gold); margin: 0 0 0.6rem; }
+@media (max-width: 680px) {
+  .g-apply { padding: 7rem 1.2rem 4rem; }
+  .g-apply-form { padding: 1.8rem 1.3rem; }
+}
+</style>

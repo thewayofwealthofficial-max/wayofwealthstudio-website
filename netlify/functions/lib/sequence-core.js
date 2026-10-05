@@ -202,6 +202,6 @@ function ukHour(d = new Date()) {
 
 module.exports = {
   SEQUENCES, MAGNET_TO_SEQUENCE, GENERAL_AUDIENCE,
-  rs, sequenceAudienceId, getContact, listContacts,
+  rs, fromAddress, sequenceAudienceId, getContact, listContacts,
   unsubToken, unsubUrl, render, sendEmail, parseResendDate, ukHour,
 };
