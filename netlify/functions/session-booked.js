@@ -16,7 +16,9 @@ exports.handler = async (event) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json(400, { ok: false, error: 'bad email' });
 
   connectLambda(event);
-  const store = getStore('sequences');
+  // Strong reads: people often book within a minute of step 1, and the default (eventual) read can miss
+  // that brand-new enrolment (seen in testing, 5 Oct).
+  const store = getStore({ name: 'sequences', consistency: 'strong' });
   const key = `session-reminder/${email}`;
   const state = await store.get(key, { type: 'json' });
   if (!state) return json(200, { ok: true, note: 'not enrolled' });
