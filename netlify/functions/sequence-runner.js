@@ -58,6 +58,13 @@ exports.handler = async (event) => {
           continue;
         }
 
+        // Booking reminders end once they've booked on /your-number (session-booked.js leaves the note).
+        if (seqId === 'session-reminder' && (await store.get(`session-booked/${c.email.toLowerCase()}`, { type: 'json' }))) {
+          await store.setJSON(key, { ...state, done: true, bookedAt: new Date().toISOString() });
+          report.skipped++;
+          continue;
+        }
+
         // Diagnostic series pause while a call is booked (sequence-booked.js), like MailerLite's call_booked check.
         if (seqId.startsWith('diagnostic-') && (await store.get(`booked/${c.email.toLowerCase()}`, { type: 'json' }))) { report.skipped++; continue; }
 
