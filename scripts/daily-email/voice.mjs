@@ -7,6 +7,8 @@
 // copy their shape AND their topic when it fits Joel's readers. Words come from Joel (Fathom passages), facts only
 // from the input. Their sentences, facts, stories, testimonials and offer are never copied.
 
+import { BRAND_VOICE_BLOCK } from '../voice/joel-voice.mjs';
+
 export const FROM_NAME = 'Joel from Way of Wealth';
 export const FROM_EMAIL = 'joel@thewayofwealth.shop';
 
@@ -107,7 +109,7 @@ const PHASE_RULES = {
 };
 
 export function systemPrompt(type) {
-  return `${CORE}\n\n${TYPE_RULES[type]}`;
+  return `${CORE}${BRAND_VOICE_BLOCK}\n\n${TYPE_RULES[type]}`;
 }
 
 export function userPrompt({ type, phase, theme, dateStr, shape, passages, post, testimonials }) {

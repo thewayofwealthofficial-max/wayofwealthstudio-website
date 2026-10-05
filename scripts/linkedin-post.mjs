@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { recentJoelWords } from './daily-email/fathom.mjs';
 import { JOEL_FACTS } from './daily-email/voice.mjs';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
+import { BRAND_VOICE_BLOCK } from './voice/joel-voice.mjs';
 import { readOwn, ranking as ownRanking } from './linkedin-own.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -98,7 +99,7 @@ STORY SHAPE, for story angles (${[...STORY].join(', ')}): PROBLEM â†’ PURSUIT â†
 - PURSUIT: what was at risk and what he did about it. The middle, told as it happened.
 - PAYOFF: what shifted. Never missing: a realisation, one step, or honestly saying he doesn't know yet. It is the SHORTEST of the three parts.
 
-HOW THE SENTENCES SOUND (measured from the 15 top guard-down story posts on LinkedIn in our research, so it reads human, not AI):
+HOW THE SENTENCES SOUND (Joel's own solo camera talk measures the same: 21% of his sentences run past 20 words, 15% are under 5; so do the 15 top guard-down LinkedIn story posts):
 - Median sentence about 10 words, but it rolls. About 1 in 5 sentences runs past 20 words, strung on commas and "and", like someone talking ("an escape from burnout, from the winter, from all of it").
 - About 1 in 5 sentences is a tiny fragment of 1 to 4 words. "Worse this time." "You don't."
 - A long rolling sentence can sit on its own as a paragraph. That keeps paragraphs short without chopping the sentence up.
@@ -123,6 +124,7 @@ THEIR WORDS: the READER PHRASES are real things strangers in this market have wr
 HOW TO BUILD IT (two steps, in this order):
 1. "his_lines": copy out 12 to 25 of Joel's own sentences from the ONE passage, word for word, with only the filler taken out (um, like, you know, so basically, repeats, false starts). Do not reword them. Pick the ones that carry the story and the point.
 2. Build the post FROM those lines. At least half the post's words must be his lines as copied. Your own words only for the first line, short joins, the one research line, and trimming. If a line of his addressed a client as "you", it can stay "you": the reader is in the same spot.
+${BRAND_VOICE_BLOCK}
 
 OUTPUT: only valid JSON, no fences:
 {"passage": <number of the passage you used>, "angle": <angle number>, "his_lines": ["...", "..."], "problem": "...", "pursuit": "...", "payoff": "..."}

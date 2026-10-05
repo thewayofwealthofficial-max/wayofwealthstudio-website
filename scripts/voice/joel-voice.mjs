@@ -11,7 +11,14 @@
 // or save them. They are for VOICE: the writer must not lift a client's details, name, numbers or story from them.
 // leaksName() blocks a draft that contains the first name of anyone else on those calls.
 
+import { readFileSync } from 'node:fs';
 import { recentJoelWords } from '../daily-email/fathom.mjs';
+
+// Joel's voice file (5 Oct 2026): his calls + his 2.5-hour solo camera talk, measured. Copy of the main project's
+// _keep/BRAND_VOICE.md; edit it there and copy it here. Every writer in his name loads it (Joel: "train yourself …
+// on my voice … so when you write my scripts/emails/blogs/posts they all sound like me").
+export const BRAND_VOICE = readFileSync(new URL('./BRAND_VOICE.md', import.meta.url), 'utf8');
+export const BRAND_VOICE_BLOCK = `\n\nJOEL'S VOICE FILE (measured from his calls and his solo camera talk). For content, his CAMERA voice is the model: light "like" and "you know", lots of "so" and "now", ask the reader's question then answer it, a line about one breath (7 to 10 words), a paragraph about 40 words. Follow it:\n\n${BRAND_VOICE}`;
 
 export const VOICE_FACTS = `MEASURED FROM 32 OF JOEL'S CALLS (166,626 words of him talking):
 - Peer to peer, never clinical. Like a mate explaining it over a coffee at the kitchen table.
@@ -38,7 +45,9 @@ export async function joelVoice({ key = process.env.FATHOM_API_KEY, days = 30, m
   const lines = passages.length
     ? `\n\nHOW JOEL ACTUALLY TALKS: his own words from recent calls. Copy his rhythm, his words and his way of explaining. These are for VOICE ONLY: never use a client's name, details, numbers or story from them, and never quote them.\n${passages.map((p, i) => `[${i + 1}] ${p.text}`).join('\n\n')}`
     : '';
-  return { block: `\n\n${VOICE_FACTS}${lines}\n\nWrite it the way Joel would say it out loud, written down.`, names };
+  // VOICE_FACTS (calls only) gave way to the voice file, which holds the call measures too and says where his camera
+  // voice differs (5 Oct 2026: "like" 43 per 10k on camera vs 273 on calls).
+  return { block: `${BRAND_VOICE_BLOCK}${lines}\n\nWrite it the way Joel would say it out loud, written down.`, names };
 }
 
 // First names of other people on his calls. A draft containing one is blocked.
