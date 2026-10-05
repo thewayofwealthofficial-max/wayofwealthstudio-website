@@ -189,7 +189,11 @@ const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9£$€% ]+/g, ' ').
 const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 
 // How much of a post is Joel's own words (0 to 1). Filler is removed from both sides so tidying it doesn't count against him.
-const MIN_OWN = 0.5;
+// Joel, 5 Oct 2026: "as high as possible without breaking". 50% blocked every draft (best tries 25-31%), so: below
+// 20% never reaches him (hard); below 35% keeps the repairs pushing for more of his words; of all tries he gets the
+// one with the most of his words.
+const MIN_OWN = 0.2;
+const TARGET_OWN = 0.35;
 const FILLER = /\b(um+|uh+|erm|you know|i mean|sort of|kind of|so basically|basically|like|yeah|okay|ok|right)\b/g;
 function joelShare(post, source) {
   const toks = (s) => norm(s).replace(FILLER, ' ').split(' ').filter(Boolean);
@@ -264,6 +268,7 @@ function check(d, passages, names, recentAngles) {
   const ownShare = joelShare(post, passage.text);
   d.ownShare = ownShare;
   if (ownShare < MIN_OWN) problems.push(`Too little of Joel's own words: ${Math.round(ownShare * 100)}% of the post is from his passage (needs ${Math.round(MIN_OWN * 100)}%). Use his sentences, tidy only the filler.`);
+  else if (ownShare < TARGET_OWN) problems.push(`Could use more of Joel's own words: ${Math.round(ownShare * 100)}% of the post is from his passage (aim for ${Math.round(TARGET_OWN * 100)}%). Swap your own lines for his sentences, tidied only of filler.`);
   return problems;
 }
 
@@ -331,7 +336,7 @@ async function main() {
     const hard = problems.some((p) => HARD.test(p));
     if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], STORY.has(Number(d.angle)))); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
-    if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
+    if (!hard && (!best || d.ownShare > best.d.ownShare || (d.ownShare === best.d.ownShare && problems.length < best.problems.length))) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
     // Kinds of problem only, cut before any quote or detail: the logs are public.
     console.log('  kinds: ' + problems.map((p) => p.split(/[:("“]/)[0].trim().slice(0, 50)).join(' | '));
@@ -339,7 +344,7 @@ async function main() {
     feedback = joelFix.concat(problems);
     last = d;
   }
-  if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the closest draft with ${flags.length} flag(s) for Joel to judge.`); }
+  if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the draft with the most of his words (${Math.round(draft.ownShare * 100)}%), ${flags.length} flag(s), for Joel to judge.`); }
   if (!draft) throw new Error('Every attempt failed a hard safety check. Nothing written.');
 
   const words = draft.post.split(/\s+/).length;
