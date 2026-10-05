@@ -26,6 +26,14 @@ const GET = [
   { t: "Your report", d: "Within 48 hours you get your 9-page report to keep, with your first three steps in your words." },
 ];
 
+// Pages from the sample report (invented client "Maya", scripts/_render-your-number-sample-pdf.tsx in the portal).
+// Every page also carries the printed "SAMPLE · INVENTED CLIENT" band.
+const SAMPLE_PAGES = [
+  { src: '/images/your-number/report-number.jpg', t: 'Your number', d: 'The turnover that pays for enough, and how it adds up.', alt: 'Sample report page: the turnover needed each year, with how it adds up' },
+  { src: '/images/your-number/report-price.jpg', t: 'Price, sessions and days', d: 'Three ways to reach the same number.', alt: 'Sample report page: price each session needs, sessions a week and days a week' },
+  { src: '/images/your-number/report-futures.jpg', t: 'Two futures', d: 'Nothing changes, next to the path you named, five years out.', alt: 'Sample report page: a five-year chart of two futures' },
+];
+
 // Verbatim clips (captions word for word from the audio). These are 12-week coaching clients, and the page says so.
 const CLIPS = ['alon-2', 'lynt-3', 'jen-4'].map((s) => RESULT_CLIPS.find((c) => c.slug === s)).filter(Boolean);
 const HERO_QUOTE = CLIPS[0];
@@ -50,6 +58,10 @@ const FAQS = [
         <img src="/images/joel-headshot-web.jpg" alt="" width="44" height="44" loading="eager" />
         <p><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</p>
       </div>
+      <figure class="yn-stack">
+        <img src="/images/your-number/report-stack.webp" width="1212" height="800" alt="Three pages of a sample Your Number report: the cover, the turnover page, and the five-year chart" />
+        <figcaption>Sample report. Invented client and figures.</figcaption>
+      </figure>
     </div>
 
     <aside class="yn-box" aria-label="Book your session">
@@ -108,6 +120,23 @@ const FAQS = [
       ))}
     </ol>
     <p class="yn-anchor">In the UK, financial planners charge £500 to £1,500 to build a cash flow model. This session is £179.99.</p>
+  </div>
+</section>
+
+<!-- 3b · SAMPLE REPORT PAGES -->
+<section class="sp-section sp-white yn-sample">
+  <div class="sp-wide">
+    <p class="yn-kicker">Your report</p>
+    <h2 class="sp-h2">What you <em>leave with</em></h2>
+    <p class="yn-sample-note">Three of the nine pages, from a sample report. Invented client and figures.</p>
+    <div class="yn-pages">
+      {SAMPLE_PAGES.map((p) => (
+        <figure>
+          <img src={p.src} width="900" height="1272" alt={p.alt} loading="lazy" />
+          <figcaption><b>{p.t}</b>{p.d}</figcaption>
+        </figure>
+      ))}
+    </div>
   </div>
 </section>
 
@@ -293,6 +322,18 @@ const FAQS = [
 .yn-hero-quote p { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: clamp(1.2rem, 2.2vw, 1.55rem); line-height: 1.4; color: var(--color-cream); margin: 0 0 0.6rem; max-width: 60ch; }
 .yn-hero-quote cite { font-style: normal; font-size: 0.88rem; color: var(--color-gold-subtle); }
 
+.yn-stack { margin: 1.8rem 0 0; max-width: 560px; }
+.yn-stack img { width: 100%; height: auto; display: block; }
+.yn-stack figcaption { font-size: 0.8rem; color: rgba(245,240,232,0.6); margin-top: 0.3rem; }
+
+/* sample report pages */
+.yn-sample-note { color: var(--color-slate); font-size: 0.98rem !important; }
+.yn-pages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; margin-top: 1.6rem; }
+.yn-pages figure { margin: 0; }
+.yn-pages img { width: 100%; height: auto; display: block; border: 1px solid var(--color-border-warm); border-radius: 4px; box-shadow: 0 14px 34px rgba(20,31,43,0.14); }
+.yn-pages figcaption { margin-top: 0.8rem; font-size: 0.95rem; color: var(--color-slate); line-height: 1.5; }
+.yn-pages figcaption b { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: var(--color-navy); }
+
 /* booking box */
 .yn-box { background: var(--color-cream); color: var(--color-charcoal); border-radius: 8px; padding: 1.6rem 1.5rem 1.3rem; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
 .yn-box-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
@@ -364,6 +405,7 @@ const FAQS = [
   .yn-hero-inner, .yn-close, .yn-letter { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .yn-letter-photo { max-width: 240px; }
   .sp-video-grid { grid-template-columns: minmax(0, 1fr); }
+  .yn-pages { grid-template-columns: minmax(0, 1fr); max-width: 460px; }
   .yn-get li { grid-template-columns: 2.4rem minmax(0, 1fr); }
   .yn-get li p { grid-column: 2; }
 }
