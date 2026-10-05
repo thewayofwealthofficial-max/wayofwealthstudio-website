@@ -298,7 +298,7 @@ async function main() {
 
   // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
   // fact-check flags is sent with those flags on top: he approves every post anyway (first 2 weeks).
-  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle \d+ is not|Passage \d+ does not|Story post is missing)/;
+  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle .* is not|Passage \d+ does not|Story post is missing)/;
   let feedback = orig ? joelFix : null, draft = null, best = null, flags = [];
   let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
