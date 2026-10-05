@@ -8,6 +8,8 @@ const BANNED = [
   'hustle', 'grind', 'side hustle', 'boss babe', 'money magnet', 'passive income', 'toxic positivity',
   'growth hack', 'you got this', 'level up', 'journey', 'breakthrough', 'unlock', 'heal your money story',
   'delve', 'unpack', 'tapestry', 'holistic', 'level 4', 'game changer', 'game-changer',
+  // Joel's email prompt (EMAIL_COPY.md, 5 Oct 2026): generic AI English.
+  "in today's world", 'are you tired of', 'crushing it', 'smash your goals', 'transform', 'dive in', "it's not just",
 ];
 const SPAMMY = ['act now', 'limited time', 'click here', 'free money', 'urgent', '100%', '!!'];
 const RESEARCH_WORDS = /\b(studies show|study shows|research shows|research says|according to|survey|scientists?|a recent study)\b/i;
@@ -53,10 +55,22 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   const words = body_plain.trim().split(/\s+/).length;
   if (words < min || words > max) problems.push(`Body is ${words} words; this email type needs ${min} to ${max}.`);
 
-  const sWords = subject.trim().split(/\s+/).length;
-  if (subject.length > 70 || sWords < 2 || sWords > 12) problems.push('Subject line should be 2 to 12 words and under 70 characters.');
+  // Joel's email prompt (EMAIL_COPY.md, 5 Oct 2026), Mode 1 deliverability and the ALWAYS rules.
+  const sLen = [...subject.trim()].length;
+  if (sLen < 30 || sLen > 50) problems.push(`Subject is ${sLen} characters; it needs 30 to 50.`);
+  const pLen = [...String(preview || '').trim()].length;
+  if (pLen < 40 || pLen > 90) problems.push(`Preview is ${pLen} characters; it needs 40 to 90.`);
+  if (norm(preview).includes(norm(subject)) || norm(subject).includes(norm(preview))) problems.push('Preview repeats the subject. It should add to it.');
   if (/[A-Z]{4,}/.test(subject)) problems.push('Subject shouts in capitals.');
   if (/!/.test(subject)) problems.push('Subject uses an exclamation mark.');
+  // Capitals: letters in all-capital words (2+ letters, common short forms allowed) under 10% in the subject, 3% in the body.
+  const OK_CAPS = /^(UK|US|VAT|HMRC|QFP|MSC|PS|OK|TV|ID|PAYE|ISA|USA|EU)$/;
+  const capsShare = (s) => { const letters = (s.match(/[A-Za-z]/g) || []).length; const shout = (s.match(/\b[A-Z]{2,}\b/g) || []).filter((w) => !OK_CAPS.test(w)).join('').length; return letters ? shout / letters : 0; };
+  if (capsShare(subject) >= 0.1) problems.push('Subject has too many capitals (keep under 10%).');
+  if (capsShare(body_plain) >= 0.03) problems.push('Body shouts in capitals (keep all-capital words under 3% of letters).');
+  if ((body_plain.match(/!/g) || []).length > 1) problems.push('More than one exclamation mark in the body. Zero is best.');
+  const fillers = (body_plain.match(/\b(genuinely|actually|really|literally)\b/gi) || []).length;
+  if (fillers > 2) problems.push(`Uses "genuinely", "actually", "really" or "literally" ${fillers} times. Two at most.`);
 
   // "push_pitch" is the PHASE (the Sunday invitation in a month's last 9 days), not the type. Checking
   // type here blocked the one email the price belongs in (bug found 27 Sep).
@@ -70,6 +84,8 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   }
 
   const links = body_plain.match(/https?:\/\/[^\s)>\]]+/g) || [];
+  const distinct = new Set(links.map((l) => l.replace(/[.,;:]+$/, '')));
+  if (distinct.size > 2) problems.push(`Has ${distinct.size} different links. Two at most, one ask (Joel's email prompt).`);
   for (const l of links) {
     const clean = l.replace(/[.,;:]+$/, '');
     if (!allowedLinks.some((a) => clean === a || clean.startsWith(a + '#') || clean.startsWith(a + '?'))) problems.push(`Contains a link that wasn't provided: ${clean}`);

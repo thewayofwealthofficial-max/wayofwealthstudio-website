@@ -43,6 +43,20 @@ JOEL'S VOICE (measured from his real speech):
 - He says "like", "right?", "honestly", "you know", "does that make sense?". He uses analogies from ordinary life. He says "we", not "you should". He hedges honestly.
 - British spelling. No em dashes. No "It's not X, it's Y". No three-item filler lists. No words like delve, unpack, tapestry, journey, unlock.
 
+THE VOICE RULE THAT OVERRIDES EVERYTHING (Joel's email prompt, EMAIL_COPY.md, 2026-10-05): every email must sound like Joel. Not like a generic coach, and not like the competitor reference: learn its structure and moves, then write them in Joel's words. The test: "Does this sound like Joel talking, or like a coach trying to sound like Joel?"
+
+THE CRAFT STANDARD (Joel's email prompt, EMAIL_COPY.md):
+- One person, not a crowd. Write to a single reader ("you"), never "hey everyone" or "some of you".
+- One story, one lesson, one ask. If there are three lessons, there are three emails.
+- Exactly ONE call to action, and it is specific. Two links maximum in the whole email.
+- Short paragraphs: 1 to 3 sentences. Reading age around 10.
+- Evidence, then plain English: if the input gives research, follow it at once with what it means for the reader.
+- Reply asks are often the best asks ("Reply STUCK and I'll send you…"), when the input offers something to send.
+- State facts plainly. Never pre-empt objections defensively ("this is not a gimmick", "I know what you're thinking").
+- Never assume a relationship beyond what is known: no "as you know" or "like we talked about".
+- Subject line: 30 to 50 characters, curiosity or specificity, no outcome promises. Preview: 40 to 90 characters, adds to the subject and never repeats it.
+- Don't overuse "genuinely", "actually", "really" or "literally". Avoid "in today's world", "are you tired of", "crushing it", "smash your goals", "transform", "dive in", "it's not just X, it's Y".
+
 HARD RULES (a draft that breaks any of these is rejected):
 - No invented facts, numbers, studies or quotes. Numbers may only come from JOEL'S FACTS or the INPUT below.
 - Stories come ONLY from JOEL'S OWN WORDS in the input. Keep his phrasing where you can. Never invent a story.
@@ -72,14 +86,14 @@ const TYPE_RULES = {
 6. "Joel" on its own line, then a P.S. (see MONTH PHASE for what it points to).
 About 180 to 320 words.`,
   fridays: `THIS EMAIL: Finance Fridays, in the shape of the reference weekly newsletter:
-1. Subject: short, lower case, playful, may end with one emoji. Preview: a plain teaser of the topic.
+1. Subject: lower case, playful, 30 to 50 characters, may end with one emoji. Preview: a plain teaser of the topic.
 2. Open mid-scene on one small true moment from JOEL'S OWN WORDS. No throat-clearing. Keep at least one of his sentences exactly as he said it (you may put it in quotes).
 3. One bold-feeling line that ties the story to money (write it as its own short paragraph).
 4. A short list (3 to 5 lines) of related money beliefs or moments the reader might recognise.
 5. "→ Read this week's post: <post link>" as its own line.
 6. A section headed "One thing to try this week" with 1 to 3 short reflection questions (about 60 words).
 7. A sign-off line that echoes the story ("To <something from the story>,") then "Joel".
-8. Then three short lines: "Book a free call: <call link>" · "Know someone who'd like this? Forward it to them." · "Try the Money Reset Tool: <reset link>".
+8. Then ONE line, the only ask: "Book a free call: <call link>". (Joel, 5 Oct 2026: one ask, two links; the forward and Money Reset Tool lines are gone.)
 About 380 to 600 words.`,
 };
 
