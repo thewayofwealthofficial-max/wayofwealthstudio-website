@@ -108,7 +108,8 @@ HOW THE SENTENCES SOUND (measured from the 15 top guard-down story posts on Link
 JOEL'S VOICE (measured from his real speech): plain, warm, direct. Short words. A long sentence carries the reasoning, a short one lands the point. He says "like", "honestly", "you know", "right?" now and then. He uses everyday comparisons. British spelling. No em dashes. No "It's not X, it's Y". No three-item filler lists. No delve, unpack, tapestry, journey, unlock, "here's the thing", "the truth is".
 
 HARD RULES (a draft that breaks any is rejected):
-- The story comes ONLY from the ONE passage you pick. Keep his phrasing; keep at least one of his sentences close to word for word. Add nothing that happened that he didn't say.
+- THE VOICE RULE THAT OVERRIDES EVERYTHING (Joel's email prompt, EMAIL_COPY.md, 2026-10-05): every post must sound like Joel, not like a generic coach and not like the top LinkedIn posts. The test: "Does this sound like Joel talking, or like a coach trying to sound like Joel?"
+- This is a transcript-to-post job: keep Joel's words and rhythm, and tidy only the filler ("um", "so basically", repeated phrases, false starts). MOST of the post must be his own sentences from the ONE passage you pick, in his words. Your own words only to join or trim his. If the passage doesn't hold enough of his words for an angle, pick a different angle or passage. Add nothing that happened that he didn't say.
 - No invented facts, numbers, dates, studies or quotes. Numbers only from the passage or JOEL'S FACTS.
 - "I/me/my" in a passage is Joel's own story: tell it as his. Never turn his story into a client's or a client's into his.
 - Never name or describe anyone else in the passage (clients, partners, family, friends, firms, places). Say "someone I work with" for a client.
@@ -183,6 +184,18 @@ async function claude(system, user, maxTokens) {
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9£$€% ]+/g, ' ').replace(/\s+/g, ' ').trim();
 const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 
+// How much of a post is Joel's own words (0 to 1). Filler is removed from both sides so tidying it doesn't count against him.
+const MIN_OWN = 0.5;
+const FILLER = /\b(um+|uh+|erm|you know|i mean|sort of|kind of|so basically|basically|like|yeah|okay|ok|right)\b/g;
+function joelShare(post, source) {
+  const toks = (s) => norm(s).replace(FILLER, ' ').split(' ').filter(Boolean);
+  const b = toks(post), p = ` ${toks(source).join(' ')} `;
+  if (b.length < 3) return 0;
+  const hit = new Array(b.length).fill(false);
+  for (let i = 0; i + 3 <= b.length; i++) if (p.includes(` ${b.slice(i, i + 3).join(' ')} `)) hit[i] = hit[i + 1] = hit[i + 2] = true;
+  return hit.filter(Boolean).length / b.length;
+}
+
 function check(d, passages, names, recentAngles) {
   const problems = [];
   const angle = ANGLES[d.angle];
@@ -241,16 +254,18 @@ function check(d, passages, names, recentAngles) {
   const used = RESEARCH.filter((r) => r.key.test(post)).length;
   if (['reach', 'positioning'].includes(jobOf(d.angle)) && used !== 1) problems.push(`A ${jobOf(d.angle)} post needs exactly ONE research idea from RESEARCH IDEAS (it has ${used}).`);
   if (/\b(?:exactly|precisely|proven to be) twice\b/i.test(post)) problems.push('Says "exactly twice". TEACHING_SCOPE.md §2.2: "about twice" is fine, "exactly twice" is not.');
-  const b = norm(post).split(' '), p = ` ${norm(passage.text)} `;
-  let kept = false;
-  for (let i = 0; i + 5 <= b.length && !kept; i++) if (p.includes(` ${b.slice(i, i + 5).join(' ')} `)) kept = true;
-  if (!kept) problems.push('Keeps none of Joel\'s own phrasing. Keep at least one of his sentences close to word for word.');
+  // Joel, 5 Oct 2026: "didn't actually use my fathom recordings… sounded too ai". The old check passed a post with
+  // ONE 5-word phrase of his. Now: share of the post's words that sit in a 3-word run found in his passage, with
+  // spoken filler taken out of both sides first. Too little = never reaches Joel (hard fail).
+  const ownShare = joelShare(post, passage.text);
+  d.ownShare = ownShare;
+  if (ownShare < MIN_OWN) problems.push(`Too little of Joel's own words: ${Math.round(ownShare * 100)}% of the post is from his passage (needs ${Math.round(MIN_OWN * 100)}%). Use his sentences, tidy only the filler.`);
   return problems;
 }
 
 // Separate pass: a fresh call that only compares claims with the source. Draft first, audit second.
 async function audit(post, passage, isStory) {
-  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. ${isStory ? 'This is a story post: also flag if the opening is background rather than the problem, or if there is no payoff.' : 'This is NOT a story post (an explainer or myth post): never flag it for a missing payoff or a background opening.'} A named research idea that matches one of these is fine: ${RESEARCH.map((r) => r.line.split(':')[0]).join('; ')}. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
+  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. ${isStory ? 'This is a story post: also flag if the opening is background rather than the problem, or if there is no payoff.' : 'This is NOT a story post (an explainer or myth post): never flag it for a missing payoff or a background opening.'} A named research idea that matches one of these is fine: ${RESEARCH.map((r) => r.line.split(':')[0]).join('; ')}. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. Also flag (issue starting "Not Joel's voice:", quote the exact words) any line that reads like a generic coach or AI rather than Joel talking, judged against how he speaks in the passage. The test (Joel's own, EMAIL_COPY.md): "Does this sound like Joel talking, or like a coach trying to sound like Joel?" Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
   const r = await claude(system, `FACTS:\n${JOEL_FACTS}\n\nPASSAGE:\n${passage.text}\n\nPOST:\n${post}`, 1600);
   return (r.items || []).filter((i) => i.real_problem === true).map((i) => `Not in Joel's words: ${i.issue}`);
 }
@@ -298,7 +313,7 @@ async function main() {
 
   // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
   // fact-check flags is sent with those flags on top: he approves every post anyway (first 2 weeks).
-  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle .* is not|Passage \d+ does not|Story post is missing)/;
+  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle .* is not|Passage \d+ does not|Story post is missing|Too little of Joel's own words)/;
   let feedback = orig ? joelFix : null, draft = null, best = null, flags = [];
   let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
@@ -313,7 +328,7 @@ async function main() {
     if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], STORY.has(Number(d.angle)))); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
     if (!hard && (!best || problems.length < best.problems.length)) best = { d, problems };
-    console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s).`);
+    console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
     if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n[PROBLEM]\n${d.problem}\n[PURSUIT]\n${d.pursuit}\n[PAYOFF]\n${d.payoff}\n`);
     feedback = joelFix.concat(problems);
     last = d;
