@@ -4,8 +4,8 @@ import { LINKS } from '../config/links';
 import { getCollection } from 'astro:content';
 import NewsletterForm from '../components/NewsletterForm.astro';
 
-const title = "Way of Wealth | Helping coaches & wellness practitioners charge without guilt";
-const description = "Behavioural money coaching for coaches and wellness practitioners who feel guilty charging, undercharge, and still don't keep what they earn. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
+const title = "Way of Wealth | A steady wage and calm about money, for small business owners";
+const description = "Behavioural money coaching for small business owners who make a good living and still find money stressful. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
 const canonical = LINKS.siteUrl;
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -16,12 +16,12 @@ const VSL_SRC = 'https://discover.thewayofwealth.shop/vsl/vsl.mp4';
 const VSL_POSTER = 'https://discover.thewayofwealth.shop/vsl/vsl-poster.jpg';
 
 const FOR_YOU = [
-  "You feel a flicker of guilt charging good money for work that also means something to you.",
-  "\"What should I actually charge?\" is a question you've never really answered. You picked a number and hoped nobody would ask why.",
-  "You've downloaded budget templates you never opened.",
-  "You check your bank balance less often than you'd like to admit.",
   "Your income swings from a fully booked month to weeks of almost nothing, and you've never built anything to survive the gap.",
+  "You check your bank balance less often than you'd like to admit.",
   "You want to feel calm about money, not just \"good at it\".",
+  "You've downloaded budget templates you never opened.",
+  "\"What should I actually charge?\" is a question you've never really answered. You picked a number and hoped nobody would ask why.",
+  "You feel a flicker of guilt charging good money for work that also means something to you.",
 ];
 
 const CREDS = ["MSc Behavioural Economics", "Qualified Financial Planner (UK)", "Klontz Money Scripts", "Kahneman · Thaler · Duhigg"];
@@ -51,8 +51,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   <div class="hm-hero-inner">
     <div class="hm-card reveal">
       <p class="hm-script">Joel Ezekiel</p>
-      <h1>Helping coaches &amp; wellness practitioners charge without guilt.</h1>
-      <p class="hm-card-sub">You're really good at what you do. But you feel guilty every time you give a price. Build a money system that runs even when you're tired.</p>
+      <h1>You make a good living. So why does money feel this stressful?</h1>
+      <p class="hm-card-sub">I help small business owners get a steady wage, a tax pot that's never short, and calm about money.</p>
       <div class="hm-actions">
         <a href={LINKS.coaching} class="btn-primary">See The Money Story Method</a>
         <a href="#start" class="hm-ghost">Join Finance Fridays</a>
