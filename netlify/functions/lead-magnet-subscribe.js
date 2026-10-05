@@ -34,6 +34,8 @@ const MAGNET_GROUP_MAP = {
   'diagnostic-worship': 'MAILERLITE_GROUP_DIAGNOSTIC',
   'diagnostic-status': 'MAILERLITE_GROUP_DIAGNOSTIC',
   'diagnostic-vigilance': 'MAILERLITE_GROUP_DIAGNOSTIC',
+  // The free 2.5-hour masterclass at /masterclass (2026-10-04). Main list only, no welcome sequence yet.
+  masterclass: 'MAILERLITE_GROUP_MASTERCLASS',
 };
 
 const BAD_DOMAINS = new Set([

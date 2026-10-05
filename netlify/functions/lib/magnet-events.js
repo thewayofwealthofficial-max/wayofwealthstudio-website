@@ -17,6 +17,16 @@ const TOOLS = {
     ],
     extra: [['skool', 'Clicked "Join the Skool Community"']],
   },
+  masterclass: {
+    name: 'Free Masterclass',
+    steps: [
+      ['opened', 'Opened the page'],
+      ['email', 'Gave their email (got the video)'],
+      ['play', 'Pressed play'],
+      ['book', 'Clicked "Book your free call"'],
+    ],
+    extra: [],
+  },
   diagnostic: {
     name: 'Money Story Diagnostic',
     steps: [

@@ -1,0 +1,260 @@
+---
+// Free masterclass sign-up (2026-10-04). Joel: "test this out as a lead magnet, set up an email capture
+// before sending them to youtube". Shape copied from Denise Duffield-Thomas: free class sign-up (name + email)
+// -> "You're In!" page with what to do next (denisedt.com/ty-live, captured 2026-10-04).
+// Words come from Joel's own video title, description and chapter list (youtu.be/N3yv8SdsS4I).
+// Sign-ups go to the main list (Finance Fridays). No welcome sequence yet.
+import Layout from '../layouts/LandingLayout.astro';
+import { LINKS } from '../config/links';
+
+const title = "How to Actually Take Control of Your Money | Free Masterclass | Way of Wealth";
+const description = "A free 2.5-hour masterclass. Most money problems aren't mathematical, they're psychological. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
+const VIDEO_ID = 'N3yv8SdsS4I';
+const CALL = 'https://calendly.com/thewayofwealth-official/20min';
+---
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/masterclass`} bodyClass="mc-page">
+
+<section class="mc-wrap">
+
+  <header class="mc-hero">
+    <p class="mc-badge">Free masterclass</p>
+    <h1 class="mc-h1">How to actually take control of your money</h1>
+    <p class="mc-sub">
+      Most money problems aren't mathematical, they're psychological. If spreadsheets, budgets and standard
+      financial advice haven't worked for you, it's not a lack of discipline. It's an unaddressed Money Story.
+    </p>
+    <p class="mc-meta">2.5 hours · Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner</p>
+  </header>
+
+  <form class="mc-card" id="mc-form" novalidate>
+    <p class="mc-card-k">Watch it free, right now</p>
+    <div class="mc-row">
+      <label class="mc-sr" for="mc-name">First name</label>
+      <input id="mc-name" type="text" autocomplete="given-name" placeholder="First name" />
+      <label class="mc-sr" for="mc-email">Your email</label>
+      <input id="mc-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
+      <button type="submit" class="mc-btn" id="mc-btn">Watch the free masterclass →</button>
+    </div>
+    <div class="mc-honeypot" aria-hidden="true">
+      <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <p class="mc-err" id="mc-err" aria-live="polite"></p>
+    <p class="mc-micro">Free. You'll also get Finance Fridays, one email a week. Unsubscribe any time.</p>
+  </form>
+
+  <section class="mc-inside" id="mc-inside">
+    <h2 class="mc-h2">Inside the masterclass</h2>
+    <ul class="mc-list">
+      <li>The 4 money scripts, and which one is running your decisions</li>
+      <li>Money avoidance: the signs, where it comes from, and how it shows up as under-earning</li>
+      <li>Finding your earliest money memory, and what was never said out loud</li>
+      <li>Behavioural guardrails: how to stop the same money mistake happening again</li>
+      <li>The 4 biases that quietly cost you money, from loss aversion to "future you"</li>
+      <li>The Diderot effect: why one purchase triggers ten more</li>
+    </ul>
+  </section>
+
+  <section class="mc-in" id="mc-in" hidden>
+    <h2 class="mc-h2">You're in<span id="mc-hi"></span>!</h2>
+    <p class="mc-sub">Here's your masterclass.</p>
+    <div class="mc-video">
+      <iframe id="mc-yt" title="How to actually take control of your money (2 Hour Masterclass)"
+        data-src={`https://www.youtube.com/embed/${VIDEO_ID}?enablejsapi=1&rel=0`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+
+    <h3 class="mc-h3">What to do while you watch</h3>
+    <ol class="mc-steps">
+      <li>
+        <b>Use the chapters.</b> It's long, so jump around. A good place to start is the 4 money scripts
+        (<a href={`https://youtu.be/${VIDEO_ID}?t=409`} target="_blank" rel="noopener">6:49</a>).
+      </li>
+      <li>
+        <b>Book your free 20-minute call.</b> If you understand money in theory but struggle to do it, that's
+        what the call is for. <a href={CALL} id="mc-book" target="_blank" rel="noopener">Book your free call →</a>
+      </li>
+      <li>
+        <b>Look out for Finance Fridays.</b> One email a week on money and how we behave with it. Honest, and
+        based on the research.
+      </li>
+    </ol>
+    <p class="mc-sign">Joel</p>
+  </section>
+
+</section>
+
+<script is:inline define:vars={{ VIDEO_ID }}>
+  const $ = (id) => document.getElementById(id);
+  const UNLOCK_KEY = 'wow_masterclass';
+
+  // Step tracking, same as /reset and the diagnostic. No names, emails or answers.
+  const visitor = (() => {
+    try {
+      let v = sessionStorage.getItem('wow_mv');
+      if (!v) { v = Math.random().toString(36).slice(2, 14).padEnd(12, '0'); sessionStorage.setItem('wow_mv', v); }
+      return v;
+    } catch (err) { return Math.random().toString(36).slice(2, 14).padEnd(12, '0'); }
+  })();
+  const tracked = new Set();
+  function track(step) {
+    if (tracked.has(step)) return;
+    tracked.add(step);
+    const body = JSON.stringify({ t: 'masterclass', s: step, v: visitor });
+    try {
+      if (!navigator.sendBeacon || !navigator.sendBeacon('/api/magnet/track', new Blob([body], { type: 'text/plain' }))) {
+        fetch('/api/magnet/track', { method: 'POST', body, keepalive: true }).catch(() => {});
+      }
+    } catch (err) { /* tracking never gets in the way */ }
+  }
+  track('opened');
+
+  // Courtesy check only; the server function is the real one.
+  const BAD_DOMAINS = new Set(['mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'temp-mail.org',
+    'yopmail.com', 'throwaway.email', 'maildrop.cc', 'getnada.com', 'trashmail.com', 'example.com', 'test.com']);
+  function checkEmail(raw) {
+    const email = (raw || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, msg: 'That email does not look right.' };
+    if (BAD_DOMAINS.has(email.split('@')[1])) return { ok: false, msg: 'Use a real address, not a temporary one.' };
+    return { ok: true, email };
+  }
+
+  function loadPlayer() {
+    const f = $('mc-yt');
+    if (!f.src) f.src = f.dataset.src;
+    // Fire "play" once when the video starts (YouTube iframe API).
+    if (!window.YT) {
+      const s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(s);
+    }
+    window.onYouTubeIframeAPIReady = () => {
+      new window.YT.Player('mc-yt', { events: { onStateChange: (e) => { if (e.data === 1) track('play'); } } });
+    };
+  }
+
+  function showIn(name) {
+    $('mc-form').hidden = true;
+    $('mc-inside').hidden = true;
+    $('mc-hi').textContent = name ? `, ${name}` : '';
+    $('mc-in').hidden = false;
+    loadPlayer();
+    $('mc-in').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(UNLOCK_KEY) || 'null');
+    if (saved) showIn(saved.name || '');
+  } catch (err) { /* nothing to do */ }
+
+  $('mc-book').addEventListener('click', () => track('book'));
+
+  $('mc-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('mc-btn');
+    const errEl = $('mc-err');
+    const name = $('mc-name').value.trim();
+    if (!name) { errEl.textContent = 'First name is required.'; $('mc-name').focus(); return; }
+    const v = checkEmail($('mc-email').value);
+    if (!v.ok) { errEl.textContent = v.msg; $('mc-email').focus(); return; }
+    errEl.textContent = '';
+    btn.disabled = true;
+    const label = btn.textContent;
+    btn.textContent = 'One second…';
+    try {
+      const res = await fetch('/api/lead-magnet/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: v.email, name, magnet: 'masterclass', honeypot: e.target.querySelector('[name="website"]').value || null }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        track('email');
+        try { localStorage.setItem(UNLOCK_KEY, JSON.stringify({ name })); } catch (err) { /* fine */ }
+        showIn(name);
+        return;
+      }
+      errEl.textContent = data.error || 'That did not go through. Try again in a moment.';
+    } catch (err) {
+      errEl.textContent = 'No connection. Check your signal and try again.';
+    }
+    btn.disabled = false;
+    btn.textContent = label;
+  });
+</script>
+
+<style is:global>
+  .mc-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 20px 80px;
+    color: var(--color-charcoal);
+  }
+  .mc-badge {
+    display: inline-block;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    border: 1px solid var(--color-gold-subtle);
+    border-radius: 999px;
+    padding: 6px 14px;
+    margin: 0 0 18px;
+  }
+  .mc-h1 {
+    font-family: var(--font-heading);
+    color: var(--color-navy);
+    font-size: clamp(32px, 6vw, 48px);
+    line-height: 1.12;
+    margin: 0 0 18px;
+  }
+  .mc-h2 { font-family: var(--font-heading); color: var(--color-navy); font-size: 28px; margin: 0 0 14px; }
+  .mc-h3 { font-family: var(--font-heading); color: var(--color-navy); font-size: 22px; margin: 36px 0 12px; }
+  .mc-sub { font-family: var(--font-body); font-size: 19px; line-height: 1.6; margin: 0 0 14px; }
+  .mc-meta { font-family: var(--font-ui); font-size: 14px; color: var(--color-slate); margin: 0; }
+  .mc-card {
+    background: var(--color-navy);
+    color: var(--color-cream);
+    border-radius: 14px;
+    padding: 26px;
+    margin: 34px 0 44px;
+  }
+  .mc-card-k { font-family: var(--font-heading); font-size: 22px; margin: 0 0 16px; }
+  .mc-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mc-row input {
+    flex: 1 1 200px;
+    min-width: 0;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-cool);
+  }
+  .mc-btn {
+    flex: 1 1 100%;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 16px;
+    padding: 15px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--color-gold);
+    color: var(--color-navy-deep);
+    cursor: pointer;
+  }
+  .mc-btn:hover { background: var(--color-gold-hover); }
+  .mc-btn:disabled { opacity: 0.7; cursor: wait; }
+  .mc-err { font-family: var(--font-ui); font-size: 14px; color: #F2B8A2; margin: 10px 0 0; min-height: 1em; }
+  .mc-micro { font-family: var(--font-ui); font-size: 13px; color: var(--color-gold-subtle); margin: 8px 0 0; }
+  .mc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mc-honeypot { position: absolute; left: -9999px; }
+  .mc-list, .mc-steps { font-family: var(--font-body); font-size: 18px; line-height: 1.6; padding-left: 22px; }
+  .mc-list li, .mc-steps li { margin: 0 0 10px; }
+  .mc-steps a { color: var(--color-navy); font-weight: 600; }
+  .mc-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 8px 0 0; border-radius: 12px; overflow: hidden; background: #000; }
+  .mc-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .mc-sign { font-family: var(--font-heading); font-style: italic; font-size: 22px; color: var(--color-navy); margin: 26px 0 0; }
+</style>
+
+</Layout>
