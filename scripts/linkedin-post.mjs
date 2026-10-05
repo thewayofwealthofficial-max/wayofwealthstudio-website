@@ -190,9 +190,9 @@ const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 
 // How much of a post is Joel's own words (0 to 1). Filler is removed from both sides so tidying it doesn't count against him.
 // Joel, 5 Oct 2026: "as high as possible without breaking". 50% blocked every draft (best tries 25-31%), so: below
-// 20% never reaches him (hard); below 35% keeps the repairs pushing for more of his words; of all tries he gets the
+// 15% never reaches him (hard; 4 test runs on 5 Oct: best tries 31, 25, 18 and 30%, worst run 18%); below 35% keeps the repairs pushing for more of his words; of all tries he gets the
 // one with the most of his words.
-const MIN_OWN = 0.2;
+const MIN_OWN = 0.15;
 const TARGET_OWN = 0.35;
 const FILLER = /\b(um+|uh+|erm|you know|i mean|sort of|kind of|so basically|basically|like|yeah|okay|ok|right)\b/g;
 function joelShare(post, source) {
