@@ -120,8 +120,12 @@ HARD RULES (a draft that breaks any is rejected):
 
 THEIR WORDS: the READER PHRASES are real things strangers in this market have written. You may turn one into a "you" line. Never quote them, never credit them.
 
+HOW TO BUILD IT (two steps, in this order):
+1. "his_lines": copy out 12 to 25 of Joel's own sentences from the ONE passage, word for word, with only the filler taken out (um, like, you know, so basically, repeats, false starts). Do not reword them. Pick the ones that carry the story and the point.
+2. Build the post FROM those lines. At least half the post's words must be his lines as copied. Your own words only for the first line, short joins, the one research line, and trimming. If a line of his addressed a client as "you", it can stay "you": the reader is in the same spot.
+
 OUTPUT: only valid JSON, no fences:
-{"passage": <number of the passage you used>, "angle": <angle number>, "problem": "...", "pursuit": "...", "payoff": "..."}
+{"passage": <number of the passage you used>, "angle": <angle number>, "his_lines": ["...", "..."], "problem": "...", "pursuit": "...", "payoff": "..."}
 Each part holds its paragraphs, separated by \\n\\n; the post is the three joined in that order. For a non-story angle, put the whole post in "problem" and leave the other two empty.`;
 
 function userPrompt(passages, angles, feedback, last, job) {
@@ -318,7 +322,7 @@ async function main() {
   let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
-    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last, job), 2000); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
+    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last, job), 3500); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
     for (const k of ['problem', 'pursuit', 'payoff']) d[k] = String(d[k] || '').replace(/\s*[—–]\s*/g, ', ').trim();
     d.post = [d.problem, d.pursuit, d.payoff].filter(Boolean).join('\n\n');
     let problems = pool.includes(Number(d.angle))
