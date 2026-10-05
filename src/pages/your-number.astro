@@ -27,11 +27,12 @@ const GET = [
 ];
 
 // Pages from the sample report (invented client "Maya", scripts/_render-your-number-sample-pdf.tsx in the portal).
-// Every page also carries the printed "SAMPLE · INVENTED CLIENT" band.
+// The close-ups show product output only: no client name, no client result. Real client figures never go here.
+// Cropped close-ups (rendered at 3x) so the figures are readable on the page.
 const SAMPLE_PAGES = [
-  { src: '/images/your-number/report-number.jpg', t: 'Your number', d: 'The turnover that pays for enough, and how it adds up.', alt: 'Sample report page: the turnover needed each year, with how it adds up' },
-  { src: '/images/your-number/report-price.jpg', t: 'Price, sessions and days', d: 'Three ways to reach the same number.', alt: 'Sample report page: price each session needs, sessions a week and days a week' },
-  { src: '/images/your-number/report-futures.jpg', t: 'Two futures', d: 'Nothing changes, next to the path you named, five years out.', alt: 'Sample report page: a five-year chart of two futures' },
+  { src: '/images/your-number/card-number.webp', h: 666, label: 'Your report · page 3', t: 'Your number', d: 'The turnover that pays for enough, then what that means a month, a working week and a working day.', alt: 'Report close-up: turnover needed each year, then per month, per working week and per working day' },
+  { src: '/images/your-number/card-price.webp', h: 504, label: 'Your report · page 4', t: 'Your prices, clients and days', d: 'The price each session needs, and how many sessions and days a week your number takes at the price you charge now.', alt: 'Report close-up: price each session needs, sessions a week and days a week' },
+  { src: '/images/your-number/card-chart.webp', h: 801, label: 'Your report · page 6', t: 'Two futures', d: 'Nothing changes, side by side with the path you named, five years out.', alt: 'Report close-up: a five-year chart with two lines, nothing changes and the path you chose' },
 ];
 
 // Verbatim clips (captions word for word from the audio). These are 12-week coaching clients, and the page says so.
@@ -58,10 +59,16 @@ const FAQS = [
         <img src="/images/joel-headshot-web.jpg" alt="" width="44" height="44" loading="eager" />
         <p><b>Joel Ezekiel</b> · MSc Behavioural Economics | Qualified Financial Planner</p>
       </div>
-      <figure class="yn-stack">
-        <img src="/images/your-number/report-stack.webp" width="1212" height="800" alt="Three pages of a sample Your Number report: the cover, the turnover page, and the five-year chart" />
-        <figcaption>Sample report. Invented client and figures.</figcaption>
-      </figure>
+      <div class="yn-mock" aria-hidden="true">
+        <div class="yn-card yn-card-back">
+          <span class="yn-card-label">Two futures · 5 years</span>
+          <img src="/images/your-number/card-chart.webp" width="1572" height="801" alt="" />
+        </div>
+        <div class="yn-card yn-card-front">
+          <span class="yn-card-label">Your report · page 3</span>
+          <img src="/images/your-number/card-number.webp" width="1572" height="666" alt="" />
+        </div>
+      </div>
     </div>
 
     <aside class="yn-box" aria-label="Book your session">
@@ -128,13 +135,19 @@ const FAQS = [
   <div class="sp-wide">
     <p class="yn-kicker">Your report</p>
     <h2 class="sp-h2">What you <em>leave with</em></h2>
-    <p class="yn-sample-note">Three of the nine pages, from a sample report. Invented client and figures.</p>
-    <div class="yn-pages">
-      {SAMPLE_PAGES.map((p) => (
-        <figure>
-          <img src={p.src} width="900" height="1272" alt={p.alt} loading="lazy" />
-          <figcaption><b>{p.t}</b>{p.d}</figcaption>
-        </figure>
+    <div class="yn-rows">
+      {SAMPLE_PAGES.map((p, i) => (
+        <div class={`yn-row${i % 2 ? ' yn-row-flip' : ''}`}>
+          <div class="yn-card yn-card-big">
+            <span class="yn-card-label">{p.label}</span>
+            <img src={p.src} width="1572" height={p.h} alt={p.alt} loading="lazy" />
+          </div>
+          <div class="yn-row-copy">
+            <span class="yn-row-n">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
+          </div>
+        </div>
       ))}
     </div>
   </div>
@@ -322,17 +335,29 @@ const FAQS = [
 .yn-hero-quote p { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-size: clamp(1.2rem, 2.2vw, 1.55rem); line-height: 1.4; color: var(--color-cream); margin: 0 0 0.6rem; max-width: 60ch; }
 .yn-hero-quote cite { font-style: normal; font-size: 0.88rem; color: var(--color-gold-subtle); }
 
-.yn-stack { margin: 1.8rem 0 0; max-width: 560px; }
-.yn-stack img { width: 100%; height: auto; display: block; }
-.yn-stack figcaption { font-size: 0.8rem; color: rgba(245,240,232,0.6); margin-top: 0.3rem; }
+/* report cards: a close-up in a light "page" frame with a small gold label */
+.yn-card { position: relative; background: #FAFAF7; border-radius: 10px; padding: 2.1rem 0.9rem 0.9rem; box-shadow: 0 2px 0 rgba(196,162,101,0.55) inset, 0 30px 70px rgba(5,10,18,0.45), 0 8px 18px rgba(5,10,18,0.25); }
+.yn-card img { width: 100%; height: auto; display: block; border-radius: 3px; }
+.yn-card-label { position: absolute; top: 0.7rem; left: 1rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-gold); }
 
-/* sample report pages */
-.yn-sample-note { color: var(--color-slate); font-size: 0.98rem !important; }
-.yn-pages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; margin-top: 1.6rem; }
-.yn-pages figure { margin: 0; }
-.yn-pages img { width: 100%; height: auto; display: block; border: 1px solid var(--color-border-warm); border-radius: 4px; box-shadow: 0 14px 34px rgba(20,31,43,0.14); }
-.yn-pages figcaption { margin-top: 0.8rem; font-size: 0.95rem; color: var(--color-slate); line-height: 1.5; }
-.yn-pages figcaption b { display: block; font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: var(--color-navy); }
+/* hero mock-up: chart behind, your number in front */
+.yn-mock { position: relative; margin-top: 2.4rem; max-width: 600px; aspect-ratio: 600 / 420; }
+.yn-card-back { position: absolute; right: 0; top: 0; width: 72%; transform: rotate(3deg); opacity: 0.96; }
+.yn-card-front { position: absolute; left: 0; bottom: 0; width: 80%; transform: rotate(-2deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .yn-card-front { animation: yn-float 7s ease-in-out infinite; }
+  @keyframes yn-float { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(-2deg) translateY(-6px); } }
+}
+
+/* what you leave with: big close-ups, zig-zag */
+.yn-rows { display: grid; gap: 4rem; margin-top: 2.6rem; }
+.yn-row { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr); gap: 3rem; align-items: center; }
+.yn-row-flip { grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr); }
+.yn-row-flip .yn-card-big { order: 2; }
+.yn-card-big { box-shadow: 0 2px 0 rgba(196,162,101,0.55) inset, 0 24px 60px rgba(20,31,43,0.18), 0 6px 14px rgba(20,31,43,0.08); border: 1px solid var(--color-border-warm); }
+.yn-row-n { font-family: 'Fraunces', Georgia, serif; color: var(--color-gold); font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.yn-row-copy h3 { font-family: 'Fraunces', Georgia, serif; font-size: clamp(1.5rem, 2.6vw, 2rem); color: var(--color-navy); margin: 0.3rem 0 0.7rem; line-height: 1.15; }
+.yn-row-copy p { font-size: 1.08rem !important; color: var(--color-slate); margin: 0 !important; }
 
 /* booking box */
 .yn-box { background: var(--color-cream); color: var(--color-charcoal); border-radius: 8px; padding: 1.6rem 1.5rem 1.3rem; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
@@ -405,7 +430,9 @@ const FAQS = [
   .yn-hero-inner, .yn-close, .yn-letter { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .yn-letter-photo { max-width: 240px; }
   .sp-video-grid { grid-template-columns: minmax(0, 1fr); }
-  .yn-pages { grid-template-columns: minmax(0, 1fr); max-width: 460px; }
+  .yn-row, .yn-row-flip { grid-template-columns: minmax(0, 1fr); gap: 1.4rem; }
+  .yn-row-flip .yn-card-big { order: 0; }
+  .yn-rows { gap: 3rem; }
   .yn-get li { grid-template-columns: 2.4rem minmax(0, 1fr); }
   .yn-get li p { grid-column: 2; }
 }
