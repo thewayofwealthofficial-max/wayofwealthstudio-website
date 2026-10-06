@@ -10,15 +10,21 @@ const VSL_SRC = 'https://discover.thewayofwealth.shop/vsl/vsl.mp4';
 const VSL_POSTER = 'https://discover.thewayofwealth.shop/vsl/vsl-poster.jpg';
 
 const PAIN_CARDS = [
-  { n: '01', t: "\"What should I actually charge?\" Never really answered. You picked a number and hoped nobody would ask why." },
-  { n: '02', t: "A flicker of guilt every time you charge good money for work that also means something to you." },
-  { n: '03', t: "You're terrified someone will actually book a call with you." },
-  { n: '04', t: "You've done all the courses. It's just not absorbing." },
-  { n: '05', t: "You charge enough. Nobody's buying." },
-  { n: '06', t: "You feel you have to feel better about yourself before you can change your prices." },
-  { n: '07', t: "Your first big payment comes in, and you end up overwhelmed and overspending." },
-  { n: '08', t: "Good months disappear into gear and lifestyle. Quiet months arrive with nothing behind them." },
-  { n: '09', t: "You've tried the apps, the budgets and the spreadsheets. None of them stuck." },
+  { n: '01', t: "You don't pay yourself a set amount. You take what's there, when it's there." },
+  { n: '02', t: "You couldn't say, right now, how much of your balance is actually yours." },
+  { n: '03', t: "The tax bill turns up and you're not sure the money is still there." },
+  { n: '04', t: "Good months disappear into gear and lifestyle. Quiet months arrive with nothing behind them." },
+  { n: '05', t: "You earn well, and you still feel behind." },
+  { n: '06', t: "You don't open the banking app when it's bad." },
+  { n: '07', t: "If you stop working, the money stops. And you know it." },
+  { n: '08', t: "You've tried the apps, the budgets and the spreadsheets. None of them stuck." },
+];
+
+const ACCOUNTS = [
+  { t: "Current", d: "What you live on. Paid from the business on the same day every month, like a wage." },
+  { t: "Emergency", d: "Your buffer. So a quiet month is just a quiet month." },
+  { t: "Tax", d: "Put away when the money lands, because it was never yours." },
+  { t: "Savings and investments", d: "For the future you, not the next good month." },
 ];
 
 const CLIENT_QUOTES = [
@@ -32,46 +38,47 @@ const CLIENT_QUOTES = [
 
 const INCLUDES = [
   { t: "12 weekly 1:1 sessions", d: "Every week it's just you and me, looking at your real accounts. Not theory." },
-  { t: "The system, built with you", d: "We set up four accounts together: tax, running costs, your pay and your runway. Then we automate them." },
-  { t: "A 90-day statement audit", d: "Your leak sheet sorts three months of statements in one sitting. Then we go through it together, so you see where it actually goes." },
+  { t: "Your four accounts, set up with you", d: "Current, Emergency, Tax, and Savings and investments. We set them up on the call, then the standing orders fill them." },
+  { t: "The 90-Day Money Audit", d: "You upload three months of bank statements and it sorts them for you. Then we go through it together, so you see where your money really goes." },
   { t: "Weekly worksheets", d: "Short exercises in your own portal. They pull apart the beliefs sitting under the habits." },
   { t: "Support between sessions", d: "I'm a message away. That's usually when the wobble happens, so that's when the real work gets done." },
-  { t: "You keep everything", d: "Recordings, worksheets, your plan. Lifetime portal access. It doesn't stop at week twelve." },
+  { t: "You keep everything", d: "Recordings, worksheets, your Cash Flow Plan and your Money Book. Lifetime portal access. It doesn't stop at week twelve." },
 ];
 
 const PHASES = [
   {
     tab: "Weeks 1–3", name: "See it, then move it",
     body: [
-      "We find your money script, the belief that's been running the show.",
-      "You put 90 days of statements through your leak sheet. Then, together, we add the once-a-year costs everyone forgets, and put your real number next to what you guessed.",
-      "By week 3 the money moves. We set up your four accounts: Current, Emergency, Tax, and Savings and investments, with a steady wage from your business and the standing orders that fill them.",
+      "Week 1: where your money is today, the money scripts you grew up with, and how your business money really runs. Paying yourself, tax, the good months and the slow ones.",
+      "Week 2: your 90-Day Money Audit. Your real number next to the one you guessed, plus the once-a-year costs everyone forgets.",
+      "Week 3: the money moves. Your four accounts, set up together, with a steady wage from the business and the standing orders that fill them.",
     ],
     quote: "It's almost like looking in a mirror.",
   },
   {
     tab: "Weeks 4–5", name: "Understand why",
     body: [
-      "Week 4: we go deep on where your money story comes from and what money means to you. Your Money Story Profile follows as a document.",
-      "Week 5: your Behavioural Pattern Report. Your patterns, with proof from your own spending.",
+      "Week 4: where your money habits come from, and why they made sense at the time. You get your Money Story Profile.",
+      "Week 5: your patterns, with proof from your own spending, and three small experiments to try. You get your Behavioural Pattern Report.",
     ],
     quote: "I feel seen and called out at the same time.",
   },
   {
     tab: "Weeks 6–8", name: "Rewrite it",
     body: [
-      "We pick the belief holding you back the most and challenge it.",
-      "We rewrite it, in your own words.",
-      "Five weeks in, we check how your system has held up, fix what broke, and set up guardrails for the moments you usually slip.",
+      "Week 6: we test the belief that keeps showing up, against your own evidence.",
+      "Week 7: we rewrite it, in your own words.",
+      "Week 8: five weeks after the money moved, we check what held, fix what broke, and set up guardrails for the moments you usually slip.",
     ],
     quote: "You've removed money from the pedestal for me. Now it's just a tool. I am in control of it. It is not in control of me.",
   },
   {
     tab: "Weeks 9–12", name: "Aim it",
     body: [
-      "We set goals against what you actually value, not what you think you should want.",
-      "We map out your cash flow with the new system in place.",
-      "We look back at how far you've come, then graduation. You leave with the plan, the system and the recordings.",
+      "Week 9: what your money is actually for. Your values, not what you think you should want.",
+      "Week 10: your Cash Flow Plan. What your life needs, and what your work needs to earn to pay for it.",
+      "Week 11: where you started, where you are now, and three ways your future could go.",
+      "Week 12: graduation. You leave with your Money Book, the system and the recordings.",
     ],
     quote: "Permission. That one word defines my whole life.",
   },
@@ -88,7 +95,7 @@ const WINDOWS = [
   {
     tab: "The same loop", head: "It keeps happening, and you can't make it stop.",
     you: ["You've tried budgets and apps, and they never stick.", "You know what to do. You just don't do it.", "Every time you get ahead, something pulls you back."],
-    we: "We find the belief running the loop. And by week 3 the money is already moving: pots, standing orders and a buffer.",
+    we: "We find the belief running the loop. And by week 3 the money is already moving: your four accounts and the standing orders that fill them.",
   },
   {
     tab: "Ready to build", head: "The money comes in. You want it to build something.",
@@ -127,8 +134,8 @@ const FAQS = [
   <div class="sp-hero-inner">
     <div class="sp-hero-copy reveal">
       <p class="sp-eyebrow">The Money Story Method · 12-week 1:1 programme</p>
-      <h1>A steady wage. No tax shock. <em>Calm about money.</em></h1>
-      <p class="sp-lead">This is for you if you run your own business, make a good living, and still never know what's really yours to take home. Twelve weeks, one to one. We work on why, then build your money system together, on the call.</p>
+      <h1>Pay yourself the same every month. <em>Even when the work isn't.</em></h1>
+      <p class="sp-lead">This is for you if you run your own business, make a good living, and still never know what's really yours to take home. Twelve weeks, one to one. We work out why your money goes where it goes, then we set up the system together, on the call.</p>
       <div class="sp-cta-row">
         <a href="#apply" class="sp-btn sp-btn-gold">Book your free 20-minute call</a>
         <a href="#how" class="sp-link">See how the 12 weeks work ↓</a>
@@ -141,75 +148,47 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 2 · CREDENTIALS STRIP -->
-<section class="sp-strip">
-  <p class="sp-strip-label">Trained in · grounded in</p>
-  <ul class="sp-strip-row">
-    <li>MSc Behavioural Economics</li>
-    <li>Qualified Financial Planner (UK)</li>
-    <li>Klontz Money Scripts</li>
-    <li>Kahneman · Thaler · Duhigg</li>
-    <li>Ex St. James's Place</li>
-  </ul>
-</section>
-
-<!-- 3 · EMPATHY -->
-<section class="sp-section sp-cream">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,30 C1200,90 960,0 720,40 C480,80 240,0 0,50 Z"/></svg>
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">You know deep down what you're worth.<br /><em>But you feel guilty charging it.</em></h2>
-    <p>You know that feeling, right?</p>
-    <p>You used to offer free readings, until you were completely burned out.</p>
-    <p>You want your retreats to be accessible, and you struggle with the right pricing.</p>
-    <p class="sp-strong">That's not a willpower thing, and it's not a maths thing. It's just how your money moves.</p>
-  </div>
-</section>
-
-<!-- 5 · PAIN CARDS -->
+<!-- 2 · THE PROBLEM -->
 <section class="sp-section sp-navy">
-  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
-    <h2 class="sp-h2 sp-on-dark reveal">Which of these do you<br /><em>know too well?</em></h2>
+    <div class="sp-narrow reveal">
+      <h2 class="sp-h2 sp-on-dark">Good money comes in.<br /><em>So why is it never enough?</em></h2>
+      <p class="sp-on-dark">Let's say an invoice for £5,000 lands on a Tuesday. The balance jumps, and it all looks like yours.</p>
+      <p class="sp-on-dark">But some of it is tax. Some of it is the software, the rent, the stuff the business runs on. Nothing in the account tells you which is which. So you spend it like it's all yours, right?</p>
+      <p class="sp-on-dark sp-strong">Then the tax bill lands. And the account is short.</p>
+    </div>
+    <h3 class="sp-h3 sp-on-dark sp-center reveal">Which of these do you know too well?</h3>
     <ul class="sp-pain-grid">
       {PAIN_CARDS.map((c) => (
         <li class="sp-pain reveal"><span class="sp-pain-n">{c.n}</span><p>{c.t}</p></li>
       ))}
     </ul>
-    <p class="sp-on-dark sp-center sp-after">This happens at every income level. More money isn't the fix, right? It's how the money moves.</p>
+    <p class="sp-on-dark sp-center sp-after">If two or three of those hit home, you're in the right place.</p>
   </div>
 </section>
 
-<!-- 4 · THE TURN -->
+<!-- 3 · WHY IT HAPPENS -->
 <section class="sp-section sp-white">
+  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
   <div class="sp-narrow reveal">
-    <h2 class="sp-h2">Working harder won't fix this.<br /><em>Changing where the money goes will.</em></h2>
-    <p>Earning more doesn't fix a leak. It just makes the leak bigger.</p>
-    <p>The people who seem calm about money aren't more disciplined than you. They've just set things up so the easy thing is also the right thing. So they don't need willpower.</p>
-    <p>That's what we build together, so it keeps working when you're tired and can't be bothered.</p>
+    <h2 class="sp-h2">It's not willpower.<br /><em>Your money has no walls.</em></h2>
+    <p>Your money's got no walls in it, so it all leaks into the same pot. And when it's all in one pot, your brain reads the whole balance as yours to spend.</p>
+    <p>That's not you being bad with money. Money doesn't know which account it's in, but you do. That can be the problem or the solution.</p>
+    <p>Now, think about the end of a long day. You've been deciding things for ten hours. At 9pm you take the easiest route, and the easiest route is the app that already has your card.</p>
+    <p>So we don't ask you to try harder. We set it up so the money splits itself before you have to decide anything. Four accounts:</p>
+    <ul class="sp-acct-grid">
+      {ACCOUNTS.map((a) => (
+        <li class="sp-acct"><h4>{a.t}</h4><p>{a.d}</p></li>
+      ))}
+    </ul>
+    <p>But walls on their own don't hold if the belief underneath keeps knocking them down. So we look at that too. Where your money habits come from, and why they made sense at the time.</p>
+    <p class="sp-strong">More money doesn't fix a leak. It just makes the leak bigger.</p>
   </div>
 </section>
 
-<!-- 6 · RING A BELL -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-narrow reveal">
-    <div>
-      <h2 class="sp-h2">Do any of these<br /><em>ring a bell?</em></h2>
-      <ul class="sp-tick">
-        <li>You gave sessions away free until you burned out.</li>
-        <li>You hold back on sharing your offerings.</li>
-        <li>You'd say spending is no problem. It's charging enough that's the problem.</li>
-        <li>You've started a budget more than once and quit.</li>
-        <li>You feel guilty spending on yourself, or charging what you're worth.</li>
-        <li>You want to feel calm about money, not just "good at it".</li>
-      </ul>
-      <p class="sp-strong">If two or three of those hit home, you're in the right place.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 8 · FOUNDER -->
-<section class="sp-section sp-white">
+<!-- 4 · FOUNDER -->
+<section class="sp-section sp-cream">
+  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,30 C1200,90 960,0 720,40 C480,80 240,0 0,50 Z"/></svg>
   <div class="sp-wide sp-founder reveal" id="origin">
     <figure class="sp-portrait">
       <img src="/images/joel-headshot-web.jpg" alt="Joel Ezekiel" loading="lazy" />
@@ -221,7 +200,7 @@ const FAQS = [
       <p>So now I've got an MSc in Behavioural Economics and I'm a Qualified Financial Planner. And honestly, what I found is that the plan is almost never the problem. Smart people have a financial plan and still don't follow it. It's the beliefs and habits underneath, you know, the stuff running on autopilot.</p>
       <p>The Money Story Method is what I built for that. We work on those beliefs, and we build the system together, on the call.</p>
       <ul class="sp-tick sp-tick-tight">
-        <li>You see what you guessed you spend against what you really spend.</li>
+        <li>You see your real number next to the one you guessed.</li>
         <li>By week 3 the money moves: four accounts and the standing orders that fill them.</li>
         <li>You leave with the plan, the system and the recordings.</li>
       </ul>
@@ -229,45 +208,21 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 9 · WHAT CHANGES + QUOTES -->
-<section class="sp-section sp-navy">
-  <svg class="sp-wave" style="--wave-fill: var(--color-bg-white);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
-  <div class="sp-wide">
-    <div class="sp-narrow sp-center reveal">
-      <h2 class="sp-h2 sp-on-dark">What changes when the<br /><em>system does the work.</em></h2>
-      <p class="sp-on-dark">Picture opening your bank app and just knowing what's yours. The tax is already put away. You pay yourself on the same day every month. And a quiet month? It's just a quiet month.</p>
-    </div>
-    <ul class="sp-quote-row">
-      {CLIENT_QUOTES.slice(0, 3).map((q) => (
-        <li class="sp-qcard reveal"><span class="sp-qmark" aria-hidden="true">“</span><p>{q}</p><small>Money Story Method client, in their own words</small></li>
-      ))}
-    </ul>
-  </div>
-</section>
-
-<!-- 10 · INTRODUCING + INCLUDES -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+<!-- 5 · WHAT YOU GET, WEEK BY WEEK -->
+<section class="sp-section sp-white" id="how">
+  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <div class="sp-narrow sp-center reveal">
       <span class="sp-badge">Introducing</span>
       <h2 class="sp-h2">The Money Story <em>Method</em></h2>
       <p>Twelve weeks, one to one, just you and me. We change the habits and we build the system, on the call. It's not a course, it's not a community and it's not a PDF.</p>
     </div>
-    <h3 class="sp-h3 sp-center reveal">Here's what's included</h3>
     <ul class="sp-include-grid">
       {INCLUDES.map((c) => (
         <li class="sp-include reveal"><h4>{c.t}</h4><p>{c.d}</p></li>
       ))}
     </ul>
-    <div class="sp-center sp-after"><a href="#apply" class="sp-btn sp-btn-gold">Book your free 20-minute call</a></div>
-  </div>
-</section>
-
-<!-- 11 · 12-WEEK TABS -->
-<section class="sp-section sp-cream" id="how">
-  <div class="sp-wide">
-    <h2 class="sp-h2 sp-center reveal">How the 12 weeks<br /><em>actually work.</em></h2>
+    <h3 class="sp-h3 sp-center reveal">How the 12 weeks actually work</h3>
     <div class="sp-tabs" data-tabs>
       <div class="sp-tablist" role="tablist">
         {PHASES.map((p, i) => (
@@ -286,12 +241,12 @@ const FAQS = [
         </div>
       ))}
     </div>
+    <div class="sp-center sp-after"><a href="#apply" class="sp-btn sp-btn-gold">Book your free 20-minute call</a></div>
   </div>
 </section>
 
-<!-- 13 · WHICH ONE IS YOU (tabs) -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
+<!-- 6 · WHO IT'S FOR, WHO IT ISN'T -->
+<section class="sp-section sp-cream">
   <div class="sp-wide">
     <h2 class="sp-h2 sp-center reveal">Most people reach out<br /><em>for one of three reasons.</em></h2>
     <p class="sp-center sp-sub reveal">Which one is closest to yours?</p>
@@ -314,27 +269,29 @@ const FAQS = [
         </div>
       ))}
     </div>
+    <div class="sp-narrow sp-notfor reveal">
+      <h3 class="sp-h3">This isn't for you <em>if…</em></h3>
+      <ul class="sp-tick">
+        <li>You're employed on a salary. Your tax is already taken off, so the main problem this fixes isn't yours.</li>
+        <li>You want someone to tell you what to invest in. I'm a planner, not an adviser. I don't tell you what to buy.</li>
+        <li>You want a course or a PDF. This is twelve weeks, one to one.</li>
+        <li>You'd rather not look at your real numbers. Every week we look at your real accounts. Not theory.</li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<!-- 13b · NOT FOR YOU -->
-<section class="sp-section sp-cream">
-  <div class="sp-narrow reveal">
-    <h2 class="sp-h2">This isn't for you <em>if…</em></h2>
-    <ul class="sp-tick">
-      <li>You want someone to tell you what to invest in. I'm a planner, not an adviser. I don't tell you what to buy.</li>
-      <li>You want a course or a PDF. This is twelve weeks, one to one. It's not a course, it's not a community and it's not a PDF.</li>
-      <li>You'd rather not look at your real numbers. Every week we look at your real accounts. Not theory.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- 12 · VIDEO WALL -->
+<!-- 7 · VIDEO WALL -->
 <section class="sp-section sp-navy" id="results">
   <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="sp-wide">
     <h2 class="sp-h2 sp-on-dark sp-center reveal">Wondering what<br /><em>results look like?</em></h2>
     <p class="sp-on-dark sp-center sp-sub reveal">Hear it from people who were exactly where you are.</p>
+    <ul class="sp-quote-row sp-quote-top">
+      {CLIENT_QUOTES.slice(0, 3).map((q) => (
+        <li class="sp-qcard reveal"><span class="sp-qmark" aria-hidden="true">“</span><p>{q}</p><small>Money Story Method client, in their own words</small></li>
+      ))}
+    </ul>
     <figure class="sp-vfeature reveal">
       <video controls playsinline preload="none" poster={`/testimonials/${VIDEOS[0].slug}.jpg`} src={`/testimonials/${VIDEOS[0].slug}.mp4`}></video>
       <figcaption>
@@ -367,12 +324,11 @@ const FAQS = [
   }
 </script>
 
-<!-- 15 · PRICING -->
-<section class="sp-section sp-navy" id="price">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
+<!-- 8 · PRICE + PROMISE -->
+<section class="sp-section sp-white" id="price">
   <div class="sp-wide">
-    <h2 class="sp-h2 sp-on-dark sp-center reveal">Choose how you'd like<br /><em>to pay.</em></h2>
-    <p class="sp-on-dark sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call. I take on 5 people a month.</p>
+    <h2 class="sp-h2 sp-center reveal">Choose how you'd like<br /><em>to pay.</em></h2>
+    <p class="sp-center sp-sub reveal">Same programme, same support. We agree the plan on the call. I take on 5 people a month.</p>
     <ul class="sp-price-grid">
       {PRICES.map((p) => (
         <li class="sp-price reveal">
@@ -384,21 +340,16 @@ const FAQS = [
         </li>
       ))}
     </ul>
+    <div class="sp-narrow sp-center sp-promise reveal">
+      <div class="sp-seal" aria-hidden="true">8</div>
+      <h3 class="sp-h3">The Eight-Session <em>Promise</em></h3>
+      <p class="sp-strong">Full refund if nothing has shifted by session 8.</p>
+      <p>If you show up and do the work, and by the end of your 8th session we haven't shifted any of your money behaviours, you get every penny back. No questions asked.</p>
+    </div>
   </div>
 </section>
 
-<!-- 16 · GUARANTEE -->
-<section class="sp-section sp-white">
-  <svg class="sp-wave" style="--wave-fill: var(--color-navy-deep);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,40 C1200,90 960,10 720,50 C480,90 240,10 0,55 Z"/></svg>
-  <div class="sp-narrow sp-center reveal">
-    <div class="sp-seal" aria-hidden="true">8</div>
-    <h2 class="sp-h2">The Eight-Session <em>Promise</em></h2>
-    <p class="sp-strong">Full refund if nothing has shifted by session 8.</p>
-    <p>If you show up and do the work, and by the end of your 8th session we haven't shifted any of your money behaviours, you get every penny back. No questions asked.</p>
-  </div>
-</section>
-
-<!-- 17 · FAQ -->
+<!-- 9 · FAQ -->
 <section class="sp-section sp-cream" id="faq">
   <div class="sp-narrow">
     <h2 class="sp-h2 sp-center reveal">Commonly asked <em>questions</em></h2>
@@ -410,7 +361,7 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 18 · CLOSING + APPLY -->
+<!-- 10 · CLOSING + APPLY -->
 <section class="g-apply sp-apply" id="apply">
   <svg class="sp-wave" style="--wave-fill: var(--color-cream);" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,50 C1200,0 960,90 720,40 C480,0 240,80 0,30 Z"/></svg>
   <div class="g-apply-inner">
@@ -656,7 +607,7 @@ const FAQS = [
 .sp-tick-tight li { padding: 0.5rem 0 0.5rem 2.2rem; }
 
 /* ---------- pain cards ---------- */
-.sp-pain-grid { list-style: none; margin: 3rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
+.sp-pain-grid { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
 .sp-pain { background: var(--color-bg-white); color: var(--color-charcoal); border-radius: 6px; padding: 1.8rem 1.5rem; }
 .sp-pain-n { display: block; font-family: 'Fraunces', serif; font-size: 1.7rem; color: var(--color-gold); margin-bottom: 0.7rem; }
 .sp-pain p { font-size: 0.98rem !important; line-height: 1.55 !important; margin: 0 !important; }
@@ -672,6 +623,18 @@ const FAQS = [
 .sp-stat-big { display: block; font-size: 2.8rem; font-weight: 700; color: var(--color-navy); margin-bottom: 0.6rem; }
 .sp-stat p { font-size: 1rem !important; line-height: 1.55 !important; }
 .sp-stat small { color: var(--color-slate); font-size: 0.82rem; }
+
+/* ---------- four accounts ---------- */
+.sp-acct-grid { list-style: none; margin: 1.6rem 0 2rem; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.sp-acct { background: var(--color-cream); border: 1px solid var(--color-border-warm); border-radius: 6px; padding: 1.3rem 1.4rem; }
+.sp-acct h4 { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--color-navy); margin: 0 0 0.4rem; }
+.sp-acct p { font-size: 0.98rem !important; line-height: 1.55 !important; margin: 0 !important; color: var(--color-slate); }
+.sp-notfor { margin-top: 4rem; }
+.sp-notfor .sp-h3 em { font-style: italic; color: var(--color-gold); }
+.sp-quote-top { margin: 0 0 2rem; }
+.sp-promise { margin-top: 4.5rem; }
+.sp-promise .sp-h3 { margin-top: 0; }
+.sp-promise .sp-h3 em { font-style: italic; color: var(--color-gold); }
 
 /* ---------- founder ---------- */
 .sp-founder { display: grid; grid-template-columns: 340px 1fr; gap: 3.5rem; align-items: start; }
@@ -791,6 +754,7 @@ const FAQS = [
 @media (max-width: 680px) {
   .sp-section { padding: 6rem 1.2rem 4.5rem; }
   .sp-hero { padding: 8rem 1.2rem 4.5rem; }
+  .sp-acct-grid { grid-template-columns: 1fr; }
   .sp-pain-grid, .sp-include-grid, .sp-video-grid, .sp-price-grid, .sp-quote-row, .sp-stats { grid-template-columns: 1fr; }
   .sp-tablist, .sp-tablist-4 { grid-template-columns: repeat(2, 1fr); }
   .sp-tablist-3 { grid-template-columns: repeat(3, 1fr); }
