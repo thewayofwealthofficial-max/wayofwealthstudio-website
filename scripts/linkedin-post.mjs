@@ -155,7 +155,7 @@ function userPrompt(passages, angles, feedback, last, job, outlier) {
   // model spent all 2,000 tokens hunting for them out loud, so all 5 attempts were cut off before the JSON.
   if (/\[[a-z ]+\] |- Topics: /.test(working)) working += `\n\nTOPICS: if one of Joel's passages below genuinely speaks to a topic named above, prefer that passage. Never stretch a passage to fit a topic, and never add a claim he didn't make.`;
   if (working) working += `\n\nUse all of the above quietly: decide in your head, then reply with the JSON only. No working shown.`;
-  return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nTHE OUTLIER POST TO COPY (${outlier.words} words, ${outlier.paragraphs} paragraphs, ${outlier.per1k} reactions+comments per 1k followers). Copy its build, never its content:\n<<<\n${outlier.body}\n>>>\n\nANGLES (what it's about; pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n${last.post}` : ''}`;
+  return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nLENGTH: about ${lengthFor(outlier).target} words, never more than ${lengthFor(outlier).hi}. Keep every beat of the outlier, just say each one in fewer words.\n\nTHE OUTLIER POST TO COPY (${outlier.words} words, ${outlier.paragraphs} paragraphs, ${outlier.per1k} reactions+comments per 1k followers). Copy its build, never its content:\n<<<\n${outlier.body}\n>>>\n\nANGLES (what it's about; pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n${last.post}` : ''}`;
 }
 
 async function claude(system, user, maxTokens) {
@@ -187,6 +187,11 @@ const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 // 15% never reaches him (hard; 4 test runs on 5 Oct: best tries 31, 25, 18 and 30%, worst run 18%); below 35% keeps the repairs pushing for more of his words; of all tries he gets the
 // one with the most of his words.
 const MIN_OWN = 0.15;
+// Length (Joel, 6 Oct 2026: "minimal words … whatever the average post length of successful posts are"). In the
+// 1,000-post pull the 3x outliers had a median of 205 words. Aim for the outlier's own length or 205, whichever is
+// shorter; never more than 5% over, never under three quarters of it.
+const WIN_WORDS = 205;
+const lengthFor = (outlier) => { const t = Math.min(outlier.words, WIN_WORDS); return { target: t, lo: Math.round(t * 0.75), hi: Math.round(t * 1.05) }; };
 const TARGET_OWN = 0.35;
 
 // Joel's copying rule (SCRIPTING.md 1b): outside the hook (the first paragraph), at most 15% of their wording and never
@@ -215,8 +220,8 @@ function check(d, passages, names, recentAngles, outlier) {
   const post = String(d.post || '').trim();
   const words = post.split(/\s+/).length;
   // The outlier sets the length now (6 Oct 2026): within about a third of it either way.
-  const lo = Math.max(60, Math.round(outlier.words * 0.65)), hi = Math.round(outlier.words * 1.35);
-  if (words < lo || words > hi) problems.push(`Post is ${words} words; the outlier is ${outlier.words}, so keep it ${lo} to ${hi}.`);
+  const { target, lo, hi } = lengthFor(outlier);
+  if (words < lo || words > hi) problems.push(`Post is ${words} words; aim for about ${target} (${lo} to ${hi}). Cut your own joining words first, never Joel's lines.`);
   if (/\b(?:isn['’]t|wasn['’]t|not) (?:about |just |really |a |an )?[^.!?\n]{1,40}[.!?]\s+(?:It['’]s|It is|It was|That['’]s|You['’]re|You are|I['’]m|I am)\b/i.test(post)) problems.push('Uses the "That\'s not X. It\'s Y." pattern, which reads as AI. Say the point once, plainly.');
   // Joel, 2026-09-27: no neat three-part lines ("Not a plan. Not a pivot. Just honesty.").
   const triplet = post.split(/\n\s*\n/).find((para) => { const s = para.trim().split(/(?<=[.!?])\s+/); return s.length === 3 && s.every((x) => x.split(/\s+/).length <= 4); });
