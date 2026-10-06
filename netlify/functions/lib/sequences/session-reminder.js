@@ -1,7 +1,7 @@
 // Booking reminders for people who gave their name and email in the /your-number booking box (step 1)
 // but didn't book (5 Oct 2026). Booking on the page stops them (session-booked.js).
 //
-// HELD BACK until Joel approves the wording: enabled: false. People still enrol from day one.
+// Approved by Joel 6 Oct 2026 and switched on.
 //
 // Shape: Ramit Sethi's cart-close emails (BIG_SENDERS_SEQUENCES.md §1 A and F): a recap of what they started
 // and what happens next, then doubts answered as questions, then a last call with a P.S. (Ramit's is a
@@ -14,7 +14,7 @@
 const BOOK = 'https://wayofwealthcoaching.com/your-number/#book';
 
 module.exports = {
-  enabled: false,
+  enabled: true, // approved by Joel 6 Oct 2026
   footerReason: 'you started booking a Cash Flow Session at wayofwealthcoaching.com',
   emails: [
     {
@@ -54,7 +54,7 @@ No. I'm a planner, not an adviser. I'm qualified but not FCA authorised. This se
 Good. An accountant looks backwards to keep you legal. They don't tell you how much of today's invoice you can actually move to your own account. That's the gap we work on.
 
 **I'm not in the UK.**
-Yes, you can still book. Bring your own tax figures from your accountant. I don't give tax advice. The price is £179.99, and your bank converts it to your currency.
+Yes, you can still book. Bring your own tax figures from your accountant. I don't give tax advice. The price is £99.97, and your bank converts it to your currency.
 
 My promise: if you don't leave knowing your number, I'll refund you.
 
