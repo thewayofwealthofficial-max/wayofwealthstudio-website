@@ -15,7 +15,7 @@ const { createHmac } = require('node:crypto');
 const RESEND = 'https://api.resend.com';
 const GENERAL_AUDIENCE = process.env.RESEND_AUDIENCE_ID || 'ed40086b-fccc-4755-8744-72085ceac3e7';
 const SITE = 'https://wayofwealthcoaching.com';
-const FROM = 'Joel from Way of Wealth <joel@thewayofwealth.shop>';
+const FROM = 'Joel from Way of Wealth <joel@wayofwealthcoaching.com>';
 // Joel, 27 Sep: send from joel@wayofwealthcoaching.com. Each address takes over automatically once Resend has
 // verified its domain, in this order of preference.
 const PREFERRED = ['wayofwealthcoaching.com', 'joelezekiel.com'];
