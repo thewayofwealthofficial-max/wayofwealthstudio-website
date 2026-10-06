@@ -86,4 +86,4 @@ The guilt you feel when you charge properly is not a signal that you are doing s
 
 That is a workable problem.
 
-— *Joel*
+*Joel*

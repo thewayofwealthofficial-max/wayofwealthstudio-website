@@ -107,4 +107,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 You don't have to have it figured out before you start. That's rather the point.
 
-— *Joel*
+*Joel*

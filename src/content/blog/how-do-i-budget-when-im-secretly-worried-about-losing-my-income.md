@@ -106,4 +106,4 @@ If you're carrying beliefs about money that run deeper than a spreadsheet can fi
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

@@ -74,4 +74,4 @@ If any of this sounds like you, it's worth knowing which of the four money scrip
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

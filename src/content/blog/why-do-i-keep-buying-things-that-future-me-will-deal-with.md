@@ -82,4 +82,4 @@ Understanding your money behaviour is not the same as excusing it. But it is, re
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

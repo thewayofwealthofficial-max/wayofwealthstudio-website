@@ -86,4 +86,4 @@ The splurge-panic cycle usually has a belief underneath it, something about what
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

@@ -78,4 +78,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Your confidence with money isn't fixed. But rebuilding it starts with understanding what eroded it — not with finding a better stranger to copy.
 
-— *Joel*
+*Joel*

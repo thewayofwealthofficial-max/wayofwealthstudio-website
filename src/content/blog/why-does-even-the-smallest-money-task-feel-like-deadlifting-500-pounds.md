@@ -94,4 +94,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Because understanding the mechanism is always the first step to changing it.
 
-— *Joel*
+*Joel*

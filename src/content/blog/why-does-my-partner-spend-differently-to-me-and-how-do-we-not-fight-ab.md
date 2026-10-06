@@ -109,4 +109,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Because understanding your own financial wiring isn't a luxury. When you're trying to build a life with another person, it might be the most practical thing you do all year.
 
-— *Joel*
+*Joel*

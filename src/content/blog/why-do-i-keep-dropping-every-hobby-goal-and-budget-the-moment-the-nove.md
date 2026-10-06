@@ -92,4 +92,4 @@ But most people are trying to solve a behavioural problem with a spreadsheet, wh
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

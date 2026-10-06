@@ -117,4 +117,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Because the goal isn't just to know where your money goes. It's to understand why you feel the way you feel when you think about it — and what to do about that first.
 
-— *Joel*
+*Joel*

@@ -102,4 +102,4 @@ The first step is not sorting your expenses. The first step is understanding wha
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

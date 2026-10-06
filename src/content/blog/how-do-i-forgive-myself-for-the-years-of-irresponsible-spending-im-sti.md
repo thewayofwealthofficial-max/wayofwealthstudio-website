@@ -105,4 +105,4 @@ One of those approaches compounds into something better. The other one just cost
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

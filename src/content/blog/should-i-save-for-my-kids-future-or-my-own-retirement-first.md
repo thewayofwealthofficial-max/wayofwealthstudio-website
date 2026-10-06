@@ -95,4 +95,4 @@ You are allowed to hold that belief. You don't have to earn it.
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

@@ -120,4 +120,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 You've already done the hard bit. You asked the question.
 
-— *Joel*
+*Joel*

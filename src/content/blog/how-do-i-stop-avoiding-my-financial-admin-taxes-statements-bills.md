@@ -97,4 +97,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 You've been doing the best you can with the wiring you have. That's not a small thing.
 
-— *Joel*
+*Joel*

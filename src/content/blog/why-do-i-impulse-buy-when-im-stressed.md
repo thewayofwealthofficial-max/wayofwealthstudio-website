@@ -114,4 +114,4 @@ You're not broken. Your brain is doing exactly what stressed, dopamine-depleted,
 
 Now you just need infrastructure that works *with* it, not against it.
 
-— *Joel*
+*Joel*

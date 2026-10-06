@@ -106,4 +106,4 @@ The scan is misfiring. The threat is mostly imagined. The "everyone else has fig
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

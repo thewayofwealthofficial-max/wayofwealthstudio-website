@@ -103,4 +103,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Because understanding the pattern is usually the thing that makes it possible to change it.
 
-— *Joel*
+*Joel*

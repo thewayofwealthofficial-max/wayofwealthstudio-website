@@ -110,4 +110,4 @@ You're not too late. You're not broken. You're just running some very old, very 
 
 That's something we can work with.
 
-— *Joel*
+*Joel*

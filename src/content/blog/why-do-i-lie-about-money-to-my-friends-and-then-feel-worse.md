@@ -111,4 +111,4 @@ Because knowing your pattern is the first step toward changing it — not by try
 
 That's where this starts.
 
-— *Joel*
+*Joel*

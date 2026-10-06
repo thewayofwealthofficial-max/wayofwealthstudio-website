@@ -90,4 +90,4 @@ You can stop replaying the meeting now.
 
 The sentence is written. That part's done.
 
-— *Joel*
+*Joel*

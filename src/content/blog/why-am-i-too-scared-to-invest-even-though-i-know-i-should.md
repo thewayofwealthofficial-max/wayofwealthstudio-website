@@ -80,4 +80,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 The investing question doesn't go away by ignoring it. But understanding *why* you're freezing is a more honest starting point than pretending the freeze isn't there.
 
-— *Joel*
+*Joel*

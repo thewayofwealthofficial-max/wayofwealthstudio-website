@@ -104,4 +104,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 The numbers in your account are data. The story your brain tells about those numbers is something you can change.
 
-— *Joel*
+*Joel*

@@ -100,4 +100,4 @@ You've tried forcing it. You've tried motivation. You've tried the spreadsheet.
 
 Try understanding the pattern first.
 
-— *Joel*
+*Joel*

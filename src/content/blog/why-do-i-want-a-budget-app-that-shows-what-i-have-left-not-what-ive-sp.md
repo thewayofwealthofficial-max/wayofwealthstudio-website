@@ -92,4 +92,4 @@ Sometimes it points to something a layer deeper: a belief that checking in on yo
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

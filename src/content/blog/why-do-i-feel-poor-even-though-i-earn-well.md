@@ -94,4 +94,4 @@ The next layer underneath all of this is usually your money beliefs — the deep
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

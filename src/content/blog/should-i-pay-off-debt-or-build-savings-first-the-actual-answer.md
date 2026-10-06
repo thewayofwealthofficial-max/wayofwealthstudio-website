@@ -95,4 +95,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 Knowing the pattern is the beginning of working with it.
 
-— *Joel*
+*Joel*

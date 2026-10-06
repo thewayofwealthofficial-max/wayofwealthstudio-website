@@ -85,4 +85,4 @@ The way out isn't shame. It's structure that works *with* how your brain actuall
 
 If you want to know which money beliefs are driving your pattern (it's not the same for everyone), the [Money Story Diagnostic](https://discover.thewayofwealth.shop/) is a free 3-minute conversation that names the money script running underneath.
 
-— *Joel*
+*Joel*

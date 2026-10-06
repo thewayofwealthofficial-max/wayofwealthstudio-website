@@ -92,10 +92,10 @@ If this resonates, the most useful next step isn't a spending tracker. It's unde
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-If you'd rather read first, the posts on [spending shame] and [why budgets fail anxious people] cover more of the same territory.
+If you'd rather read first, the posts on [spending shame](/blog/how-do-i-forgive-myself-for-the-years-of-irresponsible-spending-im-sti/) and [why budgets fail anxious people](/blog/i-keep-starting-budgets-and-giving-up-whats-wrong-with-me/) cover more of the same territory.
 
 You're not broken. You're running outdated software on hardware that's working exactly as designed.
 
-— *Joel*
+*Joel*
 
 *Joel is the founder of Way of Wealth. He holds an MSc Behavioural Economics and is a Qualified Financial Planner.*

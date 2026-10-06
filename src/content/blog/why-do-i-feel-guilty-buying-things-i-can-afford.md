@@ -101,4 +101,4 @@ The guilt will probably take time to catch up. But understanding why it's there 
 
 Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
-— *Joel*
+*Joel*

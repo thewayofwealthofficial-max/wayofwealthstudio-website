@@ -110,4 +110,4 @@ Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 
 
 That's where the useful work begins.
 
-— *Joel*
+*Joel*
