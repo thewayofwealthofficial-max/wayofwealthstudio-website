@@ -12,14 +12,19 @@ import { createDecipheriv, createHash } from 'node:crypto';
 
 let cache = null;
 
+/** Opens one of the encrypted JSON files in this folder with VOICE_KEY. */
+export function openBox(file, key = process.env.VOICE_KEY) {
+  const box = JSON.parse(readFileSync(new URL(`./${file}`, import.meta.url), 'utf8'));
+  const d = createDecipheriv('aes-256-gcm', Buffer.from(key, 'base64'), Buffer.from(box.iv, 'base64'));
+  d.setAuthTag(Buffer.from(box.tag, 'base64'));
+  return JSON.parse(Buffer.concat([d.update(Buffer.from(box.data, 'base64')), d.final()]).toString('utf8'));
+}
+
 /** All talk passages as [{date, text}], or [] when VOICE_KEY isn't set (the writers still run on Fathom alone). */
 export function talkPassages(key = process.env.VOICE_KEY) {
   if (cache) return cache;
   if (!key) { console.log('VOICE_KEY not set: no talk passages.'); return []; }
-  const box = JSON.parse(readFileSync(new URL('./talk-passages.enc', import.meta.url), 'utf8'));
-  const d = createDecipheriv('aes-256-gcm', Buffer.from(key, 'base64'), Buffer.from(box.iv, 'base64'));
-  d.setAuthTag(Buffer.from(box.tag, 'base64'));
-  cache = JSON.parse(Buffer.concat([d.update(Buffer.from(box.data, 'base64')), d.final()]).toString('utf8'));
+  cache = openBox('talk-passages.enc', key);
   return cache;
 }
 

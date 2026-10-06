@@ -20,7 +20,7 @@ import { recentJoelWords } from './daily-email/fathom.mjs';
 import { JOEL_FACTS } from './daily-email/voice.mjs';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
 import { BRAND_VOICE_BLOCK } from './voice/joel-voice.mjs';
-import { talkPassages } from './voice/talk.mjs';
+import { talkPassages, openBox } from './voice/talk.mjs';
 import { joelShare } from './voice/own-words.mjs';
 import { readOwn, ranking as ownRanking } from './linkedin-own.mjs';
 
@@ -90,23 +90,12 @@ He is a planner, not an adviser: never recommend investments, products, pensions
 WHO READS IT: small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades). Global, UK first in tone. They earn decent money, but their money feels chaotic. Their pains, most common first: money stress, income that swings, not paying themselves, not knowing where the money goes, the tax bill shock, working hard with nothing left, burnout, and home bills tangled up with the business. What they want: calm first, then a steady wage, then a buffer, then tax sorted. Their own words: "pay myself", "struggle", "confused", "take home", "where my money is going", "always behind". If they take mindset or manifesting seriously, so does Joel, and he adds the behaviour side. Never mock it, never claim it works.
 Joel has NOT coached wellness practitioners yet. Never say or imply that a client of his is a healer, yoga teacher, breathwork facilitator or practitioner unless his own words say so.
 
-THE LINKEDIN SHAPE (from the research, applies to every angle):
-- First line: a confession or a question, guard down. Never a hot take, never "here's why you're wrong", never a claim followed by reasons.
-- Mostly one-sentence paragraphs, with one or two longer paragraphs where the story runs (up to about 80 words). Blank line between paragraphs.
-- No link. No hashtags. No ask, or at most one soft question at the very end.
-- No how-to list, no tips list, no selling, no jokes.
-
-STORY SHAPE, for story angles (${[...STORY].join(', ')}): PROBLEM → PURSUIT → PAYOFF.
-- PROBLEM: open on the tension, the thing he felt. Never the background. The first line is already inside the problem: start at the worst moment in the passage (the loss, the fear, the feeling of being lost), and let any background come later, in the pursuit.
-- PURSUIT: what was at risk and what he did about it. The middle, told as it happened.
-- PAYOFF: what shifted. Never missing: a realisation, one step, or honestly saying he doesn't know yet. It is the SHORTEST of the three parts.
-
-HOW THE SENTENCES SOUND (Joel's own solo camera talk measures the same: 21% of his sentences run past 20 words, 15% are under 5; so do the 15 top guard-down LinkedIn story posts):
-- Median sentence about 10 words, but it rolls. About 1 in 5 sentences runs past 20 words, strung on commas and "and", like someone talking ("an escape from burnout, from the winter, from all of it").
-- About 1 in 5 sentences is a tiny fragment of 1 to 4 words. "Worse this time." "You don't."
-- A long rolling sentence can sit on its own as a paragraph. That keeps paragraphs short without chopping the sentence up.
-- Some sentences start with "And", "But" or "So". Some run on a bit. Not every sentence is complete. Loose, spoken grammar is good; too clean and too balanced reads as AI.
-- Never tidy parallel pairs or neat triplets, never every sentence the same length, never a slogan-like closing line.
+THE SHAPE COMES FROM ONE REAL POST (Joel, 6 Oct 2026: the reel built by copying a real outlier, "yes love this script"; the LinkedIn post built from written "shapes", "terrible"). You get ONE OUTLIER POST: a real LinkedIn post that did well with self-employed and small-business readers. Copy it the way SCRIPTING.md copies a reel:
+- KEEP ITS HOOK: its first line(s), changed only enough to fit Joel's topic (swap the topic words, keep the build).
+- FOLLOW ITS STRUCTURE BEAT FOR BEAT: the same number of paragraphs and roughly the same number of sentences, each about the same length. If its list stacks, yours stacks. If it ends on a question, yours ends on a question. If it tells a story, yours tells Joel's story in the same beats.
+- EVERY OTHER LINE IS JOEL'S: where their line does a job (a confession, a scene, a list item, the turn, the lesson), Joel's line does the same job, taken from his_lines.
+- Never more than 15% of their wording outside the hook, never 12 of their words in a row, and never their facts, story, numbers, names or claims.
+- No link. No hashtags. No ask, or at most one soft question at the very end. Never their call to action.
 
 JOEL'S VOICE (measured from his real speech): plain, warm, direct. Short words. A long sentence carries the reasoning, a short one lands the point. He says "like", "honestly", "you know", "right?" now and then. He uses everyday comparisons. British spelling. No em dashes. No "It's not X, it's Y". No three-item filler lists. No delve, unpack, tapestry, journey, unlock, "here's the thing", "the truth is".
 
@@ -123,17 +112,18 @@ HARD RULES (a draft that breaks any is rejected):
 
 THEIR WORDS: the READER PHRASES are real things strangers in this market have written. You may turn one into a "you" line. Never quote them, never credit them.
 
-HOW TO BUILD IT (two steps, in this order):
+HOW TO BUILD IT (three steps, in this order):
 1. "his_lines": copy out 12 to 25 of Joel's own sentences from the ONE passage, word for word, with only the filler taken out (um, like, you know, so basically, repeats, false starts). Do not reword them. Pick the ones that carry the story and the point.
-2. Build the post FROM those lines. At least half the post's words must be his lines as copied. Your own words only for the first line, short joins, the one research line, and trimming. If a line of his addressed a client as "you", it can stay "you": the reader is in the same spot.
+2. "map": for each paragraph of the OUTLIER, one short line: what job it does, and which of his_lines fills it.
+3. "post": write it, paragraph for paragraph. At least half the words are his lines as copied. Your own words only for the adapted hook, short joins, and at most one research line.
 ${BRAND_VOICE_BLOCK}
 
 OUTPUT: only valid JSON, no fences:
-{"passage": <number of the passage you used>, "angle": <angle number>, "his_lines": ["...", "..."], "problem": "...", "pursuit": "...", "payoff": "..."}
-Each part holds its paragraphs, separated by \\n\\n; the post is the three joined in that order. For a non-story angle, put the whole post in "problem" and leave the other two empty.`;
+{"passage": <number of the passage you used>, "angle": <angle number>, "his_lines": ["...", "..."], "map": ["...", "..."], "post": "paragraphs separated by \\n\\n"}`;
 
-function userPrompt(passages, angles, feedback, last, job) {
-  const a = Object.entries(angles).map(([n, x]) => `${n}. ${x.name}\n   First line: ${x.hook}\n   Shape: ${x.shape}\n   Length: ${x.words[0]}–${x.words[1]} words`).join('\n');
+function userPrompt(passages, angles, feedback, last, job, outlier) {
+  // Angles are now only WHAT the post is about; the outlier decides how it is built (6 Oct 2026).
+  const a = Object.entries(angles).map(([n, x]) => `${n}. ${x.name}`).join('\n');
   const p = passages.map((x, i) => `[${i}] (${x.date})\n${x.text}`).join('\n\n');
   const research = ['reach', 'positioning'].includes(job) ? `\n\nRESEARCH IDEAS (use exactly ONE, as worded here):\n${RESEARCH.map((r) => '- ' + r.line).join('\n')}` : '';
   // What's working on LinkedIn (scripts/linkedin-monitor.mjs, monthly on the 1st). Patterns only, never their words.
@@ -165,7 +155,7 @@ function userPrompt(passages, angles, feedback, last, job) {
   // model spent all 2,000 tokens hunting for them out loud, so all 5 attempts were cut off before the JSON.
   if (/\[[a-z ]+\] |- Topics: /.test(working)) working += `\n\nTOPICS: if one of Joel's passages below genuinely speaks to a topic named above, prefer that passage. Never stretch a passage to fit a topic, and never add a claim he didn't make.`;
   if (working) working += `\n\nUse all of the above quietly: decide in your head, then reply with the JSON only. No working shown.`;
-  return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nANGLES (pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n[PROBLEM]\n${last.problem}\n[PURSUIT]\n${last.pursuit}\n[PAYOFF]\n${last.payoff}` : ''}`;
+  return `THIS POST'S JOB: ${JOBS[job].brief}${research}${working}\n\nTHE OUTLIER POST TO COPY (${outlier.words} words, ${outlier.paragraphs} paragraphs, ${outlier.per1k} reactions+comments per 1k followers). Copy its build, never its content:\n<<<\n${outlier.body}\n>>>\n\nANGLES (what it's about; pick the one the passage truly supports):\n${a}\n\nJOEL'S OWN WORDS (pick ONE passage):\n${p}\n\nREADER PHRASES:\n${READER_PHRASES.map((r) => '- ' + r).join('\n')}${feedback ? `\n\nYOUR LAST DRAFT (angle ${last.angle}, passage ${last.passage}) WAS REJECTED. Keep what works and fix only these:\n- ${feedback.join('\n- ')}\n\nLAST DRAFT:\n${last.post}` : ''}`;
 }
 
 async function claude(system, user, maxTokens) {
@@ -199,7 +189,23 @@ const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 const MIN_OWN = 0.15;
 const TARGET_OWN = 0.35;
 
-function check(d, passages, names, recentAngles) {
+// Joel's copying rule (SCRIPTING.md 1b): outside the hook (the first paragraph), at most 15% of their wording and never
+// 12 of their words in a row. Words count as copied inside any 6-word run that also appears in the outlier.
+function copiedFromOutlier(post, body) {
+  const rest = post.split(/\n\s*\n/).slice(1).join(' ');
+  const b = norm(rest).split(' ').filter(Boolean), s = ` ${norm(body)} `;
+  if (b.length < 6) return null;
+  const cov = new Array(b.length).fill(false);
+  for (let i = 0; i + 6 <= b.length; i++) if (s.includes(` ${b.slice(i, i + 6).join(' ')} `)) for (let k = i; k < i + 6; k++) cov[k] = true;
+  let longest = 0, cur = 0;
+  for (const c of cov) { cur = c ? cur + 1 : 0; longest = Math.max(longest, cur); }
+  const share = cov.filter(Boolean).length / b.length;
+  if (longest > 12) return `a ${longest}-word stretch`;
+  if (share > 0.15) return `${Math.round(share * 100)}% of the words`;
+  return null;
+}
+
+function check(d, passages, names, recentAngles, outlier) {
   const problems = [];
   const angle = ANGLES[d.angle];
   const passage = passages[d.passage];
@@ -208,27 +214,14 @@ function check(d, passages, names, recentAngles) {
   if (recentAngles.includes(Number(d.angle))) problems.push(`Angle ${d.angle} was used in the last 3 posts. Pick another.`);
   const post = String(d.post || '').trim();
   const words = post.split(/\s+/).length;
-  // Joel, 2026-09-27: "length is fine". A post is as long as his story honestly runs; never pad it. Only the floor moves.
-  const floor = Math.min(angle.words[0], 180);
-  if (words < floor || words > angle.words[1]) problems.push(`Post is ${words} words; angle ${d.angle} needs ${floor}–${angle.words[1]}.`);
-  if (STORY.has(Number(d.angle))) {
-    const w = (x) => String(x || '').trim().split(/\s+/).filter(Boolean).length;
-    const [pr, pu, pa] = [w(d.problem), w(d.pursuit), w(d.payoff)];
-    if (!pr || !pu || !pa) problems.push('Story post is missing one of Problem, Pursuit or Payoff. The payoff is never missing.');
-    else if (pa >= pr || pa >= pu) problems.push(`The payoff (${pa} words) must be the shortest part (problem ${pr}, pursuit ${pu}).`);
-  }
+  // The outlier sets the length now (6 Oct 2026): within about a third of it either way.
+  const lo = Math.max(60, Math.round(outlier.words * 0.65)), hi = Math.round(outlier.words * 1.35);
+  if (words < lo || words > hi) problems.push(`Post is ${words} words; the outlier is ${outlier.words}, so keep it ${lo} to ${hi}.`);
   if (/\b(?:isn['’]t|wasn['’]t|not) (?:about |just |really |a |an )?[^.!?\n]{1,40}[.!?]\s+(?:It['’]s|It is|It was|That['’]s|You['’]re|You are|I['’]m|I am)\b/i.test(post)) problems.push('Uses the "That\'s not X. It\'s Y." pattern, which reads as AI. Say the point once, plainly.');
   // Joel, 2026-09-27: no neat three-part lines ("Not a plan. Not a pivot. Just honesty.").
   const triplet = post.split(/\n\s*\n/).find((para) => { const s = para.trim().split(/(?<=[.!?])\s+/); return s.length === 3 && s.every((x) => x.split(/\s+/).length <= 4); });
   if (triplet) problems.push(`Neat three-part line ("${triplet.trim()}"), which reads as AI. Say it once, in one plain sentence.`);
   if (/\b(drugs?|cocaine|weed)\b/i.test(post)) problems.push('Mentions drugs. Never, including Joel\'s own past (Joel, 2026-09-27).');
-  // Too clean = AI. Targets from the 15 top guard-down story posts in the LinkedIn research.
-  const sents = post.split(/\n+/).flatMap((x) => x.split(/(?<=[.!?])\s+/)).filter((x) => /[a-z]/i.test(x));
-  const lens = sents.map((x) => x.split(/\s+/).length);
-  const long = lens.filter((l) => l >= 20).length / lens.length, tiny = lens.filter((l) => l <= 4).length / lens.length;
-  // Rhythm targets come from 150+ word story posts, so only apply them at that length.
-  if (words >= 150 && long < 0.1) problems.push(`Too clean: only ${Math.round(long * 100)}% of sentences run past 20 words (the real posts: about 1 in 5). Let some sentences roll on with commas and "and", like talking.`);
-  if (words >= 150 && tiny < 0.08) problems.push(`Too even: only ${Math.round(tiny * 100)}% of sentences are 1 to 4 word fragments (the real posts: about 1 in 5).`);
   if (/[—–]/.test(post)) problems.push('Contains an em or en dash.');
   if (/https?:\/\/|www\.|\.com\b|\.shop\b/i.test(post)) problems.push('Contains a link. LinkedIn native posts carry no link.');
   if (/#\w/.test(post)) problems.push('Contains a hashtag.');
@@ -255,7 +248,9 @@ function check(d, passages, names, recentAngles) {
     problems.push('Implies a client of Joel\'s is a practitioner. His words don\'t say so.');
   }
   const used = RESEARCH.filter((r) => r.key.test(post)).length;
-  if (['reach', 'positioning'].includes(jobOf(d.angle)) && used !== 1) problems.push(`A ${jobOf(d.angle)} post needs exactly ONE research idea from RESEARCH IDEAS (it has ${used}).`);
+  if (used > 1) problems.push(`Uses ${used} research ideas. One at most.`);
+  const copied = copiedFromOutlier(post, outlier.body);
+  if (copied) problems.push(`Copies too much of the outlier's wording (${copied}). Keep its hook and its build; every other line is Joel's.`);
   if (/\b(?:exactly|precisely|proven to be) twice\b/i.test(post)) problems.push('Says "exactly twice". TEACHING_SCOPE.md §2.2: "about twice" is fine, "exactly twice" is not.');
   // Joel, 5 Oct 2026: "didn't actually use my fathom recordings… sounded too ai". The old check passed a post with
   // ONE 5-word phrase of his. Now: share of the post's words that sit in a 3-word run found in his passage, with
@@ -269,7 +264,7 @@ function check(d, passages, names, recentAngles) {
 
 // Separate pass: a fresh call that only compares claims with the source. Draft first, audit second.
 async function audit(post, passage, isStory) {
-  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. ${isStory ? 'This is a story post: also flag if the opening is background rather than the problem, or if there is no payoff.' : 'This is NOT a story post (an explainer or myth post): never flag it for a missing payoff or a background opening.'} A named research idea that matches one of these is fine: ${RESEARCH.map((r) => r.line.split(':')[0]).join('; ')}. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. Also flag (issue starting "Not Joel's voice:", quote the exact words) any line that reads like a generic coach or AI rather than Joel talking, judged against how he speaks in the passage. The test (Joel's own, EMAIL_COPY.md): "Does this sound like Joel talking, or like a coach trying to sound like Joel?" Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
+  const system = `You are a strict fact checker. You get Joel's own words (a call transcript passage), Joel's fixed facts, and a LinkedIn post written from them. List every statement in the post about something that happened, a person, a number, a feeling Joel had, or what someone did, that is NOT supported by the passage or the facts. The FACTS are true and count as support. Where the passage and the FACTS differ on Joel's own credentials or story numbers, the FACTS win (a loose word on a call is not a problem). General reflections and questions to the reader are fine. Also flag if the post turns Joel's own story into a client's, or a client's into Joel's, or describes or hints at who anyone else in the passage is. ${isStory ? 'This is a story post: also flag if the opening is background rather than the problem, or if there is no payoff.' : 'This is NOT a story post (an explainer or myth post): never flag it for a missing payoff or a background opening.'} A named research idea that matches one of these is fine: ${RESEARCH.map((r) => r.line.split(':')[0]).join('; ')}. A payoff is what shifted for Joel (a realisation, a step, or honestly not knowing yet); it is NEVER an offer, a call or a link, and the post must have no ask. Leaving out a detail, or leaving someone unnamed, is never a problem. The post copies the BUILD of a real LinkedIn post (its hook pattern, its paragraph shape, its list or its questions): that framing is fine and needs no support, as long as every statement of fact, story or feeling comes from Joel. Also flag (issue starting "Not Joel's voice:", quote the exact words) any line that reads like a generic coach or AI rather than Joel talking, judged against how he speaks in the passage. The test (Joel's own, EMAIL_COPY.md): "Does this sound like Joel talking, or like a coach trying to sound like Joel?" Output only JSON: {"items": [{"issue": "short description", "real_problem": true or false}]}`;
   const r = await claude(system, `FACTS:\n${JOEL_FACTS}\n\nPASSAGE:\n${passage.text}\n\nPOST:\n${post}`, 1600);
   return (r.items || []).filter((i) => i.real_problem === true).map((i) => `Not in Joel's words: ${i.issue}`);
 }
@@ -319,40 +314,61 @@ async function main() {
   const pool = orig ? [Number(orig.angle)] : (fresh.length ? fresh : JOBS[job].angles);
   const angles = Object.fromEntries(pool.map((n) => [n, ANGLES[n]]));
   console.log(`Job: ${job}.`);
+  // The post to copy (6 Oct 2026): the bank of real LinkedIn posts that did well with self-employed and small-business
+  // readers (main project research/2026-10-06-linkedin-self-employed), encrypted because they are other people's posts.
+  // Story posts for nurture and convert, idea posts for reach and positioning; the best one not used in 60 days.
+  // A rewrite keeps the outlier its draft was built on.
+  const bank = openBox('linkedin-outliers.enc');
+  const usedRecently = (o) => state.some((s) => s.outlier === o.id && Date.now() - Date.parse(s.date) < 60 * 864e5);
+  const wantStory = ['nurture', 'convert'].includes(job);
+  const origOutlier = orig && state.find((s) => s.passage === orig.passage && s.outlier)?.outlier;
+  const byScore = (a, b) => b.per1k - a.per1k;
+  const outlier = (origOutlier && bank.find((o) => o.id === origOutlier))
+    || bank.filter((o) => !usedRecently(o) && o.story === wantStory).sort(byScore)[0]
+    || bank.filter((o) => !usedRecently(o)).sort(byScore)[0]
+    || [...bank].sort(byScore)[0];
+  console.log(`Copying outlier ${outlier.id} (${outlier.per1k} per 1k, ${outlier.words} words, ${outlier.story ? 'story' : 'idea'}).`);
   const joelFix = orig ? [`JOEL'S OWN FIXES (do these first, exactly as he asks; the hard rules still apply): ${orig.feedback}`] : [];
 
   // Hard safety fails never reach Joel. If no attempt passes everything, the closest draft with only style or
   // fact-check flags is sent with those flags on top: he approves every post anyway (first 2 weeks).
-  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle .* is not|Passage \d+ does not|Story post is missing|Too little of Joel's own words)/;
+  const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|Implies a client|Angle .* is not|Passage \d+ does not|Story post is missing|Too little of Joel's own words|Copies too much of the outlier)/;
   let feedback = orig ? joelFix : null, draft = null, best = null, flags = [];
-  let last = orig ? { angle: orig.angle, passage: 0, problem: orig.problem || orig.text, pursuit: orig.pursuit || '', payoff: orig.payoff || '' } : null;
+  let last = orig ? { angle: orig.angle, passage: 0, post: orig.text, problem: orig.text, pursuit: '', payoff: '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
-    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last, job), 3500); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
-    for (const k of ['problem', 'pursuit', 'payoff']) d[k] = String(d[k] || '').replace(/\s*[—–]\s*/g, ', ').trim();
-    d.post = [d.problem, d.pursuit, d.payoff].filter(Boolean).join('\n\n');
+    try { d = await claude(SYSTEM, userPrompt(passages, angles, feedback, last, job, outlier), 4500); } catch (e) { console.log(`Attempt ${attempt}: bad reply (${e.message.slice(0, 80)}). Retrying.`); continue; }
+    // One post now (the outlier sets the shape); stored in problem so the draft page and rewrites work as before.
+    d.post = String(d.post || [d.problem, d.pursuit, d.payoff].filter(Boolean).join('\n\n')).replace(/\s*[—–]\s*/g, ', ').trim();
+    d.problem = d.post; d.pursuit = ''; d.payoff = '';
     let problems = pool.includes(Number(d.angle))
-      ? check(d, passages, names, fresh.length ? recentAngles : [])
+      ? check(d, passages, names, fresh.length ? recentAngles : [], outlier)
       : [`Angle ${d.angle} is not on the list for today's ${job} post. Use one of: ${pool.join(', ')}.`];
     const hard = problems.some((p) => HARD.test(p));
-    if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], STORY.has(Number(d.angle)))); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
+    if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], outlier.story)); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
-    if (!hard && (!best || d.ownShare > best.d.ownShare || (d.ownShare === best.d.ownShare && problems.length < best.problems.length))) best = { d, problems };
+    const unbacked = problems.some((p) => /^Not in Joel's words/.test(p));
+    if (!hard && !unbacked && (!best || d.ownShare > best.d.ownShare || (d.ownShare === best.d.ownShare && problems.length < best.problems.length))) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
     // Kinds of problem only, cut before any quote or detail: the logs are public.
     console.log('  kinds: ' + problems.map((p) => p.split(/[:("“]/)[0].trim().slice(0, 50)).join(' | '));
-    if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n[PROBLEM]\n${d.problem}\n[PURSUIT]\n${d.pursuit}\n[PAYOFF]\n${d.payoff}\n`);
+    if (DRY) console.log('  - ' + problems.join('\n  - ') + `\n  [angle ${d.angle}, passage ${d.passage}]\n${d.post}\n`);
     feedback = joelFix.concat(problems);
     last = d;
   }
   if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the draft with the most of his words (${Math.round(draft.ownShare * 100)}%), ${flags.length} flag(s), for Joel to judge.`); }
-  if (!draft) throw new Error('Every attempt failed a hard safety check. Nothing written.');
+  if (!draft) {
+    // Joel, 6 Oct 2026: a draft with lines that aren't backed by his words never reaches him. Say so instead.
+    console.log('No draft was safe to send: every try failed a hard check or had lines not backed by Joel\'s words.');
+    if (!DRY) await telegram(`💼 LinkedIn draft skipped today (${job}). Five tries, and every one either broke a hard rule or had lines that weren't backed by your own words, so nothing was sent. The next one runs as normal.`);
+    return;
+  }
 
   const words = draft.post.split(/\s+/).length;
   console.log(`Draft ready: angle ${draft.angle} (${ANGLES[draft.angle].name}), ${words} words.`);
   if (DRY) {
     if (flags.length) console.log('FLAGS:\n  - ' + flags.join('\n  - '));
-    console.log(`\n----- PASSAGE USED (${passages[draft.passage].date}) -----\n${passages[draft.passage].text}\n\n----- LINKEDIN POST -----\n` + (STORY.has(Number(draft.angle)) ? `[PROBLEM]\n${draft.problem}\n\n[PURSUIT]\n${draft.pursuit}\n\n[PAYOFF]\n${draft.payoff}` : draft.post) + `\n-------------------------`);
+    console.log(`\n----- PASSAGE USED (${passages[draft.passage].date}) -----\n${passages[draft.passage].text}\n\n----- LINKEDIN POST -----\n` + draft.post + `\n-------------------------`);
     return;
   }
   // Store the draft privately on Netlify, then Fred sends it to Joel with the Approve button. Never logged.
@@ -363,16 +379,14 @@ async function main() {
   if (!r.ok) throw new Error(`Draft store ${r.status}: ${(await r.text()).slice(0, 120)}`);
   const { id, sig } = await r.json();
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const shown = STORY.has(Number(draft.angle))
-    ? `<b>[PROBLEM]</b>\n${esc(draft.problem)}\n\n<b>[PURSUIT]</b>\n${esc(draft.pursuit)}\n\n<b>[PAYOFF]</b>\n${esc(draft.payoff)}`
-    : esc(draft.post);
-  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · ${job} · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
+  const shown = esc(draft.post);
+  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · ${job} · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words · copies a ${outlier.per1k}-per-1k post by ${esc(outlier.author)} · ${Math.round(draft.ownShare * 100)}% your own words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
   await telegram('Tap below. On that page you can "Approve and post", or write what needs fixing and it gets rewritten. Ignore it and nothing is posted (expires in 48 hours).', {
     inline_keyboard: [[{ text: '✅ Review & approve', url: `${SITE}/api/linkedin/draft?id=${id}&sig=${sig}` }]],
   });
   console.log('Draft stored and sent to Joel on Telegram.');
   if (orig) return; // Same story as before; it's already recorded as used.
-  state.push({ date: new Date().toISOString().slice(0, 10), job, angle: Number(draft.angle), passage: hash(passages[draft.passage].text) });
+  state.push({ date: new Date().toISOString().slice(0, 10), job, angle: Number(draft.angle), passage: hash(passages[draft.passage].text), outlier: outlier.id });
   await mkdir(dirname(STATE), { recursive: true });
   await writeFile(STATE, JSON.stringify(state, null, 2) + '\n');
 }
