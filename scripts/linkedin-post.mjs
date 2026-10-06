@@ -347,7 +347,8 @@ async function main() {
     const hard = problems.some((p) => HARD.test(p));
     if (!hard) { try { problems = problems.concat(await audit(d.post, passages[d.passage], outlier.story)); } catch (e) { problems.push('The fact check could not read its own reply. Try again.'); } }
     if (!problems.length) { draft = d; break; }
-    const unbacked = problems.some((p) => /^Not in Joel's words/.test(p));
+    // A draft the fact check never finished on is unchecked, so it counts as unbacked too (6 Oct 2026: one slipped through).
+    const unbacked = problems.some((p) => /^(Not in Joel's words|The fact check could not read)/.test(p));
     if (!hard && !unbacked && (!best || d.ownShare > best.d.ownShare || (d.ownShare === best.d.ownShare && problems.length < best.problems.length))) best = { d, problems };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
     // Kinds of problem only, cut before any quote or detail: the logs are public.
