@@ -80,8 +80,10 @@ Do that once. See what happens. You are not trying to fix the whole pattern in a
 
 The splurge-panic cycle usually has a belief underneath it, something about what money means when it is there and what it means when it is not. Those beliefs are often not conscious, and they are often not accurate, but they are driving the behaviour more than the numbers are.
 
-If you want to understand yours, the Money Beliefs Quiz takes about four minutes and gives you a mapped result based on the research frameworks I use with clients. It is a starting point, not a diagnosis. But it tends to surface the thing that is actually running the show.
+## Ready to go deeper?
 
-Find it at the top of the page.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

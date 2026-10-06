@@ -86,14 +86,10 @@ It also doesn't mean that one small action will solve everything. Finances are g
 
 But most people are trying to solve a behavioural problem with a spreadsheet, when what they need is a behavioural solution first.
 
-## Where to go from here
+## Ready to go deeper?
 
-If you recognise yourself in any of this — the strong start, the fast drop, the shame spiral, the avoidance — it's worth understanding what's actually driving it for you specifically.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-The money beliefs and behaviours that shape how you engage with finances are often invisible until someone points them out. The Way of Wealth Money Beliefs Quiz is a starting point for that. It takes about five minutes, and it gives you a clearer picture of which patterns are running in the background.
-
-It won't tell you to try harder. It will tell you what you're actually dealing with.
-
-[Take the Money Beliefs Quiz here.]
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

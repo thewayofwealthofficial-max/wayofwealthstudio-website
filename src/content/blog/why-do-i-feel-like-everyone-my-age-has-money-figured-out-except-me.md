@@ -100,12 +100,10 @@ You are not uniquely bad at this. You are experiencing a completely predictable 
 
 The scan is misfiring. The threat is mostly imagined. The "everyone else has figured it out" feeling is, in large part, a cognitive illusion with peer-reviewed documentation.
 
-## One small next step
+## Ready to go deeper?
 
-If you want to get a clearer picture of what's actually driving your relationship with money (rather than what shame is telling you), the Money Beliefs Quiz is a good place to start. It takes about four minutes, and it's built around the same research frameworks I've described here.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-There's no pressure to go further than the quiz. But most people find it useful to have a name for what they've been carrying.
-
-The link is in the menu.
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

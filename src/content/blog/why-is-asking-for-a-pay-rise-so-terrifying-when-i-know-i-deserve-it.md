@@ -95,7 +95,11 @@ Give yourself permission to just look. You don't have to do anything else yet.
 
 The fears I've described — anticipated regret, status quo bias, identity threat — don't live in isolation. They sit inside a broader set of beliefs about money, worth, and what you're allowed to want. Those beliefs were built over years, often before you had any say in the matter.
 
-If you're curious about which money beliefs might be running in the background for you, the Money Beliefs Quiz is a good place to start. It takes about five minutes and gives you a specific, named profile — not a generic horoscope, but a psychologically-grounded picture of where your particular friction points are likely to be.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because understanding the pattern is usually the thing that makes it possible to change it.
 

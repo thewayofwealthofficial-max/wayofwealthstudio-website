@@ -102,7 +102,11 @@ That's a question worth taking seriously. But it's not one a number can answer.
 
 What *can* help is understanding the beliefs you hold about money — where they came from, how they're shaping your decisions, and whether they're actually serving you. Some of those beliefs are useful. Some are keeping you stuck in comparison spirals at 2am.
 
-If you want to start understanding yours, the **Money Beliefs Quiz** is a good place to start. It takes about three minutes, and it's designed to surface the patterns driving your financial behaviour — not to tell you what you're doing wrong, but to help you understand *why* you do what you do.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 That's where the useful work begins.
 

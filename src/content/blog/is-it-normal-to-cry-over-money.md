@@ -92,8 +92,10 @@ Given all of that — the inherited money scripts, the shame spirals, the nervou
 
 That matters.
 
-If you want to understand *why* money feels the way it feels for you specifically — not in a general way, but in terms of your own patterns and beliefs — a good starting point is the **Money Beliefs Quiz**. It takes about five minutes and is designed to surface the unconscious scripts that tend to drive the behaviours we've been talking about here.
+## Ready to go deeper?
 
-It won't fix everything overnight. But understanding the pattern is always the first step toward changing it.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

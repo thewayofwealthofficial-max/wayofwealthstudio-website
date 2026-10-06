@@ -86,7 +86,11 @@ They work for the same reason your brain got stuck: because behaviour is downstr
 
 ---
 
-If you're curious about *why* your brain responds to money the way it does — not just the avoidance, but the whole pattern — the **Money Beliefs Quiz** is worth ten minutes of your time. It's built on the same behavioural research framework, and it'll give you a clearer picture of what's actually driving your relationship with money, not just the symptoms on the surface.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because understanding the mechanism is always the first step to changing it.
 

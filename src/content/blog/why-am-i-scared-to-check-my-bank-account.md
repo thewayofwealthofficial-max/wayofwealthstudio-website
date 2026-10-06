@@ -68,6 +68,10 @@ The ostrich effect is what happens when your brain decides that the emotional co
 
 If any of this sounds like you, it's worth knowing which of the four money scripts you're running — Money Avoidance, Money Worship, Money Status, or Money Vigilance. The ostrich pattern shows up most often alongside Money Avoidance, and the small first step is different for each script.
 
-I built a short quiz, based on Brad Klontz's Money Scripts research, that names yours in about three minutes.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

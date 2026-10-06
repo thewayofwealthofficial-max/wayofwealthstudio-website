@@ -80,9 +80,11 @@ Starting imperfectly, late, with incomplete information and an irregular income,
 
 You are not in the middle of a failure. You are at the start of a plan that begins with your current reality rather than an imaginary one.
 
-## Where to go from here
+## Ready to go deeper?
 
-If you want to understand *why* money decisions feel the way they do for you specifically — not generic advice, but the particular thinking patterns that tend to drive avoidance and delay — the Money Beliefs Quiz is a reasonable place to start. It takes about four minutes and gives you a framework for your own patterns rather than a one-size prescription.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 There is no version of this where you are too late. There is only the version where you keep looking backward, and the version where you do not.
 

@@ -92,6 +92,10 @@ Not all inherited beliefs about money are wrong. Some of them are genuinely prot
 
 As a behavioural economist, the most useful thing I can tell you is this: awareness of the script doesn't delete it overnight. But it does mean you start to notice when you're following it, and noticing is where choice begins.
 
-If you're curious about which money scripts might be quietly running in the background for you, the Money Beliefs Quiz is a good place to start. It takes about five minutes and asks questions most people haven't been asked before — which, in my experience, is usually where the useful stuff lives.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

@@ -99,6 +99,10 @@ One of those approaches compounds into something better. The other one just cost
 
 ---
 
-If you're curious about the specific beliefs that might be driving your relationship with money — the ones that operate quietly in the background and shape decisions before you're even conscious of making them — the Money Beliefs Quiz is a good place to start. It takes about three minutes and gives you something concrete to work with.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

@@ -86,8 +86,10 @@ Sometimes the preference for "what's left" over "what's spent" is purely cogniti
 
 Sometimes it points to something a layer deeper: a belief that checking in on your money is inherently risky, that the news will always be bad, that looking is worse than not looking. That belief has a name too — Galai and Sade at Hebrew University called it the *Ostrich Effect*, the measurable tendency to avoid financial information when we expect it to be negative.
 
-If the avoidance feels bigger than the framing fix, it might be worth understanding what's actually driving it. The Money Beliefs Quiz takes about four minutes and identifies which patterns are most active for you, so the next step is specific rather than generic.
+## Ready to go deeper?
 
-You'll find it below.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

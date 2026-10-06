@@ -79,8 +79,10 @@ Those beliefs — often formed young, often reinforced by every difficult career
 
 Klontz calls these *money scripts*: the unconscious financial narratives we carry, usually inherited, rarely examined.
 
-If you're curious about which money scripts might be running the show for you — and whether they were shaped by the kind of irregular income and job uncertainty that ADHD often brings — the Money Beliefs Quiz is a good place to start. It's built to surface the specific patterns that tend to sit underneath financial avoidance, not just give you a generic personality type.
+## Ready to go deeper?
 
-It won't fix your executive function debt in one sitting. But knowing what you're actually dealing with is almost always the right first move.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

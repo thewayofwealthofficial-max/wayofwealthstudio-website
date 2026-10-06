@@ -90,8 +90,10 @@ The subscriptions are a symptom worth addressing. But underneath the accumulatio
 
 If you've read this far and something resonated beyond the practical advice, it might be worth exploring what's actually driving the pattern.
 
-I've built a Money Beliefs Quiz that takes about five minutes and gives you a clearer picture of the underlying scripts that shape how you behave with money — not just subscriptions, but the whole thing. It's a starting point, not a diagnosis. But for a lot of people, it's the first time their financial behaviour has made sense to them.
+## Ready to go deeper?
 
-You'll find it linked in the menu above.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

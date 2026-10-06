@@ -99,7 +99,11 @@ That's fixable. Not through discipline and willpower. Through understanding the 
 
 The windfall effect doesn't operate in isolation. It connects to deeper patterns around how you relate to money — whether you feel you deserve it, whether you trust yourself to keep it, whether scarcity or avoidance is running the show underneath your conscious decisions.
 
-If you want to understand *your specific* version of this, the Money Beliefs Quiz is a good starting point. It takes about four minutes and gives you a clear picture of which patterns are most likely driving your financial behaviour — windfall spending included.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You don't have to have it figured out before you start. That's rather the point.
 

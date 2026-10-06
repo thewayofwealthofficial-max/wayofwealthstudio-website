@@ -91,8 +91,10 @@ The app problem is a symptom. Underneath it, for most ADHD brains I work with, t
 
 Understanding *your* specific pattern is more useful than any app I could recommend.
 
-If you want to start getting curious about what's actually driving your relationship with money, the **Money Beliefs Quiz** is a good place to begin. It takes about five minutes, it's not a budgeting exercise, and it's designed to surface the patterns that sit underneath the surface-level behaviour — the stuff that explains why the app fails every time, not just this time.
+## Ready to go deeper?
 
-You can find it [here].
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

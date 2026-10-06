@@ -96,8 +96,10 @@ You are not behind because you are bad at this. You are behind because the syste
 
 The first step is not sorting your expenses. The first step is understanding what is actually driving the avoidance — because until that shifts, no amount of budgeting templates or deadline reminders will stick.
 
-If you want to understand *your* specific relationship with money and why it shows up the way it does, the Money Beliefs Quiz is a useful place to start. It is built around the same behavioural frameworks I use with clients, and it takes about four minutes.
+## Ready to go deeper?
 
-You might find it surprisingly illuminating.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

@@ -89,14 +89,10 @@ That's not a mantra. It's a structurally accurate description of how family fina
 
 You are allowed to hold that belief. You don't have to earn it.
 
-## Before you go
+## Ready to go deeper?
 
-If any of this landed — the identity stuff, the guilt, the sense that your relationship with money is shaped by things you absorbed a long time ago — the Money Beliefs Quiz is worth a few minutes of your time.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-It maps where your particular money scripts are likely operating and gives you a clearer picture of what's driving the decisions that feel stuck.
-
-Not a fix. Not a sales pitch. Just a useful starting point for understanding your own patterns before you try to change them.
-
-You can find it [here].
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

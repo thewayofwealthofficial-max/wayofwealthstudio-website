@@ -76,6 +76,10 @@ Understanding your money behaviour is not the same as excusing it. But it is, re
 
 ---
 
-If you want to understand the deeper patterns driving your money decisions — not just the surface spending, but the beliefs underneath — the **Way of Wealth Money Beliefs Quiz** is a good place to start. It takes about four minutes and it'll tell you something genuinely useful about what's going on under the bonnet.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

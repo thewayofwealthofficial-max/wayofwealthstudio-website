@@ -112,7 +112,11 @@ If any of this has landed — if you recognise the script, or the loss aversion,
 
 Because the work looks different depending on what's underneath. Someone running a "I must sacrifice for family" script needs different support than someone running "if I have it I should share it" or "asking for help is shameful" (which, by the way, also affects how you relate to *receiving* financial help, not just giving it).
 
-The Money Beliefs Quiz takes about four minutes and gives you a clear picture of the scripts most likely driving your financial decisions. It's a useful place to start — not because a quiz fixes anything, but because you can't work with what you can't see.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You've already done the hard bit. You asked the question.
 

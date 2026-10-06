@@ -76,9 +76,11 @@ Pricing is where the money–self-worth fusion becomes visible, but it is rarely
 
 Those beliefs have origins. They are not character flaws.
 
-If you recognise yourself in this post and want to understand which specific beliefs are driving the pattern, the Money Beliefs Quiz I built is a reasonable place to start. It is based on Klontz's validated money scripts research and it takes about four minutes. What it gives you is a named pattern rather than a vague sense that something is off, and named patterns are things you can actually do something about.
+## Ready to go deeper?
 
-You can find it [here](#).
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The guilt you feel when you charge properly is not a signal that you are doing something wrong. It is a signal that two things in your brain are stuck together that need to come apart.
 

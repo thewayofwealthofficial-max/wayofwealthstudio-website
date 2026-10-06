@@ -77,8 +77,10 @@ The reason most budgeting advice fails people who feel this way is that it treat
 
 Understanding which money beliefs are running underneath your financial behaviour is, in my experience working with clients, more useful than the technical planning work alone. The technical work matters. It works better when you know what you are working with.
 
-If you want to know more about which patterns are shaping how you think about money, I have a short quiz that maps out your money beliefs based on Klontz's research framework. It takes about four minutes and it gives you something specific to work with, rather than a general instruction to feel better about your bank balance.
+## Ready to go deeper?
 
-You can find it [here](#).
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

@@ -109,9 +109,11 @@ Understanding *why* you feel the way you feel about money is, in my experience a
 
 The money scripts running in the background are different for everyone. Some people avoid because of shame. Some because of fear. Some because of a deep, quiet belief that they simply don't deserve financial security.
 
-If you're curious which patterns are operating for you specifically, the **Money Beliefs Quiz** is a good place to start. It takes about five minutes, and it's designed to surface the unconscious beliefs that most financial advice — and most budgets — never touch.
+## Ready to go deeper?
 
-You can find it [here].
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because the goal isn't just to know where your money goes. It's to understand why you feel the way you feel when you think about it — and what to do about that first.
 

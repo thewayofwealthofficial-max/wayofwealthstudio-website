@@ -95,6 +95,10 @@ The guilt will probably take time to catch up. But understanding why it's there 
 
 ---
 
-If you're curious about which money scripts might be running your financial decisions — including the ones you can't quite name yet — the Way of Wealth Money Beliefs Quiz is a good place to start. It takes around five minutes, and it'll give you a clearer picture of what's actually shaping your relationship with money.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

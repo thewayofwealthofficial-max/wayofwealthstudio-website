@@ -101,7 +101,11 @@ Your partner's different relationship with money isn't a threat to your security
 
 That takes time. It takes some structure. And for most people, it takes understanding their own money scripts before they can stop projecting them onto someone else.
 
-If you want to start with yourself — which is always the right place to start — my **Money Beliefs Quiz** is a good first step. It's designed to surface the scripts that are running quietly in the background, so you can see them clearly instead of just *feeling* their effects.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because understanding your own financial wiring isn't a luxury. When you're trying to build a life with another person, it might be the most practical thing you do all year.
 

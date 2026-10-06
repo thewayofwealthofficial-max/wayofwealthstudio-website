@@ -88,6 +88,10 @@ You're not bad with money. You're not failing. You're a human being with a brain
 
 The next layer underneath all of this is usually your money beliefs — the deeper, often inherited scripts about what money means, what you deserve, what security actually feels like. Those beliefs are where the reference point drift originates. And they're worth looking at.
 
-If you're curious about what yours might be, the [Money Beliefs Quiz](#) is a good place to start. It's short, it's specific, and it gives you something concrete to work with rather than another thing to feel vaguely guilty about.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

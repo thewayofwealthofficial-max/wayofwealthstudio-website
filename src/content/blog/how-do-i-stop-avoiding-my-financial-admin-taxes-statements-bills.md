@@ -89,7 +89,11 @@ Here's the thing about avoidance loops: they're almost always protecting somethi
 
 Klontz's research is clear that money behaviours don't change durably until the underlying money beliefs are examined. Which is uncomfortable to hear, but also quietly hopeful — because it means the avoidance isn't really about the tax return. It's about something that *can* be understood and shifted.
 
-If you're curious about what's actually running your financial behaviour beneath the surface, the **Money Beliefs Quiz** is a good place to start. It takes about four minutes and it's designed to surface the specific patterns driving your avoidance, so you're working with accurate information rather than generic advice that was never written with you in mind.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You've been doing the best you can with the wiring you have. That's not a small thing.
 

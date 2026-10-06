@@ -72,13 +72,11 @@ That's not irrational. It's a deeply human response to unfamiliar territory. The
 
 If that's part of what's happening for you, the fund factsheet trick won't touch it. You'd be trying to solve an identity-level problem with an information-level solution. That gap is worth noticing.
 
-## A useful next step
+## Ready to go deeper?
 
-If you're not sure whether this is primarily a loss aversion problem, an ambiguity problem, or something more rooted in how money was handled around you growing up, the Money Beliefs Quiz is a reasonable place to get some clarity.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-It takes about four minutes, it's based on the Klontz Money Script Inventory (one of the few validated tools in this space), and it gives you a specific result rather than a generic score. You'll walk away knowing which pattern is most likely driving the freeze — which is more useful than another article telling you to "just start."
-
-[Take the Money Beliefs Quiz here.]
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The investing question doesn't go away by ignoring it. But understanding *why* you're freezing is a more honest starting point than pretending the freeze isn't there.
 

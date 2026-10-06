@@ -70,11 +70,11 @@ If the answer is no — and with most online content, the answer is no — then 
 
 Your judgement, when it's working, has context built in. That's the thing ThriftyDave83 doesn't have.
 
-## Where to go from here
+## Ready to go deeper?
 
-If you're reading this because you recognise the pattern — you're a decent researcher, you're capable at work, but money feels like a different language — the Money Beliefs Quiz is a good place to start. It takes about four minutes and it'll show you which specific beliefs are driving your financial behaviour, so you're not trying to fix everything at once.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-You can find it [here].
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Your confidence with money isn't fixed. But rebuilding it starts with understanding what eroded it — not with finding a better stranger to copy.
 

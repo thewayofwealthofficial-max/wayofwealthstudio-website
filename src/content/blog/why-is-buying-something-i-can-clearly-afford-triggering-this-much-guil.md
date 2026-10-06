@@ -86,9 +86,11 @@ That doesn't make the feeling go away. But it does mean the solution isn't more 
 
 If this resonates, the most useful next step isn't a spending tracker. It's understanding what's actually driving the pattern — because anticipated regret, hedonic adaptation, and scarcity hangover each call for slightly different responses.
 
-The Way of Wealth Money Beliefs Quiz takes about four minutes and gives you a specific read on which patterns are most active for you. That's a more useful starting point than any spreadsheet.
+## Ready to go deeper?
 
-[Take the Money Beliefs Quiz here.]
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 If you'd rather read first, the posts on [spending shame] and [why budgets fail anxious people] cover more of the same territory.
 

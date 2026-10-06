@@ -100,8 +100,10 @@ Your budget isn't just a financial tool. At its most useful, it's a threat-reduc
 
 If you're carrying beliefs about money that run deeper than a spreadsheet can fix, the way you *feel* about earning, spending, or admitting how much you actually make, those beliefs shape every financial decision you take, often without you realising.
 
-The Money Beliefs Quiz takes about four minutes. It's a starting point for understanding which patterns are running in the background, so that the practical steps actually land somewhere useful.
+## Ready to go deeper?
 
-[Take the Money Beliefs Quiz here]
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

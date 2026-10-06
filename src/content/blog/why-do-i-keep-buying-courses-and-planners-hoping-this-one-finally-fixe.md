@@ -76,12 +76,10 @@ I learned this the hard way. I have an MSc in Behavioural Economics. I can tell 
 
 What helped was not another framework. It was understanding the function the avoidance was serving, and finding something less expensive to do that function instead.
 
-## A starting point
+## Ready to go deeper?
 
-If you recognise yourself in this post, the Money Beliefs Quiz is a reasonable next step. It takes about five minutes, and it's designed to identify which specific patterns are running in your financial life, not to sell you on the idea that everything is broken.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Knowing the pattern doesn't automatically fix it. But it does mean you're no longer navigating blind, and for most people, that changes what the next decision looks like.
-
-[Take the Money Beliefs Quiz here.]
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

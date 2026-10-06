@@ -101,7 +101,11 @@ If any of this is landing — if you recognise the loop, the deflection, the fee
 
 Because Klontz's research shows that money scripts vary. Some people over-spend to feel in control. Some avoid looking entirely. Some hoard without enjoying. Some self-sabotage the moment things improve. The pattern matters, because the way out of the loop depends on which loop you're actually in.
 
-The Money Beliefs Quiz is a good starting place. It takes a few minutes, and it's designed to help you identify the specific beliefs that are driving your behaviour — not to make you feel judged, but to give you something more useful than a generic prompt to "face your finances."
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because knowing your pattern is the first step toward changing it — not by trying harder, but by understanding *why* the loop formed in the first place.
 

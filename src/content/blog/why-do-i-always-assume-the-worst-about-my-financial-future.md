@@ -96,9 +96,11 @@ Most people, when they actually sit with that question, find a belief they've ne
 
 That's where the real work lives.
 
-If you want to understand what's driving your specific version of this — the catastrophising, the avoidance, the assumptions — the Money Beliefs Quiz is a good place to start. It takes about five minutes, and it's designed to surface the pattern underneath the behaviour, not just describe the behaviour itself.
+## Ready to go deeper?
 
-You can find it here: [Take the Money Beliefs Quiz]
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The numbers in your account are data. The story your brain tells about those numbers is something you can change.
 

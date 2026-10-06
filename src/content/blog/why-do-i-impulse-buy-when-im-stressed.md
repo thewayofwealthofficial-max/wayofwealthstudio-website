@@ -54,7 +54,7 @@ Your nervous system is trying to solve a real problem (I feel bad and I need to 
 
 Because here's what your brain doesn't know: the thing it's reaching for doesn't actually solve the problem. The relief fades. The feeling returns. Often with bonus shame.
 
-Researchers Yael Galai and Orly Sade found that people consistently underestimate how bad they'll feel *after* an impulse purchase. We remember the relief. We forget the regret. So we keep reaching for the same broken solution.
+People consistently underestimate how bad they'll feel *after* an impulse purchase. We remember the relief. We forget the regret. So we keep reaching for the same broken solution.
 
 If you have ADHD, add another layer: **time blindness**. Future-you (the one dealing with the credit card bill) feels fictional. Present-you (the one who desperately needs relief) is the only person who feels real.
 

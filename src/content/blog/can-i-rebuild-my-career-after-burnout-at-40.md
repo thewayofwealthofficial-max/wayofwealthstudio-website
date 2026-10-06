@@ -100,7 +100,11 @@ Beliefs like: *If I earn less for a while, I'll never recover.* Or: *I need to h
 
 Those beliefs have names. They're measurable. And they're changeable.
 
-If you want to understand which money beliefs are quietly running your decisions — including this one — the [Money Beliefs Quiz](#) is a good place to start. It takes about four minutes and gives you something concrete to work with.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You're not too late. You're not broken. You're just running some very old, very understandable software on a situation that needs a different operating system.
 

@@ -84,8 +84,10 @@ Once you're in the door, things become more manageable. Not easy, necessarily. B
 
 One thing I've noticed across years of working with people on this: avoidance is almost never just about the money. It's usually tangled up with beliefs about what money means, what having (or not having) it says about you, and what you learned about it growing up. Those beliefs run quietly in the background, and they shape your behaviour in ways that a budget spreadsheet can't touch.
 
-If you're curious about what's driving yours, the Money Beliefs Quiz takes about five minutes and gives you a specific starting point — not a generic personality label, but something you can actually use.
+## Ready to go deeper?
 
-You can find it at the top of this page.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

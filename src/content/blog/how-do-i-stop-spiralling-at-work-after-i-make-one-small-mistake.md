@@ -80,15 +80,11 @@ I know this not because I studied it, though I did. I know it because I turned �
 
 The naming matters, though. Even after the fact.
 
-## One thing before you close this tab
+## Ready to go deeper?
 
-If you recognise the spiral from this post — at work, with money, or both — the most useful next step is understanding which specific beliefs are feeding it.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-The Money Beliefs Quiz takes about four minutes. It's not a personality test. It's a set of questions based on the work of researchers like Dr. Brad Klontz, whose financial psychology frameworks are about the patterns underneath behaviour, not the behaviour itself.
-
-What you do with the results is up to you. But most people find that naming the pattern is the first thing that makes it feel less like a life sentence.
-
-[Take the Money Beliefs Quiz here.]
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You can stop replaying the meeting now.
 

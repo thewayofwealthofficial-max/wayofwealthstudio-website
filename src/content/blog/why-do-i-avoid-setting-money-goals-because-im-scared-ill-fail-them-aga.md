@@ -90,7 +90,11 @@ You might be wondering when the goal-setting bit arrives. The honest answer: it 
 
 That's the sequence. Safety first, then data, then goals. Not the other way around.
 
-If you're not sure what's sitting underneath your avoidance — whether it's learned helplessness, self-handicapping, a specific money belief from childhood, or something else entirely — my **Money Beliefs Quiz** is a good place to start. It takes about four minutes and it'll point you toward the specific pattern that's running in the background, so any next step you take is built on actual information, not a generic plan that wasn't designed for your brain.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You've tried forcing it. You've tried motivation. You've tried the spreadsheet.
 

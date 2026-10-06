@@ -87,7 +87,11 @@ The reason this question is hard isn't that you're bad with money. It's that you
 
 Behavioural economics doesn't fix that by telling you to try harder. It fixes it by designing around how your brain actually works — building in the wins, the buffers, the frames that make follow-through feel possible rather than punishing.
 
-If you're curious about *why* this stuff feels so loaded for you specifically — the patterns underneath the avoidance — the Money Beliefs Quiz is a good place to start. It takes about four minutes and it'll show you which cognitive patterns are most likely shaping how you think about all of this.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Knowing the pattern is the beginning of working with it.
 

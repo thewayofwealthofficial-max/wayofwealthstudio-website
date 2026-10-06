@@ -93,6 +93,10 @@ You are allowed to take decisions one at a time. You are allowed to close tabs. 
 
 That is not avoidance. That is working with your brain rather than against it.
 
-If you want to understand more about the specific beliefs and patterns sitting underneath your freeze, the Money Beliefs Quiz is a good place to start. It takes about four minutes and gives you a personalised breakdown of what's likely driving your avoidance — so the next step you take is based on what's actually happening for you, not a generic to-do list.
+## Ready to go deeper?
+
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
+
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*

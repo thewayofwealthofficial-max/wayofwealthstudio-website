@@ -99,10 +99,10 @@ That's a much more useful starting point than shame.
 
 ---
 
-If you want to understand *why* your brain built the pots it built — which usually comes down to deeper money beliefs formed long before you had a credit card — the **Money Beliefs Quiz** is a good place to start. It takes about four minutes, and it'll show you the specific pattern at work in your financial thinking.
+## Ready to go deeper?
 
-It's not a budget tool. It's a map of how you got here.
+[Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-[Take the Money Beliefs Quiz →]
+Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 — *Joel*
