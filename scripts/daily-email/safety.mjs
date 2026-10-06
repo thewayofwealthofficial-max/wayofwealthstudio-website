@@ -96,7 +96,7 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
 
   const links = body_plain.match(/https?:\/\/[^\s)>\]]+/g) || [];
   const distinct = new Set(links.map((l) => l.replace(/[.,;:]+$/, '')));
-  if ([...distinct].some((l) => l.includes('calendly.com')) && [...distinct].some((l) => l.includes('/reset'))) problems.push('Asks for two things: the call AND the Money Reset Tool. One ask only (Joel, 5 Oct 2026).');
+  if ([...distinct].some((l) => l.includes('calendly.com') || l.includes('/your-number')) && [...distinct].some((l) => l.includes('/reset'))) problems.push('Asks for two things: the Cash Flow Session AND the Money Reset Tool. One ask only (Joel, 5 Oct 2026).');
   if (distinct.size > 2) problems.push(`Has ${distinct.size} different links. Two at most, one ask (Joel's email prompt).`);
   for (const l of links) {
     const clean = l.replace(/[.,;:]+$/, '');

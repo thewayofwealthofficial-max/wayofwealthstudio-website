@@ -3,7 +3,7 @@
 //   Sun + Tue  letter   (shape: Denise Duffield-Thomas's Tue/Sun emails)
 //   Thu        post     (shape: Denise's Thursday episode email, pointing at this week's blog post)
 //   Fri        fridays  (Finance Fridays, shape: Mind Money Balance's weekly newsletter)
-// Monthly cycle (Denise): open the theme, teach, check in, then push the free call in the last 9 days.
+// Monthly cycle (Denise): open the theme, teach, check in, then push the Cash Flow Session in the last 9 days (the call until 6 Oct 2026).
 //
 //   1. work out today's email type and month phase
 //   2. shape: the latest matching competitor email from Gmail (structure only)
@@ -183,7 +183,7 @@ async function main() {
   const testimonials = phase === 'push_case' ? TESTIMONIALS : [];
   for (const t of testimonials) names.delete(t.who.split(/[ ,]/)[0]);
 
-  const allowedLinks = [LINKS.call, LINKS.reset, LINKS.site, ...(post ? [post.url] : [])];
+  const allowedLinks = [LINKS.session, LINKS.reset, LINKS.site, ...(post ? [post.url] : [])];
   const sourceText = [JOEL_FACTS, ...passages.map((p) => p.text), post ? `${post.title} ${post.body}` : '', ...testimonials.map((t) => t.quote)].join('\n');
 
   // Draft + checks.

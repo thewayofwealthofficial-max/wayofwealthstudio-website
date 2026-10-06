@@ -14,6 +14,8 @@ export const FROM_EMAIL = 'joel@thewayofwealth.shop';
 
 export const LINKS = {
   call: 'https://calendly.com/thewayofwealth-official/20min',
+  // The list's one ask from 6 Oct 2026 (Joel: "funnel my email list to CTA for the cash flow plan").
+  session: 'https://wayofwealthcoaching.com/your-number/',
   reset: 'https://wayofwealthcoaching.com/reset',
   blog: 'https://wayofwealthcoaching.com/blog',
   site: 'https://wayofwealthcoaching.com',
@@ -31,7 +33,7 @@ export const THEMES = {
 export const DEFAULT_THEME = 'the belief underneath the money habit';
 
 // Facts Joel has given that may appear in any email. Numbers not here or in the input are blocked.
-export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. The first step is a free 20-minute call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Week 4 goes deep on their money story. Week 5 is their Behavioural Pattern Report. Price: £1,000, or 2 × £500, or 3 × £334. The price is ONLY ever mentioned in the Sunday push invitation, in the P.S. Free tool: the Money Reset Tool at wayofwealthcoaching.com/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
+export const JOEL_FACTS = `Joel turned £3,000 (£3k) into £150,000 (£150k) trading in 2021 with no degree, thought he was a genius, and lost all of it. That is what sent him to get an MSc in Behavioural Economics and become a Qualified Financial Planner. Coaching: the Money Story Method, 12 weeks, one to one. He takes on 5 people a month. For people on this list, the first step is the Cash Flow Session (below), not a call. Three-Session Promise: full refund if it isn't landing by session 3. By week 3 of the programme the money moves (pots and standing orders). Week 4 goes deep on their money story. Week 5 is their Behavioural Pattern Report. Price: £1,000, or 2 × £500, or 3 × £334. The price is ONLY ever mentioned in the Sunday push invitation, in the P.S. The Cash Flow Session (the list's one ask, from 6 Oct 2026): 75 minutes, live on screen. Joel builds your cash flow model with you. You leave knowing your number: how much you actually need to earn, and what that means for your prices and your week. Before it, a short fact find (rough numbers are fine). Within 48 hours, a 9-page report to keep. £99.97. 5 places a week. Joel's promise: if you don't leave knowing your number, he refunds you. In the UK, financial planners charge £500 to £1,500 to build a cash flow model. Free tool: the Money Reset Tool at wayofwealthcoaching.com/reset, which splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, in about 3 minutes.`;
 
 const CORE = `You write ONE email from Joel Ezekiel (Way of Wealth) to his list.
 
@@ -96,17 +98,17 @@ About 180 to 320 words.`,
 5. "→ Read this week's post: <post link>" as its own line.
 6. A section headed "One thing to try this week" with 1 to 3 short reflection questions (about 60 words).
 7. A sign-off line that echoes the story ("To <something from the story>,") then "Joel".
-8. Then ONE line, the only ask: "Book a free call: <call link>". (Joel, 5 Oct 2026: one ask, two links; the forward and Money Reset Tool lines are gone.)
+8. Then ONE line, the only ask: "Find out your number: <Cash Flow Session link>". (Joel, 5 Oct 2026: one ask, two links. 6 Oct 2026: the ask is the Cash Flow Session, not the call.)
 About 380 to 600 words.`,
 };
 
 const PHASE_RULES = {
   open: 'MONTH PHASE: opening the month. Name this month\'s theme and what you\'ll cover. The free resource (the Money Reset Tool) is the link or the P.S.',
   teach: 'MONTH PHASE: teaching week. A story or a lesson on the theme. The P.S. (if any) points to the Money Reset Tool.',
-  checkin: 'MONTH PHASE: halfway check-in. Ask how they are getting on with the theme and invite a reply. The P.S. can mention the free 20-minute call softly.',
-  push: 'MONTH PHASE: the last days of the month, when Joel fills his coaching places. The ask is the free 20-minute call. The only real scarcity is that Joel takes 5 people a month. Name the objection as part of the pattern, never pressure. No invented deadlines, bonuses or discounts.',
-  push_pitch: 'MONTH PHASE: the push, Sunday. This is the full invitation: who the 12 weeks are for, what changes (money moves by week 3), the 5 places a month, the Three-Session Promise, and the free call link. Put the price (£1,000, or 2 × £500, or 3 × £334) in the P.S. Warm and honest, never pushy.',
-  push_case: 'MONTH PHASE: the push, Tuesday. A client case study built ONLY from the PUBLIC TESTIMONIALS in the input (name and their exact words), then one line of lesson from Joel, then the call link.',
+  checkin: 'MONTH PHASE: halfway check-in. Ask how they are getting on with the theme and invite a reply. The P.S. can mention the Cash Flow Session softly.',
+  push: 'MONTH PHASE: the last days of the month. The ask is the Cash Flow Session. The only real scarcity is that Joel takes 5 sessions a week. Name the objection as part of the pattern, never pressure. No invented deadlines, bonuses or discounts.',
+  push_pitch: 'MONTH PHASE: the push, Sunday. This is the full invitation to the Cash Flow Session: who it is for, what happens (fact find, 75 minutes live building their cash flow model, their number and what it means for their prices and their week, a 9-page report within 48 hours), the 5 places a week, the promise, and the Cash Flow Session link. Put the price (£99.97, against £500 to £1,500 for a cash flow model from a UK planner) in the P.S. Warm and honest, never pushy. Never mention the 12-week programme price.',
+  push_case: 'MONTH PHASE: the push, Tuesday. A client story built ONLY from the PUBLIC TESTIMONIALS in the input (name and their exact words). They are 12-week coaching clients: never say or suggest they had the Cash Flow Session. Then one line of lesson from Joel, then the Cash Flow Session link.',
 };
 
 export function systemPrompt(type) {
@@ -119,7 +121,7 @@ export function userPrompt({ type, phase, theme, dateStr, shape, passages, post,
   L.push(`THIS MONTH'S THEME: ${theme}`);
   L.push(PHASE_RULES[phase] || PHASE_RULES.teach);
   L.push('');
-  L.push(`LINKS YOU MAY USE: call ${LINKS.call} · Money Reset Tool ${LINKS.reset}${post ? ` · this week's post ${post.url}` : ''}`);
+  L.push(`LINKS YOU MAY USE: Cash Flow Session ${LINKS.session} · Money Reset Tool ${LINKS.reset}${post ? ` · this week's post ${post.url}` : ''}`);
   if (shape) {
     L.push('');
     L.push(`COMPETITOR REFERENCE (another coach, ${shape.date}). Copy its shape, and its topic if it fits; borrow short phrases only:`);
