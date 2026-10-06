@@ -61,7 +61,8 @@ THE CRAFT STANDARD (Joel's email prompt, EMAIL_COPY.md):
 
 HARD RULES (a draft that breaks any of these is rejected):
 - No invented facts, numbers, studies or quotes. Numbers may only come from JOEL'S FACTS or the INPUT below.
-- Stories come ONLY from JOEL'S OWN WORDS in the input. Keep his phrasing where you can. Never invent a story.
+- Stories come ONLY from JOEL'S OWN WORDS in the input. Never invent a story.
+- BUILD IT FROM HIS SENTENCES (Joel, 5 Oct 2026: "you should have more than enough material to write almost 100% in my voice"): first copy into "his_lines" 12 to 25 of his own sentences from JOEL'S OWN WORDS (his calls and his solo camera talk), word for word, tidying only filler (um, like, you know, repeats, false starts). Then write the email FROM those lines: most of the body is his sentences as copied. Your own words only for the subject, the preview, short joins and the one ask.
 - Never name or identify a client, unless the input gives you a public testimonial with a name. If Joel's words mention someone, say "someone I work with".
 - Never reveal client numbers or business size.
 - When Joel's words say "I", "me" or "my", it is JOEL'S OWN story. Tell it as his ("I was scrolling..."). Never turn his story into a client's, and never turn a client's into his.
@@ -75,7 +76,7 @@ HARD RULES (a draft that breaks any of these is rejected):
 - Write your own subject line in the reference's style. Never reuse its wording.
 
 OUTPUT: only valid JSON, no fences:
-{"subject": "...", "preview": "one line under 90 characters", "body_plain": "plain text, paragraphs separated by \\n\\n, links written as full URLs"}`;
+{"his_lines": ["...", "..."], "subject": "...", "preview": "one line under 90 characters", "body_plain": "plain text, paragraphs separated by \\n\\n, links written as full URLs"}`;
 
 const TYPE_RULES = {
   letter: `THIS EMAIL: a Sunday/Tuesday letter in the shape of the reference. About 180 to 320 words. Looks like a plain personal letter. One or two links at most. Sign off "Joel" on its own line. A P.S. is normal (about two thirds of the time).`,
@@ -127,7 +128,7 @@ export function userPrompt({ type, phase, theme, dateStr, shape, passages, post,
   }
   if (passages?.length) {
     L.push('');
-    L.push("JOEL'S OWN WORDS (from his recent calls; pick ONE passage to build from, keep his phrasing):");
+    L.push("JOEL'S OWN WORDS (his recent calls and his solo camera talk; build from them, keep his phrasing):");
     passages.forEach((p, i) => L.push(`[${i + 1}] (${p.date}) ${p.text}`));
   }
   if (post) {

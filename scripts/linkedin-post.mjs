@@ -20,6 +20,8 @@ import { recentJoelWords } from './daily-email/fathom.mjs';
 import { JOEL_FACTS } from './daily-email/voice.mjs';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
 import { BRAND_VOICE_BLOCK } from './voice/joel-voice.mjs';
+import { talkPassages } from './voice/talk.mjs';
+import { joelShare } from './voice/own-words.mjs';
 import { readOwn, ranking as ownRanking } from './linkedin-own.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -196,15 +198,6 @@ const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 // one with the most of his words.
 const MIN_OWN = 0.15;
 const TARGET_OWN = 0.35;
-const FILLER = /\b(um+|uh+|erm|you know|i mean|sort of|kind of|so basically|basically|like|yeah|okay|ok|right)\b/g;
-function joelShare(post, source) {
-  const toks = (s) => norm(s).replace(FILLER, ' ').split(' ').filter(Boolean);
-  const b = toks(post), p = ` ${toks(source).join(' ')} `;
-  if (b.length < 3) return 0;
-  const hit = new Array(b.length).fill(false);
-  for (let i = 0; i + 3 <= b.length; i++) if (p.includes(` ${b.slice(i, i + 3).join(' ')} `)) hit[i] = hit[i + 1] = hit[i + 2] = true;
-  return hit.filter(Boolean).length / b.length;
-}
 
 function check(d, passages, names, recentAngles) {
   const problems = [];
@@ -285,7 +278,12 @@ async function main() {
   if (!FATHOM_API_KEY || !ANTHROPIC_API_KEY) throw new Error('FATHOM_API_KEY / ANTHROPIC_API_KEY not set');
   if (!DRY && (!FRED_SECRET || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID)) throw new Error('FRED_SECRET / TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set');
   const state = existsSync(STATE) ? JSON.parse(await readFile(STATE, 'utf8')) : [];
-  const { passages: all, names } = await recentJoelWords({ key: FATHOM_API_KEY, days: 60, maxPassages: 500 });
+  const { passages: calls, names } = await recentJoelWords({ key: FATHOM_API_KEY, days: 60, maxPassages: 500 });
+  // Plus his 2.5-hour solo talk to camera (5 Oct 2026): 72 passages of him explaining money in his own words.
+  let talk = [];
+  try { talk = talkPassages(); } catch (e) { console.log(`Talk passages unavailable (${e.message}).`); }
+  const all = calls.concat(talk);
+  const fresh21 = (p) => !state.some((s) => s.passage === hash(p.text) && Date.now() - Date.parse(s.date) < 21 * 864e5);
 
   // REVISE_ID: Joel wrote what to fix on the approve page. Rewrite the SAME story and angle with his fixes first.
   const REVISE_ID = process.env.REVISE_ID;
@@ -309,7 +307,8 @@ async function main() {
     ? all.filter((p) => hash(p.text) === orig.passage)
     // A story can be reused once 3 weeks have passed since it was last used (Joel, 27 Sep). Filter BEFORE taking
     // the best 12, so used stories never crowd out unused ones (audit: the old top-30 cut would run dry by mid-Nov).
-    : all.filter((p) => !state.some((s) => s.passage === hash(p.text) && Date.now() - Date.parse(s.date) < 21 * 864e5)).slice(0, 12);
+    // 7 call stories + 7 talk passages (rotating by day), so every post has plenty of his own sentences to build from.
+    : (() => { const t = talk.filter(fresh21), k = t.length ? (Math.floor(Date.now() / 864e5) * 7) % t.length : 0; return calls.filter(fresh21).slice(0, 7).concat(t.slice(k, k + 7), t.slice(0, Math.max(0, k + 7 - t.length))); })();
   if (!passages.length) throw new Error(orig ? 'The story this draft came from is no longer in the last 60 days of calls.' : 'No unused story passages in the last 60 days of Fathom calls. Nothing written.');
   // Which job today: Mon reach, Wed positioning, Fri reach, Sun nurture/convert in turn. JOB=... overrides; other days reach.
   const lastSunday = [...state].reverse().find((s) => s.job === 'nurture' || s.job === 'convert');

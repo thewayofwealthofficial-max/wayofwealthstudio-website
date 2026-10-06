@@ -13,6 +13,7 @@
 
 import { readFileSync } from 'node:fs';
 import { recentJoelWords } from '../daily-email/fathom.mjs';
+import { pickTalk } from './talk.mjs';
 
 // Joel's voice file (5 Oct 2026): his calls + his 2.5-hour solo camera talk, measured. Copy of the main project's
 // _keep/BRAND_VOICE.md; edit it there and copy it here. Every writer in his name loads it (Joel: "train yourself …
@@ -41,6 +42,8 @@ export async function joelVoice({ key = process.env.FATHOM_API_KEY, days = 30, m
   } catch (e) {
     console.log(`Fathom unavailable (${e.message}); writing from the measured voice facts only.`);
   }
+  // Plus 4 passages of him explaining money on camera (5 Oct 2026), rotating daily. Voice only, like the calls.
+  try { passages = passages.concat(pickTalk(4)); } catch (e) { console.log(`Talk passages unavailable (${e.message}).`); }
   console.log(`Joel voice passages: ${passages.length} (not printed: private).`);
   const lines = passages.length
     ? `\n\nHOW JOEL ACTUALLY TALKS: his own words from recent calls. Copy his rhythm, his words and his way of explaining. These are for VOICE ONLY: never use a client's name, details, numbers or story from them, and never quote them.\n${passages.map((p, i) => `[${i + 1}] ${p.text}`).join('\n\n')}`

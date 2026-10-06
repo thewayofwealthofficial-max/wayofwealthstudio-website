@@ -36,6 +36,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
+          VOICE_KEY: ${{ secrets.VOICE_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/b2b-friday.mjs

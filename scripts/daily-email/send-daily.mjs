@@ -25,6 +25,8 @@ import { systemPrompt, userPrompt, FROM_NAME, FROM_EMAIL, LINKS, THEMES, DEFAULT
 import { draftEmail } from './anthropic.mjs';
 import { checkDraft, clean } from './safety.mjs';
 import { recentJoelWords } from './fathom.mjs';
+import { pickTalk } from '../voice/talk.mjs';
+import { joelShare } from '../voice/own-words.mjs';
 import { findOrCreateAudience, addContact, listContacts, listBroadcasts, createBroadcast, sendBroadcast, setUnsubscribed } from './resend.mjs';
 import { syncList } from './sync-list.mjs';
 
@@ -167,6 +169,8 @@ async function main() {
   let passages = [], names = new Set();
   if (type !== 'post' && phase !== 'push_case') {
     try { ({ passages, names } = await recentJoelWords({ key: process.env.FATHOM_API_KEY })); } catch (e) { console.error('Fathom unavailable: ' + e.message); }
+    // Plus 6 passages of his solo camera talk (5 Oct 2026), rotating by day: him explaining money in his own words.
+    try { passages = passages.concat(pickTalk(6)); } catch (e) { console.error('Talk passages unavailable: ' + e.message); }
     console.log(`Joel passages: ${passages.length} (not printed: private).`);
     if (!passages.length && (type === 'fridays' || phase === 'teach')) {
       await telegram(`⏭ ${type} email for ${uk.iso} SKIPPED: no usable passages from your recent Fathom calls, and stories may only come from your own words.`);
@@ -208,6 +212,8 @@ async function main() {
       requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
     });
     // Quoted parts can hold client names or private words, so they're blanked in the public log.
+    const own = passages.length ? joelShare(candidate.body_plain, passages.map((p) => p.text).join(' ')) : 0;
+    console.log(`Attempt ${attempt}: Joel's own words ${Math.round(own * 100)}%`);
     console.log(`Attempt ${attempt}: ${problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
     if (!best || problems.length <= bestProblems.length) { best = candidate; bestProblems = problems; }
