@@ -11,7 +11,18 @@ const BANNED = [
   // Joel's email prompt (EMAIL_COPY.md, 5 Oct 2026): generic AI English.
   "in today's world", 'are you tired of', 'crushing it', 'smash your goals', 'transform', 'dive in', "it's not just",
 ];
-const SPAMMY = ['act now', 'limited time', 'click here', 'free money', 'urgent', '100%', '!!'];
+const SPAMMY = ['act now', 'limited time', 'click here', 'free money', 'urgent', '100%', '!!',
+  // Joel, 5 Oct 2026: block only the clearly scammy phrases from ActiveCampaign's list
+  // (research/2026-10-05-spam-words/SPAM_TRIGGER_WORDS.md). His topic words (debt, income, cash, get paid,
+  // financial freedom, free consultation, full refund) are left alone on purpose.
+  'apply now', 'call now', 'click below', 'get it now', 'do it today', "don't delete", 'exclusive deal', 'get started now',
+  'order now', 'please read', 'what are you waiting for', 'while supplies last', 'will not believe your eyes',
+  'you are a winner', 'you have been selected', "this won't last", 'once in a lifetime', 'risk-free', 'risk free',
+  'satisfaction guaranteed', 'guaranteed', 'double your income', 'double your cash', 'earn extra cash', 'fast cash',
+  'make money', 'big bucks', 'pure profit', 'cash bonus', 'free gift', 'giveaway', 'incredible deal', 'special promotion',
+  'lowest price', 'best price', 'save big money', 'pennies a day', 'million dollars', 'as seen on', 'join millions',
+  'pre-approved', 'no strings attached', 'no catch', 'no gimmick', 'no questions asked', "this isn't a scam",
+  "this isn't spam", "this isn't junk", 'we hate spam', 'not junk', 'dear friend', 'miracle'];
 const RESEARCH_WORDS = /\b(studies show|study shows|research shows|research says|according to|survey|scientists?|a recent study)\b/i;
 
 const WORDS = { letter: [150, 340], post: [150, 340], fridays: [330, 640] };
@@ -85,6 +96,7 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
 
   const links = body_plain.match(/https?:\/\/[^\s)>\]]+/g) || [];
   const distinct = new Set(links.map((l) => l.replace(/[.,;:]+$/, '')));
+  if ([...distinct].some((l) => l.includes('calendly.com')) && [...distinct].some((l) => l.includes('/reset'))) problems.push('Asks for two things: the call AND the Money Reset Tool. One ask only (Joel, 5 Oct 2026).');
   if (distinct.size > 2) problems.push(`Has ${distinct.size} different links. Two at most, one ask (Joel's email prompt).`);
   for (const l of links) {
     const clean = l.replace(/[.,;:]+$/, '');

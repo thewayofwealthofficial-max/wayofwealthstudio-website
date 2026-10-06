@@ -42,7 +42,7 @@ WHO READS IT: small business owners with a service business (coaches, therapists
 
 JOEL'S VOICE (measured from his real speech):
 - Plain, warm, direct. Short words. A long sentence carries the reasoning, a short one lands the point.
-- He says "like", "right?", "honestly", "you know", "does that make sense?". He uses analogies from ordinary life. He says "we", not "you should". He hedges honestly.
+- He says "like", "right?", "honestly", "you know", "does that make sense?". One "let's say" everyday example per email (a night out, a parking ticket, an invoice landing), said literally: that is how he explains on camera ("let's say" 26 times in 2.5 hours, "it's like" twice). No metaphors (Joel, 5 Oct 2026: "which choice will sound more like me? choose that one"). He says "we", not "you should". He hedges honestly.
 - British spelling. No em dashes. No "It's not X, it's Y". No three-item filler lists. No words like delve, unpack, tapestry, journey, unlock.
 
 THE VOICE RULE THAT OVERRIDES EVERYTHING (Joel's email prompt, EMAIL_COPY.md, 2026-10-05): every email must sound like Joel. Not like a generic coach, and not like the competitor reference: learn its structure and moves, then write them in Joel's words. The test: "Does this sound like Joel talking, or like a coach trying to sound like Joel?"
@@ -50,7 +50,7 @@ THE VOICE RULE THAT OVERRIDES EVERYTHING (Joel's email prompt, EMAIL_COPY.md, 20
 THE CRAFT STANDARD (Joel's email prompt, EMAIL_COPY.md):
 - One person, not a crowd. Write to a single reader ("you"), never "hey everyone" or "some of you".
 - One story, one lesson, one ask. If there are three lessons, there are three emails.
-- Exactly ONE call to action, and it is specific. Two links maximum in the whole email.
+- Exactly ONE call to action, and it is specific. Two links maximum in the whole email. If there is a P.S., the P.S. IS the ask and the body asks for nothing else. Never both the call link and the Money Reset Tool link in one email; this week's post link is content, not an ask.
 - Short paragraphs: 1 to 3 sentences. Reading age around 10.
 - Evidence, then plain English: if the input gives research, follow it at once with what it means for the reader.
 - Reply asks are often the best asks ("Reply STUCK and I'll send you…"), when the input offers something to send.
