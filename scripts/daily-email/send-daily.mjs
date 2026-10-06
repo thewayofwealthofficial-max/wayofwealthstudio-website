@@ -126,6 +126,10 @@ async function senderEmail(key) {
   return FROM_EMAIL;
 }
 
+// Everyone on the list has already given their email, so the reset link tells the page
+// to skip its email gate. Added here, not by the AI, so it is never forgotten.
+const tagListLinks = (s) => s.replace(/https:\/\/wayofwealthcoaching\.com\/reset(?![\w/?#])/g, 'https://wayofwealthcoaching.com/reset?via=list');
+
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function toHtml(body, footerAddress) {
@@ -261,8 +265,8 @@ async function main() {
     replyTo: 'joel@wayofwealthcoaching.com', // forwards to Joel's Gmail (Namecheap, set up 27 Sep)
     subject: (MODE === 'review' ? `[DRAFT ${uk.weekday}] ` : '') + draft.subject,
     previewText: draft.preview,
-    html: toHtml(draft.body_plain, footerAddress),
-    text: toText(draft.body_plain, footerAddress),
+    html: toHtml(tagListLinks(draft.body_plain), footerAddress),
+    text: toText(tagListLinks(draft.body_plain), footerAddress),
     name: MODE === 'review' ? `Review ${new Date().toISOString()}` : `List ${uk.iso}`,
   });
   await sendBroadcast(resendKey, id);

@@ -229,6 +229,13 @@ const description = "Find out where your money is actually going in under 3 minu
     state.unlocked = false;
   }
 
+  // People already on the email list arrive from the daily email with ?via=list on the
+  // link (send-daily.mjs adds it). They have given their email already, so no gate.
+  if ((new URLSearchParams(location.search).get('via') || '').startsWith('list')) {
+    state.unlocked = true;
+    try { localStorage.setItem(UNLOCK_KEY, '1'); } catch (err) { /* nothing to do */ }
+  }
+
   const fmt = (n) => Math.round(n).toLocaleString('en-GB');
 
   /* ---------- the arithmetic ----------
