@@ -87,7 +87,11 @@ const FAQS = [
         <span></span><span></span><span></span>
         <b>Your cash flow model</b>
       </div>
-      <img src="/images/your-number/model-letssee.webp" width="2280" height="2126" alt="The cash flow model from the session: ten years of money flow as stacked bars, with net worth by 2036, safe to spend each month, and years that run short" fetchpriority="high" />
+      <picture>
+        {/* Phones: the chart with the three numbers stacked underneath, so they stay readable. */}
+        <source media="(max-width: 640px)" srcset="/images/your-number/model-letssee-phone.webp" width="1100" height="1471" />
+        <img src="/images/your-number/model-letssee.webp" width="2280" height="2126" alt="The cash flow model from the session: ten years of money flow as stacked bars, with net worth by 2036, safe to spend each month, and years that run short" fetchpriority="high" />
+      </picture>
     </div>
     <figcaption>The model we build together, live on screen.</figcaption>
   </figure>
