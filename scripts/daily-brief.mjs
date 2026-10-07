@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 // Daily morning brief — runs 07:00 UTC every day via GitHub Actions.
-// Pulls quiz funnel data from Airtable, subscriber count from MailerLite,
+// Pulls yesterday's free-tool numbers from the website, subscriber count from MailerLite,
 // latest blog post from the repo, and composes a Telegram message for Joel.
 //
 // ENV VARS REQUIRED (GitHub Actions secrets):
 //   TELEGRAM_BOT_TOKEN
 //   TELEGRAM_CHAT_ID
-//   AIRTABLE_TOKEN
-//   AIRTABLE_BASE_ID
-//   AIRTABLE_QUIZ_TABLE_ID
+//   FRED_SECRET
 //   MAILERLITE_API_KEY
 
 import { readdir, readFile } from 'node:fs/promises';
@@ -21,9 +19,7 @@ const REPO_ROOT = join(__dirname, '..');
 const {
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID,
-  AIRTABLE_TOKEN,
-  AIRTABLE_BASE_ID,
-  AIRTABLE_QUIZ_TABLE_ID,
+  FRED_SECRET,
   MAILERLITE_API_KEY,
 } = process.env;
 
@@ -32,86 +28,15 @@ for (const [k, v] of Object.entries(required)) {
   if (!v) { console.error(`FATAL: ${k} not set`); process.exit(1); }
 }
 
-const FUNNEL_STEPS = [
-  'intro_load', 'quiz_start',
-  'q1_shown', 'q1', 'q2_shown', 'q2', 'q3_shown', 'q3',
-  'q4_shown', 'q4', 'q5_shown', 'q5', 'q6_shown', 'q6', 'q7_shown', 'q7',
-  'email_shown', 'completed',
-];
+// Free tools (Money Reset Tool, Masterclass, Money Story Diagnostic): yesterday's numbers from the website's
+// tracker (netlify/functions/magnet-track.js). Replaced the retired quiz's Airtable funnel (7 Oct 2026).
 
-// ───────────────────────────────────────────────────────────────
-// Airtable — pull last 24h of quiz events
-
-async function pullQuizData() {
-  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID || !AIRTABLE_QUIZ_TABLE_ID) {
-    return { sessions24h: 0, sessions7d: 0, completionRate24h: null, completionRate7d: null, furthestDist: {} };
-  }
-
-  const records = [];
-  let offset = '';
-  for (let i = 0; i < 10; i++) {
-    const url = new URL(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_QUIZ_TABLE_ID}`);
-    url.searchParams.set('pageSize', '100');
-    if (offset) url.searchParams.set('offset', offset);
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } });
-    if (!res.ok) { console.error('Airtable fetch failed:', res.status); break; }
-    const data = await res.json();
-    records.push(...(data.records ?? []));
-    if (!data.offset) break;
-    offset = data.offset;
-  }
-
-  const now = Date.now();
-  const DAY = 24 * 60 * 60 * 1000;
-  const t24h = now - DAY;
-  const t7d = now - 7 * DAY;
-
-  const sessions24h = new Map();
-  const sessions7d = new Map();
-
-  for (const r of records) {
-    const f = r.fields;
-    const sid = f['Session ID'];
-    const step = f['Step'];
-    const ts = new Date(f['Timestamp'] || r.createdTime).getTime();
-    if (!sid || !step) continue;
-    const rank = FUNNEL_STEPS.indexOf(step);
-    if (ts >= t7d) {
-      const cur = sessions7d.get(sid) ?? { max: -1, step: null };
-      if (rank > cur.max) sessions7d.set(sid, { max: rank, step });
-    }
-    if (ts >= t24h) {
-      const cur = sessions24h.get(sid) ?? { max: -1, step: null };
-      if (rank > cur.max) sessions24h.set(sid, { max: rank, step });
-    }
-  }
-
-  function completionRate(map) {
-    if (map.size === 0) return null;
-    const completed = [...map.values()].filter((v) => v.step === 'completed').length;
-    return Math.round((completed / map.size) * 100);
-  }
-
-  function furthestDistribution(map) {
-    const buckets = { intro: 0, started: 0, answered_first_q: 0, past_midway: 0, reached_email: 0, completed: 0 };
-    for (const { max, step } of map.values()) {
-      if (step === 'completed') buckets.completed++;
-      else if (step === 'email_shown') buckets.reached_email++;
-      else if (step && (step.startsWith('q4') || step.startsWith('q5') || step.startsWith('q6') || step.startsWith('q7'))) buckets.past_midway++;
-      else if (step === 'q1' || (step && step.startsWith('q'))) buckets.answered_first_q++;
-      else if (step === 'quiz_start') buckets.started++;
-      else buckets.intro++;
-    }
-    return buckets;
-  }
-
-  return {
-    sessions24h: sessions24h.size,
-    sessions7d: sessions7d.size,
-    completionRate24h: completionRate(sessions24h),
-    completionRate7d: completionRate(sessions7d),
-    furthestDist: furthestDistribution(sessions24h),
-  };
+async function pullFreeTools() {
+  if (!FRED_SECRET) throw new Error('FRED_SECRET not set');
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(Date.now() - 864e5));
+  const res = await fetch(`https://wayofwealthcoaching.com/api/magnet/track?counts=${day}`, { headers: { 'x-fred-secret': FRED_SECRET } });
+  if (!res.ok) throw new Error(`Free tool numbers: ${res.status}`);
+  return { day, counts: await res.json() };
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -149,21 +74,6 @@ async function pullLatestPost() {
 }
 
 // ───────────────────────────────────────────────────────────────
-// Reddit queue
-
-async function pullQueueStatus() {
-  const QUEUE_PATH = join(REPO_ROOT, 'src', 'content', 'reddit-queue.md');
-  try {
-    const content = await readFile(QUEUE_PATH, 'utf8');
-    const queued = (content.match(/🔵/g) || []).length;
-    const published = (content.match(/✅/g) || []).length;
-    return { queued, published };
-  } catch {
-    return { queued: null, published: null };
-  }
-}
-
-// ───────────────────────────────────────────────────────────────
 // Telegram send
 
 function esc(s) {
@@ -186,7 +96,7 @@ async function sendTelegram(text) {
 
 async function main() {
   console.log('Pulling data...');
-  const [quiz, ml, post, queue] = await Promise.all([pullQuizData(), pullMailerLite(), pullLatestPost(), pullQueueStatus()]);
+  const [tools, ml, post] = await Promise.all([pullFreeTools().catch((e) => ({ error: e.message })), pullMailerLite(), pullLatestPost()]);
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -196,27 +106,26 @@ async function main() {
   // What shipped yesterday / overnight
   msg += `🚀 *Shipped overnight*\n`;
   if (post) msg += `• Latest post: ${esc(post.title)}\n`;
-  if (queue.queued !== null) msg += `• Reddit queue: ${queue.queued} queued, ${queue.published} published\n`;
   msg += '\n';
 
-  // Quiz funnel
-  msg += `📊 *Quiz funnel \\(last 24h\\)*\n`;
-  if (quiz.sessions24h === 0) {
-    msg += `• 0 sessions yesterday — no new data to learn from\n`;
+  // Free tools, yesterday (UK day). Same numbers as the 20:00 round-up, one line each.
+  const NAMES = { reset: 'Money Reset Tool', masterclass: 'Masterclass', diagnostic: 'Money Story Diagnostic' };
+  if (tools.error) {
+    msg += `📊 *Free tools yesterday*\n• Couldn't read the numbers: ${esc(tools.error)}\n\n`;
   } else {
-    msg += `• Sessions: ${quiz.sessions24h}\n`;
-    if (quiz.completionRate24h !== null) msg += `• Completion rate: ${quiz.completionRate24h}%\n`;
-    const d = quiz.furthestDist;
-    msg += `• Drop map: intro ${d.intro} → started ${d.started} → answered Q1 ${d.answered_first_q} → past midway ${d.past_midway} → email ${d.reached_email} → completed ${d.completed}\n`;
+    msg += `📊 *Free tools yesterday \\(${esc(tools.day)}\\)*\n`;
+    for (const [k, name] of Object.entries(NAMES)) {
+      const c = tools.counts[k] || {};
+      msg += `• ${esc(name)}: ${c.opened || 0} opened · ${c.email || 0} gave email · ${c.book || 0} clicked book\n`;
+    }
+    msg += '\n';
   }
-  msg += `• 7\\-day sessions: ${quiz.sessions7d}, completion: ${quiz.completionRate7d ?? '—'}%\n\n`;
 
   // MailerLite
   if (ml.total !== null) msg += `📧 *MailerLite*\n• Subscribers: ${ml.total}\n\n`;
 
   // Next up
   msg += `🤖 *What I'm on today*\n`;
-  msg += `• Monitoring quiz after the 7\\-question cut \\+ copy simplification\n`;
   msg += `• Daily blog auto\\-publishes at 05:00 UTC \\(Sonnet 4\\.6\\)\n`;
   msg += `• Competitor scan \\(Gmail MCP\\) when you open Claude Code\n\n`;
 

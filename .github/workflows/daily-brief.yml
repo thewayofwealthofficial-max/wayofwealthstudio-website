@@ -36,9 +36,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-          AIRTABLE_QUIZ_TABLE_ID: ${{ secrets.AIRTABLE_QUIZ_TABLE_ID }}
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
           MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API }}
         run: node scripts/daily-brief.mjs
 

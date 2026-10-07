@@ -94,4 +94,15 @@ async function rollup(store, day) {
   return out.join('\n');
 }
 
-module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup };
+// Plain numbers for one UK day: { tool: { step: people } }. The morning brief reads yesterday's (7 Oct 2026).
+async function counts(store, day) {
+  const { blobs } = await store.list({ prefix: `${day}/` });
+  const seen = {};
+  for (const { key } of blobs) {
+    const [, tool, vid, step] = key.split('/');
+    if (isStep(tool, step)) ((seen[tool] ??= {})[step] ??= new Set()).add(vid);
+  }
+  return Object.fromEntries(Object.keys(TOOLS).map((t) => [t, Object.fromEntries(Object.entries(seen[t] || {}).map(([s, v]) => [s, v.size]))]));
+}
+
+module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup, counts };

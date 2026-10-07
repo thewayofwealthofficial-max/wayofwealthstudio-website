@@ -7,7 +7,7 @@
 
 const crypto = require('crypto');
 const { connectLambda, getStore } = require('@netlify/blobs');
-const { PING, isStep, ukDate, telegram, rollup } = require('./lib/magnet-events');
+const { PING, isStep, ukDate, telegram, rollup, counts } = require('./lib/magnet-events');
 
 const ORIGINS = new Set(['https://wayofwealthcoaching.com', 'https://www.wayofwealthcoaching.com', 'https://discover.thewayofwealth.shop']);
 
@@ -23,6 +23,13 @@ exports.handler = async (event) => {
     if (!same(event.headers['x-fred-secret'], process.env.FRED_SECRET)) return { statusCode: 401, headers, body: 'unauthorised' };
     await telegram(await rollup(store, ukDate()));
     return { statusCode: 200, headers, body: 'sent' };
+  }
+  // GET /api/magnet/track?counts=YYYY-MM-DD with x-fred-secret: that day's numbers as JSON (for the morning brief).
+  if (event.httpMethod === 'GET' && event.queryStringParameters?.counts) {
+    if (!same(event.headers['x-fred-secret'], process.env.FRED_SECRET)) return { statusCode: 401, headers, body: 'unauthorised' };
+    const day = event.queryStringParameters.counts;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { statusCode: 400, headers, body: 'bad date' };
+    return { statusCode: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(await counts(store, day)) };
   }
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: '' };
 
