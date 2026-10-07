@@ -68,12 +68,25 @@ async function telegram(html) {
   if (!r.ok) throw new Error(`Telegram ${r.status}: ${(await r.text()).slice(0, 200)}`);
 }
 
+// Where one visitor came from, as a short safe label (7 Oct 2026). The ?src= tag on the link wins (e.g. ig-bio),
+// else the host of the page they clicked from (e.g. l.instagram.com), else 'direct' (typed it, an app, or an
+// email that hides where it came from). Only [a-z0-9.-_] survives, so it is safe in a blob key and in Telegram HTML.
+function fromLabel(src, ref) {
+  const tag = typeof src === 'string' ? src.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 30) : '';
+  if (tag) return tag;
+  const host = typeof ref === 'string' ? ref.toLowerCase().replace(/^www\./, '') : '';
+  if (/^[a-z0-9.-]{3,80}$/.test(host)) return host;
+  return 'direct';
+}
+
 // The round-up for one UK day: per tool, how many different people reached each step, and the biggest drop.
 async function rollup(store, day) {
   const { blobs } = await store.list({ prefix: `${day}/` });
   const seen = {}; // tool -> step -> Set(visitor)
+  const from = {}; // tool -> visitor -> label
   for (const { key } of blobs) {
-    const [, tool, vid, step] = key.split('/');
+    const [, tool, vid, step, label] = key.split('/');
+    if (step === 'from' && TOOLS[tool] && label) { (from[tool] ??= {})[vid] = label; continue; }
     if (!isStep(tool, step)) continue;
     ((seen[tool] ??= {})[step] ??= new Set()).add(vid);
   }
@@ -90,6 +103,18 @@ async function rollup(store, day) {
       if (lost > 0 && (!worst || lost > worst.lost)) worst = { lost, after: t.steps[i - 1][1] };
     }
     if (worst) out.push(`⬇️ Most people left after: <i>${worst.after}</i> (${worst.lost} stopped there)`);
+    // Where they came from: people opened per source, and how many of those gave their email.
+    const bySource = {};
+    for (const vid of seen[tool]?.opened || []) {
+      const s = (bySource[from[tool]?.[vid] || 'not recorded'] ??= { opened: 0, email: 0 });
+      s.opened++;
+      if (seen[tool]?.email?.has(vid)) s.email++;
+    }
+    const rows = Object.entries(bySource).sort((a, b) => b[1].opened - a[1].opened);
+    if (rows.length) {
+      out.push('Where they came from:');
+      for (const [label, s] of rows) out.push(`  ${label}: ${s.opened} opened · ${s.email} email`);
+    }
   }
   return out.join('\n');
 }
@@ -105,4 +130,4 @@ async function counts(store, day) {
   return Object.fromEntries(Object.keys(TOOLS).map((t) => [t, Object.fromEntries(Object.entries(seen[t] || {}).map(([s, v]) => [s, v.size]))]));
 }
 
-module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup, counts };
+module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup, counts, fromLabel };

@@ -96,11 +96,18 @@ const CALL = 'https://calendly.com/thewayofwealth-official/20min';
       return v;
     } catch (err) { return Math.random().toString(36).slice(2, 14).padEnd(12, '0'); }
   })();
+  // Where they came from (7 Oct 2026): the ?src= tag on the link, and the page they clicked from. 'opened' only.
+  const origin = (() => {
+    try {
+      const q = new URLSearchParams(location.search);
+      return { src: q.get('src') || q.get('utm_source') || '', r: document.referrer ? new URL(document.referrer).hostname : '' };
+    } catch (err) { return { src: '', r: '' }; }
+  })();
   const tracked = new Set();
   function track(step) {
     if (tracked.has(step)) return;
     tracked.add(step);
-    const body = JSON.stringify({ t: 'masterclass', s: step, v: visitor });
+    const body = JSON.stringify({ t: 'masterclass', s: step, v: visitor, ...(step === 'opened' ? origin : {}) });
     try {
       if (!navigator.sendBeacon || !navigator.sendBeacon('/api/magnet/track', new Blob([body], { type: 'text/plain' }))) {
         fetch('/api/magnet/track', { method: 'POST', body, keepalive: true }).catch(() => {});
