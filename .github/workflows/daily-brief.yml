@@ -37,7 +37,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           FRED_SECRET: ${{ secrets.FRED_SECRET }}
-          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: node scripts/daily-brief.mjs
 
       # Daily, from 14 days out (audit, 27 Sep). Blog shares AND native posts both stop when the login expires.

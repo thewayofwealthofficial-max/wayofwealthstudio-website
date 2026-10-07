@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 // Daily morning brief — runs 07:00 UTC every day via GitHub Actions.
-// Pulls yesterday's free-tool numbers from the website, subscriber count from MailerLite,
+// Pulls yesterday's free-tool numbers from the website, email list size from Resend,
 // latest blog post from the repo, and composes a Telegram message for Joel.
 //
 // ENV VARS REQUIRED (GitHub Actions secrets):
 //   TELEGRAM_BOT_TOKEN
 //   TELEGRAM_CHAT_ID
 //   FRED_SECRET
-//   MAILERLITE_API_KEY
+//   RESEND_API_KEY
 
 import { readdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { rs, listContacts } from './daily-email/resend.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
@@ -20,7 +21,7 @@ const {
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID,
   FRED_SECRET,
-  MAILERLITE_API_KEY,
+  RESEND_API_KEY,
 } = process.env;
 
 const required = { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID };
@@ -40,16 +41,16 @@ async function pullFreeTools() {
 }
 
 // ───────────────────────────────────────────────────────────────
-// MailerLite — subscriber count
+// Email list — people subscribed in Resend's "General" audience, the one the list emails go to
+// (scripts/daily-email/send-daily.mjs). Was MailerLite, which the list emails no longer use (7 Oct 2026).
 
-async function pullMailerLite() {
-  if (!MAILERLITE_API_KEY) return { total: null };
-  const res = await fetch('https://connect.mailerlite.com/api/subscribers?limit=1', {
-    headers: { Authorization: `Bearer ${MAILERLITE_API_KEY}`, Accept: 'application/json' },
-  });
-  if (!res.ok) return { total: null };
-  const data = await res.json();
-  return { total: data.meta?.total ?? (data.data?.length ?? null) };
+async function pullEmailList() {
+  if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY not set');
+  const { data: audiences = [] } = await rs(RESEND_API_KEY, '/audiences');
+  const general = audiences.find((a) => a.name === (process.env.RESEND_AUDIENCE_NAME || 'General'));
+  if (!general) throw new Error('No "General" audience in Resend');
+  const contacts = await listContacts(RESEND_API_KEY, general.id);
+  return { subscribed: contacts.filter((c) => !c.unsubscribed).length };
 }
 
 // ───────────────────────────────────────────────────────────────
@@ -96,7 +97,7 @@ async function sendTelegram(text) {
 
 async function main() {
   console.log('Pulling data...');
-  const [tools, ml, post] = await Promise.all([pullFreeTools().catch((e) => ({ error: e.message })), pullMailerLite(), pullLatestPost()]);
+  const [tools, list, post] = await Promise.all([pullFreeTools().catch((e) => ({ error: e.message })), pullEmailList().catch((e) => ({ error: e.message })), pullLatestPost()]);
 
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -121,13 +122,8 @@ async function main() {
     msg += '\n';
   }
 
-  // MailerLite
-  if (ml.total !== null) msg += `📧 *MailerLite*\n• Subscribers: ${ml.total}\n\n`;
-
-  // Next up
-  msg += `🤖 *What I'm on today*\n`;
-  msg += `• Daily blog auto\\-publishes at 05:00 UTC \\(Sonnet 4\\.6\\)\n`;
-  msg += `• Competitor scan \\(Gmail MCP\\) when you open Claude Code\n\n`;
+  // Email list (Resend)
+  msg += list.error ? `📧 *Email list*\n• Couldn't read it: ${esc(list.error)}\n\n` : `📧 *Email list*\n• ${list.subscribed} subscribed\n\n`;
 
   msg += `_Reply here with 'status', 'flags', 'ideas', or a specific question — I check these when you open Claude Code next\\._\n— Fred`;
 
