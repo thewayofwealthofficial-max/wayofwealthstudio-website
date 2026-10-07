@@ -321,7 +321,7 @@ async function main() {
   // Hard fails never reach Joel. If no attempt passes everything, the draft with the most of his words that has only
   // length or voice notes is sent with those notes on top: he approves every post anyway.
   const HARD = /^(Mentions drugs|Contains a link|Contains an ask|Mentions the price|Makes a research claim|Reads like regulated|Figure "|Contains the name|Uses the name or place|No passage picked|Too little of Joel's own words|Copies too much of the outlier)/;
-  let feedback = orig ? joelFix : null, draft = null, best = null, flags = [];
+  let feedback = orig ? joelFix : null, draft = null, best = null, backup = null, flags = [];
   let last = orig ? { angle: orig.angle, passage: 0, post: orig.text, problem: orig.text, pursuit: '', payoff: '' } : null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     let d;
@@ -338,6 +338,10 @@ async function main() {
     // A draft the fact check never finished on is unchecked, so it counts as unbacked too (6 Oct 2026: one slipped through).
     const unbacked = problems.some((p) => /^(Not in Joel's words|The fact check could not read)/.test(p));
     if (!hard && !unbacked && (!best || d.ownShare > best.d.ownShare || (d.ownShare === best.d.ownShare && problems.length < best.problems.length))) best = { d, problems };
+    // Joel, 7 Oct 2026: if every try has doubted lines, send him the best one anyway with those lines marked; he
+    // decides, and nothing posts without his tap. Fewest doubted lines first, then most of his words.
+    const doubted = problems.filter((p) => /^(Not in Joel's words|The fact check could not read)/.test(p)).length;
+    if (!hard && unbacked && (!backup || doubted < backup.doubted || (doubted === backup.doubted && d.ownShare > backup.d.ownShare))) backup = { d, problems, doubted };
     console.log(`Attempt ${attempt} rejected: ${problems.length} problem(s). Joel's own words: ${Math.round((d.ownShare || 0) * 100)}%.`);
     // Kinds of problem only, cut before any quote or detail: the logs are public.
     console.log('  kinds: ' + problems.map((p) => p.split(/[:("“]/)[0].trim().slice(0, 50)).join(' | '));
@@ -346,10 +350,10 @@ async function main() {
     last = d;
   }
   if (!draft && best) { draft = best.d; flags = best.problems; console.log(`No attempt passed everything. Sending the draft with the most of his words (${Math.round(draft.ownShare * 100)}%), ${flags.length} flag(s), for Joel to judge.`); }
+  if (!draft && backup) { draft = backup.d; flags = backup.problems; console.log(`Every try had doubted lines. Sending the one with the fewest (${backup.doubted}), ${Math.round(draft.ownShare * 100)}% his words, marked for Joel to judge.`); }
   if (!draft) {
-    // Joel, 6 Oct 2026: a draft with lines that aren't backed by his words never reaches him. Say so instead.
-    console.log('No draft was safe to send: every try failed a hard check or had lines not backed by Joel\'s words.');
-    if (!DRY) await telegram(`💼 LinkedIn draft skipped today (${job}). Five tries, and every one either broke a hard rule or had lines that weren't backed by your own words, so nothing was sent. The next one runs as normal.`);
+    console.log('No draft was safe to send: every try failed a hard check.');
+    if (!DRY) await telegram(`💼 LinkedIn draft skipped today (${job}). Five tries, and every one broke a hard rule (too little of your words, a private name, a link, an ask, price, advice, or a made-up figure), so nothing was sent. The next one runs as normal.`);
     return;
   }
 
@@ -369,7 +373,7 @@ async function main() {
   const { id, sig } = await r.json();
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const shown = esc(draft.post);
-  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · ${job} · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words · copies a ${outlier.per1k}-per-1k post by ${esc(outlier.author)} · ${Math.round(draft.ownShare * 100)}% your own words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
+  await telegram((orig ? '✏️ <b>Rewritten with your fixes</b>\n' : '') + `💼 <b>LinkedIn draft</b> · ${job} · angle ${draft.angle}: ${esc(ANGLES[draft.angle].name)} · ${words} words · copies a ${outlier.per1k}-per-1k post by ${esc(outlier.author)} · ${Math.round(draft.ownShare * 100)}% your own words\n<i>The labels are for you; they aren't posted.</i>\n\n` + (flags.some((f) => /^(Not in Joel's words|The fact check could not read)/.test(f)) ? `⛔ <b>The fact check thinks you never said some of this. Check these lines before you approve:</b>\n` : flags.length ? `⚠️ <b>Didn't pass every check. Read these first:</b>\n` : '') + (flags.length ? `• ${flags.map(esc).join('\n• ')}\n\n` : '') + shown);
   await telegram('Tap below. On that page you can "Approve and post", or write what needs fixing and it gets rewritten. Ignore it and nothing is posted (expires in 48 hours).', {
     inline_keyboard: [[{ text: '✅ Review & approve', url: `${SITE}/api/linkedin/draft?id=${id}&sig=${sig}` }]],
   });
