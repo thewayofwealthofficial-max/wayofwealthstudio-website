@@ -32,7 +32,15 @@
       "id": "ce645c010c9d17e8",
       "urn": "urn:li:share:7511074277551529985",
       "angle": 6,
-      "postedAt": "2026-09-30T14:47:24Z"
+      "postedAt": "2026-09-30T14:47:24Z",
+      "scored": {
+        "at": "2026-10-08T12:08:00.832Z",
+        "reactions": 2,
+        "comments": 0,
+        "followers": 2849,
+        "per1k": 0.7
+      },
+      "topic": "spending and saving habits"
     },
     {
       "id": "7d9f3a5c510726b8",
