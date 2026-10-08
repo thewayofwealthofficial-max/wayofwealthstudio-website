@@ -80,7 +80,8 @@ const FAQS = [
     </aside>
   </div>
 
-  <!-- The live cash flow model (screenshot of the session tool, sample client) -->
+  <!-- Two futures for Ella, a made-up client (Joel, 8 Oct 2026: "more extreme or the most relatable scenario").
+       Voyant-style chart drawn from the session tool's own projection engine; figures invented to illustrate. -->
   <figure class="yn-model">
     <div class="yn-window">
       <div class="yn-window-bar" aria-hidden="true">
@@ -88,12 +89,12 @@ const FAQS = [
         <b>Your cash flow model</b>
       </div>
       <picture>
-        {/* Phones: the chart with the three numbers stacked underneath, so they stay readable. */}
-        <source media="(max-width: 640px)" srcset="/images/your-number/model-letssee-phone.webp" width="1100" height="1471" />
-        <img src="/images/your-number/model-letssee.webp" width="2280" height="2126" alt="The cash flow model from the session: ten years of money flow as stacked bars, with net worth by 2036, safe to spend each month, and years that run short" fetchpriority="high" />
+        {/* Phones: a narrower drawing of the same two charts, so the labels stay readable. */}
+        <source media="(max-width: 640px)" srcset="/images/your-number/ella-two-futures-phone.webp" width="1200" height="1974" />
+        <img src="/images/your-number/ella-two-futures.webp" width="2360" height="1798" alt="Two futures for Ella, a made-up client on the same income over ten years. Nothing changes: she runs short every year, shown in red. With a plan: she never runs short." fetchpriority="high" />
       </picture>
     </div>
-    <figcaption>The model we build together, live on screen.</figcaption>
+    <figcaption>Ella is made up. Same income, two futures. We build yours live in the session.</figcaption>
   </figure>
 
   {HERO_QUOTE && (
