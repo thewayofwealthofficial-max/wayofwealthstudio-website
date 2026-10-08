@@ -45,11 +45,33 @@ const TOOLS = {
   },
 };
 
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 // Steps that ping Joel the moment they happen. Everything else waits for the 20:00 round-up.
+// p = { from, name, email }. from is the plain source; name/email only arrive with 'began' and 'email',
+// go into the ping and are never stored (Joel, 8 Oct: "who started and opened ... and where its from").
+const who = (p) => (p.name ? `<b>${esc(p.name)}</b>${p.email ? ` (${esc(p.email)})` : ''}` : p.email ? esc(p.email) : 'someone');
 const PING = {
-  email: (tool) => `🧲 <b>${TOOLS[tool].name}</b>: someone just gave their email.`,
-  book: (tool) => `🔥 <b>${TOOLS[tool].name}</b>: someone just clicked the book-a-call button.`,
+  opened: (tool, p) => `👀 <b>${TOOLS[tool].name}</b>: someone opened it. From: ${esc(p.from)}`,
+  started: (tool, p) => `✍️ <b>${TOOLS[tool].name}</b>: someone started it. From: ${esc(p.from)}`,
+  began: (tool, p) => `✍️ <b>${TOOLS[tool].name}</b>: ${who(p)} started it. From: ${esc(p.from)}`,
+  email: (tool, p) => `🧲 <b>${TOOLS[tool].name}</b>: ${who(p)} gave their email. From: ${esc(p.from)}`,
+  book: (tool, p) => `🔥 <b>${TOOLS[tool].name}</b>: ${who(p)} clicked the book-a-call button. From: ${esc(p.from)}`,
 };
+
+// A stored source label in plain words. ?src= tags show as written; known sites get their name.
+const SITES = [
+  [/instagram/, 'Instagram'], [/facebook|^fb\.|\.fb\.com$/, 'Facebook'], [/linkedin|^lnkd\.in$/, 'LinkedIn'],
+  [/google\./, 'Google'], [/youtube|^youtu\.be$/, 'YouTube'], [/^t\.co$|twitter|^x\.com$/, 'X'],
+  [/mail\.|outlook|^gmail/, 'Email'], [/wayofwealthcoaching\.com$/, 'Your website'], [/thewayofwealth\.shop$/, 'Your diagnostic site'],
+];
+function plainSource(label) {
+  if (!label || label === 'not recorded') return 'not recorded';
+  if (label === 'direct') return 'no link info (typed in, an app, or a DM)';
+  if (!label.includes('.')) return `tag "${label}"`;
+  const hit = SITES.find(([re]) => re.test(label));
+  return hit ? hit[1] : label;
+}
 
 const isStep = (tool, step) => !!TOOLS[tool] && [...TOOLS[tool].steps, ...TOOLS[tool].extra].some(([k]) => k === step);
 
@@ -106,7 +128,7 @@ async function rollup(store, day) {
     // Where they came from: people opened per source, and how many of those gave their email.
     const bySource = {};
     for (const vid of seen[tool]?.opened || []) {
-      const s = (bySource[from[tool]?.[vid] || 'not recorded'] ??= { opened: 0, email: 0 });
+      const s = (bySource[plainSource(from[tool]?.[vid] || 'not recorded')] ??= { opened: 0, email: 0 });
       s.opened++;
       if (seen[tool]?.email?.has(vid)) s.email++;
     }
@@ -130,4 +152,4 @@ async function counts(store, day) {
   return Object.fromEntries(Object.keys(TOOLS).map((t) => [t, Object.fromEntries(Object.entries(seen[t] || {}).map(([s, v]) => [s, v.size]))]));
 }
 
-module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup, counts, fromLabel };
+module.exports = { TOOLS, PING, isStep, ukDate, telegram, rollup, counts, fromLabel, plainSource };

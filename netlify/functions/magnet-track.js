@@ -1,6 +1,7 @@
 // Receives one step from a free tool (sendBeacon from /reset and from discover.thewayofwealth.shop).
 //   POST /api/magnet/track   body: {"t":"reset","s":"opened","v":"<visitor id>"}   (text/plain, so no CORS preflight)
 //                            'opened' may also carry "src" (the ?src= tag on the link) and "r" (the referrer's host).
+//                            'began' / 'email' may carry "n" (first name) and "e" (email): used in the ping, never stored.
 //   GET  /api/magnet/track?report=1  with x-fred-secret: sends today's round-up now (for testing).
 // Pings Joel on Telegram straight away for the steps in PING; the rest wait for magnet-report.js at 20:00 UK.
 //
@@ -8,7 +9,7 @@
 
 const crypto = require('crypto');
 const { connectLambda, getStore } = require('@netlify/blobs');
-const { PING, isStep, ukDate, telegram, rollup, counts, fromLabel } = require('./lib/magnet-events');
+const { PING, isStep, ukDate, telegram, rollup, counts, fromLabel, plainSource } = require('./lib/magnet-events');
 
 const ORIGINS = new Set(['https://wayofwealthcoaching.com', 'https://www.wayofwealthcoaching.com', 'https://discover.thewayofwealth.shop']);
 
@@ -37,7 +38,7 @@ exports.handler = async (event) => {
   let b;
   try {
     const raw = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf8') : event.body || '';
-    if (raw.length > 300) return { statusCode: 413, headers, body: '' };
+    if (raw.length > 600) return { statusCode: 413, headers, body: '' };
     b = JSON.parse(raw);
   } catch {
     return { statusCode: 400, headers, body: '' };
@@ -47,15 +48,26 @@ exports.handler = async (event) => {
 
   // Where they came from (7 Oct 2026): sent with 'opened' only. The ?src= tag on the link wins, else the site
   // they clicked from, else 'direct'. Stored as its own key so the round-up can read it from the list alone.
+  let label = null;
   if (s === 'opened') {
-    await store.setJSON(`${ukDate()}/${t}/${v}/from/${fromLabel(b.src, b.r)}`, { at: Date.now() });
+    label = fromLabel(b.src, b.r);
+    await store.setJSON(`${ukDate()}/${t}/${v}/from/${label}`, { at: Date.now() });
   }
 
   const key = `${ukDate()}/${t}/${v}/${s}`;
   const already = PING[s] ? await store.get(key) : null; // only ping once per person per step per day
   await store.setJSON(key, { at: Date.now() });
   if (PING[s] && already === null) {
-    try { await telegram(PING[s](t)); } catch (e) { console.error('magnet ping:', e.message); }
+    try {
+      if (!label) {
+        const { blobs } = await store.list({ prefix: `${ukDate()}/${t}/${v}/from/` });
+        label = blobs[0]?.key.split('/')[4] || null;
+      }
+      // Name and email ride along on 'began' / 'email' for the ping only. Never written to the store.
+      const name = typeof b.n === 'string' ? b.n.trim().slice(0, 60) : '';
+      const email = typeof b.e === 'string' && /^[^\s@]{1,64}@[^\s@]{1,190}$/.test(b.e.trim()) ? b.e.trim() : '';
+      await telegram(PING[s](t, { from: plainSource(label || 'not recorded'), name, email }));
+    } catch (e) { console.error('magnet ping:', e.message); }
   }
   return { statusCode: 204, headers, body: '' };
 };
