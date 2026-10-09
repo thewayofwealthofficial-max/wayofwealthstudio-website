@@ -42,6 +42,8 @@ const SEQUENCES = {
   'diagnostic-status': require('./sequences/diagnostic-status'),
   'diagnostic-vigilance': require('./sequences/diagnostic-vigilance'),
   'session-reminder': require('./sequences/session-reminder'),
+  // 9 Oct 2026. Masterclass follow-up (10 emails, 12 days). Connected below.
+  'masterclass': require('./sequences/masterclass'),
 };
 
 // Which sign-up form starts which sequence.
@@ -57,6 +59,8 @@ const MAGNET_TO_SEQUENCE = {
   // Step 1 of the booking box on /your-number (5 Oct): name + email, then Calendly. Reminders for anyone who
   // doesn't book; booking on the page stops them (session-booked.js).
   'session-booking': 'session-reminder',
+  // The free masterclass (/masterclass). Switched on by Joel 9 Oct 2026 ("go").
+  masterclass: 'masterclass',
 };
 
 let lastCall = 0;
