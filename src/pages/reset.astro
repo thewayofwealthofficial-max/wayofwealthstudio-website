@@ -455,7 +455,7 @@ const description = "Find out where your money is actually going in under 3 minu
           honeypot: form.querySelector('[name="website"]').value || null,
           // Only sent when the person ticked the box. Used for their email, never stored.
           breakdown: $('rs-send-numbers').checked
-            ? (() => { const c = calc(); return { cur: state.cur, rev: c.rev, tax: c.tax, run: c.run, buffer: c.buffer, payMonth: c.payMonth, payWeek: c.payWeek, taxPct: state.taxPct }; })()
+            ? (() => { const c = calc(); return { cur: state.cur, rev: c.rev, tax: c.tax, run: c.run, buffer: c.buffer, payMonth: c.payMonth, payWeek: c.payWeek, taxPct: state.taxPct, short: c.short, extra: c.extra }; })()
             : null,
         }),
       });

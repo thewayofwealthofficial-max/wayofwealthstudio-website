@@ -71,6 +71,11 @@ function breakdownText(b) {
   const [rev, tax, run, buffer, payMonth, payWeek, taxPct] = ['rev', 'tax', 'run', 'buffer', 'payMonth', 'payWeek', 'taxPct'].map(n);
   if ([rev, tax, run, buffer, payMonth, payWeek, taxPct].some((x) => x === null)) return null;
   const m = (x) => `${cur}${x.toLocaleString('en-GB')}`;
+  // Same words as the red box on the page, when what's left doesn't cover their life (9 Oct 2026).
+  const short = n('short'), extra = n('extra');
+  const shortLine = short > 0 && extra > 0
+    ? [`- **You're short ${m(short)} a month.** To cover what your life costs, about ${m(extra)} more needs to come in each month.`]
+    : [];
   return [
     'Each month, roughly:',
     `- **Coming in:** ${m(rev)}`,
@@ -78,6 +83,7 @@ function breakdownText(b) {
     `- **Work bills:** ${m(run)}. What your work costs to run, ring-fenced.`,
     `- **Slow-month buffer:** ${m(buffer)}. Builds up during strong months to protect your pay when you take time off.`,
     `- **Yours to keep:** ${m(payWeek)} a week (${m(payMonth)} a month). A steady wage that stays the same whether you had a big month or a quiet one.`,
+    ...shortLine,
   ].join('\n').replace(/\n- /, '\n\n- ');
 }
 
