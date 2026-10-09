@@ -28,9 +28,9 @@ const description = "Find out where your money is actually going in under 3 minu
   </header>
 
   <!-- ============================================================
-       2 · YOUR NUMBERS — three quick inputs, all pre-filled with a
-       sensible default. No life-cost figure to type: the pay formula
-       is a flat share of what's left, not a cap against living costs.
+       2 · YOUR NUMBERS — four quick inputs, all pre-filled. Pay = what your life costs, if what's left covers
+       it; the rest builds the buffer. If it doesn't, the shortfall shows (Joel, 9 Oct 2026; replaces the flat
+       70% share of 22 Sep, which never checked the wage against living costs).
   ============================================================ -->
   <div class="rs-card reveal">
     <p class="rs-step">Step one</p>
@@ -85,7 +85,25 @@ const description = "Find out where your money is actually going in under 3 minu
       </div>
     </div>
 
-    <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reset My Numbers in 3 Minutes →</button>
+    <!-- Living costs -->
+    <div class="rs-block">
+      <label class="rs-label" for="rs-life-chips">Roughly what does your life cost each month?</label>
+      <p class="rs-help rs-help-tight">Rent or mortgage, food, bills, everything you need to live. Not your work costs.</p>
+      <div class="rs-chips" id="rs-life-chips">
+        <button type="button" class="rs-chip" data-val="1500">£1,500</button>
+        <button type="button" class="rs-chip" data-val="2000">£2,000</button>
+        <button type="button" class="rs-chip is-on" data-val="2500">£2,500</button>
+        <button type="button" class="rs-chip" data-val="3000">£3,000</button>
+        <button type="button" class="rs-chip" data-val="custom">Custom</button>
+      </div>
+      <div class="rs-moneybox rs-run-custom-box" id="rs-life-custom-box" hidden>
+        <span class="rs-cur">£</span>
+        <input id="rs-life-custom" type="number" min="0" step="10" inputmode="decimal" placeholder="–" />
+        <span class="rs-suffix-per">a month</span>
+      </div>
+    </div>
+
+    <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reset My Numbers →</button>
   </div>
 
   <!-- Results show free the moment "Reset My Numbers" is pressed (Joel, 9 Oct 2026: 7 people reached
@@ -104,7 +122,12 @@ const description = "Find out where your money is actually going in under 3 minu
       <p class="rs-hero-out-k">What's Yours to Keep</p>
       <p class="rs-hero-out-v"><span class="rs-cur">£</span><span id="rs-w-payweek">0</span><span class="rs-per">/ week</span></p>
       <p class="rs-hero-out-sub">(or <span class="rs-cur">£</span><span id="rs-w-pay">0</span> / month on the 1st)</p>
-      <p class="rs-hero-out-context">A consistent, guilt-free salary that stays the same whether you had a big month or a quiet one.</p>
+      <p class="rs-hero-out-context" id="rs-w-context">A consistent, guilt-free salary that stays the same whether you had a big month or a quiet one.</p>
+    </div>
+
+    <div class="rs-short" id="rs-short" hidden>
+      <p class="rs-short-k">You're short <span class="rs-cur">£</span><span id="rs-w-short">0</span> a month.</p>
+      <p class="rs-short-n">To cover what your life costs, about <span class="rs-cur">£</span><span id="rs-w-extra">0</span> more needs to come in each month.</p>
     </div>
 
     <div class="rs-grid">
@@ -219,6 +242,7 @@ const description = "Find out where your money is actually going in under 3 minu
     revenue: 5000,
     runAmt: 500, // work costs, a flat amount — not a share of revenue
     taxPct: 20,  // a starting point to show the split, not a recommendation
+    lifeAmt: 2500, // what their life costs a month (rent, food, bills)
     unlocked: false, // true once they press "Reset My Numbers". Never remembered (Joel, 9 Oct: always a reveal).
   };
 
@@ -236,12 +260,19 @@ const description = "Find out where your money is actually going in under 3 minu
     const run = state.runAmt;
     const net = Math.max(0, rev - tax - run);
 
-    const payMonthRaw = net * 0.70;
+    // Pay yourself what your life costs, if what's left covers it. The rest builds the buffer.
+    const life = Math.max(0, state.lifeAmt);
+    const payMonthRaw = Math.min(net, life);
     const payMonth = Math.round(payMonthRaw);
     const payWeek = Math.round((payMonthRaw * 12) / 52);
     const buffer = Math.round(net - payMonthRaw);
+    // Short: extra coming in needed to close the gap. Bigger than the gap, because tax comes off the extra too
+    // (work costs are a flat amount, so they don't grow with it).
+    const short = Math.round(Math.max(0, life - net));
+    const keep = 1 - taxPct / 100;
+    const extra = short > 0 && keep > 0 ? Math.round(short / keep) : 0;
 
-    return { rev, tax, run, net, payMonth, payWeek, buffer };
+    return { rev, tax, run, net, payMonth, payWeek, buffer, short, extra };
   }
 
   /* ---------- painting ---------- */
@@ -262,6 +293,12 @@ const description = "Find out where your money is actually going in under 3 minu
     $('rs-w-pay').textContent = fmt(c.payMonth);
     $('rs-w-payweek').textContent = fmt(c.payWeek);
     $('rs-w-buf').textContent = fmt(c.buffer);
+    $('rs-short').hidden = c.short === 0;
+    $('rs-w-short').textContent = fmt(c.short);
+    $('rs-w-extra').textContent = fmt(c.extra);
+    $('rs-w-context').textContent = c.short === 0
+      ? 'What your life costs, paid to you like a salary. The same whether you had a big month or a quiet one.'
+      : "This is everything that's left after tax and work costs. It doesn't cover what your life costs yet.";
   }
 
   /* ---------- the gate ----------
@@ -312,6 +349,33 @@ const description = "Find out where your money is actually going in under 3 minu
   runCustomInput.addEventListener('input', () => {
     const v = Number(runCustomInput.value);
     state.runAmt = isFinite(v) ? Math.max(0, v) : 0;
+    paint();
+  });
+
+  /* ---------- living costs (same pattern as work costs) ---------- */
+  const lifeChips = document.querySelectorAll('#rs-life-chips .rs-chip');
+  const lifeCustomBox = $('rs-life-custom-box');
+  const lifeCustomInput = $('rs-life-custom');
+  lifeChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      lifeChips.forEach((c) => c.classList.remove('is-on'));
+      chip.classList.add('is-on');
+      const val = chip.getAttribute('data-val');
+      if (val === 'custom') {
+        lifeCustomBox.hidden = false;
+        lifeCustomInput.focus();
+        const v = Number(lifeCustomInput.value);
+        state.lifeAmt = isFinite(v) ? Math.max(0, v) : 0;
+      } else {
+        lifeCustomBox.hidden = true;
+        state.lifeAmt = Number(val);
+      }
+      paint();
+    });
+  });
+  lifeCustomInput.addEventListener('input', () => {
+    const v = Number(lifeCustomInput.value);
+    state.lifeAmt = isFinite(v) ? Math.max(0, v) : 0;
     paint();
   });
 
@@ -612,6 +676,10 @@ const description = "Find out where your money is actually going in under 3 minu
   /* Pot 1 reads as "hands off", not as an error. The tax pot is doing its job,
      and shame is not a lever (TEACHING_SCOPE.md §5.2). */
   .rs-pot-alert .rs-pot-k { color: #E8D5B0; }
+  .rs-short { margin: 1.4rem auto 1.4rem; max-width: 34rem; text-align: center; border: 1px solid rgba(214, 90, 74, 0.55);
+    background: rgba(214, 90, 74, 0.10); border-radius: 14px; padding: 1rem 1.2rem; }
+  .rs-short-k { font-family: var(--font-ui); font-weight: 700; font-size: 1.05rem; color: #F2A99E; margin: 0; }
+  .rs-short-n { font-family: var(--font-ui); font-size: 0.88rem; line-height: 1.55; color: var(--d-mute); margin: 0.4rem 0 0; }
   .rs-pot-k { font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; color: var(--d-text); }
   .rs-pot-pct { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--d-mute); margin-left: 0.35rem; }
   .rs-pot-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.75rem; font-weight: 600; color: #fff; margin-top: 0.5rem; line-height: 1.1; }
