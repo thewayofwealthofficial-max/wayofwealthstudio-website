@@ -54,5 +54,68 @@
     "name": "The Business (R)Evolution Podcast",
     "type": "podcast",
     "country": "US"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "leonandcompany.co.uk",
+    "name": "Leon & Company",
+    "type": "accountant",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "creativeandnumbers.co.uk",
+    "name": "Creative and Numbers",
+    "type": "accountant",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "amrbookkeeping.co.uk",
+    "name": "AMR Bookkeeping Solutions",
+    "type": "bookkeeper",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "auditconsultinggroup.co.uk",
+    "name": "Audit Consulting Group",
+    "type": "bookkeeper",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "bbnetworking.co.uk",
+    "name": "BBN – Business Breakfast Networking",
+    "type": "business network",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "tylergrange.co.uk",
+    "name": "Tyler Grange",
+    "type": "employer",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "consensussupport.com",
+    "name": "Consensus Support",
+    "type": "employer",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "freelancelifestyle.co.uk",
+    "name": "The Freelancer's Teabreak",
+    "type": "podcast",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-09",
+    "domain": "freelancingfemales.com",
+    "name": "Freelancing Females Newsletter",
+    "type": "newsletter",
+    "country": "US"
   }
 ]
