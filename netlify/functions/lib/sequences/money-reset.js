@@ -7,6 +7,8 @@
 // afterHours = hours after sign-up. Email 1 goes instantly from the sign-up form.
 
 const CALL = 'https://calendly.com/thewayofwealth-official/20min';
+// 9 Oct 2026 (Joel): one ask everywhere = the Cash Flow Session. Ask lines below now point here.
+const SESSION = 'https://wayofwealthcoaching.com/your-number/';
 
 module.exports = {
   footerReason: 'you used the Money Reset Tool at wayofwealthcoaching.com',
@@ -47,7 +49,7 @@ Two small asks.
 Joel
 MSc Behavioural Economics | Qualified Financial Planner
 
-P.S. Want this set up in your actual bank accounts? We set up these exact sub-accounts and automated transfers together. [Book a free 20-minute call](${CALL}).
+P.S. Want to know what these pots need to hold for your business? In a Cash Flow Session I build your cash flow model with you, live on screen, so you leave knowing how much you actually need to earn. **[Find out your number here](${SESSION})**.
 `,
     },
     {
@@ -177,7 +179,7 @@ Taking it off the pedestal doesn't mean caring less about money. You just get to
 
 [Watch Josh say it himself here](https://wayofwealthcoaching.com/testimonials/josh-pedestal.mp4).
 
-If you want to work on this with me, one to one, [book a free 20-minute call](${CALL}). I take on five people a month.
+If you want to work on this with me, start with a Cash Flow Session: 75 minutes, live on screen, and you leave knowing your number. **[Find out your number here](${SESSION})**. 5 places a week.
 
 Joel
 `,
@@ -210,7 +212,7 @@ So here's what working together actually looks like. It's called the Money Story
 
 It's not a course or a PDF. It's the work on why it hasn't stuck before, plus the system, set up with you.
 
-I take on five people a month. If you'd like to see if it's a fit, [book a free 20-minute call](${CALL}). We just talk about where you are and whether I can help.
+If you'd like to start, book a Cash Flow Session. 75 minutes, live on screen, and you leave knowing how much you actually need to earn. **[Find out your number here](${SESSION})**. 5 places a week.
 
 Joel
 `,
@@ -234,7 +236,7 @@ I learned something like this in the gym, of all places. On the days I didn't wa
 
 So you don't need to wait for a calm month to start.
 
-If you want to do this properly, with me, [book a free 20-minute call](${CALL}). I take on five people a month.
+If you want to do this properly, with me, **[find out your number here](${SESSION})**. 75 minutes, live on screen. 5 places a week.
 
 And if now's not the time, that's completely fine. From here you'll get Finance Fridays every Friday, and a few shorter emails in between. I'm really glad you're here.
 
