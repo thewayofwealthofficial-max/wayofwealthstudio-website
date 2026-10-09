@@ -160,21 +160,7 @@ const description = "Find out where your money is actually going in under 3 minu
     <p class="rs-unlock-n">The guide is on its way. If it's not there in a few minutes, check your junk folder.</p>
   </div>
 
-  <!-- ============================================================
-       4 · TAKE IT WITH YOU
-  ============================================================ -->
-  <div class="rs-card reveal">
-    <p class="rs-step">Last bit</p>
-    <h2 class="rs-h2">Want this set up in your actual bank accounts?</h2>
-    <p class="rs-help">
-      We set up these exact sub-accounts and automated transfers together.
-    </p>
-    <div class="rs-actions">
-      <a class="rs-btn rs-btn-primary" href={`${LINKS.vsl}?src=reset`} target="_blank" rel="noopener noreferrer" data-track="book">
-        Book a Free Consultation →
-      </a>
-    </div>
-  </div>
+  <!-- The "Book a Free Consultation" box was removed (Joel, 9 Oct 2026): the guide is the one next step here. -->
 
   </div><!-- /#rs-locked -->
 
@@ -233,24 +219,8 @@ const description = "Find out where your money is actually going in under 3 minu
     revenue: 5000,
     runAmt: 500, // work costs, a flat amount — not a share of revenue
     taxPct: 20,  // a starting point to show the split, not a recommendation
-    unlocked: false, // set once they have given an email (or did on a previous visit)
+    unlocked: false, // true once they press "Reset My Numbers". Never remembered (Joel, 9 Oct: always a reveal).
   };
-
-  // Remember the unlock so a refresh doesn't ask twice. Private browsing and blocked
-  // site data both throw here, in which case they simply get asked again.
-  const UNLOCK_KEY = 'wow_reset_unlocked_v4';
-  try {
-    state.unlocked = localStorage.getItem(UNLOCK_KEY) === '1';
-  } catch (err) {
-    state.unlocked = false;
-  }
-
-  // People already on the email list arrive from the daily email with ?via=list on the
-  // link (send-daily.mjs adds it). They have given their email already, so no gate.
-  if ((new URLSearchParams(location.search).get('via') || '').startsWith('list')) {
-    state.unlocked = true;
-    try { localStorage.setItem(UNLOCK_KEY, '1'); } catch (err) { /* nothing to do */ }
-  }
 
   const fmt = (n) => Math.round(n).toLocaleString('en-GB');
 
@@ -386,7 +356,6 @@ const description = "Find out where your money is actually going in under 3 minu
 
   function unlock() {
     state.unlocked = true;
-    try { localStorage.setItem(UNLOCK_KEY, '1'); } catch (err) { /* nothing to do */ }
     paintGate();
     paint();
     $('rs-locked').scrollIntoView({ behavior: 'smooth', block: 'start' });

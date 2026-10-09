@@ -13,9 +13,9 @@ const TOOLS = {
       ['started', 'Touched the numbers'],
       ['reveal', 'Pressed "Reset My Numbers"'],
       ['email', 'Gave their email (got the guide)'],
-      ['book', 'Clicked "Book a Free Consultation"'],
     ],
-    extra: [['skool', 'Clicked "Join the Skool Community"']],
+    // The book and Skool buttons were removed from /reset (book: Joel, 9 Oct 2026). The guide is the next step.
+    extra: [],
   },
   masterclass: {
     name: 'Free Masterclass',
