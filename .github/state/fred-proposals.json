@@ -1,5 +1,20 @@
 {
-  "generated_at": "2026-10-08T22:26:04.647Z",
+  "generated_at": "2026-10-09T21:52:51.633Z",
   "ttl_ms": 86400000,
-  "proposals": []
+  "proposals": [
+    {
+      "id": "blog-title-diagnostic-crutch",
+      "file": "src/content/blog/prices-are-up-and-youre-avoiding-your-numbers-heres-whats-happening-in-your-brai.md",
+      "impact": "Remove banned diagnostic crutch from title to improve trust and click quality",
+      "risk": "low",
+      "observation": "The blog post published today carries the title \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\" The phrase \"Here's what's happening in your brain\" is listed verbatim in the banned structural patterns as a diagnostic crutch (\"Here's what's really happening\" / \"The truth is\" / \"Most people don't realise\" family). It also fails the Sultanic test: 1,000 other coaches could write that exact subtitle. The post went live today, so the change costs one file edit and avoids that title compounding across any social shares or RSS pulls that happen in the next 24 hours.",
+      "proposal": "Replace the title's second sentence with something only Joel could write, grounded in the specific behavioural mechanism the post actually covers. The new title should name the brain behaviour precisely rather than promising a reveal. This keeps the hook but removes the diagnostic-crutch structure and passes the Sultanic test.",
+      "current_text": "title: \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\"",
+      "new_text": "title: \"Prices are up and you're avoiding your numbers. Your brain is doing it on purpose.\"",
+      "signed_id": "85227fb86e853d34.1791582771631",
+      "created_at": 1791582771631,
+      "requires_manual": false,
+      "block_reason": null
+    }
+  ]
 }
