@@ -14,8 +14,9 @@ module.exports = {
     {
       id: '01-your-numbers',
       afterHours: 0,
-      subject: 'your numbers (and what to do with them)',
-      preheader: "What's yours to keep, and where the rest goes.",
+      // 9 Oct 2026: the tool no longer needs an email, so this email now delivers the guide (Joel: yes).
+      subject: 'your guide (and what to do with your numbers)',
+      preheader: 'The 5 phases, and what to do with your numbers.',
       // Used when no figures were ticked, or when the hourly runner retries a failed first send (no figures then).
       defaults: {
         breakdown: "The tool splits what comes in into four pots: tax, work bills, a slow-month buffer, and a steady weekly wage, so you know what's yours to keep. Your numbers stayed on the page, so [run it again here](https://wayofwealthcoaching.com/reset/) any time you want to see them.",
@@ -23,7 +24,7 @@ module.exports = {
       body: `
 Hey {{name}},
 
-Here's your breakdown from the Money Reset Tool, like I promised.
+Here's the guide I promised: **[The Money Story Method](https://wayofwealthcoaching.com/guides/the-money-story-method.pdf)**. It's the 5 phases my clients used to put these pots into their real bank accounts, and keep them there.
 
 {{breakdown}}
 

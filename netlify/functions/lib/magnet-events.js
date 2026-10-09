@@ -12,7 +12,7 @@ const TOOLS = {
       ['opened', 'Opened the page'],
       ['started', 'Touched the numbers'],
       ['reveal', 'Pressed "Reset My Numbers"'],
-      ['email', 'Gave their email (unlocked)'],
+      ['email', 'Gave their email (got the guide)'],
       ['book', 'Clicked "Book a Free Consultation"'],
     ],
     extra: [['skool', 'Clicked "Join the Skool Community"']],

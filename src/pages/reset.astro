@@ -24,7 +24,7 @@ const description = "Find out where your money is actually going in under 3 minu
       Stop doing mental math every time you open your banking app. It splits what comes in into
       tax, work bills, a slow-month buffer and a steady weekly wage, so you know what’s yours to keep.
     </p>
-    <p class="rs-conf">🔒 Free. Your figures stay on this page unless you tick the box to email them to yourself. We don’t keep them. One email opens the rest.</p>
+    <p class="rs-conf">🔒 Free. Your figures stay on this page unless you tick the box to email them to yourself. We don’t keep them. No email needed to see your numbers.</p>
   </header>
 
   <!-- ============================================================
@@ -88,32 +88,8 @@ const description = "Find out where your money is actually going in under 3 minu
     <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reset My Numbers in 3 Minutes →</button>
   </div>
 
-  <!-- ============================================================
-       2b · THE GATE — hidden until "Reset My Numbers" is clicked.
-       Nothing past it renders until an email is given. Remembered per browser.
-  ============================================================ -->
-  <form class="rs-card rs-unlock reveal" id="rs-unlock" hidden novalidate>
-    <p class="rs-unlock-k">Where should we send your breakdown?</p>
-    <p class="rs-unlock-n">
-      Enter your first name and email to unlock your exact numbers and keep a copy for your records.
-    </p>
-    <div class="rs-unlock-row">
-      <label class="rs-sr" for="rs-name">First name</label>
-      <input id="rs-name" type="text" autocomplete="given-name" placeholder="First name" />
-      <label class="rs-sr" for="rs-email">Your email</label>
-      <input id="rs-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
-      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Unlock My Results →</button>
-    </div>
-    <!-- honeypot: bots fill this, humans never see it -->
-    <div class="rs-honeypot" aria-hidden="true">
-      <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-    </div>
-    <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
-    <!-- Unticked by default: figures only leave the page if the person chooses (Joel, 27 Sep). -->
-    <label class="rs-tick"><input type="checkbox" id="rs-send-numbers" /> Email me my numbers too</label>
-    <p class="rs-micro">Free. No spam, and you can unsubscribe any time. We don’t keep your numbers.</p>
-  </form>
-
+  <!-- Results show free the moment "Reset My Numbers" is pressed (Joel, 9 Oct 2026: 7 people reached
+       the old email gate in a week and none gave an email). The email now gets the guide, below. -->
   <div id="rs-locked" hidden>
   <!-- ============================================================
        3 · WHAT'S YOURS TO KEEP  (the one gold-edged moment on the page)
@@ -150,6 +126,38 @@ const description = "Find out where your money is actually going in under 3 minu
         <p class="rs-pot-n">Builds up automatically during strong months to protect your paycheck when you take time off.</p>
       </div>
     </div>
+  </div>
+
+  <!-- ============================================================
+       3b · THE GUIDE — the email swap. They've seen their numbers; this is how to set them up.
+  ============================================================ -->
+  <form class="rs-card rs-unlock reveal" id="rs-unlock" novalidate>
+    <p class="rs-step">Free guide</p>
+    <p class="rs-unlock-k">Download the free guide to set this up properly.</p>
+    <p class="rs-unlock-n">
+      The Money Story Method: the 5 phases my clients used to put these pots into their real bank
+      accounts, and keep them there. Enter your first name and email and I'll send it to you.
+    </p>
+    <div class="rs-unlock-row">
+      <label class="rs-sr" for="rs-name">First name</label>
+      <input id="rs-name" type="text" autocomplete="given-name" placeholder="First name" />
+      <label class="rs-sr" for="rs-email">Your email</label>
+      <input id="rs-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
+      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Send Me the Guide →</button>
+    </div>
+    <!-- honeypot: bots fill this, humans never see it -->
+    <div class="rs-honeypot" aria-hidden="true">
+      <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
+    <!-- Unticked by default: figures only leave the page if the person chooses (Joel, 27 Sep). -->
+    <label class="rs-tick"><input type="checkbox" id="rs-send-numbers" /> Email me my numbers too</label>
+    <p class="rs-micro">Free. No spam, and you can unsubscribe any time. We don’t keep your numbers.</p>
+  </form>
+  <div class="rs-card rs-unlock" id="rs-guide-sent" hidden>
+    <p class="rs-step">Free guide</p>
+    <p class="rs-unlock-k">Sent. Check your inbox.</p>
+    <p class="rs-unlock-n">The guide is on its way. If it's not there in a few minutes, check your junk folder.</p>
   </div>
 
   <!-- ============================================================
@@ -351,15 +359,7 @@ const description = "Find out where your money is actually going in under 3 minu
   /* ---------- reveal ---------- */
   $('rs-reveal-btn').addEventListener('click', () => {
     track('reveal');
-    if (state.unlocked) {
-      paint();
-      $('rs-locked').hidden = false;
-      $('rs-locked').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
-
-    $('rs-unlock').hidden = false;
-    $('rs-unlock').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    unlock();
   });
 
   /* ---------- unlock ----------
@@ -389,7 +389,6 @@ const description = "Find out where your money is actually going in under 3 minu
     try { localStorage.setItem(UNLOCK_KEY, '1'); } catch (err) { /* nothing to do */ }
     paintGate();
     paint();
-    $('rs-unlock').hidden = true;
     $('rs-locked').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -430,7 +429,8 @@ const description = "Find out where your money is actually going in under 3 minu
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         track('email', { n: name, e: v.email });
-        unlock();
+        form.hidden = true;
+        $('rs-guide-sent').hidden = false;
         return;
       }
       // Say what actually went wrong rather than unlocking on a failure.
