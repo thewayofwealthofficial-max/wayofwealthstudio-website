@@ -125,7 +125,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 100 | ⏸ | How does one live in the wish fulfilled as far as financial abundance when it comes to spending? | positive fantasies (Oettingen) | Spending & shame | All segments |
 | 101 | ✅ | How can I set a budget when there are months without significant income? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
 | 102 | ✅ | The salaries of my employees will be paid out of the revenue, but what about my salary? | defaults (Madrian & Shea), mental accounting (Thaler) | Self-employed | Small business owners |
-| 103 | 🔵 | Should we set our income to the total of all our monthly expenses and then adjust from there? | commitment devices (Ashraf, Karlan & Yin), mental accounting (Thaler) | Self-employed | Small business owners |
+| 103 | ✅ | Should we set our income to the total of all our monthly expenses and then adjust from there? | commitment devices (Ashraf, Karlan & Yin), mental accounting (Thaler) | Self-employed | Small business owners |
 | 104 | 🔵 | Is profit something we put away for a rainy day and Owner's pay simply our paycheque? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
 | 105 | 🔵 | What percentage of my paychecks should I be setting aside for taxes? | if-then plans (implementation intentions), earmarking (Soman & Cheema); explain how a tax pot works, never give their percentage | Self-employed | Small business owners |
 
