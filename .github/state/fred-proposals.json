@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-10-09T21:52:51.633Z",
+  "generated_at": "2026-10-10T20:41:57.421Z",
   "ttl_ms": 86400000,
   "proposals": [
     {
       "id": "blog-title-diagnostic-crutch",
       "file": "src/content/blog/prices-are-up-and-youre-avoiding-your-numbers-heres-whats-happening-in-your-brai.md",
-      "impact": "Remove banned diagnostic crutch from title to improve trust and click quality",
+      "impact": "remove banned diagnostic crutch from published title to protect brand voice",
       "risk": "low",
-      "observation": "The blog post published today carries the title \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\" The phrase \"Here's what's happening in your brain\" is listed verbatim in the banned structural patterns as a diagnostic crutch (\"Here's what's really happening\" / \"The truth is\" / \"Most people don't realise\" family). It also fails the Sultanic test: 1,000 other coaches could write that exact subtitle. The post went live today, so the change costs one file edit and avoids that title compounding across any social shares or RSS pulls that happen in the next 24 hours.",
-      "proposal": "Replace the title's second sentence with something only Joel could write, grounded in the specific behavioural mechanism the post actually covers. The new title should name the brain behaviour precisely rather than promising a reveal. This keeps the hook but removes the diagnostic-crutch structure and passes the Sultanic test.",
+      "observation": "Yesterday's published blog post carries the title \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\" The second sentence is a direct diagnostic crutch (\"Here's what's happening\") which appears verbatim on the banned structural patterns list. It also reads as a generic hook that could appear on any personal finance site. The Sultanic test fails: 1,000 other coaches could write this exact sentence. The title is live and indexed, so the fix needs to happen in the content file, not a draft.",
+      "proposal": "Rewrite the second sentence of the blog title to remove the diagnostic crutch and pass the Sultanic test. The replacement should stay close in character count to avoid disrupting any social previews already scheduled, and should be specific enough that only Joel, with his behavioural economics background, could plausibly have written it. One frontmatter field edit in the published file.",
       "current_text": "title: \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\"",
-      "new_text": "title: \"Prices are up and you're avoiding your numbers. Your brain is doing it on purpose.\"",
-      "signed_id": "85227fb86e853d34.1791582771631",
-      "created_at": 1791582771631,
+      "new_text": "title: \"Prices are up and you're avoiding your numbers. Your brain is running a cost-of-looking calculation, and it's lying to you.\"",
+      "signed_id": "20c63a2d9af0da2b.1791664917419",
+      "created_at": 1791664917419,
       "requires_manual": false,
       "block_reason": null
     }
