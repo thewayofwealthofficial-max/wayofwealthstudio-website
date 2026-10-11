@@ -196,7 +196,8 @@ function buildPdf(raw, firstName) {
   const pts = [
     { x: tx1, top: 'Today', bot: m(0) },
     { x: tx1 + (tx2 - tx1) * 0.35, top: `1 month: ${m(d.buffer.first)}`, bot: d.buffer.firstMonths ? `about ${d.buffer.firstMonths} months` : 'not yet possible' },
-    { x: tx2, top: `6 months: ${m(d.buffer.full)}`, bot: d.buffer.fullMonths ? `about ${d.buffer.fullMonths} months` : 'not yet possible' },
+    // Joel 11 Oct: no 'about 59 months' here, it reads as defeat. The 6-month goal is named, not timed.
+    { x: tx2, top: `6 months: ${m(d.buffer.full)}`, bot: 'the long-term goal' },
   ];
   pts.forEach((pt, i) => {
     doc.setFillColor(...(i === 0 ? C.mute : C.gold)); doc.circle(pt.x, ty, 6, 'F');
