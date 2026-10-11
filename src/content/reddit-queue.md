@@ -128,6 +128,19 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 103 | ✅ | Should we set our income to the total of all our monthly expenses and then adjust from there? | commitment devices (Ashraf, Karlan & Yin), mental accounting (Thaler) | Self-employed | Small business owners |
 | 104 | 🔵 | Is profit something we put away for a rainy day and Owner's pay simply our paycheque? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
 | 105 | 🔵 | What percentage of my paychecks should I be setting aside for taxes? | if-then plans (implementation intentions), earmarking (Soman & Cheema); explain how a tax pot works, never give their percentage | Self-employed | Small business owners |
+| 106 | 🔵 | Why do I spend money so fast? | Present bias, hedonic adaptation | Spending & shame | All segments |
+| 107 | 🔵 | Why do I feel like I have to spend all my money? | Scarcity mindset (money scripts, Klontz), present bias | Spending & shame | All segments |
+| 108 | 🔵 | Why am I so bad with money? | Money scripts (Klontz), self-concept threat | Anxiety & avoidance | All segments |
+| 109 | 🔵 | Why does spending money make me anxious? | Pain of paying, loss aversion | Anxiety & avoidance | All segments |
+| 110 | 🔵 | Why do I always run out of money? | Present bias, mental accounting | Budgeting that sticks | Self-employed |
+| 111 | 🔵 | How do I stop living paycheck to paycheck? | Status quo bias, implementation intentions | Budgeting that sticks | Self-employed |
+| 112 | 🔵 | How much should I pay myself as a small business owner? | Mental accounting, status quo bias | Self-employed | Small business owners |
+| 113 | 🔵 | How do I pay myself a salary when self-employed? | Mental accounting, implementation intentions | Self-employed | Self-employed |
+| 114 | 🔵 | How much should I put aside for tax when self-employed? | Present bias, implementation intentions | Self-employed | Self-employed |
+| 115 | 🔵 | How do I separate my business and personal money? | Mental accounting, law of least effort | Self-employed | Small business owners |
+| 116 | 🔵 | Why do I feel the need to buy things? | Emotional spending, money scripts (Klontz) | Spending & shame | All segments |
+| 117 | 🔵 | Why do I feel bad about charging for my services? | Money scripts (Klontz), loss aversion | Self-employed | Self-employed |
+| 118 | 🔵 | How do I stop feeling bad after spending money? | Pain of paying, money scripts (Klontz) | Spending & shame | All segments |
 
 ---
 
