@@ -238,7 +238,7 @@ function buildPdf(raw, firstName) {
 
   panel(doc, y, 150, C.gold);
   doc.setFont('Fraunces', 'normal'); doc.setFontSize(18); doc.setTextColor(...C.text); doc.text('Want your exact number?', X + 20, y + 34);
-  para(doc, 'These numbers are a rough guide. On a Cash Flow Session we go through your real bank statements together. 75 minutes. You leave knowing your exact number.', y + 58, { x: X + 20, width: CW - 40, size: 10.5 });
+  para(doc, 'These numbers are a rough guide. On a Cash Flow Session I build your cash flow model with you, live on screen, from rough numbers you give me. No bank statements, no bank details. 75 minutes. You leave knowing your exact number.', y + 58, { x: X + 20, width: CW - 40, size: 10.5 });
   doc.setFillColor(...C.gold); doc.roundedRect(X + 20, y + 102, 250, 32, 8, 8, 'F');
   doc.setFont('Inter', 'bold'); doc.setFontSize(11); doc.setTextColor(...C.onGold);
   doc.text('Book a Cash Flow Session (£99.97)', X + 145, y + 122, { align: 'center' });
