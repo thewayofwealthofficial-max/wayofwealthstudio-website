@@ -7,14 +7,15 @@
 
 const TOOLS = {
   reset: {
-    name: 'Money Reset Tool',
+    // 11 Oct 2026: /reset is now the Pay Yourself Calculator (Joel's 4 steps: started, finished, gave email, clicked Session).
+    name: 'Pay Yourself Calculator',
     steps: [
       ['opened', 'Opened the page'],
-      ['started', 'Touched the numbers'],
-      ['reveal', 'Pressed "Reset My Numbers"'],
-      ['email', 'Gave their email (got the guide)'],
+      ['started', 'First tap'],
+      ['finished', 'Saw their weekly wage'],
+      ['email', 'Gave their email (got the plan)'],
+      ['book', 'Clicked "Book a Cash Flow Session"'],
     ],
-    // The book and Skool buttons were removed from /reset (book: Joel, 9 Oct 2026). The guide is the next step.
     extra: [],
   },
   masterclass: {

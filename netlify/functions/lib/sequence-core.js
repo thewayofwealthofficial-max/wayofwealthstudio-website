@@ -192,6 +192,9 @@ async function sendEmail({ to, email, firstName, footerReason, tagSeq, vars }) {
       text: r.text,
       headers: { 'List-Unsubscribe': `<${r.unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
       tags: tagSeq ? [{ name: 'sequence', value: tagSeq.replace(/[^a-zA-Z0-9_-]/g, '_') }] : undefined,
+
+      // 11 Oct 2026: the Pay Yourself Plan PDF rides along on /reset email 1 (never stored).
+      attachments: vars && Array.isArray(vars.__attachments) ? vars.__attachments : undefined,
     },
   });
   if (!res.ok) throw new Error(`Resend send ${res.status} ${res.text.slice(0, 200)}`);

@@ -1,212 +1,179 @@
 ---
+// THE PAY YOURSELF CALCULATOR at /reset (live 11 Oct 2026; replaced the Money Reset Tool, same URL so the
+// RESET keyword and old posts keep working). Joel's brief 10 Oct + the 9 Oct professional-practice check
+// (income = 12-month average or a slow month; VAT; payments on account in the plan). Six taps -> one free
+// number -> plan locked behind an email. The plan (email text + 3-page PDF) is built in
+// netlify/functions/lib/pay-plan.js from the six answers and not stored.
 import Layout from '../layouts/LandingLayout.astro';
 import { LINKS } from '../config/links';
 
-const title = "The Money Reset Tool — Free | Way of Wealth";
-const description = "Find out where your money is actually going in under 3 minutes. It splits what comes in into tax, work bills, a slow-month buffer and a steady weekly wage, so you know what's yours to keep. Free. Joel Ezekiel · MSc Behavioural Economics · Qualified Financial Planner.";
+const title = "Pay Yourself Calculator | How much can you safely pay yourself? | Way of Wealth";
+const description = "How much can you safely pay yourself each week? For business owners whose money comes in lumps. Free.";
+const CALENDLY = 'https://calendly.com/thewayofwealth-official/your-cash-flow-session';
+import { RESULT_CLIPS } from '../config/resultsClips';
+// Proof after the email (Joel, 11 Oct): checked clips, captions word for word. Sam left out (may be Joel's brother).
+const CLIPS = ['alon-2', 'josh-1', 'lynt-3', 'hozz-4'].map((s) => RESULT_CLIPS.find((c) => c.slug === s)).filter(Boolean);
 ---
-<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/reset`} bodyClass="rs-dark">
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/reset`} bodyClass="py-dark">
 
-<section class="rs-wrap">
+<main class="py-wrap">
 
-  <!-- ============================================================
-       1 · HERO
-  ============================================================ -->
-  <header class="rs-hero reveal">
-    <p class="rs-badge">⬥ Free Tool</p>
-    <h1 class="rs-h1">
-      The Money <em>Reset</em> Tool.
-    </h1>
-    <p class="rs-sub">
-      Find out where your money is actually going in under 3 minutes.
-    </p>
-    <p class="rs-sub rs-context">
-      Stop doing mental math every time you open your banking app. It splits what comes in into
-      tax, work bills, a slow-month buffer and a steady weekly wage, so you know what’s yours to keep.
-    </p>
-    <p class="rs-conf">🔒 Free. Your figures stay on this page unless you tick the box to email them to yourself. We don’t keep them. No email needed to see your numbers.</p>
+  <header class="py-hero">
+    <h1 class="py-h1">How much can you safely pay yourself each week?</h1>
+    <p class="py-sub">For business owners whose money comes in lumps. Six taps. Your number shows straight away.</p>
   </header>
 
-  <!-- ============================================================
-       2 · YOUR NUMBERS — four quick inputs, all pre-filled. Pay = what your life costs, if what's left covers
-       it; the rest builds the buffer. If it doesn't, the shortfall shows (Joel, 9 Oct 2026; replaces the flat
-       70% share of 22 Sep, which never checked the wage against living costs).
-  ============================================================ -->
-  <div class="rs-card reveal">
-    <p class="rs-step">Step one</p>
-    <h2 class="rs-h2">Your numbers.</h2>
-
-    <!-- Gross inflow -->
-    <div class="rs-currency" role="group" aria-label="Currency">
-      <button type="button" class="rs-chip is-on" data-cur="£">£</button>
-      <button type="button" class="rs-chip" data-cur="$">$</button>
-      <button type="button" class="rs-chip" data-cur="€">€</button>
-      <button type="button" class="rs-chip" data-cur="C$">C$</button>
-      <button type="button" class="rs-chip" data-cur="R">R</button>
-      <button type="button" class="rs-chip" data-cur="₪">₪</button>
+  <!-- 1. Income -->
+  <section class="py-q" data-q="income">
+    <p class="py-qn">1 of 6</p>
+    <h2 class="py-qt">What comes in each month, on average?</h2>
+    <p class="py-help">Take the average of the last 12 months. If it swings a lot, use a slow month instead.</p>
+    <div class="py-chips" data-key="income">
+      <button type="button" class="py-chip" data-val="3000">£3,000</button>
+      <button type="button" class="py-chip" data-val="5000">£5,000</button>
+      <button type="button" class="py-chip" data-val="8000">£8,000</button>
+      <button type="button" class="py-chip" data-val="12000">£12,000</button>
+      <button type="button" class="py-chip" data-val="20000">£20,000</button>
+      <button type="button" class="py-chip" data-val="custom">Custom</button>
     </div>
+    <div class="py-custom" hidden><span>£</span><input type="number" inputmode="numeric" min="0" placeholder="Type an amount" /><span>a month</span></div>
+  </section>
 
-    <label class="rs-label" for="rs-rev">Roughly what hits your business account each month?</label>
-    <p class="rs-help rs-help-tight">Everything that comes in from your work, before anything goes out.</p>
+  <!-- 2. VAT -->
+  <section class="py-q" data-q="vat">
+    <p class="py-qn">2 of 6</p>
+    <h2 class="py-qt">Are you VAT registered?</h2>
+    <div class="py-chips" data-key="vat">
+      <button type="button" class="py-chip" data-val="no">No</button>
+      <button type="button" class="py-chip" data-val="yes">Yes</button>
+    </div>
+  </section>
 
-    <p class="rs-bigfig">
-      <span class="rs-cur">£</span><span id="rs-rev-out">5,000</span><span class="rs-per">a month</span>
-    </p>
+  <!-- 3. Business costs -->
+  <section class="py-q" data-q="costs">
+    <p class="py-qn">3 of 6</p>
+    <h2 class="py-qt">What does the business cost to run each month?</h2>
+    <div class="py-chips" data-key="costs">
+      <button type="button" class="py-chip" data-val="250">£250</button>
+      <button type="button" class="py-chip" data-val="500">£500</button>
+      <button type="button" class="py-chip" data-val="1000">£1,000</button>
+      <button type="button" class="py-chip" data-val="2000">£2,000</button>
+      <button type="button" class="py-chip" data-val="custom">Custom</button>
+    </div>
+    <div class="py-custom" hidden><span>£</span><input type="number" inputmode="numeric" min="0" placeholder="Type an amount" /><span>a month</span></div>
+  </section>
 
-    <input id="rs-rev" type="range" min="1000" max="20000" step="250" value="5000" />
-    <div class="rs-scale"><span>1,000</span><span>10,000</span><span>20,000</span></div>
+  <!-- 4. Current pay -->
+  <section class="py-q" data-q="pay">
+    <p class="py-qn">4 of 6</p>
+    <h2 class="py-qt">What do you pay yourself now, each week?</h2>
+    <div class="py-chips" data-key="pay">
+      <button type="button" class="py-chip" data-val="none">No set amount</button>
+      <button type="button" class="py-chip" data-val="300">£300</button>
+      <button type="button" class="py-chip" data-val="600">£600</button>
+      <button type="button" class="py-chip" data-val="1000">£1,000</button>
+      <button type="button" class="py-chip" data-val="1500">£1,500</button>
+      <button type="button" class="py-chip" data-val="custom">Custom</button>
+    </div>
+    <div class="py-custom" hidden><span>£</span><input type="number" inputmode="numeric" min="0" placeholder="Type an amount" /><span>a week</span></div>
+  </section>
 
-    <!-- Work costs -->
-    <div class="rs-block">
-      <label class="rs-label" for="rs-run-chips">Roughly what does your work cost to run each month?</label>
-      <p class="rs-help rs-help-tight">Software, equipment, insurance, travel, anything your work needs to run.</p>
-      <div class="rs-chips" id="rs-run-chips">
-        <button type="button" class="rs-chip" data-val="250">£250</button>
-        <button type="button" class="rs-chip is-on" data-val="500">£500</button>
-        <button type="button" class="rs-chip" data-val="750">£750</button>
-        <button type="button" class="rs-chip" data-val="1000">£1,000</button>
-        <button type="button" class="rs-chip" data-val="custom">Custom</button>
+  <!-- 5. Life costs -->
+  <section class="py-q" data-q="life">
+    <p class="py-qn">5 of 6</p>
+    <h2 class="py-qt">What does your life cost each month?</h2>
+    <p class="py-help">Rent or mortgage, food, bills, everything you need to live.</p>
+    <div class="py-chips" data-key="life">
+      <button type="button" class="py-chip" data-val="1500">£1,500</button>
+      <button type="button" class="py-chip" data-val="2000">£2,000</button>
+      <button type="button" class="py-chip" data-val="3000">£3,000</button>
+      <button type="button" class="py-chip" data-val="4000">£4,000</button>
+      <button type="button" class="py-chip" data-val="6000">£6,000</button>
+      <button type="button" class="py-chip" data-val="custom">Custom</button>
+    </div>
+    <div class="py-custom" hidden><span>£</span><input type="number" inputmode="numeric" min="0" placeholder="Type an amount" /><span>a month</span></div>
+  </section>
+
+  <!-- 6. Tax -->
+  <section class="py-q" data-q="tax">
+    <p class="py-qn">6 of 6</p>
+    <h2 class="py-qt">How much do you set aside for tax?</h2>
+    <p class="py-help">Check the real figure with your accountant.</p>
+    <div class="py-chips" data-key="tax">
+      <button type="button" class="py-chip" data-val="20">20%</button>
+      <button type="button" class="py-chip" data-val="25">25%</button>
+      <button type="button" class="py-chip" data-val="30">30%</button>
+    </div>
+  </section>
+
+  <p class="py-progress" id="py-progress">Answer all six to see your number.</p>
+
+  <!-- RESULT (free) -->
+  <section class="py-result" id="py-result" hidden>
+    <p class="py-label">Your safe weekly wage</p>
+    <p class="py-big"><span id="py-weekly">£0</span></p>
+    <p class="py-gap" id="py-gap"></p>
+    <p class="py-help">Until your buffer holds a few slow months, plan from a slow month, not a good one.</p>
+
+    <!-- Locked plan -->
+    <div class="py-plan">
+      <p class="py-plan-t">🔒 Your Pay Yourself Plan</p>
+      <div class="py-accounts">
+        <div class="py-acc"><span>Yours</span><b class="py-blur">£0,000</b></div>
+        <div class="py-acc"><span>Tax</span><b class="py-blur">£0,000</b></div>
+        <div class="py-acc"><span>Business costs</span><b class="py-blur">£0,000</b></div>
+        <div class="py-acc"><span>Slow-month buffer</span><b class="py-blur">£0,000</b></div>
+        <div class="py-acc" id="py-acc-vat" hidden><span>VAT</span><b class="py-blur">£0,000</b></div>
       </div>
-      <div class="rs-moneybox rs-run-custom-box" id="rs-run-custom-box" hidden>
-        <span class="rs-cur">£</span>
-        <input id="rs-run-custom" type="number" min="0" step="10" inputmode="decimal" placeholder="–" />
-        <span class="rs-suffix-per">a month</span>
+      <p class="py-plan-n">Your four accounts, what goes in each from every £1,000, your buffer target, and a 30-minute setup.</p>
+    </div>
+
+    <form class="py-form" id="py-form" novalidate>
+      <label>First name<input name="name" autocomplete="given-name" required /></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+      <input name="website" tabindex="-1" autocomplete="off" class="py-hp" aria-hidden="true" />
+      <button type="submit" class="py-btn">Email me my plan</button>
+      <p class="py-help py-help-small">No spam. Unsubscribe any time. We use your numbers to write your plan and email it to you. We don't keep them in any database.</p>
+      <p class="py-err" id="py-err" hidden></p>
+    </form>
+  </section>
+
+  <!-- AFTER SUBMIT -->
+  <section class="py-done" id="py-done" hidden>
+    <p class="py-done-t">Your plan is on its way, <span id="py-name">friend</span>.</p>
+    <div class="py-session">
+      <p>These numbers are a rough guide. On a Cash Flow Session we go through your real bank statements together. 75 minutes. You leave knowing your exact number.</p>
+      <a class="py-btn py-book" href={CALENDLY} target="_blank" rel="noopener">Book a Cash Flow Session (£99.97)</a>
+    </div>
+
+    <div class="py-proof">
+      <p class="py-kicker">What clients say</p>
+      <div class="py-clips">
+        {CLIPS.map((v) => (
+          <figure class="py-clip">
+            <video controls playsinline preload="none" poster={`/testimonials/results/${v!.slug}.jpg`} src={`/testimonials/results/${v!.slug}.mp4`}></video>
+            <figcaption><p>"{v!.cap}"</p><small>{v!.who}, coaching client</small></figcaption>
+          </figure>
+        ))}
       </div>
+      <p class="py-help py-help-small">Real clips from 12-week coaching clients. Results vary.</p>
+      <a class="py-btn py-book" href={CALENDLY} target="_blank" rel="noopener">Book a Cash Flow Session (£99.97)</a>
     </div>
+  </section>
 
-    <!-- Tax reserve -->
-    <div class="rs-block">
-      <label class="rs-label" for="rs-tax-chips">How much do you want to set aside for taxes?</label>
-      <p class="rs-help rs-help-tight">Not sure? Pick one to see how the split works, then check your real figure with your accountant.</p>
-      <div class="rs-chips" id="rs-tax-chips">
-        <button type="button" class="rs-chip is-on" data-val="20">20%</button>
-        <button type="button" class="rs-chip" data-val="25">25%</button>
-        <button type="button" class="rs-chip" data-val="30">30%</button>
-      </div>
-    </div>
-
-    <!-- Living costs -->
-    <div class="rs-block">
-      <label class="rs-label" for="rs-life-chips">Roughly what does your life cost each month?</label>
-      <p class="rs-help rs-help-tight">Rent or mortgage, food, bills, everything you need to live. Not your work costs.</p>
-      <div class="rs-chips" id="rs-life-chips">
-        <button type="button" class="rs-chip" data-val="1500">£1,500</button>
-        <button type="button" class="rs-chip" data-val="2000">£2,000</button>
-        <button type="button" class="rs-chip is-on" data-val="2500">£2,500</button>
-        <button type="button" class="rs-chip" data-val="3000">£3,000</button>
-        <button type="button" class="rs-chip" data-val="custom">Custom</button>
-      </div>
-      <div class="rs-moneybox rs-run-custom-box" id="rs-life-custom-box" hidden>
-        <span class="rs-cur">£</span>
-        <input id="rs-life-custom" type="number" min="0" step="10" inputmode="decimal" placeholder="–" />
-        <span class="rs-suffix-per">a month</span>
-      </div>
-    </div>
-
-    <button type="button" class="rs-btn rs-btn-primary rs-reveal-btn" id="rs-reveal-btn">Reset My Numbers →</button>
-  </div>
-
-  <!-- Results show free the moment "Reset My Numbers" is pressed (Joel, 9 Oct 2026: 7 people reached
-       the old email gate in a week and none gave an email). The email now gets the guide, below. -->
-  <div id="rs-locked" hidden>
-  <!-- ============================================================
-       3 · WHAT'S YOURS TO KEEP  (the one gold-edged moment on the page)
-  ============================================================ -->
-  <div class="rs-walls reveal" id="rs-walls">
-    <div class="rs-inline">
-      <span class="rs-inline-k">Gross in</span>
-      <span class="rs-inline-v"><span class="rs-cur">£</span><span id="rs-w-in">0</span> <span class="rs-inline-per">a month</span></span>
-    </div>
-
-    <div class="rs-hero-out">
-      <p class="rs-hero-out-k">What's Yours to Keep</p>
-      <p class="rs-hero-out-v"><span class="rs-cur">£</span><span id="rs-w-payweek">0</span><span class="rs-per">/ week</span></p>
-      <p class="rs-hero-out-sub">(or <span class="rs-cur">£</span><span id="rs-w-pay">0</span> / month on the 1st)</p>
-      <p class="rs-hero-out-context" id="rs-w-context">A consistent, guilt-free salary that stays the same whether you had a big month or a quiet one.</p>
-    </div>
-
-    <div class="rs-short" id="rs-short" hidden>
-      <p class="rs-short-k">You're short <span class="rs-cur">£</span><span id="rs-w-short">0</span> a month.</p>
-      <p class="rs-short-n">To cover what your life costs, about <span class="rs-cur">£</span><span id="rs-w-extra">0</span> more needs to come in each month.</p>
-    </div>
-
-    <div class="rs-grid">
-      <div class="rs-pot rs-pot-alert">
-        <p class="rs-pot-k">🏛️ Taxes (Untouchable) <span class="rs-pot-pct" id="rs-w-taxpct">0%</span></p>
-        <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-tax">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">Swept the day money lands, so the tax money is put aside before you can spend it.</p>
-      </div>
-
-      <div class="rs-pot">
-        <p class="rs-pot-k">🏢 Business Overheads</p>
-        <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-run">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">What your work costs to run, ring-fenced.</p>
-      </div>
-
-      <div class="rs-pot">
-        <p class="rs-pot-k">🛡️ Slow-Month Buffer</p>
-        <p class="rs-pot-v"><span class="rs-cur">£</span><span id="rs-w-buf">0</span><span class="rs-pot-per">/mo</span></p>
-        <p class="rs-pot-n">Builds up automatically during strong months to protect your paycheck when you take time off.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       3b · THE GUIDE — the email swap. They've seen their numbers; this is how to set them up.
-  ============================================================ -->
-  <form class="rs-card rs-unlock reveal" id="rs-unlock" novalidate>
-    <p class="rs-step">Free guide</p>
-    <p class="rs-unlock-k">Download the free guide to set this up properly.</p>
-    <p class="rs-unlock-n">
-      The Money Story Method: the 5 phases my clients used to put these pots into their real bank
-      accounts, and keep them there. Enter your first name and email and I'll send it to you.
-    </p>
-    <div class="rs-unlock-row">
-      <label class="rs-sr" for="rs-name">First name</label>
-      <input id="rs-name" type="text" autocomplete="given-name" placeholder="First name" />
-      <label class="rs-sr" for="rs-email">Your email</label>
-      <input id="rs-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" />
-      <button type="submit" class="rs-btn rs-btn-primary" id="rs-unlock-btn">Send Me the Guide →</button>
-    </div>
-    <!-- honeypot: bots fill this, humans never see it -->
-    <div class="rs-honeypot" aria-hidden="true">
-      <label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-    </div>
-    <p class="rs-unlock-err" id="rs-unlock-err" aria-live="polite"></p>
-    <!-- Unticked by default: figures only leave the page if the person chooses (Joel, 27 Sep). -->
-    <label class="rs-tick"><input type="checkbox" id="rs-send-numbers" /> Email me my numbers too</label>
-    <p class="rs-micro">Free. No spam, and you can unsubscribe any time. We don’t keep your numbers.</p>
-  </form>
-  <div class="rs-card rs-unlock" id="rs-guide-sent" hidden>
-    <p class="rs-step">Free guide</p>
-    <p class="rs-unlock-k">Sent. Check your inbox.</p>
-    <p class="rs-unlock-n">The guide is on its way. If it's not there in a few minutes, check your junk folder.</p>
-  </div>
-
-  <!-- The "Book a Free Consultation" box was removed (Joel, 9 Oct 2026): the guide is the one next step here. -->
-
-  </div><!-- /#rs-locked -->
-
-  <!-- ============================================================
-       5 · SCOPE — outside the gate on purpose, it is always visible
-  ============================================================ -->
-  <p class="rs-scope reveal">
-    <b>This is an educational tool, not financial advice.</b> It does the arithmetic on the figures
-    you typed and nothing else. Joel is a planner, not an adviser, so nothing here tells you what to
-    do with your money, how much to hold for tax, or where to put anything. Your accountant gives
-    you your tax number.
-    <span class="rs-scope-cred">Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner</span>
-  </p>
-
-</section>
+  <p class="py-disc">An educational tool, not financial advice. It only does maths on the numbers you pick.</p>
+</main>
 
 <script>
-  const $ = (id) => document.getElementById(id);
+  // Share of what's left after tax that goes to the slow-month buffer. Fixed at 10% on the page; the plan email shows 5% and 15% (Joel, 11 Oct).
+  const BUFFER_PCT = 10;
 
-  /* ---------- step tracking ----------
-     Tells netlify/functions/magnet-track.js how far people get, so Joel sees drop-off (1 Oct 2026).
-     No numbers, and nothing personal is stored: just the step and a random id for this browser tab. The first name
-     and email ride along with 'email' for Joel's Telegram ping only (8 Oct 2026). */
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => '£' + Math.round(n).toLocaleString('en-GB');
+  const state = { income: null, vat: null, costs: null, pay: null, life: null, tax: null };
+
+
+  /* ---------- step tracking (same tracker as before, tool 'reset'): opened, started, finished, email, book ---------- */
   const visitor = (() => {
     try {
       let v = sessionStorage.getItem('wow_mv');
@@ -233,525 +200,161 @@ const description = "Find out where your money is actually going in under 3 minu
     } catch (err) { /* tracking never gets in the way of the tool */ }
   }
   track('opened');
-  $('rs-rev').addEventListener('input', () => track('started'));
-  document.querySelectorAll('.rs-chip, [data-cur]').forEach((b) => b.addEventListener('click', () => track('started')));
-  document.querySelectorAll('[data-track]').forEach((a) => a.addEventListener('click', () => track(a.getAttribute('data-track'))));
 
-  const state = {
-    cur: '£',
-    revenue: 5000,
-    runAmt: 500, // work costs, a flat amount — not a share of revenue
-    taxPct: 20,  // a starting point to show the split, not a recommendation
-    lifeAmt: 2500, // what their life costs a month (rent, food, bills)
-    unlocked: false, // true once they press "Reset My Numbers". Never remembered (Joel, 9 Oct: always a reveal).
-  };
-
-  const fmt = (n) => Math.round(n).toLocaleString('en-GB');
-
-  /* ---------- the arithmetic ----------
-     Pay is a flat 70% of what's left after tax and work costs. The buffer is
-     the other 30%, so pay + buffer always equals what's left — nothing hides
-     between the two, which matters when Joel is doing this out loud on a call. */
   function calc() {
-    const rev = state.revenue;
-    const taxPct = state.taxPct ?? 0;
-
-    const tax = Math.round(rev * (taxPct / 100));
-    const run = state.runAmt;
-    const net = Math.max(0, rev - tax - run);
-
-    // Pay yourself what your life costs, if what's left covers it. The rest builds the buffer.
-    const life = Math.max(0, state.lifeAmt);
-    const payMonthRaw = Math.min(net, life);
-    const payMonth = Math.round(payMonthRaw);
-    const payWeek = Math.round((payMonthRaw * 12) / 52);
-    const buffer = Math.round(net - payMonthRaw);
-    // Short: extra coming in needed to close the gap. Bigger than the gap, because tax comes off the extra too
-    // (work costs are a flat amount, so they don't grow with it).
-    const short = Math.round(Math.max(0, life - net));
-    const keep = 1 - taxPct / 100;
-    const extra = short > 0 && keep > 0 ? Math.round(short / keep) : 0;
-
-    return { rev, tax, run, net, payMonth, payWeek, buffer, short, extra };
+    const vat = state.vat === 'yes' ? state.income / 6 : 0;   // standard 20% rate on VAT-inclusive takings
+    const profit = state.income - vat - state.costs;
+    const tax = Math.max(0, profit) * (state.tax / 100);
+    const left = profit - tax;
+    const buffer = Math.max(0, left) * (BUFFER_PCT / 100);
+    const monthly = Math.max(0, left - buffer);
+    const weekly = (monthly * 12) / 52;
+    return { vat, profit, tax, left, buffer, monthly, weekly };
   }
 
-  /* ---------- painting ---------- */
-  function paintCurrency() {
-    document.querySelectorAll('.rs-cur').forEach((el) => { el.textContent = state.cur; });
+  function gaps(c) {
+    const out = [];
+    const payNow = state.pay === 'none' ? null : Number(state.pay);
+    if (state.life > c.monthly) out.push(`Your life costs ${fmt(state.life - c.monthly)} a month more than your business can pay you.`);
+    if (payNow !== null && payNow - c.weekly > 50) out.push(`You're taking ${fmt(payNow - c.weekly)} a week more than your business can support.`);
+    if (payNow === null) out.push("Right now you don't have a wage.");
+    if (payNow !== null && c.weekly - payNow > 50) out.push(`You could pay yourself ${fmt(c.weekly - payNow)} a week more.`);
+    if (!out.length) out.push("You're close. Now make it automatic.");
+    return out;
   }
 
   function paint() {
+    const done = Object.values(state).every((v) => v !== null && !(typeof v === 'number' && !isFinite(v)));
+    $('py-progress').hidden = done;
+    $('py-result').hidden = !done;
+    if (!done) return;
+    track('finished');
     const c = calc();
-    $('rs-rev-out').textContent = fmt(c.rev);
-
-    if (!state.unlocked) return;
-
-    $('rs-w-in').textContent = fmt(c.rev);
-    $('rs-w-tax').textContent = fmt(c.tax);
-    $('rs-w-taxpct').textContent = (state.taxPct ?? 0) + '%';
-    $('rs-w-run').textContent = fmt(c.run);
-    $('rs-w-pay').textContent = fmt(c.payMonth);
-    $('rs-w-payweek').textContent = fmt(c.payWeek);
-    $('rs-w-buf').textContent = fmt(c.buffer);
-    $('rs-short').hidden = c.short === 0;
-    $('rs-w-short').textContent = fmt(c.short);
-    $('rs-w-extra').textContent = fmt(c.extra);
-    $('rs-w-context').textContent = c.short === 0
-      ? 'What your life costs, paid to you like a salary. The same whether you had a big month or a quiet one.'
-      : "This is everything that's left after tax and work costs. It doesn't cover what your life costs yet.";
+    $('py-weekly').textContent = fmt(c.weekly);
+    const g = gaps(c);
+    $('py-gap').textContent = g[0];
+    $('py-acc-vat').hidden = state.vat !== 'yes';
   }
 
-  /* ---------- the gate ----------
-     The unlock form stays hidden until "Reset My Numbers" is clicked. Once
-     unlocked (this visit or a past one), the results render straight away. */
-  function paintGate() {
-    $('rs-locked').hidden = !state.unlocked;
-  }
-
-  /* ---------- currency ---------- */
-  document.querySelectorAll('[data-cur]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-cur]').forEach((b) => b.classList.remove('is-on'));
-      btn.classList.add('is-on');
-      state.cur = btn.getAttribute('data-cur') || '£';
-      paintCurrency();
-      paint();
-    });
-  });
-
-  /* ---------- money in ---------- */
-  $('rs-rev').addEventListener('input', (e) => {
-    state.revenue = Number(e.target.value);
-    paint();
-  });
-
-  /* ---------- work costs ---------- */
-  const runChips = document.querySelectorAll('#rs-run-chips .rs-chip');
-  const runCustomBox = $('rs-run-custom-box');
-  const runCustomInput = $('rs-run-custom');
-  runChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      runChips.forEach((c) => c.classList.remove('is-on'));
+  document.querySelectorAll('.py-chips').forEach((group) => {
+    const key = group.getAttribute('data-key');
+    const box = group.parentElement.querySelector('.py-custom');
+    group.querySelectorAll('.py-chip').forEach((chip) => chip.addEventListener('click', () => {
+      track('started');
+      group.querySelectorAll('.py-chip').forEach((b) => b.classList.remove('is-on'));
       chip.classList.add('is-on');
       const val = chip.getAttribute('data-val');
       if (val === 'custom') {
-        runCustomBox.hidden = false;
-        runCustomInput.focus();
-        const v = Number(runCustomInput.value);
-        state.runAmt = isFinite(v) ? Math.max(0, v) : 0;
+        box.hidden = false; box.querySelector('input').focus();
+        const v = Number(box.querySelector('input').value);
+        state[key] = box.querySelector('input').value === '' ? null : v;
       } else {
-        runCustomBox.hidden = true;
-        state.runAmt = Number(val);
+        if (box) box.hidden = true;
+        state[key] = (key === 'vat' || val === 'none') ? val : Number(val);
       }
       paint();
-    });
-  });
-  runCustomInput.addEventListener('input', () => {
-    const v = Number(runCustomInput.value);
-    state.runAmt = isFinite(v) ? Math.max(0, v) : 0;
-    paint();
-  });
-
-  /* ---------- living costs (same pattern as work costs) ---------- */
-  const lifeChips = document.querySelectorAll('#rs-life-chips .rs-chip');
-  const lifeCustomBox = $('rs-life-custom-box');
-  const lifeCustomInput = $('rs-life-custom');
-  lifeChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      lifeChips.forEach((c) => c.classList.remove('is-on'));
-      chip.classList.add('is-on');
-      const val = chip.getAttribute('data-val');
-      if (val === 'custom') {
-        lifeCustomBox.hidden = false;
-        lifeCustomInput.focus();
-        const v = Number(lifeCustomInput.value);
-        state.lifeAmt = isFinite(v) ? Math.max(0, v) : 0;
-      } else {
-        lifeCustomBox.hidden = true;
-        state.lifeAmt = Number(val);
-      }
-      paint();
-    });
-  });
-  lifeCustomInput.addEventListener('input', () => {
-    const v = Number(lifeCustomInput.value);
-    state.lifeAmt = isFinite(v) ? Math.max(0, v) : 0;
-    paint();
-  });
-
-  /* ---------- tax reserve ---------- */
-  const taxChips = document.querySelectorAll('#rs-tax-chips .rs-chip');
-  taxChips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      taxChips.forEach((c) => c.classList.remove('is-on'));
-      chip.classList.add('is-on');
-      state.taxPct = Number(chip.getAttribute('data-val'));
-      paint();
+    }));
+    if (box) box.querySelector('input').addEventListener('input', (e) => {
+      state[key] = e.target.value === '' ? null : Math.max(0, Number(e.target.value)); paint();
     });
   });
 
-  /* ---------- reveal ---------- */
-  $('rs-reveal-btn').addEventListener('click', () => {
-    track('reveal');
-    unlock();
-  });
+  // ManyChat: /reset?email=name@x.com pre-fills the email so it's one tap.
+  try {
+    const em = new URLSearchParams(location.search).get('email');
+    if (em) $('py-form').querySelector('[name="email"]').value = em;
+  } catch (err) {}
 
-  /* ---------- unlock ----------
-     Mirrors the server list in netlify/functions/lead-magnet-subscribe.js. This is a
-     courtesy check so people get told before a round trip; the function is the real one. */
-  const BAD_DOMAINS = new Set([
-    'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'guerrillamail.biz',
-    '10minutemail.com', '10minutemail.net', 'tempmail.com', 'temp-mail.org',
-    'yopmail.com', 'throwaway.email', 'maildrop.cc', 'getnada.com', 'sharklasers.com',
-    'mintemail.com', 'mohmal.com', 'fakeinbox.com', 'trashmail.com', 'mailcatch.com',
-    'spamgourmet.com', 'dispostable.com', 'tempinbox.com', 'mailnesia.com',
-    'discard.email', 'spambog.com', 'tempmailo.com', 'emailondeck.com',
-    'example.com', 'test.com', 'asdf.com', 'a.com', 'b.com',
-  ]);
-
-  function checkEmail(raw) {
-    const email = (raw || '').trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, msg: 'That email does not look right.' };
-    if (email.length > 254) return { ok: false, msg: 'That email is too long.' };
-    const domain = email.split('@')[1];
-    if (BAD_DOMAINS.has(domain)) return { ok: false, msg: 'Use a real address, not a temporary one.' };
-    return { ok: true, email };
-  }
-
-  function unlock() {
-    state.unlocked = true;
-    paintGate();
-    paint();
-    $('rs-locked').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  $('rs-unlock').addEventListener('submit', async (e) => {
+  $('py-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const form = e.target;
-    const btn = $('rs-unlock-btn');
-    const errEl = $('rs-unlock-err');
-    const nameInput = $('rs-name');
-    const emailInput = $('rs-email');
-
-    const name = nameInput.value.trim();
-    if (!name) { errEl.textContent = 'First name is required.'; nameInput.focus(); return; }
-
-    const v = checkEmail(emailInput.value);
-    if (!v.ok) { errEl.textContent = v.msg; emailInput.focus(); return; }
-
-    errEl.textContent = '';
-    btn.disabled = true;
-    const label = btn.textContent;
-    btn.textContent = 'One second…';
-
+    const f = $('py-form');
+    const name = f.querySelector('[name="name"]').value.trim();
+    const email = f.querySelector('[name="email"]').value.trim();
+    const err = $('py-err');
+    err.hidden = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'That email does not look right.'; err.hidden = false; return; }
+    const btn = f.querySelector('.py-btn'); btn.disabled = true; btn.textContent = 'Sending…';
     try {
+      // The six answers go to the sign-up function, which works the plan out itself and emails it. Not stored.
       const res = await fetch('/api/lead-magnet/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: v.email,
-          name,
-          magnet: 'cash-reset',
-          honeypot: form.querySelector('[name="website"]').value || null,
-          // Only sent when the person ticked the box. Used for their email, never stored.
-          breakdown: $('rs-send-numbers').checked
-            ? (() => { const c = calc(); return { cur: state.cur, rev: c.rev, tax: c.tax, run: c.run, buffer: c.buffer, payMonth: c.payMonth, payWeek: c.payWeek, taxPct: state.taxPct, short: c.short, extra: c.extra }; })()
-            : null,
+          email, name, magnet: 'cash-reset', honeypot: f.querySelector('[name="website"]').value || null,
+          plan: { income: state.income, vat: state.vat === 'yes', costs: state.costs, payNow: state.pay === 'none' ? null : state.pay, life: state.life, taxPct: state.tax },
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) {
-        track('email', { n: name, e: v.email });
-        form.hidden = true;
-        $('rs-guide-sent').hidden = false;
-        return;
-      }
-      // Say what actually went wrong rather than unlocking on a failure.
-      errEl.textContent = data.error || 'That did not go through. Try again in a moment.';
-    } catch (err) {
-      errEl.textContent = 'No connection. Check your signal and try again.';
+      if (!res.ok || data.error) throw new Error(data.error || 'That did not go through. Try again in a moment.');
+      track('email', { n: name, e: email });
+      $('py-name').textContent = (name.split(/\s+/)[0]) || 'friend';
+      $('py-result').hidden = true;
+      $('py-done').hidden = false;
+      $('py-done').scrollIntoView({ behavior: 'smooth' });
+    } catch (x) {
+      err.textContent = x.message; err.hidden = false;
+      btn.disabled = false; btn.textContent = 'Email me my plan';
     }
-
-    btn.disabled = false;
-    btn.textContent = label;
   });
-
-  paintGate();
-  paintCurrency();
-  paint();
+  document.querySelectorAll('.py-book').forEach((a) => a.addEventListener('click', () => track('book')));
 </script>
 
 <style is:global>
-  /* ============================================================
-     THE MONEY RESET TOOL · /reset
-     Dark, to match the Money Story Diagnostic at discover.thewayofwealth.shop
-     (src/styles.css, the .lp block). Same ground, same panels, same gold as the
-     single accent, same Fraunces + Inter pairing. One brand, two tools.
-  ============================================================ */
-
-  /* The page owns its own ground. Scoped to this page's body class so the two
-     other pages on this layout are untouched. */
-  body.rs-dark {
-    background: #0b1119;
-    color: var(--d-text);
-  }
-  body.rs-dark main {
-    background: radial-gradient(115% 60% at 78% -6%, #16212e 0%, #0b1119 55%, #070c12 100%);
-  }
-  /* Header and footer come from the shared layout in a lighter navy. Pull them
-     into this page's darker tone so it reads as one piece. */
-  body.rs-dark .lp-header { background: #0a1017; }
-  body.rs-dark .lp-footer { background: #070c12; }
-
-  .rs-wrap {
-    --d-bg: #0b1119;
-    --d-panel: #131d29;
-    --d-panel-2: #0e1721;
-    --d-inset: #0d151f;
-    --d-line: #26323f;
-    --d-text: #F5F0E8;
-    --d-mute: #9AA7B4;
-    --d-gold: #C4A265;
-    --d-on-gold: #14202c;
-    --d-display: 'Fraunces', Georgia, serif;
-
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 4.5rem 1.25rem 5rem;
-    color: var(--d-text);
-  }
-
-  /* The gate depends on the hidden attribute actually hiding things. Any stray
-     display rule would silently defeat it, so make it unbeatable. */
-  .rs-wrap [hidden] { display: none !important; }
-
-  .rs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-  /* --- hero --- */
-  .rs-hero { margin-bottom: 2.5rem; }
-  .rs-badge {
-    display: inline-block; font-family: var(--font-ui); font-size: 11.5px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--d-gold);
-    background: rgba(196, 162, 101, 0.12); border: 1px solid rgba(196, 162, 101, 0.3);
-    border-radius: 999px; padding: 0.4rem 0.9rem; margin-bottom: 1.4rem;
-  }
-  .rs-h1 {
-    font-family: var(--d-display); font-weight: 600;
-    font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -0.015em;
-    color: #fff; margin: 0; text-wrap: balance;
-  }
-  .rs-h1 em { font-style: italic; color: var(--d-gold); }
-  .rs-sub {
-    font-family: var(--font-ui); font-size: clamp(0.98rem, 1.5vw, 1.08rem);
-    color: var(--d-mute); margin-top: 1.3rem; max-width: 46ch; line-height: 1.6;
-  }
-  .rs-context { margin-top: 0.8rem; }
-  .rs-conf { font-family: var(--font-ui); font-size: 12.5px; color: var(--d-mute); margin-top: 1.5rem; }
-
-  /* --- cards --- */
-  .rs-card {
-    background: var(--d-panel);
-    border: 1px solid var(--d-line);
-    border-radius: 16px;
-    padding: 2.2rem 2.2rem 2.4rem;
-    margin-bottom: 1.1rem;
-  }
-  .rs-step {
-    font-family: var(--font-ui); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--d-gold);
-    margin-bottom: 0.8rem;
-  }
-  .rs-h2 {
-    font-family: var(--d-display); font-weight: 600;
-    font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.15; letter-spacing: -0.01em;
-    color: #fff; margin: 0;
-  }
-  .rs-help { font-family: var(--font-ui); font-size: 0.95rem; color: var(--d-mute); margin-top: 0.9rem; max-width: 56ch; line-height: 1.65; }
-  .rs-help b { color: var(--d-text); font-weight: 600; }
-  .rs-help-tight { margin-top: 0.4rem; }
-  .rs-micro { font-family: var(--font-ui); font-size: 12px; color: var(--d-mute); margin-top: 0.6rem; }
-  .rs-tick { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-family: var(--font-ui); font-size: 0.92rem; color: var(--d-mute); cursor: pointer; }
-  .rs-tick input { width: 1.1rem; height: 1.1rem; accent-color: currentColor; margin: 0; }
-  .rs-label {
-    display: block; font-family: var(--font-ui); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); margin-top: 1.9rem; margin-bottom: 0.7rem;
-  }
-  .rs-wrap .rs-currency + .rs-label { margin-top: 1.6rem; }
-
-  /* --- chips --- */
-  .rs-chip {
-    font-family: var(--font-ui); font-size: 13px; font-weight: 600;
-    padding: 0.5rem 0.95rem; border-radius: 999px; cursor: pointer;
-    background: #182430; color: var(--d-mute);
-    border: 1px solid var(--d-line); transition: all 0.18s;
-  }
-  .rs-chip:hover { border-color: var(--d-gold); color: var(--d-text); }
-  .rs-chip:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 2px; }
-  .rs-chip.is-on { background: var(--d-gold); border-color: var(--d-gold); color: var(--d-on-gold); }
-  .rs-currency { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.6rem; }
-  .rs-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
-  .rs-rec { font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; margin-left: 0.35rem; }
-
-  /* --- big figure --- */
-  .rs-bigfig {
-    font-family: var(--font-ui); font-variant-numeric: tabular-nums;
-    font-size: clamp(2.1rem, 6vw, 2.9rem); font-weight: 600; color: #fff;
-    margin: 1.5rem 0 1.1rem; line-height: 1;
-  }
-  .rs-cur { color: var(--d-gold); }
-  .rs-per { font-family: var(--font-ui); font-size: 0.85rem; font-weight: 400; color: var(--d-mute); margin-left: 0.6rem; }
-
-  /* --- range inputs --- */
-  .rs-wrap input[type="range"] {
-    -webkit-appearance: none; appearance: none;
-    width: 100%; height: 6px; border-radius: 999px;
-    background: var(--d-line); outline: none; cursor: pointer;
-  }
-  .rs-wrap input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--d-gold); border: 3px solid #0d151f;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); cursor: pointer;
-  }
-  .rs-wrap input[type="range"]::-moz-range-thumb {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--d-gold); border: 3px solid #0d151f;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); cursor: pointer;
-  }
-  .rs-wrap input[type="range"]:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 4px; }
-  .rs-scale { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 11.5px; color: var(--d-mute); margin-top: 0.7rem; }
-
-  /* --- number boxes --- */
-  .rs-moneybox {
-    display: flex; align-items: center; gap: 0.4rem;
-    border: 1px solid var(--d-line); border-radius: 11px;
-    padding: 0.15rem 0.9rem; background: var(--d-inset);
-    transition: border-color 0.18s, box-shadow 0.18s;
-    max-width: 21rem; margin-top: 0.9rem;
-  }
-  .rs-moneybox:focus-within {
-    border-color: var(--d-gold); box-shadow: 0 0 0 3px rgba(196, 162, 101, 0.16);
-  }
-  .rs-moneybox input {
-    font-family: var(--font-ui); font-variant-numeric: tabular-nums;
-    font-size: 1.5rem; font-weight: 600; color: #fff;
-    border: none; background: transparent; outline: none; width: 100%; padding: 0.6rem 0;
-  }
-  .rs-moneybox input::placeholder { color: #5d6b79; }
-  .rs-moneybox input::-webkit-outer-spin-button, .rs-moneybox input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .rs-moneybox input[type=number] { -moz-appearance: textfield; }
-  .rs-suffix-per { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 400; color: var(--d-mute); white-space: nowrap; }
-  .rs-run-custom-box { margin-top: 0.7rem; }
-
-  /* --- stacked fields within step one --- */
-  .rs-block { margin-top: 2rem; padding-top: 1.9rem; border-top: 1px solid var(--d-line); }
-  .rs-block .rs-label { margin-top: 0; }
-
-  /* --- reveal button --- */
-  .rs-reveal-btn { margin-top: 2.2rem; width: 100%; text-align: center; }
-
-  /* --- what's yours to keep · the one gold-edged moment on the page --- */
-  .rs-walls {
-    background: var(--d-panel-2);
-    border: 1px solid rgba(196, 162, 101, 0.42);
-    border-radius: 16px;
-    padding: 2.2rem 2.2rem 2.4rem; margin-bottom: 1.1rem;
-    box-shadow: 0 0 60px rgba(196, 162, 101, 0.05);
-  }
-
-  .rs-inline { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-bottom: 1.3rem; border-bottom: 1px solid var(--d-line); }
-  .rs-inline-k { font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--d-mute); }
-  .rs-inline-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 600; color: #fff; }
-  .rs-inline-per { font-family: var(--font-ui); font-size: 0.78rem; font-weight: 400; color: var(--d-mute); }
-
-  .rs-hero-out { text-align: center; padding: 2.1rem 0 2rem; }
-  .rs-hero-out-k { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--d-gold); }
-  .rs-hero-out-v { font-family: var(--d-display); font-variant-numeric: tabular-nums; font-size: clamp(2.6rem, 8vw, 3.6rem); font-weight: 600; color: #fff; margin-top: 0.6rem; line-height: 1; }
-  .rs-hero-out-sub { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 0.92rem; color: var(--d-mute); margin-top: 0.7rem; }
-  .rs-hero-out-sub .rs-cur { color: var(--d-mute); }
-  .rs-hero-out-context { font-family: var(--font-ui); font-size: 0.85rem; color: var(--d-mute); margin: 0.9rem auto 0; max-width: 40ch; line-height: 1.6; }
-
-  .rs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
-  .rs-pot { background: var(--d-panel); border: 1px solid var(--d-line); border-radius: 14px; padding: 1.3rem 1.35rem 1.4rem; }
-  /* Pot 1 reads as "hands off", not as an error. The tax pot is doing its job,
-     and shame is not a lever (TEACHING_SCOPE.md §5.2). */
-  .rs-pot-alert .rs-pot-k { color: #E8D5B0; }
-  .rs-short { margin: 1.4rem auto 1.4rem; max-width: 34rem; text-align: center; border: 1px solid rgba(214, 90, 74, 0.55);
-    background: rgba(214, 90, 74, 0.10); border-radius: 14px; padding: 1rem 1.2rem; }
-  .rs-short-k { font-family: var(--font-ui); font-weight: 700; font-size: 1.05rem; color: #F2A99E; margin: 0; }
-  .rs-short-n { font-family: var(--font-ui); font-size: 0.88rem; line-height: 1.55; color: var(--d-mute); margin: 0.4rem 0 0; }
-  .rs-pot-k { font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; color: var(--d-text); }
-  .rs-pot-pct { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: var(--d-mute); margin-left: 0.35rem; }
-  .rs-pot-v { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.75rem; font-weight: 600; color: #fff; margin-top: 0.5rem; line-height: 1.1; }
-  .rs-pot-per { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 400; color: var(--d-mute); margin-left: 0.45rem; }
-  .rs-pot-n { font-family: var(--font-ui); font-size: 0.83rem; line-height: 1.6; color: var(--d-mute); margin-top: 0.6rem; }
-
-  /* --- the unlock gate ---
-     Hidden until "Reset My Numbers" is clicked, then it gets the strongest
-     treatment on the page — nothing past it renders until an email is given. */
-  .rs-unlock {
-    display: block;
-    background: var(--d-panel);
-    border: 1px solid rgba(196, 162, 101, 0.45);
-    box-shadow: 0 0 70px rgba(196, 162, 101, 0.06);
-  }
-  .rs-unlock-k { font-family: var(--d-display); font-weight: 600; font-size: 1.25rem; color: #fff; }
-  .rs-unlock-n { font-family: var(--font-ui); font-size: 0.92rem; line-height: 1.6; color: var(--d-mute); margin-top: 0.6rem; max-width: 52ch; }
-  .rs-unlock-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
-  .rs-unlock-row input {
-    flex: 1 1 12rem; min-width: 0;
-    font-family: var(--font-ui); font-size: 15px; color: #fff;
-    border: 1px solid var(--d-line); border-radius: 11px;
-    padding: 0.95rem 1rem; background: var(--d-inset); outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s;
-  }
-  .rs-unlock-row input::placeholder { color: #5d6b79; }
-  .rs-unlock-row input:focus { border-color: var(--d-gold); box-shadow: 0 0 0 3px rgba(196, 162, 101, 0.16); }
-  .rs-unlock-row .rs-btn { flex: 0 0 auto; }
-  .rs-unlock-row .rs-btn:disabled { opacity: 0.6; cursor: wait; }
-  .rs-unlock-err:not(:empty) {
-    font-family: var(--font-ui); font-size: 12.5px; color: #E2857A;
-    margin-top: 0.7rem;
-  }
-  .rs-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-
-  /* --- actions --- */
-  .rs-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.6rem; }
-  .rs-btn {
-    font-family: var(--font-ui); font-size: 15px; font-weight: 700;
-    border-radius: 11px; padding: 0.95rem 1.6rem; cursor: pointer;
-    border: 1px solid transparent; text-decoration: none; display: inline-block;
-    transition: filter 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
-  }
-  .rs-btn:focus-visible { outline: 2px solid var(--d-gold); outline-offset: 3px; }
-  .rs-btn-primary { background: var(--d-gold); color: var(--d-on-gold); }
-  .rs-btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
-  .rs-btn-ghost { background: transparent; color: var(--d-text); border-color: var(--d-line); }
-  .rs-btn-ghost:hover { border-color: var(--d-gold); }
-
-  /* --- scope --- */
-  .rs-scope { font-family: var(--font-ui); font-size: 12px; line-height: 1.75; color: var(--d-mute); margin-top: 2.5rem; max-width: 64ch; }
-  .rs-scope b { color: var(--d-text); }
-  .rs-scope-cred { display: block; font-family: var(--font-ui); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.9rem; color: var(--d-mute); }
-
-  /* Somebody asked their machine for less movement. Honour it. */
-  @media (prefers-reduced-motion: reduce) {
-    .rs-wrap *, .rs-wrap *::before, .rs-wrap *::after {
-      animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important; scroll-behavior: auto !important;
-    }
-    .rs-btn-primary:hover { transform: none; }
-  }
-
-  /* --- responsive --- */
-  @media (max-width: 700px) {
-    .rs-wrap { padding: 3rem 1rem 4rem; }
-    .rs-card, .rs-walls { padding: 1.7rem 1.35rem 1.9rem; border-radius: 14px; }
-    .rs-grid { grid-template-columns: 1fr; }
-    .rs-moneybox { max-width: none; }
-    .rs-actions .rs-btn { width: 100%; text-align: center; }
-    .rs-unlock-row .rs-btn { width: 100%; text-align: center; }
-  }
+  body.py-dark { background: #0b1119; color: #F5F0E8; }
+  body.py-dark main { background: radial-gradient(115% 60% at 78% -6%, #16212e 0%, #0b1119 55%, #070c12 100%); }
+  body.py-dark .lp-header { background: #0a1017; }
+  body.py-dark .lp-footer { background: #070c12; }
+  .py-wrap { --bg: #0b1119; --panel: #131d29; --line: #26323f; --text: #F5F0E8; --mute: #9AA7B4; --gold: #C4A265; --on-gold: #14202c;
+    --display: 'Fraunces', Georgia, serif; --ui: 'Inter', system-ui, sans-serif;
+    max-width: 560px; margin: 0 auto; padding: 36px 18px 64px; font-family: var(--ui); color: var(--text); }
+  .py-wrap [hidden] { display: none !important; }
+  .py-h1 { font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 7vw, 2.7rem); line-height: 1.12; margin: 0 0 14px; color: var(--text); }
+  .py-sub { font-size: 1.02rem; line-height: 1.6; color: var(--mute); margin: 0 0 28px; }
+  .py-q { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 18px; margin: 0 0 14px; }
+  .py-qn { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 8px; }
+  .py-qt { font-family: var(--display); font-weight: 600; font-size: 1.25rem; line-height: 1.3; margin: 0 0 6px; color: var(--text); }
+  .py-help { font-size: .95rem; line-height: 1.6; color: var(--mute); margin: 0 0 12px; }
+  .py-help-small { font-size: 12.5px; margin-top: 10px; }
+  .py-help a { color: var(--gold); }
+  .py-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .py-chip { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: #182430; color: var(--mute); font: 600 15px var(--ui); cursor: pointer; transition: all .18s; }
+  .py-chip:hover { color: var(--text); border-color: var(--gold); }
+  .py-chip.is-on { background: var(--gold); border-color: var(--gold); color: var(--on-gold); }
+  .py-custom { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--mute); font-weight: 600; }
+  .py-custom input { min-height: 44px; flex: 1; background: #0d151f; color: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; font: 600 16px var(--ui); }
+  .py-progress { text-align: center; font-size: .95rem; color: var(--mute); margin: 18px 0; }
+  .py-result, .py-done { margin-top: 26px; }
+  .py-label { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0; text-align: center; }
+  .py-big { font-family: var(--display); font-weight: 600; font-variant-numeric: tabular-nums; font-size: clamp(3.4rem, 15vw, 4.6rem); line-height: 1; color: #fff; margin: 10px 0 16px; text-align: center; }
+  .py-gap { max-width: 34rem; margin: 0 auto 14px; text-align: center; border: 1px solid rgba(214, 90, 74, 0.55); background: rgba(214, 90, 74, 0.10); border-radius: 14px; padding: 14px 16px; font-weight: 700; font-size: 1.25rem; line-height: 1.35; color: #F2A99E; }
+  .py-result > .py-help { text-align: center; }
+  .py-plan { background: var(--panel); border: 1px solid rgba(196,162,101,.45); border-radius: 16px; padding: 18px; margin: 18px 0; }
+  .py-plan-t { font-family: var(--display); font-weight: 600; font-size: 1.2rem; margin: 0 0 12px; color: var(--text); }
+  .py-accounts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .py-acc { background: #0d151f; border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .py-acc b { font-size: 1.4rem; color: #fff; }
+  .py-blur { filter: blur(7px); user-select: none; }
+  .py-plan-n { font-size: .9rem; line-height: 1.55; color: var(--mute); margin: 12px 0 0; }
+  .py-form { display: flex; flex-direction: column; gap: 12px; }
+  .py-form label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+  .py-form input { min-height: 50px; background: #0d151f; color: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 0 14px; font: 500 16px var(--ui); text-transform: none; letter-spacing: 0; }
+  .py-form input:focus { outline: none; border-color: var(--gold); }
+  .py-hp { position: absolute; left: -9999px; }
+  .py-btn { display: flex; align-items: center; justify-content: center; min-height: 52px; border: 0; border-radius: 11px; background: var(--gold); color: var(--on-gold); font: 700 16px var(--ui); text-decoration: none; cursor: pointer; padding: 0 20px; text-align: center; }
+  .py-btn:hover { filter: brightness(1.08); }
+  .py-btn:disabled { opacity: .6; cursor: wait; }
+  .py-err { color: #E2857A; font-size: 13px; }
+  .py-done-t { font-family: var(--display); font-weight: 600; font-size: clamp(1.8rem, 6vw, 2.3rem); line-height: 1.15; margin: 0 0 16px; color: var(--text); }
+  .py-session { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 18px; }
+  .py-session p { font-size: 1rem; line-height: 1.6; color: var(--text); margin: 0 0 16px; }
+  .py-proof { margin-top: 30px; }
+  .py-kicker { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 14px; }
+  .py-clips { display: grid; gap: 14px; margin-bottom: 8px; }
+  .py-clip { margin: 0; background: rgba(245,240,232,.05); border: 1px solid rgba(196,162,101,.2); border-radius: 12px; padding: 12px; }
+  .py-clip video { width: 100%; border-radius: 8px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .py-clip figcaption p { font-family: var(--display); font-style: italic; font-size: 1.02rem; line-height: 1.5; color: var(--text); margin: 12px 0 6px; }
+  .py-clip figcaption small { color: var(--gold); font-size: .82rem; }
+  .py-proof .py-btn { margin-top: 16px; }
+  .py-disc { font-size: 12.5px; text-align: center; color: var(--mute); margin: 34px 0 0; }
 </style>
 
 </Layout>

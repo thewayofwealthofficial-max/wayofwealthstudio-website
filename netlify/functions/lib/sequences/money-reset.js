@@ -16,23 +16,21 @@ module.exports = {
     {
       id: '01-your-numbers',
       afterHours: 0,
-      // 9 Oct 2026: the tool no longer needs an email, so this email now delivers the guide (Joel: yes).
-      subject: 'your guide (and what to do with your numbers)',
-      preheader: 'The 5 phases, and what to do with your numbers.',
-      // Used when no figures were ticked, or when the hourly runner retries a failed first send (no figures then).
+      // 11 Oct 2026: /reset rebuilt as the Pay Yourself Calculator. Email 1 IS the plan; {{plan}} is built in
+      // lead-magnet-subscribe.js (planText) from the six answers, never stored. Approved lines from the 27 Sep
+      // email 1 are kept below the plan.
+      subject: 'your Pay Yourself Plan',
+      preheader: 'Your safe weekly wage, your accounts, and a 30-minute setup.',
+      // Used when the hourly runner retries a failed first send (no numbers then).
       defaults: {
-        breakdown: "The tool splits what comes in into four pots: tax, work bills, a slow-month buffer, and a steady weekly wage, so you know what's yours to keep. Your numbers stayed on the page, so [run it again here](https://wayofwealthcoaching.com/reset/) any time you want to see them.",
+        plan: "Your numbers stayed on the page, so [run the calculator again here](https://wayofwealthcoaching.com/reset/) any time to see your safe weekly wage and your four accounts.",
       },
       body: `
 Hey {{name}},
 
-Here's the guide I promised: **[The Money Story Method](https://wayofwealthcoaching.com/guides/the-money-story-method.pdf)**. It's the 5 phases my clients used to put these pots into their real bank accounts, and keep them there.
+Here's your Pay Yourself Plan, built from the numbers you picked.
 
-{{breakdown}}
-
-Now, why four pots and not one account?
-
-Because most of us run everything through one account. A big payment lands, the balance looks huge, and it feels like you're doing great. But a lot of that money was never yours.
+{{plan}}
 
 Over the next week or so I'll send you a few short emails:
 - the one pot to set up first, in about three minutes
@@ -46,10 +44,14 @@ Two small asks.
 
 **Move this email to your Primary tab**, or star it, so the next ones don't get lost in Promotions.
 
-Joel
+**Want your exact number?**
+
+These numbers are a rough guide. On a Cash Flow Session we go through your real bank statements together. 75 minutes. You leave knowing your exact number. **[Book a Cash Flow Session (£99.97)](https://calendly.com/thewayofwealth-official/your-cash-flow-session)**
+
+Joel Ezekiel
 MSc Behavioural Economics | Qualified Financial Planner
 
-P.S. Want to know what these pots need to hold for your business? In a Cash Flow Session I build your cash flow model with you, live on screen, so you leave knowing how much you actually need to earn. **[Find out your number here](${SESSION})**.
+*This plan is educational, not financial advice. It does maths on the numbers you gave. Check your tax with your accountant.*
 `,
     },
     {

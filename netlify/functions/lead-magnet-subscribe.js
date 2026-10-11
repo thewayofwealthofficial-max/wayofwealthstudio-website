@@ -73,12 +73,15 @@ function breakdownText(b) {
   const m = (x) => `${cur}${x.toLocaleString('en-GB')}`;
   // Same words as the red box on the page, when what's left doesn't cover their life (9 Oct 2026).
   const short = n('short'), extra = n('extra');
+  const vat = n('vat'); // 9 Oct 2026: only sent when they ticked "VAT registered"
+  const vatLine = vat > 0 ? [`- **VAT (HMRC's money):** ${m(vat)}. About a sixth of what comes in at the standard 20% rate. Check your real figure with your accountant.`] : [];
   const shortLine = short > 0 && extra > 0
     ? [`- **You're short ${m(short)} a month.** To cover what your life costs, about ${m(extra)} more needs to come in each month.`]
     : [];
   return [
     'Each month, roughly:',
     `- **Coming in:** ${m(rev)}`,
+    ...vatLine,
     `- **Tax (${taxPct}%):** ${m(tax)}. Swept the day money lands, so the tax money is put aside before you can spend it.`,
     `- **Work bills:** ${m(run)}. What your work costs to run, ring-fenced.`,
     `- **Slow-month buffer:** ${m(buffer)}. Builds up during strong months to protect your pay when you take time off.`,
@@ -86,6 +89,9 @@ function breakdownText(b) {
     ...shortLine,
   ].join('\n').replace(/\n- /, '\n\n- ');
 }
+
+// The Pay Yourself Calculator (/reset, rebuilt 11 Oct 2026): sums, email text and PDF live in lib/pay-plan.js.
+const payPlan = require('./lib/pay-plan');
 
 // Sends /reset email 1 on its own: to people already on the list, or running the tool again. They asked for it.
 async function sendResetEmail({ email, name, vars }) {
@@ -209,7 +215,16 @@ exports.handler = async (event) => {
   const { email, name, magnet, honeypot, breakdown } = payload;
   // Only present when the person ticked "Email me my numbers too" on /reset. Used for email 1, never stored.
   const bd = magnet === 'cash-reset' ? breakdownText(breakdown) : null;
-  const vars = bd ? { breakdown: bd } : {};
+  // 11 Oct 2026: the rebuilt /reset (Pay Yourself Calculator) sends `plan`; email 1 shows it as {{plan}}.
+  const pl = magnet === 'cash-reset' ? payPlan.planText(payload.plan) : null;
+  const vars = pl ? { plan: pl } : bd ? { plan: bd } : {};
+  // The PDF is made here, attached to email 1, and not saved anywhere.
+  if (pl) {
+    try {
+      const pdf = payPlan.buildPdf(payload.plan, typeof name === 'string' ? name : '');
+      if (pdf) vars.__attachments = [{ filename: 'Pay-Yourself-Plan.pdf', content: pdf.toString('base64'), content_type: 'application/pdf' }];
+    } catch (e) { console.error('[lead-magnet-subscribe] plan PDF failed:', e.message); }
+  }
   // The diagnostic sends the person's own report link for its day-1 email. Only its own report links are accepted.
   if (typeof payload.report_url === 'string' && payload.report_url.startsWith('https://discover.thewayofwealth.shop/.netlify/functions/report?') && payload.report_url.length < 600) {
     vars.report_line = `Your full Money Story Report is ready, the whole thing in one place: [open your report](${payload.report_url})`;
