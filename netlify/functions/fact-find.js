@@ -1,8 +1,7 @@
 // Fact find for the paid "Your Cash Flow Session" (2026-10-05). Form at /your-number/fact-find.
 //   POST /api/fact-find   body: JSON of the answers (see FIELDS)
-// Saves the answers (Netlify Blobs, store "fact-finds"), then emails them to Joel and pings him on Telegram.
-// The save happens first, so answers are never lost if the email fails. A failed email is reported back
-// to the person filling it in, plainly.
+// Emails the answers to Joel and pings him on Telegram. Nothing is kept on the website (11 Oct 2026, Joel:
+// delete everything once the session is done). A failed email is reported back, plainly, so they can resend.
 //
 // Netlify env: RESEND_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
 
@@ -57,8 +56,8 @@ exports.handler = async (event) => {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(answers.email)) return { statusCode: 400, headers, body: JSON.stringify({ ok: false, error: 'Please check your email address.' }) };
 
   const at = new Date().toISOString();
-  connectLambda(event);
-  await getStore('fact-finds').setJSON(`${at}_${answers.email.toLowerCase()}`, { at, answers });
+  // 11 Oct 2026 (Joel): answers are no longer kept on the website. The email to Joel is the only copy,
+  // and he deletes it once the session is done and the report is sent.
 
   const rows = FIELDS.map(([key, label]) => `<p style="margin:0 0 14px"><b>${esc(label)}</b><br>${esc(answers[key] || '—').replace(/\n/g, '<br>')}</p>`).join('');
   const text = FIELDS.map(([key, label]) => `${label}\n${answers[key] || '—'}`).join('\n\n');
@@ -75,7 +74,7 @@ exports.handler = async (event) => {
   });
   if (!res.ok) {
     console.error('fact-find email failed', res.status, res.text.slice(0, 300));
-    return { statusCode: 502, headers, body: JSON.stringify({ ok: false, error: 'Your answers were saved, but the email to Joel did not send. Please email joel@wayofwealthcoaching.com to let him know.' }) };
+    return { statusCode: 502, headers, body: JSON.stringify({ ok: false, error: 'That did not send. Please try again in a minute, or email joel@wayofwealthcoaching.com.' }) };
   }
 
   try {
