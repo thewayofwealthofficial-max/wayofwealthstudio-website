@@ -9,24 +9,29 @@
 //   - 2 EMPLOYERS: small and mid-size businesses that might bring Joel in for staff financial wellbeing.
 //   - 3 SHOWS: small business podcasts and newsletters, each with a guest pitch.
 //   - one bold idea.
-// Joel sends them himself. Nothing is sent automatically. Kept out of the prospecting cockpit (its "do not touch" rule).
+// Nothing is sent without Joel's tap: each pitch with an email address gets a signed "✅ Send" link that sends it from
+// joel@wayofwealthcoaching.com via netlify/functions/b2b-send.js (Joel, 11 Oct 2026). Contact-form-only pitches he sends
+// himself. Drafts are saved to scripts/state/b2b/pending.json. Kept out of the prospecting cockpit (its "do not touch" rule).
 //
 // Anti-invention: an organisation is kept only if its website came back in a REAL web search result, and the site
 // opens. Contact routes come only from the organisation's own pages (mailto links / a contact page). Pitches use
 // only Joel's fixed facts and what the organisation's own site says. Joel has no partnerships and has not run
 // staff workshops yet: the hard checks block any pitch that implies otherwise.
 //
-// ENV: ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
+// ENV: ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, FRED_SECRET (signs the send links). DRY_RUN=1 prints instead of sending.
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { createHmac } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { joelVoice, leaksName } from './voice/joel-voice.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STATE = join(ROOT, 'scripts', 'state', 'b2b', 'suggested.json');
+const PENDING = join(ROOT, 'scripts', 'state', 'b2b', 'pending.json');
+const SITE = 'https://wayofwealthcoaching.com';
 const DRY = process.env.DRY_RUN === '1';
-const { ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } = process.env;
+const { ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, FRED_SECRET } = process.env;
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 
@@ -221,17 +226,41 @@ async function main() {
 
   const week = Math.floor(Date.now() / (7 * 864e5));
   const idea = BIG_IDEAS[week % BIG_IDEAS.length];
-  const card = (tag, o) => `${tag}. ${o.name} (${o.type}, ${o.country})\nWhy: ${o.why}\nWebsite: ${o.url}\nContact: ${o.email || o.contactPage}\n\nSubject: ${o.pitch.subject}\n\n${o.pitch.body}`;
-  await telegram(`🎯 FRIDAY BIG SWING\nOne yes = a steady way in to small business owners. Pick one or two and send them yourself.\n\n💡 Bold idea this week: ${idea}`);
+  // One signed link per emailable pitch, plus "send all"; checked by netlify/functions/b2b-send.js.
+  const date = new Date().toISOString().slice(0, 10);
+  const sendLink = (id) =>
+    FRED_SECRET
+      ? `${SITE}/api/b2b/send?week=${date}&id=${encodeURIComponent(id)}&sig=${createHmac('sha256', FRED_SECRET).update(`b2b:${date}:${id}`).digest('hex').slice(0, 16)}`
+      : '';
+  const card = (tag, o) =>
+    `${tag}. ${o.name} (${o.type}, ${o.country})\nWhy: ${o.why}\nWebsite: ${o.url}\nContact: ${o.email || o.contactPage}\n\nSubject: ${o.pitch.subject}\n\n${o.pitch.body}` +
+    (o.email && sendLink(String(tag))
+      ? `\n\n✅ Send this one from joel@wayofwealthcoaching.com:\n${sendLink(String(tag))}`
+      : o.email ? '' : '\n\n✍️ Website form only: send this one yourself.');
+  await telegram(`🎯 FRIDAY BIG SWING\nOne yes = a steady way in to small business owners. Tap ✅ under a pitch to send it from joel@wayofwealthcoaching.com, or send it yourself.\n\n💡 Bold idea this week: ${idea}`);
   if (partners.length) await telegram('🤝 REFERRAL PARTNERS: two-way referral or a free talk');
   for (const [i, o] of partners.entries()) await telegram(card(i + 1, o));
   if (employers.length) await telegram('🏢 EMPLOYERS: a free talk for their staff');
   for (const [i, o] of employers.entries()) await telegram(card(`E${i + 1}`, o));
   if (shows.length) await telegram('🎙️ PODCASTS AND NEWSLETTERS: ask to come on as a guest');
   for (const [i, o] of shows.entries()) await telegram(card(`P${i + 1}`, o));
+  const tagged = [
+    ...partners.map((o, i) => [String(i + 1), o]),
+    ...employers.map((o, i) => [`E${i + 1}`, o]),
+    ...shows.map((o, i) => [`P${i + 1}`, o]),
+  ];
+  const emailable = tagged.filter(([, o]) => o.email).length;
+  if (emailable > 1 && sendLink('all')) await telegram(`✅ Send all ${emailable} that have an email address:\n${sendLink('all')}`);
 
   if (!DRY) {
-    const date = new Date().toISOString().slice(0, 10);
+    // The drafts the send links point at, exactly as shown above.
+    const pending = {
+      week: date,
+      created_at: new Date().toISOString(),
+      items: tagged.map(([id, o]) => ({ id, name: o.name, to: o.email || '', subject: o.pitch.subject, body: o.pitch.body, sent_at: null })),
+    };
+    await mkdir(dirname(PENDING), { recursive: true });
+    await writeFile(PENDING, JSON.stringify(pending, null, 1) + '\n');
     state.push(...[...partners, ...employers, ...shows].map((o) => ({ date, domain: host(o.url), name: o.name, type: o.type, country: o.country })));
     await mkdir(dirname(STATE), { recursive: true });
     await writeFile(STATE, JSON.stringify(state, null, 2) + '\n');

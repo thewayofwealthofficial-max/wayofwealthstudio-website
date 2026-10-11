@@ -2,7 +2,7 @@ name: Friday Big Swing (B2B)
 
 # Every Friday: 5 referral partners (accountants, bookkeepers, business networks, business coaches), 2 employers,
 # 3 small business podcasts or newsletters, a ready pitch each + one bold idea, to Fred (repointed 5 Oct 2026).
-# Joel sends them himself; nothing is sent automatically. See scripts/b2b-friday.mjs.
+# Nothing is sent without Joel's tap on a signed link (netlify/functions/b2b-send.js). See scripts/b2b-friday.mjs.
 # GitHub runs crons hours late, so 04:07 UTC lands in the morning UK.
 
 on:
@@ -39,6 +39,7 @@ jobs:
           VOICE_KEY: ${{ secrets.VOICE_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FRED_SECRET: ${{ secrets.FRED_SECRET }}
         run: node scripts/b2b-friday.mjs
 
       - name: Remember who was suggested (never repeat)

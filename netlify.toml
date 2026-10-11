@@ -46,6 +46,13 @@
   status = 200
   force = true
 
+# Friday big swing: Joel's one-tap "send this pitch" links (netlify/functions/b2b-send.js).
+[[redirects]]
+  from = "/api/b2b/send"
+  to = "/.netlify/functions/b2b-send"
+  status = 200
+  force = true
+
 # The Money Story Diagnostic's Calendly webhook tells the email robot when someone books or cancels.
 [[redirects]]
   from = "/api/sequence/booked"
