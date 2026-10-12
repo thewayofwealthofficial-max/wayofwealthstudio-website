@@ -60,7 +60,15 @@
       "id": "a3c01bc3578782ef",
       "urn": "urn:li:share:7512506590521016320",
       "angle": 3,
-      "postedAt": "2026-10-04T13:39:07.508Z"
+      "postedAt": "2026-10-04T13:39:07.508Z",
+      "scored": {
+        "at": "2026-10-12T13:20:06.886Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2855,
+        "per1k": 0
+      },
+      "topic": "other money"
     },
     {
       "id": "746408383acada40",
