@@ -74,13 +74,29 @@
       "id": "746408383acada40",
       "urn": "urn:li:share:7512947794333163521",
       "angle": 2,
-      "postedAt": "2026-10-05T18:52:18.897Z"
+      "postedAt": "2026-10-05T18:52:18.897Z",
+      "scored": {
+        "at": "2026-10-13T12:48:59.582Z",
+        "reactions": 1,
+        "comments": 0,
+        "followers": 2854,
+        "per1k": 0.35
+      },
+      "topic": "money mindset and beliefs"
     },
     {
       "id": "6d336223a1a035e1",
       "urn": "urn:li:share:7513169714236350465",
       "angle": 5,
-      "postedAt": "2026-10-06T09:34:08.395Z"
+      "postedAt": "2026-10-06T09:34:08.395Z",
+      "scored": {
+        "at": "2026-10-13T12:49:04.575Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2854,
+        "per1k": 0
+      },
+      "topic": "money mindset and beliefs"
     },
     {
       "id": "8430f44fbe7187fc",
