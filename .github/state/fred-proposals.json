@@ -1,20 +1,5 @@
 {
-  "generated_at": "2026-10-12T23:46:12.584Z",
+  "generated_at": "2026-10-13T21:57:26.549Z",
   "ttl_ms": 86400000,
-  "proposals": [
-    {
-      "id": "blog-title-diagnostic-crutch",
-      "file": "src/content/blog/prices-are-up-and-youre-avoiding-your-numbers-heres-whats-happening-in-your-brai.md",
-      "impact": "remove banned diagnostic crutch from published title before it propagates to social shares",
-      "risk": "low",
-      "observation": "The blog post published 2026-10-09 carries the title \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\" The phrase \"Here's what's happening in your brain\" is a textbook diagnostic crutch, explicitly banned by the voice rules (\"Here's what's really happening\" is listed; \"Here's what's happening in your brain\" is the same structural move). It has already published and will propagate to any social share, RSS reader, or link preview generated from this point forward. The fix is a one-line title change in the file's frontmatter.",
-      "proposal": "Replace the post title in the frontmatter of the October 9th blog post. Keep the first clause (it is specific and grounded) and rewrite the second clause so it names what the reader is actually experiencing rather than promising a diagnostic reveal. The replacement must pass the Sultanic test: 1,000 coaches could not write it, because it names the specific cognitive pattern Joel teaches (avoidance as a protection mechanism against numbers that confirm a fear) rather than a generic brain-hook.",
-      "current_text": "title: \"Prices are up and you're avoiding your numbers. Here's what's happening in your brain.\"",
-      "new_text": "title: \"Prices are up and you're avoiding your numbers. The avoidance is protecting a story, not your bank balance.\"",
-      "signed_id": "f95e4c0c722f6c2a.1791848772583",
-      "created_at": 1791848772583,
-      "requires_manual": false,
-      "block_reason": null
-    }
-  ]
+  "proposals": []
 }
