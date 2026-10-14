@@ -215,6 +215,9 @@ const CLIPS = ['alon-2', 'josh-1', 'lynt-3', 'hozz-4'].map((s) => RESULT_CLIPS.f
   function gaps(c) {
     const out = [];
     const payNow = state.pay === 'none' ? null : Number(state.pay);
+    // 14 Oct 2026: a business that costs more than comes in is the first problem to name.
+    if (c.profit < 0) return [`Right now your business costs ${fmt(-c.profit)} a month more than comes in, before you pay yourself anything.`];
+    if (c.profit === 0) return ["Right now your business uses up everything that comes in. There's nothing left to pay you yet."];
     if (state.life > c.monthly) out.push(`Your life costs ${fmt(state.life - c.monthly)} a month more than your business can pay you.`);
     if (payNow !== null && payNow - c.weekly > 50) out.push(`You're taking ${fmt(payNow - c.weekly)} a week more than your business can support.`);
     if (payNow === null) out.push("Right now you don't have a wage.");

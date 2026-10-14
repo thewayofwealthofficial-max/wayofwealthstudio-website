@@ -6,7 +6,9 @@ const FONTS = require('./fonts/pdf-fonts');
 
 const CALENDLY = 'https://calendly.com/thewayofwealth-official/your-cash-flow-session';
 const POA_URL = 'https://www.gov.uk/understand-self-assessment-bill/payments-on-account';
-const BUF = 10; // % of what's left after tax; the plan also shows 5% and 15% (Joel, 11 Oct)
+const BUF = 10;
+const VAT_NOTE = "If your costs have VAT on them too, you can usually take that off, so your real VAT bill is often lower. Your accountant will know.";
+const LOSS_MSG = "More needs to come in than goes out on the business first. That's where to start: what comes in, or what the business costs."; // % of what's left after tax; the plan also shows 5% and 15% (Joel, 11 Oct)
 
 function calc(p, bufferPct) {
   const vat = p.vat ? p.income / 6 : 0;
@@ -36,6 +38,10 @@ const m = (x) => `£${Math.round(x).toLocaleString('en-GB')}`;
 
 // Same order as the page: life gap, over-paying, no wage, under-paying, close.
 function gapLine(plan, c) {
+  // 14 Oct 2026 (Joel's test: £12k in, VAT, £11k costs): when the business costs more than comes in, THAT is
+  // the problem to name first, before any life gap. Profit 0 or below = nothing to split yet.
+  if (c.profit < 0) return `Right now your business costs ${m(-c.profit)} a month more than comes in, before you pay yourself anything. That's ${m(-c.profit * 12)} a year.`;
+  if (c.profit === 0) return "Right now your business uses up everything that comes in. There's nothing left to pay you yet.";
   if (plan.life > c.monthly) return `Your life costs ${m(plan.life - c.monthly)} a month more than your business can pay you. That's ${m((plan.life - c.monthly) * 12)} a year.`;
   if (plan.payNow !== null && plan.payNow - c.weekly > 50) return `You're taking ${m(plan.payNow - c.weekly)} a week more than your business can support. That's ${m((plan.payNow - c.weekly) * 52)} a year.`;
   if (plan.payNow === null) return "Right now you don't have a wage. This plan gives you one.";
@@ -57,7 +63,7 @@ function build(raw) {
   ].map((a) => ({ ...a, per1k: per1k(a.v) }));
   const month = plan.life + plan.costs;
   return {
-    plan, c, accounts, gap: gapLine(plan, c),
+    plan, c, accounts, gap: gapLine(plan, c), loss: c.profit <= 0,
     buffer: {
       first: month, full: month * 6,
       firstMonths: c.buffer > 0 ? Math.ceil(month / c.buffer) : null,
@@ -77,8 +83,13 @@ function planText(raw) {
     '',
     d.gap,
     '',
-    `**Your ${plan.vat ? '' : 'four '}accounts, from every £1,000 that comes in**`,
-    ...d.accounts.map((a) => `- **${a.k}:** ${m(a.per1k)} (${m(a.v)} a month)`),
+    ...(d.loss
+      ? ['**Before you split your money into accounts**', '', LOSS_MSG]
+      : [
+          `**Your ${plan.vat ? '' : 'four '}accounts, from every £1,000 that comes in**`,
+          ...d.accounts.map((a) => `- **${a.k}:** ${m(a.per1k)} (${m(a.v)} a month)`),
+        ]),
+    ...(plan.vat ? ['', VAT_NOTE] : []),
     '',
     "Your full plan is attached as a PDF: your buffer target, your 30-minute setup and your slow-month rule.",
   ].join('\n');
@@ -139,12 +150,13 @@ function buildPdf(raw, firstName) {
   doc.setFont('Fraunces', 'normal'); doc.setFontSize(72); doc.setTextColor(...C.white);
   doc.text(m(c.weekly), W / 2, 280, { align: 'center' });
   doc.setFont('Inter', 'normal'); doc.setFontSize(12); doc.setTextColor(...C.mute);
-  doc.text(`${m(c.monthly)} a month, paid to you like a wage`, W / 2, 314, { align: 'center' });
+  doc.text(d.loss ? 'Nothing to pay yet: the business costs more than comes in' : `${m(c.monthly)} a month, paid to you like a wage`, W / 2, 314, { align: 'center' });
 
   // gap box
   doc.setFillColor(36, 22, 25); doc.setDrawColor(...C.warnLine); doc.setLineWidth(0.8);
-  const gapLines = doc.splitTextToSize(d.gap, CW - 40);
+  // Font set BEFORE measuring, so long lines wrap inside the box (14 Oct 2026 fix).
   doc.setFont('Inter', 'bold'); doc.setFontSize(14);
+  const gapLines = doc.splitTextToSize(d.gap, CW - 40);
   const gh = 30 + gapLines.length * 21;
   doc.roundedRect(X, 372, CW, gh, 10, 10, 'FD');
   doc.setTextColor(...C.warn); doc.text(gapLines, W / 2, 398, { align: 'center', lineHeightFactor: 1.5 });
@@ -171,9 +183,17 @@ function buildPdf(raw, firstName) {
   doc.addPage(); page(doc, 2);
   kicker(doc, 'Where every payment goes', 100);
   h2(doc, `Your ${plan.vat ? '' : 'four '}accounts`, 128);
+  if (d.loss) {
+    panel(doc, 160, 120, C.warnLine);
+    doc.setFont('Fraunces', 'normal'); doc.setFontSize(16); doc.setTextColor(...C.text);
+    doc.text('Before you split your money into accounts', X + 20, 192);
+    para(doc, `${d.gap} ${LOSS_MSG}`, 216, { x: X + 20, width: CW - 40, color: C.text, size: 11 });
+    y = 300;
+  } else {
   y = para(doc, 'Every time money comes in, split it like this. The bars show what each account gets from every £1,000.', 154);
   y += 14;
-  d.accounts.forEach((a, i) => {
+  }
+  if (!d.loss) d.accounts.forEach((a, i) => {
     panel(doc, y, 66);
     doc.setFont('Fraunces', 'normal'); doc.setFontSize(15); doc.setTextColor(...C.text); doc.text(a.k, X + 18, y + 28);
     doc.setFont('Inter', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...C.mute); doc.text(a.note, X + 18, y + 44);
@@ -186,6 +206,7 @@ function buildPdf(raw, firstName) {
     doc.text(`${m(a.per1k)} of every £1,000`, W - X - 18, y + 44, { align: 'right' });
     y += 76;
   });
+  if (plan.vat) y = para(doc, VAT_NOTE, y + 4, { size: 9.5 });
 
   y += 18;
   kicker(doc, 'Your safety net', y); y += 26;
@@ -217,8 +238,8 @@ function buildPdf(raw, firstName) {
   y = 160;
   const steps = [
     `Open ${plan.vat ? 'three' : 'two'} extra pots with your bank. Name them "Tax: untouchable"${plan.vat ? ', "VAT"' : ''} and "Slow-month buffer".`,
-    'Every time a payment comes in, split it using your "from every £1,000" numbers.',
-    `Pay yourself ${m(c.weekly)} on the same day every week, by standing order.`,
+    d.loss ? 'Every time a payment comes in, move the tax' + (plan.vat ? ' and VAT' : '') + ' first.' : 'Every time a payment comes in, split it using your "from every £1,000" numbers.',
+    d.loss ? 'Once more comes in than goes out, set a weekly wage on the same day every week, by standing order.' : `Pay yourself ${m(c.weekly)} on the same day every week, by standing order.`,
     'Never touch Tax.',
   ];
   steps.forEach((s) => {
