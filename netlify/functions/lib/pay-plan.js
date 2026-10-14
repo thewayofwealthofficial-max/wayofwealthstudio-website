@@ -8,7 +8,7 @@ const CALENDLY = 'https://calendly.com/thewayofwealth-official/your-cash-flow-se
 const POA_URL = 'https://www.gov.uk/understand-self-assessment-bill/payments-on-account';
 const BUF = 10;
 const VAT_NOTE = "If your costs have VAT on them too, you can usually take that off, so your real VAT bill is often lower. Your accountant will know.";
-const LOSS_MSG = "More needs to come in than goes out on the business first. That's where to start: what comes in, or what the business costs."; // % of what's left after tax; the plan also shows 5% and 15% (Joel, 11 Oct)
+// BUF = % of what's left after tax that goes to the buffer; the plan also shows 5% and 15% (Joel, 11 Oct).
 
 function calc(p, bufferPct) {
   const vat = p.vat ? p.income / 6 : 0;
@@ -49,27 +49,74 @@ function gapLine(plan, c) {
   return "You're close. Now make it automatic.";
 }
 
-function build(raw) {
-  const plan = normalise(raw);
-  if (!plan) return null;
-  const c = calc(plan, BUF);
+function accountsFor(plan, c) {
   const per1k = (x) => (x / plan.income) * 1000;
-  const accounts = [
+  return [
     { k: 'Yours', note: 'your weekly wage', v: c.monthly },
     { k: 'Tax', note: `${plan.taxPct}% of profit. Never touch it`, v: c.tax },
     { k: 'Business costs', note: 'what the business needs to run', v: plan.costs },
     { k: 'Slow-month buffer', note: `${BUF}% of what's left after tax`, v: c.buffer },
     ...(plan.vat ? [{ k: 'VAT', note: "HMRC's money, about a sixth at 20%", v: c.vat }] : []),
   ].map((a) => ({ ...a, per1k: per1k(a.v) }));
+}
+
+const VAT_THRESHOLD_YEAR = 90000; // GOV.UK, checked 5 Oct 2026
+const down50 = (x) => Math.floor(x / 50) * 50;
+const up50 = (x) => Math.ceil(x / 50) * 50;
+
+// 15 Oct 2026 (Joel): when the wage doesn't cover what their life costs, the plan must say WHAT to change and
+// show the target numbers. Sums on their own numbers only: the aim is a wage that covers their life costs.
+// wage = (income - VAT - costs) x (1 - tax%) x (1 - buffer%), so the profit needed = life / that factor.
+function targets(plan, c) {
+  if (!(plan.life > 0) || c.monthly >= plan.life - 1) return null;
+  const keep = (1 - plan.taxPct / 100) * (1 - BUF / 100);
+  const vatShare = plan.vat ? 1 / 6 : 0;
+  const needProfit = plan.life / keep;
+  const gapProfit = needProfit - c.profit; // how much more profit a month is needed
+  const options = [];
+  const costsTo = down50(plan.income * (1 - vatShare) - needProfit);
+  if (costsTo >= 0 && costsTo < plan.costs) {
+    options.push({ kind: 'costs', costs: costsTo, income: plan.income,
+      text: `Bring business costs down to ${m(costsTo)} a month or less (from ${m(plan.costs)}), with what comes in staying the same.` });
+  }
+  const incomeTo = up50((needProfit + plan.costs) / (1 - vatShare));
+  const overVat = !plan.vat && incomeTo * 12 > VAT_THRESHOLD_YEAR;
+  options.push({ kind: 'income', costs: plan.costs, income: incomeTo,
+    text: `Bring in about ${m(incomeTo)} a month (from ${m(plan.income)}), with costs staying the same.` +
+      (overVat ? ` At that level you'd pass the £90,000 VAT threshold, so VAT would apply too.` : '') });
+  const mixCosts = down50(plan.costs - gapProfit / 2);
+  const mixIncome = up50(plan.income + gapProfit / 2 / (1 - vatShare));
+  if (mixCosts >= 0 && mixCosts < plan.costs) {
+    options.push({ kind: 'mix', costs: mixCosts, income: mixIncome,
+      text: `Or a mix of both: costs down to about ${m(mixCosts)} and about ${m(mixIncome)} coming in.` });
+  }
+  const pick = options[0]; // costs first when it can work on its own; otherwise more coming in
+  const tPlan = { ...plan, income: pick.income, costs: pick.costs };
+  const tc = calc(tPlan, BUF);
+  return {
+    options, pick, plan: tPlan, c: tc, accounts: accountsFor(tPlan, tc),
+    costsAlone: options.some((o) => o.kind === 'costs'),
+    intro: `To pay yourself what your life costs (${m(plan.life)} a month), one of these needs to change:`,
+  };
+}
+
+function build(raw) {
+  const plan = normalise(raw);
+  if (!plan) return null;
+  const c = calc(plan, BUF);
+  const t = targets(plan, c);
+  // Buffer, setup and the 5% / 15% lines follow the target plan when there is one.
+  const bp = t ? t.plan : plan, bc = t ? t.c : c;
   const month = plan.life + plan.costs;
   return {
-    plan, c, accounts, gap: gapLine(plan, c), loss: c.profit <= 0,
+    plan, c, accounts: accountsFor(plan, c), gap: gapLine(plan, c), loss: c.profit <= 0, t,
+    goal: { plan: bp, c: bc },
     buffer: {
-      first: month, full: month * 6,
-      firstMonths: c.buffer > 0 ? Math.ceil(month / c.buffer) : null,
-      fullMonths: c.buffer > 0 ? Math.ceil((month * 6) / c.buffer) : null,
+      first: bp.life + bp.costs, full: (bp.life + bp.costs) * 6,
+      firstMonths: bc.buffer > 0 ? Math.ceil((bp.life + bp.costs) / bc.buffer) : null,
+      fullMonths: bc.buffer > 0 ? Math.ceil(((bp.life + bp.costs) * 6) / bc.buffer) : null,
     },
-    slow: calc(plan, 5), fast: calc(plan, 15),
+    slow: calc(bp, 5), fast: calc(bp, 15), month,
   };
 }
 
@@ -83,15 +130,26 @@ function planText(raw) {
     '',
     d.gap,
     '',
-    ...(d.loss
-      ? ['**Before you split your money into accounts**', '', LOSS_MSG]
+    ...(d.t
+      ? [
+          '**What needs to change**',
+          '',
+          d.t.intro,
+          ...d.t.options.map((o, i) => `${i + 1}. ${o.text}`),
+          '',
+          `**Your target plan** (option 1: ${m(d.t.pick.income)} coming in, ${m(d.t.pick.costs)} business costs)`,
+          `- **Your weekly wage:** ${m(d.t.c.weekly)} (${m(d.t.c.monthly)} a month)`,
+          ...d.t.accounts.filter((a) => a.k !== 'Yours').map((a) => `- **${a.k}:** ${m(a.v)} a month (${m(a.per1k)} of every £1,000)`),
+        ]
       : [
           `**Your ${plan.vat ? '' : 'four '}accounts, from every £1,000 that comes in**`,
           ...d.accounts.map((a) => `- **${a.k}:** ${m(a.per1k)} (${m(a.v)} a month)`),
         ]),
     ...(plan.vat ? ['', VAT_NOTE] : []),
     '',
-    "Your full plan is attached as a PDF: your buffer target, your 30-minute setup and your slow-month rule.",
+    d.t
+      ? 'Your full plan is attached as a PDF: what to change, your target accounts, your buffer target, your 30-minute setup and your slow-month rule.'
+      : 'Your full plan is attached as a PDF: your accounts, your buffer target, your 30-minute setup and your slow-month rule.',
   ].join('\n');
 }
 
@@ -112,7 +170,7 @@ function page(doc, n) {
   doc.setFont('Inter', 'semibold'); doc.setFontSize(8.5); doc.setTextColor(...C.gold);
   doc.text('WAY OF WEALTH', X, 40, { charSpace: 1.6 });
   doc.setFont('Inter', 'normal'); doc.setTextColor(...C.mute);
-  doc.text(`Pay Yourself Plan · page ${n} of 3`, W - X, 40, { align: 'right' });
+  doc.text(`Pay Yourself Plan · page ${n} of 4`, W - X, 40, { align: 'right' });
   doc.setDrawColor(...C.line); doc.setLineWidth(0.6); doc.line(X, 52, W - X, 52);
   doc.setFontSize(8); doc.text('wayofwealthcoaching.com · Joel Ezekiel · MSc Behavioural Economics | Qualified Financial Planner', W / 2, H - 28, { align: 'center' });
 }
@@ -179,39 +237,47 @@ function buildPdf(raw, firstName) {
   });
   para(doc, 'Built from the numbers you picked. A rough guide, not a forecast.', y + 8, { size: 9.5 });
 
-  // ---- page 2: the accounts + buffer ----
+  // ---- page 2: what to change (if anything) + the accounts ----
   doc.addPage(); page(doc, 2);
-  kicker(doc, 'Where every payment goes', 100);
-  h2(doc, `Your ${plan.vat ? '' : 'four '}accounts`, 128);
-  if (d.loss) {
-    panel(doc, 160, 120, C.warnLine);
-    doc.setFont('Fraunces', 'normal'); doc.setFontSize(16); doc.setTextColor(...C.text);
-    doc.text('Before you split your money into accounts', X + 20, 192);
-    para(doc, `${d.gap} ${LOSS_MSG}`, 216, { x: X + 20, width: CW - 40, color: C.text, size: 11 });
-    y = 300;
+  const shown = d.t ? d.t : { accounts: d.accounts, plan, c };
+  if (d.t) {
+    kicker(doc, 'What needs to change', 100);
+    h2(doc, 'Your target plan', 128);
+    // the options panel
+    doc.setFont('Inter', 'normal'); doc.setFontSize(10.5);
+    const optLines = d.t.options.map((o, i) => doc.splitTextToSize(`${i + 1}.  ${o.text}`, CW - 40));
+    const ph = 46 + optLines.reduce((n, l) => n + l.length * 15.75 + 6, 0);
+    panel(doc, 148, ph, C.gold);
+    para(doc, d.t.intro, 172, { x: X + 20, width: CW - 40, color: C.text, size: 10.5, weight: 'semibold' });
+    let oy = 196;
+    optLines.forEach((l) => { doc.setFont('Inter', 'normal'); doc.setFontSize(10.5); doc.setTextColor(...C.text); doc.text(l, X + 20, oy, { lineHeightFactor: 1.5 }); oy += l.length * 15.75 + 6; });
+    y = 148 + ph + 22;
+    y = para(doc, `Your target plan uses option 1: ${m(d.t.pick.income)} coming in and ${m(d.t.pick.costs)} business costs. Here's where every payment would go.`, y, { size: 10 }) + 6;
   } else {
-  y = para(doc, 'Every time money comes in, split it like this. The bars show what each account gets from every £1,000.', 154);
-  y += 14;
+    kicker(doc, 'Where every payment goes', 100);
+    h2(doc, `Your ${plan.vat ? '' : 'four '}accounts`, 128);
+    y = para(doc, 'Every time money comes in, split it like this. The bars show what each account gets from every £1,000.', 154) + 14;
   }
-  if (!d.loss) d.accounts.forEach((a, i) => {
-    panel(doc, y, 66);
-    doc.setFont('Fraunces', 'normal'); doc.setFontSize(15); doc.setTextColor(...C.text); doc.text(a.k, X + 18, y + 28);
-    doc.setFont('Inter', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...C.mute); doc.text(a.note, X + 18, y + 44);
-    doc.setFont('Inter', 'bold'); doc.setFontSize(15); doc.setTextColor(...C.white); doc.text(`${m(a.v)}/mo`, W - X - 18, y + 28, { align: 'right' });
-    // bar: share of every £1,000
-    const bx = X + 18, bw = CW - 36, by = y + 50;
-    doc.setFillColor(...C.line); doc.roundedRect(bx, by, bw, 7, 3.5, 3.5, 'F');
-    doc.setFillColor(...(i === 0 ? C.gold : [232, 213, 176])); doc.roundedRect(bx, by, Math.max(4, bw * Math.min(1, a.per1k / 1000)), 7, 3.5, 3.5, 'F');
-    doc.setFont('Inter', 'semibold'); doc.setFontSize(9.5); doc.setTextColor(...C.gold);
-    doc.text(`${m(a.per1k)} of every £1,000`, W - X - 18, y + 44, { align: 'right' });
-    y += 76;
+  shown.accounts.forEach((a, i) => {
+    panel(doc, y, 62);
+    doc.setFont('Fraunces', 'normal'); doc.setFontSize(14); doc.setTextColor(...C.text); doc.text(a.k, X + 18, y + 25);
+    doc.setFont('Inter', 'normal'); doc.setFontSize(9); doc.setTextColor(...C.mute);
+    doc.text(i === 0 ? `your weekly wage: ${m(shown.c.weekly)}` : a.note, X + 18, y + 40);
+    doc.setFont('Inter', 'bold'); doc.setFontSize(14); doc.setTextColor(...C.white); doc.text(`${m(a.v)}/mo`, W - X - 18, y + 25, { align: 'right' });
+    const bx = X + 18, bw = CW - 36, by = y + 47;
+    doc.setFillColor(...C.line); doc.roundedRect(bx, by, bw, 6, 3, 3, 'F');
+    doc.setFillColor(...(i === 0 ? C.gold : [232, 213, 176])); doc.roundedRect(bx, by, Math.max(4, bw * Math.min(1, a.per1k / 1000)), 6, 3, 3, 'F');
+    doc.setFont('Inter', 'semibold'); doc.setFontSize(9); doc.setTextColor(...C.gold);
+    doc.text(`${m(a.per1k)} of every £1,000`, W - X - 18, y + 40, { align: 'right' });
+    y += 70;
   });
-  if (plan.vat) y = para(doc, VAT_NOTE, y + 4, { size: 9.5 });
+  if (plan.vat) para(doc, VAT_NOTE, y + 4, { size: 9 });
 
-  y += 18;
+  // ---- page 3: the buffer + the setup ----
+  doc.addPage(); page(doc, 3);
+  y = 100;
   kicker(doc, 'Your safety net', y); y += 26;
   h2(doc, 'Your buffer target', y); y += 22;
-  // timeline
   const tx1 = X + 10, tx2 = W - X - 10, ty = y + 34;
   doc.setDrawColor(...C.line); doc.setLineWidth(2); doc.line(tx1, ty, tx2, ty);
   const pts = [
@@ -227,27 +293,27 @@ function buildPdf(raw, firstName) {
     doc.setFont('Inter', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...C.mute); doc.text(pt.bot, pt.x, ty + 24, { align: al });
   });
   y = ty + 56;
-  para(doc, d.c.buffer > 0
-    ? `At ${m(c.buffer)} a month, one month of life and business costs takes about ${d.buffer.firstMonths} months. Want it faster or slower? At 5% your weekly wage would be ${m(d.slow.weekly)}. At 15%, ${m(d.fast.weekly)}. If your income swings a lot, go faster.`
-    : "Right now there's nothing left over to build a buffer. That's the first thing to change.", y);
+  y = para(doc, d.goal.c.buffer > 0
+    ? `${d.t ? 'On your target plan, at' : 'At'} ${m(d.goal.c.buffer)} a month, one month of life and business costs takes about ${d.buffer.firstMonths} months. Want it faster or slower? At 5% your weekly wage would be ${m(d.slow.weekly)}. At 15%, ${m(d.fast.weekly)}. If your income swings a lot, go faster.`
+    : "Right now there's nothing left over to build a buffer. That's the first thing to change.", y) + 30;
 
-  // ---- page 3: what to do ----
-  doc.addPage(); page(doc, 3);
-  kicker(doc, 'This week', 100);
-  h2(doc, 'Your 30-minute setup', 128);
-  y = 160;
+  kicker(doc, 'This week', y); y += 26;
+  h2(doc, 'Your 30-minute setup', y); y += 30;
   const steps = [
     `Open ${plan.vat ? 'three' : 'two'} extra pots with your bank. Name them "Tax: untouchable"${plan.vat ? ', "VAT"' : ''} and "Slow-month buffer".`,
-    d.loss ? 'Every time a payment comes in, move the tax' + (plan.vat ? ' and VAT' : '') + ' first.' : 'Every time a payment comes in, split it using your "from every £1,000" numbers.',
-    d.loss ? 'Once more comes in than goes out, set a weekly wage on the same day every week, by standing order.' : `Pay yourself ${m(c.weekly)} on the same day every week, by standing order.`,
+    'Every time a payment comes in, split it using your "from every £1,000" numbers.',
+    d.t ? `Once the change above is in place, pay yourself ${m(d.goal.c.weekly)} on the same day every week, by standing order. Until then, move the tax${plan.vat ? ' and VAT' : ''} first.` : `Pay yourself ${m(c.weekly)} on the same day every week, by standing order.`,
     'Never touch Tax.',
   ];
-  steps.forEach((s) => {
+  steps.forEach((st) => {
     doc.setDrawColor(...C.gold); doc.setLineWidth(1.2); doc.roundedRect(X, y - 11, 14, 14, 3, 3, 'S');
-    y = para(doc, s, y, { x: X + 26, width: CW - 26, color: C.text, size: 11.5 }) + 10;
+    y = para(doc, st, y, { x: X + 26, width: CW - 26, color: C.text, size: 11.5 }) + 10;
   });
-  y = para(doc, 'Run a limited company? Ask your accountant how to pay this to yourself.', y + 2, { size: 10 }) + 22;
+  para(doc, 'Run a limited company? Ask your accountant how to pay this to yourself.', y + 2, { size: 10 });
 
+  // ---- page 4: slow months, tax, the session ----
+  doc.addPage(); page(doc, 4);
+  y = 100;
   kicker(doc, 'When a slow month comes', y); y += 22;
   y = para(doc, 'Your wage comes from the buffer, never from Tax. Then in the next good month, top the buffer up first.', y, { color: C.text, size: 11.5 }) + 22;
 
@@ -271,4 +337,4 @@ function buildPdf(raw, firstName) {
   return Buffer.from(doc.output('arraybuffer'));
 }
 
-module.exports = { build, planText, buildPdf, calc, normalise };
+module.exports = { build, planText, buildPdf, calc, normalise, targets };
