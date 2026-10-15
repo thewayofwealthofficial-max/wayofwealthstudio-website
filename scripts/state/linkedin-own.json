@@ -116,7 +116,15 @@
       "id": "5e460c8335f4e452",
       "urn": "urn:li:share:7513575787137122304",
       "angle": 6,
-      "postedAt": "2026-10-07T12:27:43.943Z"
+      "postedAt": "2026-10-07T12:27:43.943Z",
+      "scored": {
+        "at": "2026-10-15T10:07:59.784Z",
+        "reactions": 1,
+        "comments": 0,
+        "followers": 2854,
+        "per1k": 0.35
+      },
+      "topic": "spending and saving habits"
     },
     {
       "id": "b02f77717bd5a549",
