@@ -117,5 +117,75 @@
     "name": "Freelancing Females Newsletter",
     "type": "newsletter",
     "country": "US"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "lanop.co.uk",
+    "name": "Lanop Accountancy",
+    "type": "accountant",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "pearllemonaccountants.co.uk",
+    "name": "Pearl Lemon Accountants",
+    "type": "bookkeeper",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "londonbookkeepingco.co.uk",
+    "name": "London Bookkeeping Co",
+    "type": "bookkeeper",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "bigbusinessbreakfastclub.co.uk",
+    "name": "Big Business Breakfast Club",
+    "type": "business network",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "smallbusinessaustralia.org",
+    "name": "Small Business Australia – Coaching",
+    "type": "business coach",
+    "country": "Australia"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "happy.co.uk",
+    "name": "Happy Ltd",
+    "type": "employer",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "bcorporation.uk",
+    "name": "B Lab UK",
+    "type": "employer",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "bigidea.co.uk",
+    "name": "The Ambitious Lifestyle Business Podcast",
+    "type": "podcast",
+    "country": "UK"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "freelancecake.com",
+    "name": "Freelance Cake Newsletter",
+    "type": "newsletter",
+    "country": "US"
+  },
+  {
+    "date": "2026-10-16",
+    "domain": "wisepreneurs.au",
+    "name": "Wisepreneurs",
+    "type": "podcast",
+    "country": "Australia"
   }
 ]
