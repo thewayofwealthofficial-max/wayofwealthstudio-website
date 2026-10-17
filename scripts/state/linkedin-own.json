@@ -130,7 +130,15 @@
       "id": "b02f77717bd5a549",
       "urn": "urn:li:share:7514274924186738689",
       "angle": 5,
-      "postedAt": "2026-10-09T10:45:50.842Z"
+      "postedAt": "2026-10-09T10:45:50.842Z",
+      "scored": {
+        "at": "2026-10-17T09:31:05.745Z",
+        "reactions": 2,
+        "comments": 0,
+        "followers": 2854,
+        "per1k": 0.7
+      },
+      "topic": "paying yourself"
     },
     {
       "id": "65cfa7c77a513c68",
