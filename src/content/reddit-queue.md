@@ -141,6 +141,18 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 116 | 🔵 | Why do I feel the need to buy things? | Emotional spending, money scripts (Klontz) | Spending & shame | All segments |
 | 117 | 🔵 | Why do I feel bad about charging for my services? | Money scripts (Klontz), loss aversion | Self-employed | Self-employed |
 | 118 | 🔵 | How do I stop feeling bad after spending money? | Pain of paying, money scripts (Klontz) | Spending & shame | All segments |
+| 119 | 🔵 | Why do I spend money as soon as I get it? | Present bias, money scripts (Klontz) | Spending & shame | Self-employed |
+| 120 | 🔵 | Why is money so stressful? | Negativity bias, scarcity mindset | Anxiety & avoidance | All segments |
+| 121 | 🔵 | Why do I hate looking at my bank account? | Ostrich effect, pain of paying | Anxiety & avoidance | All segments |
+| 122 | 🔵 | Why do I sabotage myself every time my finances start to improve? | Money scripts (Klontz), status quo bias | Anxiety & avoidance | Small business owners |
+| 123 | 🔵 | Why does having money give me anxiety? | Money scripts (Klontz), loss aversion | Anxiety & avoidance | Small business owners |
+| 124 | 🔵 | Why do I always feel the need to buy things? | Hedonic adaptation, money scripts (Klontz) | Spending & shame | All segments |
+| 125 | 🔵 | Why do I buy stuff and not use it? | Present bias, affective forecasting | Spending & shame | All segments |
+| 126 | 🔵 | Why do I feel broke as a man in my 40s? | Social comparison, money scripts (Klontz) | Anxiety & avoidance | Small business owners |
+| 127 | 🔵 | Why do I never feel like I have enough money even when the numbers say otherwise? | Scarcity mindset, hedonic adaptation | Anxiety & avoidance | Small business owners |
+| 128 | 🔵 | How do I stop impulse spending? | Present bias, implementation intentions | Budgeting that sticks | Self-employed |
+| 129 | 🔵 | How do I stop overspending on food every month? | Mental accounting, law of least effort | Budgeting that sticks | All segments |
+| 130 | 🔵 | Why am I so bad with money even though I earn decent? | Money scripts (Klontz), status quo bias | Behavioural basics | Small business owners |
 
 ---
 
