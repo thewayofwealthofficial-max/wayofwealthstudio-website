@@ -1,5 +1,20 @@
 {
-  "generated_at": "2026-10-18T19:39:43.587Z",
+  "generated_at": "2026-10-19T21:45:07.051Z",
   "ttl_ms": 86400000,
-  "proposals": []
+  "proposals": [
+    {
+      "id": "blog-title-audit",
+      "file": "src/content/blog/the-global-economy-is-defying-gravity-so-are-you-thats-the-problem.md",
+      "impact": "Higher click-through from search and social by grounding the title in the ICP's lived experience",
+      "risk": "low",
+      "observation": "The blog post committed at sha ddff8b5 carries the title \"The global economy is defying gravity. So are you. That's the problem.\" The Sultanic test fails it: a thousand macro-finance commentators and generic money coaches could write that sentence without modification. \"Defying gravity\" is a cliché borrowed from financial journalism. The ICP is a freelancer or service business owner who is confused about cash flow, not a reader of The Economist. The title does not contain a single word from their vocabulary (\"pay myself\", \"take home\", \"always behind\", \"where my money is going\"). It will underperform in search and social because it speaks to no one specific.",
+      "proposal": "Replace the title and the frontmatter slug-candidate with a version that puts the ICP's felt experience at the centre. The new title names a concrete situation (the money coming in not feeling real) rather than a borrowed macro metaphor. This is a single-line frontmatter edit. No body copy changes required — the body can stay if it delivers on the new promise; flag to Joel to verify the intro sentence matches on his next read.",
+      "current_text": "title: \"The global economy is defying gravity. So are you. That's the problem.\"",
+      "new_text": "title: \"The money is coming in. So why does your account still feel empty?\"",
+      "signed_id": "9d4cd3a9d5408725.1792446307049",
+      "created_at": 1792446307049,
+      "requires_manual": false,
+      "block_reason": null
+    }
+  ]
 }
