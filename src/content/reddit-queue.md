@@ -129,7 +129,7 @@ This is the keyword-mining queue. Each entry is a Jess question harvested from R
 | 104 | ✅ | Is profit something we put away for a rainy day and Owner's pay simply our paycheque? | mental accounting (Thaler), earmarking (Soman & Cheema) | Self-employed | Small business owners |
 | 105 | ✅ | What percentage of my paychecks should I be setting aside for taxes? | if-then plans (implementation intentions), earmarking (Soman & Cheema); explain how a tax pot works, never give their percentage | Self-employed | Small business owners |
 | 106 | ✅ | Why do I spend money so fast? | Present bias, hedonic adaptation | Spending & shame | All segments |
-| 107 | 🔵 | Why do I feel like I have to spend all my money? | Scarcity mindset (money scripts, Klontz), present bias | Spending & shame | All segments |
+| 107 | ✅ | Why do I feel like I have to spend all my money? | Scarcity mindset (money scripts, Klontz), present bias | Spending & shame | All segments |
 | 108 | 🔵 | Why am I so bad with money? | Money scripts (Klontz), self-concept threat | Anxiety & avoidance | All segments |
 | 109 | 🔵 | Why does spending money make me anxious? | Pain of paying, loss aversion | Anxiety & avoidance | All segments |
 | 110 | 🔵 | Why do I always run out of money? | Present bias, mental accounting | Budgeting that sticks | Self-employed |
