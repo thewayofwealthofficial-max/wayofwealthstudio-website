@@ -144,7 +144,15 @@
       "id": "65cfa7c77a513c68",
       "urn": "urn:li:share:7515367464290074624",
       "angle": 4,
-      "postedAt": "2026-10-12T11:07:13.000Z"
+      "postedAt": "2026-10-12T11:07:13.000Z",
+      "scored": {
+        "at": "2026-10-20T10:12:52.254Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2855,
+        "per1k": 0
+      },
+      "topic": "money mindset and beliefs"
     }
   ]
 }
