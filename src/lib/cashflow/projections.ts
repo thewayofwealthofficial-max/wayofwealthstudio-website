@@ -451,6 +451,7 @@ export function projectYears(
   // Retirement spending (spendInRetirement). priceIndex grows today's money to each year's prices;
   // deltaAtRetirement holds the event changes made before retiring, which the retirement figure replaces.
   let priceIndex = 1;
+  let incomeIndex = 1; // today's money → this year's, at the income growth rate (for income steps)
   let deltaAtRetirement: number | null = null;
   const retirementPlan = plan.retirement;
   const firstRetiredYear = retirementPlan ? Math.round(retirementPlan.yearsUntilRetirement) : Infinity;
@@ -807,17 +808,21 @@ export function projectYears(
     // Resolve income & expenses for the year. Lines WITH steps use their
     // absolute per-year step values (no auto-growth — what's typed is used);
     // lines WITHOUT steps grow at the assumption rate, exactly as before.
+    // Steps are in TODAY'S money and keep growing at the line's rate, as Voyant does (help articles
+    // 360044947012, 360057983512; Joel 21 Oct 2026: "fix it"). They used to replace the figure and stop it
+    // growing, so one pay rise in year 3 froze the whole salary.
+    incomeIndex *= 1 + incomeGrowth;
     incomeLines = incomeLines.map((l) => {
       const stepped = resolveSteppedAmount(l.base, l.steps, y);
       return {
         ...l,
-        amount: stepped !== null ? stepped : l.amount * (1 + incomeGrowth),
+        amount: stepped !== null ? stepped * incomeIndex : l.amount * (1 + incomeGrowth),
         extra: (l.extra || 0) * (1 + incomeGrowth),
       };
     });
     expenseLines = expenseLines.map((e) => {
       const stepped = resolveSteppedAmount(e.base, e.steps, y);
-      return { ...e, amount: stepped !== null ? stepped : e.amount * (1 + (shock ? inflFor(y) : expenseInflation)) };
+      return { ...e, amount: stepped !== null ? stepped * priceIndex : e.amount * (1 + (shock ? inflFor(y) : expenseInflation)) };
     });
     monthlyExpenses = retiredSpending
       ? ((retirementPlan!.desiredAnnualIncome || 0) / 12) * priceIndex * expenseSurvivorFactor +
@@ -1730,13 +1735,18 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       }`;
     }
     case "buy_house": {
-      const deposit = iv.deposit || 0;
-      const mortgageBalance = iv.mortgageBalance || 0;
+      // Everything typed is in TODAY'S money and grows with inflation to the purchase year: "The amount entered
+      // in market value will escalate by the Inflation Rate until the property is purchased" (Voyant help
+      // 360039763931; Joel 21 Oct 2026: "yes"). The deposit, loan and payment grow by the same factor so they
+      // still add up to the price.
+      const f = ctx.inflationFactor;
+      const deposit = (iv.deposit || 0) * f;
+      const mortgageBalance = (iv.mortgageBalance || 0) * f;
       const mortgageRate = iv.mortgageRate || 0;
       // No payment typed → work it out from the loan, rate and term, as Voyant does.
       const mortgageMonthly =
         iv.mortgageMonthly && iv.mortgageMonthly > 0
-          ? iv.mortgageMonthly
+          ? iv.mortgageMonthly * f
           : mortgageMonthlyPayment(mortgageBalance, mortgageRate, iv.mortgageTermYears ?? 25, iv.mortgageInterestOnly);
       const monthlyInterest = (mortgageBalance * mortgageRate) / 100 / 12;
       const growsWarning =
@@ -1744,14 +1754,19 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
           ? ` — WARNING: ${money(mortgageMonthly)}/mo is less than the ${money(monthlyInterest)}/mo interest, so the mortgage grows`
           : "";
       const rentReplaced = iv.rentReplaced || 0;
-      const propertyValue = iv.propertyValue || deposit;
+      const propertyValue = (iv.propertyValue || iv.deposit || 0) * f;
 
-      // Pay the deposit from the named payment source, then ready cash, then
-      // the liquidation order. If the money isn't there, it is NOT invented —
-      // the gap becomes a shortfall and the year turns red.
+      // Pay the deposit from the named payment source, then ready cash, then the liquidation order.
       const paid = ctx.spend(deposit, {});
-      if (paid.short > 0) ctx.reportUnfunded(paid.short);
-      const depositSources = paid.from.map((f) => `${f.label} ${money(f.amount)}`).join(", ");
+      if (paid.short > 0) {
+        // Can't afford it: "the software will not make the purchase and the full amount of the property purchase
+        // expense will show as a shortfall" (Voyant help 15998916639387). Put back what was taken; the rent
+        // carries on; no house, no mortgage.
+        for (const from of paid.from) ctx.receive(from.amount, from.id);
+        ctx.reportUnfunded(propertyValue);
+        return `${iv.label || "Buy house"}: NOT BOUGHT — ${money(paid.short)} short of the ${money(deposit)} deposit, so the whole ${money(propertyValue)} purchase shows as a shortfall`;
+      }
+      const depositSources = paid.from.map((x) => `${x.label} ${money(x.amount)}`).join(", ");
 
       // Stop the rent. It has been inflating since the plan started, so cancel
       // it at what it costs NOW — cancelling the original figure would leave a
@@ -1784,8 +1799,8 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
         ownerId: ctx.defaultOwnerId,
       });
 
-      return `${iv.label || "Buy house"}: deposit ${money(paid.funded)}${depositSources ? ` from ${depositSources}` : ""}${
-        paid.short > 0 ? ` — ${money(paid.short)} of the deposit could not be funded` : ""
+      return `${iv.label || "Buy house"}: ${money(propertyValue)} home, deposit ${money(paid.funded)}${
+        depositSources ? ` from ${depositSources}` : ""
       }, mortgage ${money(mortgageMonthly)}/mo${mortgageBalance > 0 ? ` (${money(mortgageBalance)} @ ${mortgageRate}%)` : ""}${growsWarning}`;
     }
     case "downsize": {
