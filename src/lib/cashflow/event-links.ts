@@ -146,6 +146,13 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
 
   let changed = false;
   const income = plan.income.map((l) => {
+    // A final salary pension starts at their retirement unless it has its own start (Voyant help 360054426571).
+    if (l.kind === "db_pension" && l.startYear === undefined && !l.yearLinks?.start) {
+      const end = retFor(l.personId).lastWorkYear;
+      if (end === undefined) return l;
+      changed = true;
+      return { ...l, startYear: end + 1 };
+    }
     if ((l.kind === "employment" || l.kind === "self_employment") && l.endYear === undefined && !l.yearLinks?.end) {
       const end = retFor(l.personId).lastWorkYear;
       if (end === undefined) return l;

@@ -9,6 +9,7 @@ import type {
   CashflowPlanData,
   DebtLine,
   ExpenseLine,
+  IncomeLine,
   Intervention,
   ProjectionAssumptions,
   SavingsAllocation,
@@ -180,12 +181,15 @@ export function projectYears(
   // lines without steps grow `amount` by incomeGrowth each year. personId is
   // resolved to a concrete person up front so per-person tax lines up.
   // `extra` = pay rises attached to this line by income_change events; grows with the line, stops with it.
-  type IncomeState = { id?: string; kind?: string; extra?: number; growth?: number; amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
+  type IncomeState = { id?: string; kind?: string; extra?: number; growth?: number; db?: IncomeLine; dbStarted?: boolean; linkedPropertyId?: string; survivorPct?: number; guaranteeUntil?: number; amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
   let incomeLines: IncomeState[] = plan.income.map((l) => ({
     id: l.id,
     kind: l.kind,
     extra: 0,
     growth: l.growthPct !== undefined ? l.growthPct / 100 : undefined,
+    db: l.kind === "db_pension" ? l : undefined,
+    survivorPct: l.kind === "db_pension" ? l.dbSurvivorPct : undefined,
+    linkedPropertyId: l.linkedPropertyId,
     amount: l.amount || 0,
     base: l.amount || 0,
     isGross: l.isGross,
@@ -513,7 +517,15 @@ export function projectYears(
   const retirementPlan = plan.retirement;
   const firstRetiredYear = retirementPlan ? Math.round(retirementPlan.yearsUntilRetirement) : Infinity;
   let buckets: BucketState[] = startingBuckets.map((b) => ({ ...b }));
-  let debtState: DebtLine[] = plan.debts.map((d) => ({ ...d }));
+  // No payment typed but a term → the required payment, worked out as Voyant does (help 360022319672).
+  let debtState: DebtLine[] = plan.debts.map((d) =>
+    (d.actualPayment || 0) <= 0 && d.balance > 0 && (d.termYears || d.interestOnly)
+      ? (() => {
+          const pay = mortgageMonthlyPayment(d.balance, d.rate, d.termYears ?? 25, d.interestOnly);
+          return { ...d, minPayment: pay, actualPayment: pay };
+        })()
+      : { ...d }
+  );
   let interventionMonthlyDelta = 0; // accumulates income_change interventions (post-tax)
   // Survivor scenario: once a person dies, the household's base expenses scale
   // down (one mouth, not two). `deceasedFrom` is declared above.
@@ -636,8 +648,34 @@ export function projectYears(
         )
       : Infinity;
 
+  // Voyant's tax table escalation (help 201569626): frozen until taxFrozenUntil, then up by the % a year.
+  const taxEsc = (y: number): number =>
+    Math.pow(
+      1 + (assumptions.taxTableEscalationPct ?? 4) / 100,
+      Math.max(0, startYear + y - (assumptions.taxFrozenUntil ?? 2030))
+    );
+  const baseUkTax = assumptions.ukTax ?? DEFAULT_UK_TAX;
+  const baseUkAllow = assumptions.ukAllowances ?? DEFAULT_UK_ALLOWANCES;
+
   for (let y = 1; y <= horizon; y++) {
     const events: string[] = [];
+    const tf = taxEsc(y);
+    const yearUkTax: typeof baseUkTax = {
+      ...baseUkTax,
+      personalAllowance: baseUkTax.personalAllowance * tf,
+      basicRateThreshold: baseUkTax.basicRateThreshold * tf,
+      higherRateThreshold: baseUkTax.higherRateThreshold * tf,
+      niPrimaryThreshold: baseUkTax.niPrimaryThreshold * tf,
+      niUpperEarningsLimit: baseUkTax.niUpperEarningsLimit * tf,
+      paTaperThreshold: (baseUkTax.paTaperThreshold ?? 100000) * tf,
+    };
+    const yearUkAllow: typeof baseUkAllow = {
+      ...baseUkAllow,
+      cgtAnnualExempt: baseUkAllow.cgtAnnualExempt * tf,
+      pensionTaperThreshold: baseUkAllow.pensionTaperThreshold * tf,
+      isaAllowance: (baseUkAllow.isaAllowance ?? DEFAULT_UK_ALLOWANCES.isaAllowance ?? 0) * tf,
+    };
+    const yearAssumptions: ProjectionAssumptions = { ...assumptions, ukTax: yearUkTax, ukAllowances: yearUkAllow };
 
     // Balances BEFORE any life event fires. Without this snapshot an event's
     // spending is invisible: the pot is already lower by the time the year
@@ -760,6 +798,35 @@ export function projectYears(
               }
             : b
         );
+        // Income that carries on for the partner: a final salary survivor's %, a joint-life annuity's %, and an
+        // annuity's guarantee, paid in full to its end (Voyant help 360054426571, 360054272232).
+        if (survivorId !== pid) {
+          for (const l of incomeLines.filter((x) => x.personId === pid && ((x.survivorPct || 0) > 0 || (x.guaranteeUntil ?? 0) >= y))) {
+            const base = {
+              ...l,
+              personId: survivorId,
+              extra: 0,
+              guaranteeUntil: undefined,
+              survivorPct: undefined,
+              db: l.db ? { ...l.db, dbCommutationFactor: undefined, dbTaxFreeCash: undefined, dbEarlyReductionPct: undefined } : undefined,
+            };
+            const guaranteed = (l.guaranteeUntil ?? -1) >= y;
+            if (guaranteed) {
+              incomeLines.push({ ...base, id: `${l.id}__guaranteed`, label: `${l.label} (guaranteed)`, endYear: l.guaranteeUntil });
+            }
+            if ((l.survivorPct || 0) > 0) {
+              const pct = (l.survivorPct || 0) / 100;
+              incomeLines.push({
+                ...base,
+                id: `${l.id}__survivor`,
+                label: `${l.label} (survivor's)`,
+                amount: l.amount * pct,
+                base: l.base * pct,
+                startYear: guaranteed ? (l.guaranteeUntil as number) + 1 : l.startYear,
+              });
+            }
+          }
+        }
         // Life cover pays out to cash (explicit amount, else sum of term-life).
         const payout =
           iv.lifeCoverPayout ??
@@ -780,6 +847,16 @@ export function projectYears(
         continue;
       }
       const applied = applyIntervention(iv, {
+        endIncomeLinkedTo: (propertyId) => {
+          const ended: string[] = [];
+          for (const l of incomeLines) {
+            if (l.linkedPropertyId === propertyId && (l.endYear === undefined || l.endYear >= y)) {
+              l.endYear = y - 1;
+              ended.push(l.label);
+            }
+          }
+          return ended;
+        },
         addToIncomeLine: (lineId, delta) => {
           // The named line, else the payer's salary (else anyone's). None found → caller falls back.
           const owner = resolvePersonId(iv.ownerId, people);
@@ -818,19 +895,21 @@ export function projectYears(
           debtState = [...debtState, d];
         },
         addIncome: (line) => {
-          // Steps hold it level — an annuity does not rise with the assumption
-          // rate unless the coach says so. Base 0 keeps it silent before it
-          // starts; the window gate does the same job belt-and-braces.
+          // Its own growth (0 = level): not a step, since steps now grow with inflation (21 Oct 2026). Added
+          // before this year's growth step, so pre-shrink it: the first year pays exactly what was bought.
+          const g0 = (line.growthPct ?? 0) / 100;
           incomeLines = [
             ...incomeLines,
             {
-              amount: line.monthly,
-              base: 0,
+              amount: line.monthly / (1 + g0),
+              base: line.monthly / (1 + g0),
               isGross: line.isGross,
               label: line.label,
-              steps: [{ fromYear: line.fromYear, amount: line.monthly }],
+              growth: (line.growthPct ?? 0) / 100,
               startYear: line.fromYear,
               personId: line.personId,
+              survivorPct: line.survivorPct,
+              guaranteeUntil: line.guaranteeUntil,
             },
           ];
         },
@@ -885,13 +964,44 @@ export function projectYears(
       const stepped = l.steps?.some((st) => y >= st.fromYear) ? resolveSteppedAmount(l.base, l.steps, y) : null;
       // State pension: the triple lock, "the higher of ... NAE ..., CPI ..., or 2.5%" (Voyant help 211660743).
       // NAE = the plan's income growth; the plan's inflation rate stands in for CPI.
-      const g = l.growth ?? (l.kind === "state_pension" ? Math.max(incomeGrowth, expenseInflation, 0.025) : incomeGrowth);
+      // Final salary: rises by its own % or the plan's inflation (CPI stand-in); a future-value amount doesn't grow
+      // before it starts.
+      const g =
+        l.kind === "db_pension"
+          ? l.db?.dbFutureValue && l.startYear !== undefined && y <= l.startYear
+            ? 0
+            : l.growth ?? expenseInflation
+          : l.growth ?? (l.kind === "state_pension" ? Math.max(incomeGrowth, expenseInflation, 0.025) : incomeGrowth);
       return {
         ...l,
         amount: stepped !== null ? stepped * priceIndex : l.amount * (1 + g),
         extra: (l.extra || 0) * (1 + g),
       };
     });
+    // A final salary pension starting this year: the scheme's early-retirement cut, then tax-free cash by
+    // commutation (Voyant help 201934153), paid into their ready cash and counted against the Lump Sum Allowance.
+    for (const l of incomeLines) {
+      if (!l.db || l.dbStarted || !incomeInWindow(l, y)) continue;
+      l.dbStarted = true;
+      const d = l.db;
+      const age = people.find((p) => p.id === l.personId)?.currentAge;
+      if (d.dbNormalRetirementAge && d.dbEarlyReductionPct && age !== undefined && age + y < d.dbNormalRetirementAge) {
+        const cut = Math.min(1, ((d.dbNormalRetirementAge - (age + y)) * d.dbEarlyReductionPct) / 100);
+        l.amount *= 1 - cut;
+        events.push(`${l.label}: ${Math.round(cut * 100)}% early-retirement cut`);
+      }
+      const cf = d.dbCommutationFactor;
+      if (cf && cf > 0 && d.dbTaxFreeCash) {
+        const pension = l.amount * 12;
+        const max = pension / (3 / 20 + 1 / cf);
+        const wanted = d.dbTaxFreeCash === "max" ? max : Math.min(max, d.dbTaxFreeCash);
+        const pcls = Math.min(wanted, lsaLeft(l.personId));
+        lsaUsedByPerson[l.personId] = (lsaUsedByPerson[l.personId] || 0) + pcls;
+        l.amount = Math.max(0, pension - pcls / cf) / 12;
+        receiveFromEvent(pcls, undefined, l.personId);
+        events.push(`${l.label}: ${money(pcls)} tax-free cash, pension now ${money(l.amount * 12)}/yr`);
+      }
+    }
     expenseLines = expenseLines.map((e) => {
       const stepped = e.steps?.some((st) => y >= st.fromYear) ? resolveSteppedAmount(e.base, e.steps, y) : null;
       const infl = e.inflation ?? (shock ? inflFor(y) : expenseInflation);
@@ -926,7 +1036,7 @@ export function projectYears(
         a.bandExt += annual * taxReliefMultiplier;
       }
     }
-    const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), assumptions, pastSPA(y), pensionAdj);
+    const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), yearAssumptions, pastSPA(y), pensionAdj);
     const monthlyIncome = taxResult.netMonthly + interventionMonthlyDelta;
 
     // Step debts forward (with per-debt principal/interest deltas)
@@ -960,8 +1070,8 @@ export function projectYears(
     // UK tax config — needed here because planned withdrawals below are taxed
     // on the way out, and their net proceeds count as this year's cash.
     const region = assumptions.region ?? "UK";
-    const ukTaxCfg = assumptions.ukTax ?? DEFAULT_UK_TAX;
-    const ukAllow = region === "UK" ? assumptions.ukAllowances ?? DEFAULT_UK_ALLOWANCES : undefined;
+    const ukTaxCfg = yearUkTax;
+    const ukAllow = region === "UK" ? yearUkAllow : undefined;
     const grossByPerson = taxResult.grossByPerson;
     const incomeRatePctFor = (ownerId: string): number => {
       const band = ukMarginalBand(grossByPerson[ownerId] || 0, ukTaxCfg);
@@ -992,7 +1102,8 @@ export function projectYears(
       if (region !== "UK") return 0;
       const gross = grossByPerson[ownerId] || 0;
       const pa = ukTaxCfg.personalAllowance;
-      const effective = gross > 100000 ? Math.max(0, pa - (gross - 100000) / 2) : pa;
+      const taper = ukTaxCfg.paTaperThreshold ?? 100000;
+      const effective = gross > taper ? Math.max(0, pa - (gross - taper) / 2) : pa;
       return Math.max(0, effective - gross - (paUsedByPerson[ownerId] || 0));
     };
     /** Capital gains annual exempt amount still available this year. */
@@ -1237,7 +1348,7 @@ export function projectYears(
               incomeInWindow(l, y)
           )
           .reduce((s, l) => s + l.amount + (l.extra || 0), 0) * 12;
-      return earnings > 0 ? earnings : 3600;
+      return earnings > 0 ? earnings : 3600 * tf;
     };
     const isaUsedByPerson: Record<string, number> = {};
     const isaRoom = (ownerId: string): number =>
@@ -1761,6 +1872,8 @@ function sumByKind(
 }
 
 type InterventionContext = {
+  /** Stop every income linked to this property (sold). Returns their labels. */
+  endIncomeLinkedTo: (propertyId: string) => string[];
   /** Add a pay rise to an income line (named, else the salary). Returns the line's label, or null if none. */
   addToIncomeLine: (lineId: string | undefined, delta: number) => string | null;
   getInterventionDelta: () => number;
@@ -1800,6 +1913,9 @@ type InterventionContext = {
     isGross: boolean;
     personId: string;
     fromYear: number;
+    growthPct?: number;
+    survivorPct?: number;
+    guaranteeUntil?: number;
   }) => void;
   /** Whose pots this event should reach for first. */
   ownerId: string;
@@ -1941,6 +2057,19 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
         depositSources ? ` from ${depositSources}` : ""
       }, mortgage ${money(mortgageMonthly)}/mo${mortgageBalance > 0 ? ` (${money(mortgageBalance)} @ ${mortgageRate}%)` : ""}${growsWarning}`;
     }
+    case "debt_payment": {
+      const debt =
+        ctx.debts.find((d) => d.id === iv.debtId && d.balance > 0) ?? ctx.debts.find((d) => d.balance > 0);
+      if (!debt) return `${iv.label || "Debt payment"}: no debt left to pay`;
+      const want = iv.payOff ? debt.balance : Math.min(debt.balance, iv.amount || 0);
+      if (want <= 0) return `${iv.label || "Debt payment"}: set an amount`;
+      const paid = ctx.spend(want, {});
+      debt.balance -= paid.funded;
+      const from = paid.from.map((f) => `${f.label} ${money(f.amount)}`).join(", ");
+      return `${iv.label || "Debt payment"}: ${money(paid.funded)} off ${debt.name}${from ? ` from ${from}` : ""}${
+        paid.short > 0 ? `; ${money(paid.short)} couldn't be paid, ${money(debt.balance)} still owed` : debt.balance <= 0.005 ? ", cleared" : ""
+      }`;
+    }
     case "downsize": {
       // Sell (or trade down) a property: clear its mortgage from the sale,
       // release the net equity to cash, optionally buy a cheaper place, and
@@ -1981,8 +2110,11 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       if (actualValue <= 0 && (iv.newRentMonthly || 0) > 0) {
         ctx.setMonthlyExpenses(ctx.getMonthlyExpenses() + (iv.newRentMonthly || 0));
       }
+      // Sold outright: rent linked to it stops.
+      const stoppedRent = actualValue <= 0 ? ctx.endIncomeLinkedTo(prop.id) : [];
 
       const parts = [`sold ${money(saleValue)}`];
+      if (stoppedRent.length) parts.push(`${stoppedRent.join(", ")} stopped`);
       if (payoff > 0) parts.push(`cleared ${money(payoff)} mortgage`);
       if (mortgage && mortgage.balance > 0) {
         parts.push(`${money(mortgage.balance)} of mortgage still owed`);
@@ -2032,7 +2164,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       if (amount <= 0) return `${iv.label || "Crystallise"}: nothing to crystallise`;
       // 25% tax free, but never past the person's Lump Sum Allowance. The rest stays in drawdown,
       // taxed as income when it comes out.
-      const taxFreeCash = ctx.takeTaxFreeCash(pot.ownerId ?? ctx.defaultOwnerId, amount * 0.25);
+      const taxFreeCash = ctx.takeTaxFreeCash(pot.ownerId ?? ctx.defaultOwnerId, (amount * (iv.tfcPct ?? 25)) / 100);
       const intoDrawdown = amount - taxFreeCash;
       ctx.writeDown(pot.id, amount); // recorded, so it isn't absorbed by growth
       ctx.receive(taxFreeCash); // PCLS is a lump sum — it lands as ready cash
@@ -2064,15 +2196,24 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
         return `${iv.label || "Annuity"}: set an amount and an annuity rate`;
       }
       ctx.writeDown(pot.id, spend); // recorded, not silently assigned
-      const annualIncome = spend * (ratePct / 100);
+      const owner = pot.ownerId ?? ctx.defaultOwnerId;
+      // Tax-free cash first, if chosen; the rest buys the annuity.
+      const tfc = iv.annuityTfcPct ? ctx.takeTaxFreeCash(owner, (spend * iv.annuityTfcPct) / 100) : 0;
+      if (tfc > 0) ctx.receive(tfc);
+      const annualIncome = (spend - tfc) * (ratePct / 100);
       ctx.addIncome({
         label: iv.label || "Annuity",
         monthly: annualIncome / 12,
         isGross: true, // annuity income is taxed as income
-        personId: pot.ownerId ?? ctx.defaultOwnerId,
+        personId: owner,
         fromYear: iv.year,
+        growthPct: iv.annuityEscalationPct,
+        survivorPct: iv.annuityJointPct,
+        guaranteeUntil: iv.annuityGuaranteeYears ? iv.year + iv.annuityGuaranteeYears - 1 : undefined,
       });
-      return `${iv.label || "Buy annuity"}: ${money(spend)} buys ${money(annualIncome)}/yr for life at ${ratePct}%`;
+      return `${iv.label || "Buy annuity"}: ${tfc > 0 ? `${money(tfc)} tax-free cash, ` : ""}${money(spend - tfc)} buys ${money(annualIncome)}/yr for life at ${ratePct}%${
+        iv.annuityEscalationPct ? `, rising ${iv.annuityEscalationPct}% a year` : ", level"
+      }${iv.annuityJointPct ? `, ${iv.annuityJointPct}% to partner` : ""}${iv.annuityGuaranteeYears ? `, ${iv.annuityGuaranteeYears} years guaranteed` : ""}`;
     }
     case "asset_crash": {
       const crashPct = iv.crashPct ?? 30;

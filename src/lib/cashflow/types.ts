@@ -114,6 +114,24 @@ export type IncomeLine = {
    */
   startYear?: number;
   endYear?: number;
+  /**
+   * Final salary (defined benefit) details, for kind "db_pension" (21 Oct 2026, Voyant help 360054426571 and
+   * 201934153). It starts at their retirement unless it has a start year, and rises by its growth % (default:
+   * the plan's inflation, standing in for CPI). `amount` is today's money and grows until it starts, unless
+   * dbFutureValue (Voyant's "None" escalation in deferment).
+   * - dbSurvivorPct: % paid on to the surviving partner.
+   * - dbCommutationFactor + dbTaxFreeCash ("max" or an amount): tax-free cash by commutation, Voyant's formula:
+   *   PCLS = Pension / (3/20 + 1/CF), residual = Pension − PCLS/CF; a fixed amount gives up just enough pension.
+   * - dbNormalRetirementAge + dbEarlyReductionPct: the scheme's cut, % a year, for each year it starts early.
+   */
+  /** Rent from a property pot: it stops when that property is sold (Voyant help 14618432988059). */
+  linkedPropertyId?: string;
+  dbFutureValue?: boolean;
+  dbSurvivorPct?: number;
+  dbCommutationFactor?: number;
+  dbTaxFreeCash?: "max" | number;
+  dbNormalRetirementAge?: number;
+  dbEarlyReductionPct?: number;
   /** startYear / endYear linked to a life event instead of typed in (10 Oct 2026). See event-links.ts. */
   yearLinks?: { start?: EventLink; end?: EventLink };
 };
@@ -194,6 +212,10 @@ export type DebtLine = {
   rate: number;
   minPayment: number;
   actualPayment: number;
+  /** Voyant works the required payment out from "the loan balance, interest rate, payment type, and if a
+   *  repayment debt, the years remaining" (help 360022319672). With no payment typed, the engine does too. */
+  termYears?: number;
+  interestOnly?: boolean;
 };
 
 export type AssetKind = "cash" | "stocks" | "pension" | "property";
@@ -381,7 +403,8 @@ export type InterventionType =
   | "death"
   | "crystallise_pension"
   | "buy_annuity"
-  | "asset_crash";
+  | "asset_crash"
+  | "debt_payment";
 
 /**
  * Region-aware annual contribution limits for tax-advantaged accounts.
@@ -485,6 +508,10 @@ export type Intervention = {
    *  Falls back to the first property bucket / first mortgage-like debt. */
   propertyBucketId?: string;
   mortgageDebtId?: string;
+  /** debt_payment: which debt, and whether to pay it off in full (else `amount` is a one-off overpayment). Paid
+   *  "using any income and liquid assets available at that point" (Voyant help 360022319672). */
+  debtId?: string;
+  payOff?: boolean;
   /** remortgage: new annual interest rate % (undefined = unchanged). */
   newRate?: number;
   /** remortgage: new monthly payment (undefined = unchanged). */
@@ -516,6 +543,20 @@ export type Intervention = {
   /** buy_annuity: the annuity rate — annual income as a % of the purchase
    *  price. A £100,000 pot at 6% pays £6,000 a year for life, taxed as income. */
   annuityRatePct?: number;
+  /**
+   * Voyant's crystallisation and annuity options (help 360024146252, 360054272232, 21 Oct 2026):
+   * - tfcPct: crystallise_pension tax-free cash, % of the amount crystallised. Unset = 25; 0 = none. Still
+   *   capped by the Lump Sum Allowance.
+   * - annuityTfcPct: % of the pot paid out tax free before the rest buys the annuity. Unset = none.
+   * - annuityEscalationPct: yearly rise. Unset/0 = level.
+   * - annuityJointPct: joint life, % carried on to the partner when the owner dies.
+   * - annuityGuaranteeYears: "years certain": dying inside it, the full payment carries on to the end of it.
+   */
+  tfcPct?: number;
+  annuityTfcPct?: number;
+  annuityEscalationPct?: number;
+  annuityJointPct?: number;
+  annuityGuaranteeYears?: number;
   // For asset_crash:
   crashPct?: number; // % drop applied to target asset class (default 30)
   targetKind?: "stocks" | "property" | "all"; // which asset class crashes
@@ -585,6 +626,8 @@ export type UKTaxAssumptions = {
   niUpperEarningsLimit: number; // £
   niMainRatePct: number; // 8 (2024-25)
   niUpperRatePct: number; // 2
+  /** Income above which the personal allowance tapers away. Unset = £100,000. Rises with the tax table. */
+  paTaperThreshold?: number;
 };
 
 export const DEFAULT_UK_TAX: UKTaxAssumptions = {
@@ -660,6 +703,16 @@ export const DEFAULT_UK_ALLOWANCES: UKTaxAllowances = {
 
 export type ProjectionAssumptions = {
   horizonYears: number;
+  /**
+   * Voyant's "Default Tax Table Assumption" (help 201569626; case study p.34): tax bands, NI thresholds, the
+   * personal allowance and its taper point, the pension taper point, the £3,600 no-earnings limit, the CGT
+   * allowance and the ISA allowance all rise by this % a year, "only ... once we move beyond the known".
+   * Unset = Voyant's default, 4%. taxFrozenUntil = the last calendar year they stay frozen: income tax and NI
+   * thresholds are frozen until April 2031 (Budget 2025, reported by ICAEW and Deloitte). The other items use
+   * the same date, which is an assumption.
+   */
+  taxTableEscalationPct?: number;
+  taxFrozenUntil?: number;
   incomeGrowthPct: number;
   expenseInflationPct: number;
   /** Voyant's Inflation Adjustment stress test: extra spending inflation for the first `years` years, then

@@ -92,8 +92,9 @@ export function calcUKTaxAndNI(
 
   // PA tapered above £100k
   let effectivePA = pa0;
-  if (annualGross > 100000) {
-    effectivePA = Math.max(0, pa0 - (annualGross - 100000) / 2);
+  const taper = assumptions.paTaperThreshold ?? 100000;
+  if (annualGross > taper) {
+    effectivePA = Math.max(0, pa0 - (annualGross - taper) / 2);
   }
 
   // The bands are fixed slices of TAXABLE income (gov.uk/income-tax-rates): basic is the first £37,700
