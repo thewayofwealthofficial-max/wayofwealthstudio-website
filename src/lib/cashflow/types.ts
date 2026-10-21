@@ -181,6 +181,12 @@ export type ExpenseLine = {
    * Voyant warns this can create artificial shortfalls, so use it sparingly.
    */
   paymentSourceOnly?: boolean;
+  /** A cost tied to a child's ages, e.g. nursery 1 to 4, university 18 to 21 (Voyant: children have a birth
+   *  year and education events, help 360042368051, case study p.51-53). Sets the cost's years from the child's
+   *  birth year; a typed start/end year still wins. */
+  childId?: string;
+  childFromAge?: number;
+  childToAge?: number;
   /** This cost's own yearly inflation %, instead of the plan's (Voyant help 360044947012). */
   inflationPct?: number;
   /** Years this cost runs (21 Oct 2026, Voyant has start and stop on every expense): childcare that ends,
@@ -404,7 +410,8 @@ export type InterventionType =
   | "crystallise_pension"
   | "buy_annuity"
   | "asset_crash"
-  | "debt_payment";
+  | "debt_payment"
+  | "critical_illness";
 
 /**
  * Region-aware annual contribution limits for tax-advantaged accounts.
@@ -819,6 +826,9 @@ export type YearProjection = {
   yearLabel: string;
   annualIncome: number; // post-tax (take-home) annual income for cashflow
   annualGrossIncome?: number; // gross annual income (sum of isGross income lines × 12), if any
+  /** Each income line paid this year, a year's worth, as entered (gross lines before tax). For Voyant's Year View
+   *  Income tab (21 Oct 2026). */
+  incomeByLine?: Array<{ label: string; kind?: string; annual: number; isGross?: boolean }>;
   annualExpenses: number;
   annualSurplus: number; // gross leftover: income − expenses − debt − scheduled savings
   /** Portion of annualSurplus that was given a job this year (routed into a
@@ -1034,6 +1044,8 @@ export type Policy = {
   termYears?: number | null;
   /** Held in trust → benefit excluded from estate for IHT calc. */
   inTrust?: boolean;
+  /** Whose life or illness it covers. Unset = anyone's (as before). */
+  ownerId?: string;
 };
 
 export const POLICY_KIND_LABELS: Record<PolicyKind, string> = {
@@ -1055,6 +1067,8 @@ export type CashflowPlanData = {
   /** People in the plan — 1 (single) or 2 (a couple). Each is taxed
    *  separately. Absent/empty on legacy plans → treated as a single person. */
   people?: Person[];
+  /** Children, with a birth year (a future year for a child not yet born). Not taxpayers, so not in `people`. */
+  children?: Array<{ id: string; name: string; birthYear: number }>;
   income: IncomeLine[];
   expenses: ExpenseLine[];
   debts: DebtLine[];

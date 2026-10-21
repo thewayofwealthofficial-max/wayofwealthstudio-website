@@ -34,7 +34,7 @@ const linkedYear = (events: Map<string, Intervention>, link: EventLink | undefin
 
 /** The year a link gives, or null if the event is gone. For showing in the editor. */
 export function resolveLink(plan: CashflowPlanData, link: EventLink, kind: "start" | "end"): number | null {
-  const events = new Map((plan.interventions ?? []).map((iv) => [iv.id, iv]));
+  const events = new Map(timelineEvents(plan).map((iv) => [iv.id, iv]));
   return linkedYear(events, link, kind === "start" ? MIN_START : MIN_END);
 }
 
@@ -46,7 +46,7 @@ export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
   const hasLinks =
     plan.income.some((l) => l.yearLinks) || plan.savings.some((s) => s.yearLinks);
   if (!hasLinks) return plan;
-  const events = new Map((plan.interventions ?? []).map((iv) => [iv.id, iv]));
+  const events = new Map(timelineEvents(plan).map((iv) => [iv.id, iv]));
   let changed = false;
 
   const income = plan.income.map((l) => {
@@ -215,4 +215,50 @@ export function mortalityYears(plan: CashflowPlanData): { byPerson: Record<strin
   const byPerson: Record<string, number> = {};
   for (const p of people) byPerson[p.id] = Math.max(1, (p.mortalityAge ?? DEFAULT_MORTALITY_AGE) - (p.currentAge as number));
   return { byPerson, planEnd: Math.max(...Object.values(byPerson)) };
+}
+
+/** Costs tied to a child's ages get their years from the child's birth year (21 Oct 2026). Engine only. */
+export function applyChildren(plan: CashflowPlanData, thisYear = new Date().getFullYear()): CashflowPlanData {
+  const kids = new Map((plan.children ?? []).map((c) => [c.id, c]));
+  if (!kids.size || !plan.expenses.some((e) => e.childId)) return plan;
+  const expenses = plan.expenses.map((e) => {
+    const kid = e.childId ? kids.get(e.childId) : undefined;
+    if (!kid) return e;
+    const from = e.childFromAge !== undefined ? kid.birthYear + e.childFromAge - thisYear : undefined;
+    const to = e.childToAge !== undefined ? kid.birthYear + e.childToAge - thisYear : undefined;
+    return {
+      ...e,
+      startYear: e.startYear ?? (from !== undefined && from > 0 ? from : undefined),
+      endYear: e.endYear ?? (to !== undefined ? Math.max(0, to) : undefined),
+    };
+  });
+  return { ...plan, expenses };
+}
+
+/**
+ * Voyant's default timeline events (help 4405509976475): each person's Retirement and Mortality, alongside the
+ * plan's own events, so a year can follow them ("pension starts the year of John retires"). Synthetic: they're
+ * only for linking and never fire in the engine.
+ */
+export function timelineEvents(plan: CashflowPlanData): Intervention[] {
+  const out: Intervention[] = [...(plan.interventions ?? [])];
+  const people = plan.people?.length ? plan.people : [{ id: "you", name: "", currentAge: plan.retirement?.currentAge }];
+  const mort = mortalityYears(plan);
+  people.forEach((p, i) => {
+    const name = p.name || (i === 0 ? "You" : "Partner");
+    const retireYear =
+      i === 0
+        ? plan.retirement
+          ? Math.round(plan.retirement.yearsUntilRetirement)
+          : undefined
+        : "retirementAge" in p && p.retirementAge !== undefined && p.currentAge !== undefined
+          ? p.retirementAge - p.currentAge
+          : undefined;
+    if (retireYear !== undefined && retireYear >= 1) {
+      out.push({ id: `__retire_${p.id}`, year: retireYear, type: "income_change", label: `${name} retires` });
+    }
+    const dies = mort?.byPerson[p.id] ?? (i === 0 && !plan.people?.length ? mort?.planEnd : undefined);
+    if (dies !== undefined) out.push({ id: `__dies_${p.id}`, year: dies, type: "death", label: `${name} dies (life expectancy)` });
+  });
+  return out;
 }

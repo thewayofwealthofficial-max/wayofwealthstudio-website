@@ -20,7 +20,7 @@ import type { TaxWrapper } from "./types";
 import { mortgageMonthlyPayment, totalDebtBalance } from "./cashflow-calc";
 import { calcUKTaxAndNI, calcUKNI, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, ukMarginalBand, taperedPensionAllowance, calcUKInvestmentTax } from "./uk-tax";
 import { calcUSTaxAndFICA } from "./us-tax";
-import { applyEventLinks, applyRetirement, mortalityYears, statePensionAgeFor } from "./event-links";
+import { applyChildren, applyEventLinks, applyRetirement, mortalityYears, statePensionAgeFor } from "./event-links";
 
 /**
  * Sum monthly take-home income (post-tax for gross lines, raw for net lines)
@@ -47,7 +47,11 @@ function netMonthlyIncomeFromLines(
   taxAnnual: number;
   niAnnual: number;
   grossByPerson: Record<string, number>;
+  /** Tax and Class 4 NI on self-employed, rental and "other" income: worked out this year, paid next year
+   *  (Voyant help 205259609). Included in taxAnnual/niAnnual and already taken off netMonthly. */
+  arrearsAnnual: number;
 } {
+  let arrearsAnnual = 0;
   let netMonthly = 0;
   let grossAnnual = 0;
   let taxAnnual = 0;
@@ -63,12 +67,16 @@ function netMonthlyIncomeFromLines(
   // state pension or rent, or for anyone past State Pension age. A line with no type is treated as salary,
   // as every gross line was before types existed.
   const grossMonthlyByPerson: Record<string, number> = {};
+  const arrearsGrossByPerson: Record<string, number> = {};
   const class1ByPerson: Record<string, number> = {};
   const class4ByPerson: Record<string, number> = {};
   for (const l of lines) {
     if (!l.isGross) continue;
     const pid = l.personId ?? "__default";
     grossMonthlyByPerson[pid] = (grossMonthlyByPerson[pid] || 0) + (l.amount || 0);
+    if (l.kind === "self_employment" || l.kind === "rental" || l.kind === "other") {
+      arrearsGrossByPerson[pid] = (arrearsGrossByPerson[pid] || 0) + (l.amount || 0);
+    }
     if (l.kind === undefined || l.kind === "employment") {
       class1ByPerson[pid] = (class1ByPerson[pid] || 0) + (l.amount || 0);
     } else if (l.kind === "self_employment") {
@@ -90,6 +98,15 @@ function netMonthlyIncomeFromLines(
         ? 0
         : calcUKNI(Math.max(0, (class1ByPerson[pid] || 0) * 12 - (adj?.niOff ?? 0)), cfg.niMainRatePct, cfg.niUpperRatePct, cfg.niPrimaryThreshold, cfg.niUpperEarningsLimit) +
           calcUKNI((class4ByPerson[pid] || 0) * 12, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, cfg.niPrimaryThreshold, cfg.niUpperEarningsLimit);
+      // The part of the tax that self-employed, rental and other income adds is paid next year, with Class 4 NI.
+      const arrearsGross = (arrearsGrossByPerson[pid] || 0) * 12;
+      if (arrearsGross > 0) {
+        const payeOnly = calcUKTaxAndNI(Math.max(0, annualGross - preTax - arrearsGross), cfg, adj?.bandExt ?? 0).tax;
+        const class4 = pastStatePensionAge(pid)
+          ? 0
+          : calcUKNI((class4ByPerson[pid] || 0) * 12, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, cfg.niPrimaryThreshold, cfg.niUpperEarningsLimit);
+        arrearsAnnual += Math.max(0, t.tax - payeOnly) + class4;
+      }
       taxAnnual += t.tax;
       niAnnual += ni;
       // Pension paid before tax leaves take-home here; the pot is credited in the contribution step.
@@ -104,7 +121,7 @@ function netMonthlyIncomeFromLines(
       netMonthly += grossMonthly;
     }
   }
-  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson };
+  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson, arrearsAnnual };
 }
 
 /**
@@ -134,7 +151,7 @@ export function projectYears(
 ): YearProjection[] {
   // Years linked to life events always follow the event (10 Oct 2026). A plan with no links is untouched.
   // Retiring stops salary and pension payments in, and starts the state pension (21 Oct 2026).
-  const plan = applyRetirement(applyEventLinks(rawPlan));
+  const plan = applyRetirement(applyChildren(applyEventLinks(rawPlan)));
   // 75 years covers a 25-year-old planned through to 100. The old 30-year cap
   // silently truncated any real retirement plan.
   // When everyone's age is known, the plan runs to the later death, as Voyant's does (21 Oct 2026).
@@ -527,6 +544,11 @@ export function projectYears(
       : { ...d }
   );
   let interventionMonthlyDelta = 0; // accumulates income_change interventions (post-tax)
+  let arrearsFromLastYear = 0; // self-assessed tax carried into the next year
+  // Protection: policies already paid out stop (and stop charging premiums).
+  const paidPolicies = new Set<string>();
+  const policyActive = (p: { id: string; termYears?: number | null }, y: number) =>
+    !paidPolicies.has(p.id) && (p.termYears == null || y <= p.termYears);
   // Survivor scenario: once a person dies, the household's base expenses scale
   // down (one mouth, not two). `deceasedFrom` is declared above.
   let expenseSurvivorFactor = 1;
@@ -774,6 +796,18 @@ export function projectYears(
       // Death is handled here (not in applyIntervention) because it touches
       // loop-level state: the deceased set, the survivor expense factor, and
       // pot ownership transfer.
+      if (iv.type === "critical_illness") {
+        // Pays out the owner's active critical illness cover. It doesn't end their job (Voyant help 4403468513165).
+        const pid = resolvePersonId(iv.ownerId, people);
+        const ci = (plan.policies || []).filter(
+          (p) => p.kind === "critical_illness" && policyActive(p, y) && (!p.ownerId || p.ownerId === pid)
+        );
+        ci.forEach((p) => paidPolicies.add(p.id));
+        const payout = ci.reduce((s, p) => s + (p.sumAssured || 0), 0);
+        receiveFromEvent(payout, undefined, pid);
+        events.push(`${iv.label || "Critical illness"}: ${payout > 0 ? `${money(payout)} paid out` : "no active cover"}`);
+        continue;
+      }
       if (iv.type === "death") {
         const pid = resolvePersonId(iv.deceasedPersonId, people);
         deceasedFrom[pid] = y;
@@ -828,11 +862,12 @@ export function projectYears(
           }
         }
         // Life cover pays out to cash (explicit amount, else sum of term-life).
-        const payout =
-          iv.lifeCoverPayout ??
-          (plan.policies || [])
-            .filter((p) => p.kind === "term_life")
-            .reduce((s, p) => s + (p.sumAssured || 0), 0);
+        // Only cover still in its term, on this person's life (or with no owner set), and only once.
+        const lifePolicies = (plan.policies || []).filter(
+          (p) => p.kind === "term_life" && policyActive(p, y) && (!p.ownerId || p.ownerId === pid)
+        );
+        lifePolicies.forEach((p) => paidPolicies.add(p.id));
+        const payout = iv.lifeCoverPayout ?? lifePolicies.reduce((s, p) => s + (p.sumAssured || 0), 0);
         // A protection pay-out is a lump sum inflow — it lands in the
         // survivor's ready cash (spec §2.3).
         receiveFromEvent(payout, undefined, survivorId);
@@ -1011,6 +1046,8 @@ export function projectYears(
       ? ((retirementPlan!.desiredAnnualIncome || 0) / 12) * priceIndex * expenseSurvivorFactor +
         (expenseInterventionDelta - (deltaAtRetirement ?? 0))
       : expenseLines.reduce((s, e) => s + expenseNow(e, y), 0) * expenseSurvivorFactor + expenseInterventionDelta;
+    // Insurance premiums are paid while the policy runs, until it pays out (Voyant case study p.58).
+    monthlyExpenses += (plan.policies || []).reduce((t, p) => t + (policyActive(p, y) ? p.monthlyPremium || 0 : 0), 0);
 
     // Recompute tax on this year's gross income — only streams active this
     // year count (a salary that ended, a pension not yet started, contribute 0).
@@ -1037,7 +1074,11 @@ export function projectYears(
       }
     }
     const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), yearAssumptions, pastSPA(y), pensionAdj);
-    const monthlyIncome = taxResult.netMonthly + interventionMonthlyDelta;
+    // Arrears: this year's self-assessed tax isn't paid yet; last year's is paid now (Voyant help 205259609).
+    const monthlyIncome =
+      taxResult.netMonthly + interventionMonthlyDelta + (taxResult.arrearsAnnual - arrearsFromLastYear) / 12;
+    if (arrearsFromLastYear > 0) events.push(`Tax for last year paid now: ${money(arrearsFromLastYear)}`);
+    arrearsFromLastYear = taxResult.arrearsAnnual;
 
     // Step debts forward (with per-debt principal/interest deltas)
     const debtStep = stepDebtsOneYear(debtState);
@@ -1828,6 +1869,9 @@ export function projectYears(
       yearLabel: String(startYear + y),
       annualIncome,
       annualGrossIncome: taxResult.grossAnnual || undefined,
+      incomeByLine: activeIncome(incomeLines, y)
+        .filter((l) => l.amount > 0)
+        .map((l) => ({ label: l.label, kind: l.kind, annual: l.amount * 12, isGross: l.isGross })),
       annualExpenses,
       annualSurplus,
       allocatedSurplus,
