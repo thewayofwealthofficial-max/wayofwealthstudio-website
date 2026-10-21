@@ -16,9 +16,10 @@ import type {
 } from "./types";
 import { DEFAULT_UK_TAX, DEFAULT_UK_ALLOWANCES, DEFAULT_US_TAX_SINGLE, DEFAULT_LIQUIDATION_ORDER, expensePriority, resolveSteppedAmount, effectivePeople, resolvePersonId, taxCategoryOf } from "./types";
 import type { TaxWrapper } from "./types";
-import { totalDebtBalance, totalDebtPayments, totalExpenses } from "./cashflow-calc";
-import { calcUKTaxAndNI, ukMarginalBand, taperedPensionAllowance, calcUKInvestmentTax } from "./uk-tax";
+import { mortgageMonthlyPayment, totalDebtBalance } from "./cashflow-calc";
+import { calcUKTaxAndNI, calcUKNI, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, ukMarginalBand, taperedPensionAllowance, calcUKInvestmentTax } from "./uk-tax";
 import { calcUSTaxAndFICA } from "./us-tax";
+import { applyEventLinks, applyRetirement, statePensionAgeFor } from "./event-links";
 
 /**
  * Sum monthly take-home income (post-tax for gross lines, raw for net lines)
@@ -32,8 +33,10 @@ import { calcUSTaxAndFICA } from "./us-tax";
  * per person.
  */
 function netMonthlyIncomeFromLines(
-  lines: { amount: number; isGross?: boolean; personId?: string }[],
-  assumptions: ProjectionAssumptions
+  lines: { amount: number; isGross?: boolean; personId?: string; kind?: string }[],
+  assumptions: ProjectionAssumptions,
+  /** True for someone past State Pension age: no National Insurance on anything. */
+  pastStatePensionAge: (personId: string) => boolean = () => false
 ): {
   netMonthly: number;
   grossAnnual: number;
@@ -51,12 +54,22 @@ function netMonthlyIncomeFromLines(
   // Net (post-tax) lines pool together — no tax applied.
   netMonthly += lines.filter((l) => !l.isGross).reduce((s, l) => s + (l.amount || 0), 0);
 
-  // Gross lines grouped per person, each taxed on their own.
+  // Gross lines grouped per person, each taxed on their own. National Insurance is on EARNINGS only
+  // (21 Oct 2026): salary at the plan's Class 1 rates, self-employed at Class 4, and nothing on pensions,
+  // state pension or rent, or for anyone past State Pension age. A line with no type is treated as salary,
+  // as every gross line was before types existed.
   const grossMonthlyByPerson: Record<string, number> = {};
+  const class1ByPerson: Record<string, number> = {};
+  const class4ByPerson: Record<string, number> = {};
   for (const l of lines) {
     if (!l.isGross) continue;
     const pid = l.personId ?? "__default";
     grossMonthlyByPerson[pid] = (grossMonthlyByPerson[pid] || 0) + (l.amount || 0);
+    if (l.kind === undefined || l.kind === "employment") {
+      class1ByPerson[pid] = (class1ByPerson[pid] || 0) + (l.amount || 0);
+    } else if (l.kind === "self_employment") {
+      class4ByPerson[pid] = (class4ByPerson[pid] || 0) + (l.amount || 0);
+    }
   }
 
   for (const [pid, grossMonthly] of Object.entries(grossMonthlyByPerson)) {
@@ -65,10 +78,15 @@ function netMonthlyIncomeFromLines(
     grossAnnual += annualGross;
     grossByPerson[pid] = annualGross;
     if (region === "UK") {
-      const t = calcUKTaxAndNI(annualGross, assumptions.ukTax ?? DEFAULT_UK_TAX);
+      const cfg = assumptions.ukTax ?? DEFAULT_UK_TAX;
+      const t = calcUKTaxAndNI(annualGross, cfg);
+      const ni = pastStatePensionAge(pid)
+        ? 0
+        : calcUKNI((class1ByPerson[pid] || 0) * 12, cfg.niMainRatePct, cfg.niUpperRatePct, cfg.niPrimaryThreshold, cfg.niUpperEarningsLimit) +
+          calcUKNI((class4ByPerson[pid] || 0) * 12, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, cfg.niPrimaryThreshold, cfg.niUpperEarningsLimit);
       taxAnnual += t.tax;
-      niAnnual += t.ni;
-      netMonthly += t.takeHome / 12;
+      niAnnual += ni;
+      netMonthly += (annualGross - t.tax - ni) / 12;
     } else if (region === "US") {
       const t = calcUSTaxAndFICA(annualGross, assumptions.usTax ?? DEFAULT_US_TAX_SINGLE);
       taxAnnual += t.tax;
@@ -104,14 +122,28 @@ function netMonthlyIncomeFromLines(
  * Year 0 is "today" — current state.
  */
 export function projectYears(
-  plan: CashflowPlanData,
+  rawPlan: CashflowPlanData,
   assumptions: ProjectionAssumptions
 ): YearProjection[] {
+  // Years linked to life events always follow the event (10 Oct 2026). A plan with no links is untouched.
+  // Retiring stops salary and pension payments in, and starts the state pension (21 Oct 2026).
+  const plan = applyRetirement(applyEventLinks(rawPlan));
   // 75 years covers a 25-year-old planned through to 100. The old 30-year cap
   // silently truncated any real retirement plan.
   const horizon = Math.max(1, Math.min(75, assumptions.horizonYears || 5));
   const incomeGrowth = (assumptions.incomeGrowthPct || 0) / 100;
   const expenseInflation = (assumptions.expenseInflationPct || 0) / 100;
+  // Inflation shock (stress test, 8 Oct 2026). Without one, every expression below is the original one.
+  const shock = assumptions.inflationShock && assumptions.inflationShock.years > 0 && assumptions.inflationShock.extraPct !== 0
+    ? assumptions.inflationShock
+    : null;
+  const inflFor = (yr: number) => expenseInflation + (shock && yr >= 1 && yr <= shock.years ? shock.extraPct / 100 : 0);
+  const cumInfl = (yr: number) => {
+    if (!shock) return Math.pow(1 + expenseInflation, yr);
+    let f = 1;
+    for (let k = 1; k <= yr; k++) f *= 1 + inflFor(k);
+    return f;
+  };
   const taxReliefMultiplier = 1 + (assumptions.pensionTaxReliefPct || 0) / 100;
 
   const classGrowth = (kind: AssetKind | undefined): number => {
@@ -136,8 +168,12 @@ export function projectYears(
   // schedule. Lines with steps use absolute step values (no auto-growth);
   // lines without steps grow `amount` by incomeGrowth each year. personId is
   // resolved to a concrete person up front so per-person tax lines up.
-  type IncomeState = { amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
+  // `extra` = pay rises attached to this line by income_change events; grows with the line, stops with it.
+  type IncomeState = { id?: string; kind?: string; extra?: number; amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
   let incomeLines: IncomeState[] = plan.income.map((l) => ({
+    id: l.id,
+    kind: l.kind,
+    extra: 0,
     amount: l.amount || 0,
     base: l.amount || 0,
     isGross: l.isGross,
@@ -159,12 +195,23 @@ export function projectYears(
   const activeIncome = (lines: IncomeState[], y: number): IncomeState[] =>
     lines.map((l) => {
       const dead = deceasedFrom[l.personId] !== undefined && y >= deceasedFrom[l.personId];
-      return { ...l, amount: incomeInWindow(l, y) && !dead ? l.amount : 0 };
+      return { ...l, amount: incomeInWindow(l, y) && !dead ? l.amount + (l.extra || 0) : 0 };
     });
 
-  const startTax = netMonthlyIncomeFromLines(activeIncome(incomeLines, 0), assumptions);
+  // Past State Pension age in year y → no National Insurance. Unknown age → assume not.
+  const pastSPA = (y: number) => (pid: string): boolean => {
+    const age = people.find((p) => p.id === pid)?.currentAge ?? (pid === people[0]?.id ? plan.retirement?.currentAge : undefined);
+    if (age === undefined) return false;
+    const spa = (pid === people[0]?.id ? plan.retirement?.statePensionAge : undefined) ?? statePensionAgeFor(age);
+    return age + y >= spa;
+  };
+  const startTax = netMonthlyIncomeFromLines(activeIncome(incomeLines, 0), assumptions, pastSPA(0));
   const startingMonthlyIncome = startTax.netMonthly;
-  const startingMonthlyExpenses = totalExpenses(plan);
+  // Today's costs: only lines already running (one that starts in a later year isn't spent today).
+  const startingMonthlyExpenses = plan.expenses.reduce(
+    (s, e) => s + (e.startYear === undefined || e.startYear <= 0 ? e.amount || 0 : 0),
+    0
+  );
 
   // Build per-bucket balance state. monthlyContrib carried separately so
   // interventions can adjust per-bucket monthly amounts later. startYear /
@@ -200,6 +247,9 @@ export function projectYears(
     costBasis: number;
     drawdown?: SavingsAllocation["drawdown"];
     withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
+    paidFromPay?: boolean;
+    /** Cash pots stop taking payments once they reach this (an emergency fund is "done"). */
+    target?: number | null;
   };
   // May the projector sell this pot down on its own to cover an overspend?
   // Property is ring-fenced by default — Voyant never auto-liquidates a primary
@@ -326,13 +376,24 @@ export function projectYears(
       costBasis: s.purchaseValue ?? s.current ?? 0,
       drawdown: s.drawdown,
       withdrawalLimit: s.withdrawalLimit,
+      paidFromPay: s.paidFromPay,
+      target: s.target,
     })),
     ...defaultCashBuckets,
   ];
 
   const startingSavingsBalance = startingBuckets.reduce((s, b) => s + b.balance, 0);
-  const startingMonthlySavings = startingBuckets.reduce((s, b) => s + b.baseMonthly, 0);
-  const startingMonthlyDebtPayments = totalDebtPayments(plan);
+  // "Today" is a year at today's rates, so count only what really goes out over the next 12 months: savings
+  // already running (not ones starting later, not payroll pensions, which are paid before take-home), and debt
+  // payments no bigger than the debt. A £375 card cleared in month 1 counted as £4,500 (21 Oct 2026).
+  const startingMonthlySavings = startingBuckets.reduce(
+    (s, b) => s + ((b.startYear === undefined || b.startYear <= 0) && !b.paidFromPay ? b.baseMonthly : 0),
+    0
+  );
+  const startingMonthlyDebtPayments = plan.debts.reduce(
+    (s, d) => s + Math.min(d.actualPayment || 0, Math.max(0, d.balance || 0) / 12),
+    0
+  );
 
   // Year 0 — today (interventions don't fire on year 0)
   const today: YearProjection = {
@@ -370,6 +431,8 @@ export function projectYears(
     steps?: import("./types").AmountStep[];
     paymentSourceBucketId?: string;
     paymentSourceOnly?: boolean;
+    startYear?: number;
+    endYear?: number;
   };
   let expenseLines: ExpenseState[] = (plan.expenses || []).map((e) => ({
     label: e.label,
@@ -378,9 +441,19 @@ export function projectYears(
     steps: e.steps,
     paymentSourceBucketId: e.paymentSourceBucketId,
     paymentSourceOnly: e.paymentSourceOnly,
+    startYear: e.startYear,
+    endYear: e.endYear,
   }));
+  // A cost outside its years counts as nothing, but keeps growing so it starts at the right price.
+  const expenseNow = (e: ExpenseState, y: number) => (incomeInWindow(e, y) ? e.amount : 0);
   let expenseInterventionDelta = 0;
   let monthlyExpenses = startingMonthlyExpenses;
+  // Retirement spending (spendInRetirement). priceIndex grows today's money to each year's prices;
+  // deltaAtRetirement holds the event changes made before retiring, which the retirement figure replaces.
+  let priceIndex = 1;
+  let deltaAtRetirement: number | null = null;
+  const retirementPlan = plan.retirement;
+  const firstRetiredYear = retirementPlan ? Math.round(retirementPlan.yearsUntilRetirement) : Infinity;
   let buckets: BucketState[] = startingBuckets.map((b) => ({ ...b }));
   let debtState: DebtLine[] = plan.debts.map((d) => ({ ...d }));
   let interventionMonthlyDelta = 0; // accumulates income_change interventions (post-tax)
@@ -483,6 +556,19 @@ export function projectYears(
   const projections: YearProjection[] = [today];
   const startYear = new Date().getFullYear();
 
+  // Tax-free pension cash each person has taken so far, across the whole plan. The 25% is capped by
+  // the Lump Sum Allowance in total, not per pot or per year (gov.uk, checked 20 Oct 2026). Before
+  // this, Sam's £1.14m pot paid out £285k tax free, over the £268,275 limit.
+  const lsaUsedByPerson: Record<string, number> = {};
+  const lsaLeft = (ownerId: string): number =>
+    pensionRegionAllowances
+      ? Math.max(
+          0,
+          (pensionRegionAllowances.lumpSumAllowance ?? DEFAULT_UK_ALLOWANCES.lumpSumAllowance ?? 0) -
+            (lsaUsedByPerson[ownerId] || 0)
+        )
+      : Infinity;
+
   for (let y = 1; y <= horizon; y++) {
     const events: string[] = [];
 
@@ -515,6 +601,9 @@ export function projectYears(
       let need = Math.max(0, amount);
       const take = (b: BucketState) => {
         if (need <= 0 || b.balance <= 0) return;
+        // A pension can't pay for an event before its owner can legally reach it. Sam's house deposit
+        // was taken from his pension at 41 (21 Oct 2026); the shortfall draw already had this rule.
+        if (b.kind === "pension" && b.inherited === undefined && !canAccessPension(b.ownerId, y)) return;
         const got = Math.min(b.balance, need);
         takeFromPot(b, got);
         need -= got;
@@ -567,7 +656,11 @@ export function projectYears(
     // now is used at the figure that was typed, not a year already inflated.
     // Income events grow too — an expense event inflating while a pay rise
     // stayed frozen quietly made every plan look worse each year.
-    expenseInterventionDelta = expenseInterventionDelta * (1 + expenseInflation);
+    expenseInterventionDelta = expenseInterventionDelta * (1 + (shock ? inflFor(y) : expenseInflation));
+    priceIndex *= 1 + (shock ? inflFor(y) : expenseInflation);
+    if (deltaAtRetirement !== null) deltaAtRetirement *= 1 + (shock ? inflFor(y) : expenseInflation);
+    const retiredSpending = !!retirementPlan?.spendInRetirement && y >= firstRetiredYear;
+    if (retiredSpending && deltaAtRetirement === null) deltaAtRetirement = expenseInterventionDelta;
     interventionMonthlyDelta = interventionMonthlyDelta * (1 + incomeGrowth);
 
     // Apply interventions that fire AT THE START of this year (before growth)
@@ -618,6 +711,19 @@ export function projectYears(
         continue;
       }
       const applied = applyIntervention(iv, {
+        addToIncomeLine: (lineId, delta) => {
+          // The named line, else the payer's salary (else anyone's). None found → caller falls back.
+          const owner = resolvePersonId(iv.ownerId, people);
+          const salary = (l: IncomeState) => l.kind === "employment" || l.kind === "self_employment";
+          const line =
+            (lineId ? incomeLines.find((l) => l.id === lineId) : undefined) ??
+            incomeLines.find((l) => salary(l) && l.personId === owner) ??
+            incomeLines.find(salary);
+          if (!line) return null;
+          // Applied before this year's growth step, so pre-shrink it: the rise lands at the figure typed.
+          line.extra = (line.extra || 0) + delta / (1 + incomeGrowth);
+          return line.label;
+        },
         getInterventionDelta: () => interventionMonthlyDelta,
         setInterventionDelta: (n) => {
           interventionMonthlyDelta = n;
@@ -661,6 +767,11 @@ export function projectYears(
         },
         ownerId: resolvePersonId(iv.ownerId, people),
         canAccessPension: (ownerId) => canAccessPension(ownerId, y),
+        takeTaxFreeCash: (ownerId, wanted) => {
+          const allowed = Math.min(wanted, lsaLeft(ownerId));
+          lsaUsedByPerson[ownerId] = (lsaUsedByPerson[ownerId] || 0) + allowed;
+          return allowed;
+        },
         debts: debtState,
         defaultOwnerId: people[0]?.id ?? resolvePersonId(undefined, people),
         spend: (amount, o) =>
@@ -682,7 +793,7 @@ export function projectYears(
         reportUnfunded: (amount) => {
           unfundedEventSpend += amount;
         },
-        inflationFactor: Math.pow(1 + expenseInflation, y),
+        inflationFactor: cumInfl(y),
       });
       if (applied) events.push(applied);
       // Pinned raise: earmark this income_change's monthly delta for a bucket
@@ -698,18 +809,24 @@ export function projectYears(
     // lines WITHOUT steps grow at the assumption rate, exactly as before.
     incomeLines = incomeLines.map((l) => {
       const stepped = resolveSteppedAmount(l.base, l.steps, y);
-      return { ...l, amount: stepped !== null ? stepped : l.amount * (1 + incomeGrowth) };
+      return {
+        ...l,
+        amount: stepped !== null ? stepped : l.amount * (1 + incomeGrowth),
+        extra: (l.extra || 0) * (1 + incomeGrowth),
+      };
     });
     expenseLines = expenseLines.map((e) => {
       const stepped = resolveSteppedAmount(e.base, e.steps, y);
-      return { ...e, amount: stepped !== null ? stepped : e.amount * (1 + expenseInflation) };
+      return { ...e, amount: stepped !== null ? stepped : e.amount * (1 + (shock ? inflFor(y) : expenseInflation)) };
     });
-    monthlyExpenses =
-      expenseLines.reduce((s, e) => s + e.amount, 0) * expenseSurvivorFactor + expenseInterventionDelta;
+    monthlyExpenses = retiredSpending
+      ? ((retirementPlan!.desiredAnnualIncome || 0) / 12) * priceIndex * expenseSurvivorFactor +
+        (expenseInterventionDelta - (deltaAtRetirement ?? 0))
+      : expenseLines.reduce((s, e) => s + expenseNow(e, y), 0) * expenseSurvivorFactor + expenseInterventionDelta;
 
     // Recompute tax on this year's gross income — only streams active this
     // year count (a salary that ended, a pension not yet started, contribute 0).
-    const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), assumptions);
+    const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), assumptions, pastSPA(y));
     const monthlyIncome = taxResult.netMonthly + interventionMonthlyDelta;
 
     // Step debts forward (with per-debt principal/interest deltas)
@@ -729,7 +846,11 @@ export function projectYears(
     const annualDebtPaid = debtStep.deltas.reduce((s, d) => s + d.paymentsMade, 0);
     // Only buckets currently in their contribution window intend to save this
     // year; out-of-window buckets free up their share for available cash.
+    // Payroll pensions are paid before take-home, so they never come out of this year's cash.
+    // A cash pot already at its target isn't planning to save either.
+    const atTarget = (b: BucketState) => b.kind === "cash" && !!b.target && b.target > 0 && b.balance >= b.target;
     const monthlySavings = buckets.reduce((s, b) => {
+      if (b.paidFromPay || atTarget(b)) return s;
       const inWindow =
         (b.startYear === undefined || y >= b.startYear) &&
         (b.endYear === undefined || y <= b.endYear);
@@ -796,7 +917,7 @@ export function projectYears(
     const withdrawalTax = (
       b: BucketState,
       gross: number
-    ): { tax: number; paUsed: number; cgtUsed: number } => {
+    ): { tax: number; paUsed: number; cgtUsed: number; lsaUsed?: number } => {
       if (region !== "UK" || gross <= 0) return { tax: 0, paUsed: 0, cgtUsed: 0 };
       if (b.kind === "pension") {
         // Inherited before the holder turned 75 → the beneficiary pays nothing.
@@ -805,12 +926,16 @@ export function projectYears(
         // one has already had its tax-free cash, so all of it is income. An
         // inherited-after-75 pot is fully taxable with no tax-free slice.
         // Either way, unused Personal Allowance covers the taxable part first.
-        const taxable = gross * (b.crystallised || b.inherited === "taxable" ? 1 : 0.75);
+        // The 25% stops once the person's Lump Sum Allowance is used up.
+        const taxFree =
+          b.crystallised || b.inherited === "taxable" ? 0 : Math.min(gross * 0.25, lsaLeft(b.ownerId));
+        const taxable = gross - taxFree;
         const covered = Math.min(taxable, unusedPA(b.ownerId));
         return {
           tax: (taxable - covered) * (incomeRatePctFor(b.ownerId) / 100),
           paUsed: covered,
           cgtUsed: 0,
+          lsaUsed: taxFree,
         };
       }
       if (b.wrapper === "gia" && ukAllow) {
@@ -824,7 +949,8 @@ export function projectYears(
       }
       return { tax: 0, paUsed: 0, cgtUsed: 0 }; // cash / ISA / property
     };
-    const commitAllowance = (b: BucketState, r: { paUsed: number; cgtUsed: number }) => {
+    const commitAllowance = (b: BucketState, r: { paUsed: number; cgtUsed: number; lsaUsed?: number }) => {
+      if (r.lsaUsed) lsaUsedByPerson[b.ownerId] = (lsaUsedByPerson[b.ownerId] || 0) + r.lsaUsed;
       if (r.paUsed) paUsedByPerson[b.ownerId] = (paUsedByPerson[b.ownerId] || 0) + r.paUsed;
       if (r.cgtUsed) cgtUsedByPerson[b.ownerId] = (cgtUsedByPerson[b.ownerId] || 0) + r.cgtUsed;
     };
@@ -841,8 +967,19 @@ export function projectYears(
         const rate = incomeRatePctFor(b.ownerId) / 100;
         const taxableFraction = b.crystallised || b.inherited === "taxable" ? 1 : 0.75;
         if (rate <= 0) return net;
-        if (net <= room / taxableFraction) return net; // allowance covers it
-        return (net - room * rate) / (1 - taxableFraction * rate);
+        const gross = net <= room / taxableFraction ? net : (net - room * rate) / (1 - taxableFraction * rate);
+        if (taxableFraction === 1) return gross;
+        // The 25% would go past the Lump Sum Allowance, so the tax is no longer one straight line.
+        // Search for the gross that leaves `net` after withdrawalTax, which knows the cap.
+        if (gross * 0.25 <= lsaLeft(b.ownerId)) return gross;
+        let lo = net;
+        let hi = net / (1 - rate);
+        for (let i = 0; i < 50; i++) {
+          const mid = (lo + hi) / 2;
+          if (mid - withdrawalTax(b, mid).tax < net) lo = mid;
+          else hi = mid;
+        }
+        return hi;
       }
       if (b.wrapper === "gia" && ukAllow) {
         const room = unusedCGT(b.ownerId);
@@ -874,7 +1011,7 @@ export function projectYears(
         dd.mode === "percent"
           ? b.balance * (dd.value / 100)
           : dd.indexed
-            ? dd.value * Math.pow(1 + expenseInflation, y - from)
+            ? dd.value * (shock ? cumInfl(y) / cumInfl(from) : Math.pow(1 + expenseInflation, y - from))
             : dd.value;
       const gross = Math.min(b.balance, Math.max(0, wanted));
       if (gross <= 0) continue;
@@ -894,8 +1031,8 @@ export function projectYears(
     // in the same column and the books balance the same way.
     let sourceOnlyUnfunded = 0;
     for (const e of expenseLines) {
-      if (!e.paymentSourceBucketId) continue;
-      const annualCost = Math.max(0, e.amount) * 12 * expenseSurvivorFactor;
+      if (!e.paymentSourceBucketId || retiredSpending) continue; // in retirement the lines are replaced
+      const annualCost = Math.max(0, expenseNow(e, y)) * 12 * expenseSurvivorFactor;
       if (annualCost <= 0) continue;
       const pot = buckets.find((b) => b.id === e.paymentSourceBucketId);
       if (!pot) continue; // pot deleted — fall through to normal funding
@@ -952,6 +1089,7 @@ export function projectYears(
     const savingsOrder = assumptions.savingsOrder;
     /** The fraction of THIS pot's intended contribution that actually lands. */
     const scaleFor = (b: BucketState): number => {
+      if (b.paidFromPay) return 1; // already paid, before take-home
       if (!savingsOrder || savingsOrder.length === 0) return contributionScale;
       if (affordableContributions >= plannedContributions) return 1;
       // Walk the categories in order, handing each its full ask until the
@@ -960,7 +1098,7 @@ export function projectYears(
       let budget = affordableContributions;
       for (const c of savingsOrder) {
         const wanted = buckets
-          .filter((x) => taxCategoryOf(x) === c)
+          .filter((x) => taxCategoryOf(x) === c && !x.paidFromPay && !atTarget(x))
           .reduce((s, x) => {
             const inW =
               (x.startYear === undefined || y >= x.startYear) &&
@@ -987,6 +1125,12 @@ export function projectYears(
     const pensionAAFor = (ownerId: string): number =>
       ukAllow ? taperedPensionAllowance(grossByPerson[ownerId] || 0, ukAllow) : Infinity;
     let pensionCapped = false;
+    const isaUsedByPerson: Record<string, number> = {};
+    const isaRoom = (ownerId: string): number =>
+      ukAllow
+        ? Math.max(0, (ukAllow.isaAllowance ?? DEFAULT_UK_ALLOWANCES.isaAllowance ?? 0) - (isaUsedByPerson[ownerId] || 0))
+        : Infinity;
+    let isaCapped = false;
 
     const bucketDeltas: NonNullable<YearProjection["bucketDeltas"]> = [];
     // Cash the client actually parted with to fund savings this year, and cash
@@ -1004,13 +1148,18 @@ export function projectYears(
       const paidOut = eventPaidOut[b.id] || 0;
       const paidIn = eventPaidIn[b.id] || 0;
       const plannedOut = plannedWithdrawnByBucket[b.id] || 0;
-      const contributionMultiplier = b.kind === "pension" ? taxReliefMultiplier : 1;
+      const contributionMultiplier = b.kind === "pension" && !b.paidFromPay ? taxReliefMultiplier : 1;
       const inWindow =
         (b.startYear === undefined || y >= b.startYear) &&
         (b.endYear === undefined || y <= b.endYear);
       const monthlyThisYear = effectiveMonthly(b, y);
       // Cash the client actually hands over, after the affordability scale-back.
       let cashContribution = (inWindow ? monthlyThisYear * 12 : 0) * scaleFor(b);
+      // A cash pot with a target stops filling at it; the rest stays as this year's spare cash, which then
+      // flows on down the surplus list. Sam's £7,500 emergency fund kept filling to £209k (21 Oct 2026).
+      if (b.kind === "cash" && b.target && b.target > 0) {
+        cashContribution = Math.min(cashContribution, Math.max(0, b.target - b.balance));
+      }
       let yearContribution = cashContribution * contributionMultiplier;
       // Pension annual allowance: cap the GROSS (incl. relief) contribution at
       // the owner's tapered allowance, tracked per person.
@@ -1023,14 +1172,27 @@ export function projectYears(
             yearContribution = room;
             // Hand back the cash that could not be paid in.
             const cashNeeded = yearContribution / contributionMultiplier;
-            refusedByLimit += cashContribution - cashNeeded;
+            if (!b.paidFromPay) refusedByLimit += cashContribution - cashNeeded; // payroll money was never cash
             cashContribution = cashNeeded;
             pensionCapped = true;
           }
           pensionUsedByPerson[b.ownerId] = used + yearContribution;
         }
       }
-      actualContributions += cashContribution;
+      // ISA allowance, per person per year, across all their ISAs. What doesn't fit stays as cash and flows
+      // on down the surplus list, like a capped pension (21 Oct 2026: a test paid £36k into one ISA in a year).
+      if (b.wrapper === "isa" && b.kind !== "pension" && ukAllow && yearContribution > 0) {
+        const room = isaRoom(b.ownerId);
+        if (yearContribution > room) {
+          const cashNeeded = room / contributionMultiplier;
+          if (!b.paidFromPay) refusedByLimit += cashContribution - cashNeeded;
+          yearContribution = room;
+          cashContribution = cashNeeded;
+          isaCapped = true;
+        }
+        isaUsedByPerson[b.ownerId] = (isaUsedByPerson[b.ownerId] || 0) + yearContribution;
+      }
+      if (!b.paidFromPay) actualContributions += cashContribution;
       const grown = (b.balance + yearContribution) * (1 + classGrowth(b.kind));
       // Growth is never base cost — only money actually paid in is.
       const nextCostBasis = b.costBasis + yearContribution;
@@ -1049,6 +1211,9 @@ export function projectYears(
       });
       return { ...b, balance: grown, costBasis: nextCostBasis };
     });
+    if (isaCapped) {
+      events.push(`ISA payments capped at the yearly ISA allowance — the rest stayed as available cash`);
+    }
     if (pensionCapped) {
       events.push(
         `Pension contribution capped at the annual allowance${refusedByLimit > 0 ? ` — ${money(refusedByLimit)} stayed as available cash` : ""}`
@@ -1158,11 +1323,18 @@ export function projectYears(
         const bid = dest.target.bucketId;
         if (!bucketById.has(bid)) continue;
         const already = allocToBucket[bid] || 0;
-        const room = dest.capPerYear === undefined ? Infinity : Math.max(0, dest.capPerYear - already);
+        const capRoom = dest.capPerYear === undefined ? Infinity : Math.max(0, dest.capPerYear - already);
+        // A full cash pot (at its target) takes no more; the money spills to the next destination.
+        const pot = bucketById.get(bid)!;
+        const targetRoom =
+          pot.kind === "cash" && pot.target && pot.target > 0 ? Math.max(0, pot.target - pot.balance - already) : Infinity;
+        const isaLeft = pot.wrapper === "isa" && pot.kind !== "pension" ? isaRoom(pot.ownerId) : Infinity;
+        const room = Math.min(capRoom, targetRoom, isaLeft);
         const give = Math.min(remainingSurplus, room);
         if (give > 0) {
           allocToBucket[bid] = already + give;
           remainingSurplus -= give;
+          if (pot.wrapper === "isa" && pot.kind !== "pension") isaUsedByPerson[pot.ownerId] = (isaUsedByPerson[pot.ownerId] || 0) + give;
         }
       } else {
         const did = dest.target.debtId;
@@ -1266,9 +1438,13 @@ export function projectYears(
         if (d) {
           d.surplusAdded = (d.surplusAdded || 0) - gross;
           d.closingBalance -= gross;
+          // Record only: which pot covered the gap, for the chart's "Details" split (8 Oct 2026). No maths changes.
+          d.drawnToCover = (d.drawnToCover || 0) + gross;
         }
       }
-      shortfall = need; // still unmet after draining everything → RED year
+      // Still unmet after draining everything → RED year. Under a penny is rounding dust from the gross-up
+      // maths, not a real gap; it was painting red years on a plan with nothing short (21 Oct 2026).
+      shortfall = need < 0.01 ? 0 : need;
     }
     // ---- Year-end sweep: spare cash gets a job (spec §2.2) -----------------
     // Lump sums — an inheritance, house sale proceeds, a life cover pay-out —
@@ -1299,6 +1475,11 @@ export function projectYears(
                 room = Math.min(room, Math.max(0, aa - (pensionUsedByPerson[target.ownerId] || 0)));
               }
             }
+            // Same for an ISA and the yearly ISA allowance; a full cash pot takes nothing more.
+            if (target.wrapper === "isa" && target.kind !== "pension") room = Math.min(room, isaRoom(target.ownerId));
+            if (target.kind === "cash" && target.target && target.target > 0) {
+              room = Math.min(room, Math.max(0, target.target - target.balance));
+            }
             const move = Math.min(cash.balance, room);
             if (move <= 0) continue;
             takeFromPot(cash, move);
@@ -1307,6 +1488,7 @@ export function projectYears(
               pensionUsedByPerson[target.ownerId] =
                 (pensionUsedByPerson[target.ownerId] || 0) + move;
             }
+            if (target.wrapper === "isa" && target.kind !== "pension") isaUsedByPerson[target.ownerId] = (isaUsedByPerson[target.ownerId] || 0) + move;
             sweptToWork += move;
             const dFrom = bucketDeltas.find((x) => x.id === cash.id);
             if (dFrom) {
@@ -1436,6 +1618,8 @@ function sumByKind(
 }
 
 type InterventionContext = {
+  /** Add a pay rise to an income line (named, else the salary). Returns the line's label, or null if none. */
+  addToIncomeLine: (lineId: string | undefined, delta: number) => string | null;
   getInterventionDelta: () => number;
   setInterventionDelta: (n: number) => void;
   getMonthlyExpenses: () => number;
@@ -1453,6 +1637,8 @@ type InterventionContext = {
   }>;
   /** Can this person legally reach their pension in this year? */
   canAccessPension: (ownerId: string) => boolean;
+  /** Use up some of this person's Lump Sum Allowance. Returns how much of `wanted` can be tax free. */
+  takeTaxFreeCash: (ownerId: string, wanted: number) => number;
   addBucket: (b: {
     id: string;
     label: string;
@@ -1511,6 +1697,8 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
   switch (iv.type) {
     case "income_change": {
       const delta = iv.monthlyDelta || 0;
+      const onLine = ctx.addToIncomeLine(iv.incomeLineId, delta);
+      if (onLine) return `${iv.label || "Income change"}: ${delta >= 0 ? "+" : ""}${money(delta)}/mo on ${onLine}`;
       ctx.setInterventionDelta(ctx.getInterventionDelta() + delta);
       return `${iv.label || "Income change"}: ${delta >= 0 ? "+" : ""}${money(delta)}/mo (post-tax)`;
     }
@@ -1543,9 +1731,18 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
     }
     case "buy_house": {
       const deposit = iv.deposit || 0;
-      const mortgageMonthly = iv.mortgageMonthly || 0;
       const mortgageBalance = iv.mortgageBalance || 0;
       const mortgageRate = iv.mortgageRate || 0;
+      // No payment typed → work it out from the loan, rate and term, as Voyant does.
+      const mortgageMonthly =
+        iv.mortgageMonthly && iv.mortgageMonthly > 0
+          ? iv.mortgageMonthly
+          : mortgageMonthlyPayment(mortgageBalance, mortgageRate, iv.mortgageTermYears ?? 25, iv.mortgageInterestOnly);
+      const monthlyInterest = (mortgageBalance * mortgageRate) / 100 / 12;
+      const growsWarning =
+        mortgageBalance > 0 && mortgageMonthly < monthlyInterest - 0.5
+          ? ` — WARNING: ${money(mortgageMonthly)}/mo is less than the ${money(monthlyInterest)}/mo interest, so the mortgage grows`
+          : "";
       const rentReplaced = iv.rentReplaced || 0;
       const propertyValue = iv.propertyValue || deposit;
 
@@ -1589,7 +1786,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
 
       return `${iv.label || "Buy house"}: deposit ${money(paid.funded)}${depositSources ? ` from ${depositSources}` : ""}${
         paid.short > 0 ? ` — ${money(paid.short)} of the deposit could not be funded` : ""
-      }, mortgage ${money(mortgageMonthly)}/mo${mortgageBalance > 0 ? ` (${money(mortgageBalance)} @ ${mortgageRate}%)` : ""}`;
+      }, mortgage ${money(mortgageMonthly)}/mo${mortgageBalance > 0 ? ` (${money(mortgageBalance)} @ ${mortgageRate}%)` : ""}${growsWarning}`;
     }
     case "downsize": {
       // Sell (or trade down) a property: clear its mortgage from the sale,
@@ -1680,7 +1877,9 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       }
       const amount = Math.min(pot.balance, iv.crystalliseAmount ?? pot.balance);
       if (amount <= 0) return `${iv.label || "Crystallise"}: nothing to crystallise`;
-      const taxFreeCash = amount * 0.25;
+      // 25% tax free, but never past the person's Lump Sum Allowance. The rest stays in drawdown,
+      // taxed as income when it comes out.
+      const taxFreeCash = ctx.takeTaxFreeCash(pot.ownerId ?? ctx.defaultOwnerId, amount * 0.25);
       const intoDrawdown = amount - taxFreeCash;
       ctx.writeDown(pot.id, amount); // recorded, so it isn't absorbed by growth
       ctx.receive(taxFreeCash); // PCLS is a lump sum — it lands as ready cash

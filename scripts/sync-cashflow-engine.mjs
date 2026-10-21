@@ -29,6 +29,9 @@ const FILES = [
   ["src/lib/cashflow-calc.ts", "cashflow-calc.ts"],
   ["src/lib/uk-tax.ts", "uk-tax.ts"],
   ["src/lib/us-tax.ts", "us-tax.ts"],
+  // The engine imports it since 10 Oct 2026 (event links, then retirement rules on 21 Oct). Without it the
+  // copy didn't compile, so the sync was skipped and this site kept running the old maths.
+  ["src/lib/event-links.ts", "event-links.ts"],
 ];
 
 const BANNER = `/**

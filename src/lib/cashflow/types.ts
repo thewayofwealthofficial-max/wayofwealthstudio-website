@@ -54,16 +54,37 @@ export type Person = {
   id: string;
   name: string;
   currentAge?: number;
+  /** A partner's own retirement age and state pension (21 Oct 2026). The first person uses the plan's
+   *  retirement card instead, so there is one place to set each. Unset = this person never "retires". */
+  retirementAge?: number;
+  statePensionAnnual?: number;
 };
 
 /** Stable id for the implicit single person on legacy / single-person plans. */
 export const DEFAULT_PERSON_ID = "person_you";
+
+/**
+ * What kind of income a line is, as Voyant splits it (21 Oct 2026). Salary and self-employed income stop when
+ * the person retires unless the line has its own end year. Undefined = "other": never stopped automatically,
+ * which keeps every plan saved before this field existed exactly as it was.
+ */
+export type IncomeKind = "employment" | "self_employment" | "state_pension" | "db_pension" | "rental" | "other";
+
+export const INCOME_KIND_LABELS: Record<IncomeKind, string> = {
+  employment: "Salary",
+  self_employment: "Self-employed",
+  state_pension: "State pension",
+  db_pension: "Final salary pension",
+  rental: "Rental",
+  other: "Other",
+};
 
 export type IncomeLine = {
   id: string;
   label: string;
   amount: number;
   frequency: "monthly";
+  kind?: IncomeKind;
   /** Whose income this is (drives per-person tax). Undefined = the first/only
    *  person. */
   personId?: string;
@@ -84,7 +105,12 @@ export type IncomeLine = {
    */
   startYear?: number;
   endYear?: number;
+  /** startYear / endYear linked to a life event instead of typed in (10 Oct 2026). See event-links.ts. */
+  yearLinks?: { start?: EventLink; end?: EventLink };
 };
+
+/** A year that follows a life event: the event's year plus `offset` (-1 = the year before). See event-links.ts. */
+export type EventLink = { eventId: string; offset: number };
 
 /**
  * Funding priority, Voyant-style. When a year can't fund everything (even after
@@ -128,6 +154,10 @@ export type ExpenseLine = {
    * Voyant warns this can create artificial shortfalls, so use it sparingly.
    */
   paymentSourceOnly?: boolean;
+  /** Years this cost runs (21 Oct 2026, Voyant has start and stop on every expense): childcare that ends,
+   *  school fees that start. Same rules as an income line's window; unset = from today, for ever. */
+  startYear?: number;
+  endYear?: number;
 };
 
 /** Default funding priority for an expense — explicit override wins, else
@@ -279,6 +309,12 @@ export type SavingsAllocation = {
     allowFromYear?: number;
   };
   /**
+   * Pension paid through payroll (21 Oct 2026): the monthly amount, employee plus employer, comes off before
+   * take-home pay. So it never leaves the client's cash and gets no extra tax relief, which is already in the
+   * pay slip. Sam's £937 a month was taken from his take-home AND grossed up by 25%, counting it twice.
+   */
+  paidFromPay?: boolean;
+  /**
    * Optional contribution window. The bucket's monthlyAmount applies only in
    * projection years where startYear <= y <= endYear (both inclusive,
    * 1-indexed where year 1 is the first projection year after "today").
@@ -289,6 +325,8 @@ export type SavingsAllocation = {
    */
   startYear?: number;
   endYear?: number;
+  /** Contribution window and drawdown start linked to life events (10 Oct 2026). See event-links.ts. */
+  yearLinks?: { start?: EventLink; end?: EventLink; drawdownStart?: EventLink };
   /**
    * Optional per-year step schedule for the monthly contribution. When present,
    * overrides the flat `monthlyAmount` (which becomes the pre-first-step value)
@@ -354,8 +392,18 @@ export type Intervention = {
   year: number;
   type: InterventionType;
   label: string;
+  /** Optional life icon shown on the timeline (wedding, baby, travel...). Display only; a key of LIFE_ICONS
+   *  in cashflow-timeline.tsx. Without it the event keeps its type's icon (8 Oct 2026). */
+  icon?: string;
   // For income_change / expense_change / savings_change: monthly delta
   monthlyDelta?: number;
+  /**
+   * For income_change: the income line this pay rise belongs to (21 Oct 2026). The rise is added to that line,
+   * in its terms (a gross line gets a gross rise, taxed with it), and stops when the line stops, e.g. at
+   * retirement. Unset = the person's salary line if the plan has one; with none, the old plan-wide take-home
+   * change. Sam's +£375 rises carried on paying after he retired.
+   */
+  incomeLineId?: string;
   /**
    * For income_change / lump_sum_in: pin the money this event creates to a
    * specific savings bucket so it gets first claim on surplus before the
@@ -394,6 +442,10 @@ export type Intervention = {
   mortgageMonthly?: number;
   mortgageBalance?: number; // initial mortgage loan amount
   mortgageRate?: number; // annual interest rate %
+  /** Mortgage term in years (default 25) and type. With no payment typed, the engine works the payment out
+   *  from loan, rate and term (21 Oct 2026); a typed £1,200 on £400k at 4.5% let the debt grow unseen. */
+  mortgageTermYears?: number;
+  mortgageInterestOnly?: boolean;
   rentReplaced?: number; // amount of rent (essentials) that goes to zero
   propertyValue?: number;
   // For downsize / remortgage:
@@ -544,12 +596,20 @@ export type UKTaxAllowances = {
   /** Age a pension can first be accessed (UK: 55, rising to 57). Pots aren't
    *  drawn for income before the owner reaches this age. */
   pensionAccessAge: number; // 57
+  /** Lump Sum Allowance: the most tax-free cash a person can take across all their pensions, in total.
+   *  "The most you can take is £268,275" (gov.uk/tax-on-your-private-pension/lump-sum-allowance, checked
+   *  20 Oct 2026). Optional so plans saved before it existed fall back to the default. */
+  lumpSumAllowance?: number;
+  /** Most a person can pay into ISAs in a tax year: "the maximum you can save in ISAs is £20,000"
+   *  (gov.uk/individual-savings-accounts, 2026/27, checked 21 Oct 2026). Optional for older saved plans. */
+  isaAllowance?: number;
 };
 
 export const DEFAULT_UK_ALLOWANCES: UKTaxAllowances = {
   dividendAllowance: 500,
-  dividendBasicPct: 8.75,
-  dividendHigherPct: 33.75,
+  // 2026/27 rates, gov.uk/tax-on-dividends checked 21 Oct 2026 (were 8.75% and 33.75%).
+  dividendBasicPct: 10.75,
+  dividendHigherPct: 35.75,
   dividendAdditionalPct: 39.35,
   giaDividendYieldPct: 2,
   psaBasic: 1000,
@@ -562,12 +622,17 @@ export const DEFAULT_UK_ALLOWANCES: UKTaxAllowances = {
   cgtHigherPct: 24,
   giaGainFraction: 0.5,
   pensionAccessAge: 57,
+  lumpSumAllowance: 268275,
+  isaAllowance: 20000,
 };
 
 export type ProjectionAssumptions = {
   horizonYears: number;
   incomeGrowthPct: number;
   expenseInflationPct: number;
+  /** Voyant's Inflation Adjustment stress test: extra spending inflation for the first `years` years, then
+   *  back to normal (prices stay at the higher level). Unset = no shock; the engine is unchanged (8 Oct 2026). */
+  inflationShock?: { extraPct: number; years: number };
   // Per-asset-class growth rates (annual mean)
   cashGrowthPct: number;
   stocksGrowthPct: number;
@@ -758,6 +823,9 @@ export type YearProjection = {
      *  growth and can be checked against the assumed rate. */
     investmentTax?: number;
     surplusAdded?: number; // extra surplus routed here this year (directed + cascade)
+    /** Gross taken from this pot by the engine to cover a shortfall this year (already inside a negative
+     *  surplusAdded). Record only, for Voyant's "Details" split of who paid the bills. */
+    drawnToCover?: number;
     growth: number; // closing - opening - contributions - surplusAdded - event flows
     closingBalance: number;
   }>;
@@ -784,7 +852,15 @@ export type YearProjection = {
 export type RetirementSettings = {
   yearsUntilRetirement: number; // years from today
   desiredAnnualIncome: number; // in plan's currency
-  statePensionAnnual: number; // UK State Pension / US Social Security (annual)
+  statePensionAnnual: number; // UK State Pension / US Social Security (annual), in today's money
+  /** Age the state pension starts. Unset = worked out from their age (UK: statePensionAgeFor). */
+  statePensionAge?: number;
+  /**
+   * Spend desiredAnnualIncome in retirement (21 Oct 2026). From the retirement year it replaces today's living
+   * costs, in today's money grown with inflation; debts stay separate and life events after retirement still add
+   * on. Unset/false = the old behaviour: today's spending simply carries on, and the figure only feeds the card.
+   */
+  spendInRetirement?: boolean;
   /** Client's current age. When set, charts label the x-axis by age (Voyant
    *  style) and place the Pre-Retirement / Retirement phase band. Optional —
    *  charts fall back to calendar years when absent. */
@@ -792,7 +868,8 @@ export type RetirementSettings = {
 };
 
 export const REGION_RETIREMENT_DEFAULTS: Record<Region, RetirementSettings> = {
-  UK: { yearsUntilRetirement: 30, desiredAnnualIncome: 30000, statePensionAnnual: 11500 },
+  // Full new State Pension: "£241.30 a week" (gov.uk/new-state-pension/what-youll-get, 21 Oct 2026) × 52.
+  UK: { yearsUntilRetirement: 30, desiredAnnualIncome: 30000, statePensionAnnual: 12548 },
   US: { yearsUntilRetirement: 30, desiredAnnualIncome: 60000, statePensionAnnual: 22000 },
   OTHER: { yearsUntilRetirement: 30, desiredAnnualIncome: 30000, statePensionAnnual: 0 },
 };
@@ -878,6 +955,15 @@ export const POLICY_KIND_LABELS: Record<PolicyKind, string> = {
   income_protection: "Income protection",
 };
 
+/** A named chapter of the plan, e.g. "Building the business" (Voyant life stages, 8 Oct 2026). Display only:
+ *  drawn as a band under the chart and timeline; the projection never reads it. Years are 1..horizon. */
+export type LifeStage = {
+  id: string;
+  label: string;
+  fromYear: number;
+  toYear: number;
+};
+
 export type CashflowPlanData = {
   /** People in the plan — 1 (single) or 2 (a couple). Each is taxed
    *  separately. Absent/empty on legacy plans → treated as a single person. */
@@ -887,6 +973,8 @@ export type CashflowPlanData = {
   debts: DebtLine[];
   savings: SavingsAllocation[];
   interventions?: Intervention[];
+  /** Named life stages shown as bands under the chart (display only). */
+  stages?: LifeStage[];
   /** Ordered priority list for routing each year's surplus. Empty/undefined =
    *  surplus stays unallocated (assumed spent). See SurplusDestination. */
   surplusDestinations?: SurplusDestination[];
@@ -930,6 +1018,11 @@ export type CashflowScenario = {
   data: CashflowPlanData;
   createdAt: string; // ISO timestamp
   updatedAt: string;
+  /** What-ifs that follow the base (9 Oct 2026, src/lib/scenario-follow.ts): the scenario this one follows.
+   *  Unset = a frozen copy (every what-if made before this existed). */
+  followsBaseId?: string;
+  /** The base's plan as it was when this what-if last caught up with it. */
+  baseSnapshot?: CashflowPlanData;
 };
 
 export type CashflowPlanRow = {

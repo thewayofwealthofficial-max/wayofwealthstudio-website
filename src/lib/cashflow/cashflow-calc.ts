@@ -87,6 +87,34 @@ export function fmtMoney(
   }).format(n);
 }
 
+/**
+ * The plan's saved currency, checked. The old free-text box saved every key press, so a plan can
+ * hold a half-typed code ("I", "IL") that makes Intl throw and takes the whole page down (Sam, 20 Oct
+ * 2026). A bad code shows as GBP with `invalid` set, so the builder can say so plainly.
+ */
+export function planCurrency(code: string | undefined): { code: string; invalid: string | null } {
+  if (!code) return { code: "GBP", invalid: null };
+  try {
+    new Intl.NumberFormat("en-GB", { style: "currency", currency: code });
+    return { code, invalid: null };
+  } catch {
+    return { code: "GBP", invalid: code };
+  }
+}
+
+/**
+ * Monthly mortgage payment. Repayment: the standard annuity formula, clearing the loan over the term.
+ * Interest-only: just the interest. Moved here from the what-if wizard so the builder and engine share it.
+ */
+export function mortgageMonthlyPayment(loan: number, ratePct: number, years: number, interestOnly = false): number {
+  if (loan <= 0) return 0;
+  const r = ratePct / 100 / 12;
+  if (interestOnly) return loan * r;
+  const n = Math.max(1, Math.round(years * 12));
+  if (r === 0) return loan / n;
+  return (loan * r) / (1 - Math.pow(1 + r, -n));
+}
+
 export function fmtGBP(n: number): string {
   return fmtMoney(n, "GBP", "en-GB");
 }

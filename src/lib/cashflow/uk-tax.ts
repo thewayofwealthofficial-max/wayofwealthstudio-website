@@ -93,9 +93,12 @@ export function calcUKTaxAndNI(
     effectivePA = Math.max(0, pa0 - (annualGross - 100000) / 2);
   }
 
+  // The bands are fixed slices of TAXABLE income (gov.uk/income-tax-rates): basic is the first £37,700
+  // (50,270 − 12,570), and 45% starts above £125,140. They do not move when the allowance tapers. The old
+  // code widened the basic band as the allowance shrank, undercharging £1,000 at £110k (21 Oct 2026).
   const taxable = Math.max(0, annualGross - effectivePA);
-  const basicCap = Math.max(0, basicRateThreshold - effectivePA);
-  const higherCap = Math.max(0, higherRateThreshold - effectivePA);
+  const basicCap = Math.max(0, basicRateThreshold - pa0);
+  const higherCap = Math.max(0, higherRateThreshold);
 
   let tax = 0;
   if (taxable <= basicCap) {
@@ -111,17 +114,30 @@ export function calcUKTaxAndNI(
       (taxable - higherCap) * (additionalRatePct / 100);
   }
 
-  // NI Class 1 employee — flat-band approximation
-  let ni = 0;
-  if (annualGross > niPrimaryThreshold) {
-    const main = Math.min(annualGross, niUpperEarningsLimit) - niPrimaryThreshold;
-    ni += Math.max(0, main) * (niMainRatePct / 100);
-    if (annualGross > niUpperEarningsLimit) {
-      ni += (annualGross - niUpperEarningsLimit) * (niUpperRatePct / 100);
-    }
-  }
+  const ni = calcUKNI(annualGross, niMainRatePct, niUpperRatePct, niPrimaryThreshold, niUpperEarningsLimit);
 
   const total = tax + ni;
   const takeHome = annualGross - total;
   return { tax, ni, total, takeHome };
 }
+
+/**
+ * National Insurance on earnings only, at the given main and upper rates: employee Class 1 (8%, 2%) or
+ * self-employed Class 4 (6%, 2%), between the primary threshold and the upper earnings limit.
+ */
+export function calcUKNI(
+  earnings: number,
+  mainPct: number,
+  upperPct: number,
+  threshold: number,
+  upperLimit: number
+): number {
+  if (earnings <= threshold) return 0;
+  const main = Math.max(0, Math.min(earnings, upperLimit) - threshold) * (mainPct / 100);
+  const upper = earnings > upperLimit ? (earnings - upperLimit) * (upperPct / 100) : 0;
+  return main + upper;
+}
+
+/** Self-employed Class 4 NI rates, verified on GOV.UK 2026-10-05 (gov.uk/self-employed-national-insurance-rates). */
+export const UK_CLASS4_MAIN_PCT = 6;
+export const UK_CLASS4_UPPER_PCT = 2;
