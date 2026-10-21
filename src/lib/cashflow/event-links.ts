@@ -4,7 +4,7 @@
  * Copied from the coaching portal by scripts/sync-cashflow-engine.mjs.
  * Change the portal, run `npm run sync:engine`, commit the result.
  */
-import type { CashflowPlanData, EventLink, IncomeLine, Intervention } from "./types";
+import { DEFAULT_MORTALITY_AGE, type CashflowPlanData, type EventLink, type IncomeLine, type Intervention } from "./types";
 
 /**
  * Events drive the plan (10 Oct 2026, Voyant's events as shared timing anchors).
@@ -189,4 +189,23 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
   }
 
   return changed ? { ...plan, income, savings } : plan;
+}
+
+/**
+ * Each person's death year (projection years) from their age and "Lives to" age, 90 by default. Null when
+ * anyone's age is unknown: then the plan keeps its own forecast length. Voyant: the later death is the plan's
+ * end (help 4405509976475).
+ */
+export function mortalityYears(plan: CashflowPlanData): { byPerson: Record<string, number>; planEnd: number } | null {
+  const people = plan.people?.length ? plan.people : null;
+  if (!people) {
+    const age = plan.retirement?.currentAge;
+    if (age === undefined) return null;
+    const end = Math.max(1, DEFAULT_MORTALITY_AGE - age);
+    return { byPerson: {}, planEnd: end };
+  }
+  if (people.some((p) => p.currentAge === undefined)) return null;
+  const byPerson: Record<string, number> = {};
+  for (const p of people) byPerson[p.id] = Math.max(1, (p.mortalityAge ?? DEFAULT_MORTALITY_AGE) - (p.currentAge as number));
+  return { byPerson, planEnd: Math.max(...Object.values(byPerson)) };
 }

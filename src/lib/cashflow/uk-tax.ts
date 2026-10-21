@@ -70,7 +70,10 @@ export function calcUKInvestmentTax(
  */
 export function calcUKTaxAndNI(
   annualGross: number,
-  assumptions: UKTaxAssumptions = DEFAULT_UK_TAX
+  assumptions: UKTaxAssumptions = DEFAULT_UK_TAX,
+  /** Gross relief-at-source pension payments: the basic and higher bands widen by this, which is how
+   *  higher-rate relief is given (Voyant help 51264574424475). */
+  bandExtension = 0
 ): { tax: number; ni: number; total: number; takeHome: number } {
   if (annualGross <= 0) return { tax: 0, ni: 0, total: 0, takeHome: 0 };
 
@@ -97,8 +100,8 @@ export function calcUKTaxAndNI(
   // (50,270 − 12,570), and 45% starts above £125,140. They do not move when the allowance tapers. The old
   // code widened the basic band as the allowance shrank, undercharging £1,000 at £110k (21 Oct 2026).
   const taxable = Math.max(0, annualGross - effectivePA);
-  const basicCap = Math.max(0, basicRateThreshold - pa0);
-  const higherCap = Math.max(0, higherRateThreshold);
+  const basicCap = Math.max(0, basicRateThreshold - pa0) + bandExtension;
+  const higherCap = Math.max(0, higherRateThreshold) + bandExtension;
 
   let tax = 0;
   if (taxable <= basicCap) {

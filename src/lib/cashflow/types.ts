@@ -58,7 +58,13 @@ export type Person = {
    *  retirement card instead, so there is one place to set each. Unset = this person never "retires". */
   retirementAge?: number;
   statePensionAnnual?: number;
+  /** Age they're assumed to live to. Default 90: Voyant's Mortality event is "usually placed initially at age
+   *  90" and the later of the two marks the plan's end (help 4405509976475). */
+  mortalityAge?: number;
 };
+
+/** Voyant's default Mortality age (help 4405509976475). */
+export const DEFAULT_MORTALITY_AGE = 90;
 
 /** Stable id for the implicit single person on legacy / single-person plans. */
 export const DEFAULT_PERSON_ID = "person_you";
@@ -85,6 +91,9 @@ export type IncomeLine = {
   amount: number;
   frequency: "monthly";
   kind?: IncomeKind;
+  /** This line's own yearly growth %, instead of the plan's income growth (Voyant: "This default can be
+   *  overridden at the individual item level", help 360044947012). E.g. rent that rises 3%, a pension that's flat. */
+  growthPct?: number;
   /** Whose income this is (drives per-person tax). Undefined = the first/only
    *  person. */
   personId?: string;
@@ -154,6 +163,8 @@ export type ExpenseLine = {
    * Voyant warns this can create artificial shortfalls, so use it sparingly.
    */
   paymentSourceOnly?: boolean;
+  /** This cost's own yearly inflation %, instead of the plan's (Voyant help 360044947012). */
+  inflationPct?: number;
   /** Years this cost runs (21 Oct 2026, Voyant has start and stop on every expense): childcare that ends,
    *  school fees that start. Same rules as an income line's window; unset = from today, for ever. */
   startYear?: number;
@@ -314,6 +325,27 @@ export type SavingsAllocation = {
    * pay slip. Sam's £937 a month was taken from his take-home AND grossed up by 25%, counting it twice.
    */
   paidFromPay?: boolean;
+  /**
+   * How a pension is paid, as Voyant splits it (help 51264574424475, 21 Oct 2026):
+   * - "relief_at_source" (default): the client pays monthlyAmount from take-home and basic-rate relief is added
+   *   on top; higher-rate relief comes through the tax bands, which widen by the gross payment.
+   * - "net_pay": through payroll before tax (most workplace schemes). Full relief at their top rate.
+   * - "salary_sacrifice": given up from salary before tax and National Insurance.
+   * For net pay and salary sacrifice, monthlyAmount is what goes into the pot. With a before-tax salary line it
+   * comes off that salary before tax; with only take-home figures it is already gone, like paidFromPay.
+   */
+  pensionMethod?: "relief_at_source" | "net_pay" | "salary_sacrifice";
+  /** This pot's own growth % a year, instead of the plan's rate for its kind, and its yearly fees %, which come
+   *  off growth (Voyant help 360044947012, 205248189: "Fees, if applicable, are deducted from capital growth"). */
+  growthPct?: number;
+  feesPct?: number;
+  /** The employer's payment a month, into this pension. Never from the client's money (Voyant: "unscheduled"). */
+  employerMonthly?: number;
+  /** Payments as a % of salary instead of an amount (Voyant help 360032280051): the client's and the employer's.
+   *  Salary = salaryLineId, else the owner's first Salary line, as that line stands each year. */
+  employeePctOfSalary?: number;
+  employerPctOfSalary?: number;
+  salaryLineId?: string;
   /**
    * Optional contribution window. The bucket's monthlyAmount applies only in
    * projection years where startYear <= y <= endYear (both inclusive,
@@ -828,6 +860,8 @@ export type YearProjection = {
     drawnToCover?: number;
     growth: number; // closing - opening - contributions - surplusAdded - event flows
     closingBalance: number;
+    /** The growth rate this pot used this year (its own, after fees), as a fraction. Unset = its kind's rate. */
+    rate?: number;
   }>;
   debtDeltas?: Array<{
     id: string;
