@@ -356,8 +356,11 @@ export type SavingsAllocation = {
    * comes out of the children's fund until university" is modelled.
    */
   withdrawalLimit?: {
-    mode: "maximum" | "none" | "capped";
+    /** "minimum": keep at least minBalance in the pot, a ring-fenced reserve (Voyant: "This 20,000 reserve will
+     *  be set as the account's minimum balance", help 360022500531). */
+    mode: "maximum" | "none" | "capped" | "minimum";
     capPerYear?: number;
+    minBalance?: number;
     allowFromYear?: number;
   };
   /**
@@ -380,6 +383,11 @@ export type SavingsAllocation = {
    *  off growth (Voyant help 360044947012, 205248189: "Fees, if applicable, are deducted from capital growth"). */
   growthPct?: number;
   feesPct?: number;
+  /** Property only: false = does NOT qualify for the residence nil-rate band (a rental, a second home).
+   *  Unset = qualifies, as Voyant's "Qualifies for Main Residence IHT Exemption" toggle (14835114279195). */
+  ihtMainResidence?: boolean;
+  /** Qualifies for Business / Agricultural Relief on death (Voyant 47275438336795). IHT insight only. */
+  businessRelief?: boolean;
   /** The employer's payment a month, into this pension. Never from the client's money (Voyant: "unscheduled"). */
   employerMonthly?: number;
   /** Payments as a % of salary instead of an amount (Voyant help 360032280051): the client's and the employer's.
@@ -581,7 +589,7 @@ export type Intervention = {
   annuityGuaranteeYears?: number;
   // For asset_crash:
   crashPct?: number; // % drop applied to target asset class (default 30)
-  targetKind?: "stocks" | "property" | "all"; // which asset class crashes
+  targetKind?: "stocks" | "pension" | "property" | "all"; // which asset class crashes
   // Scenario tag for side-by-side comparison.
   // - undefined / "both" → fires in both base and alternative projections
   // - "alt" → only fires in the alternative projection
@@ -759,6 +767,23 @@ export type ProjectionAssumptions = {
    * DEFAULT_ASSET_CORRELATION.
    */
   assetCorrelation?: number[][];
+  /**
+   * Per-year rates set by Monte Carlo, indexed by plan year (index 1 = year 1), in % a year. A class left
+   * out of a year uses its normal rate. `inflation` replaces the spending inflation rate for expenses that
+   * grow at the plan's rate. Unset = the engine is unchanged.
+   */
+  growthByYear?: Array<Partial<{ stocks: number; pension: number; cash: number; property: number; inflation: number }> | undefined>;
+  /**
+   * Voyant's "Approximate Geometric Mean for default calculation" tick box (help 360021264731, 202062668):
+   * the share and pension means are treated as arithmetic and turned into geometric ones for the normal
+   * projection with G = R - V/2(1+R). Monte Carlo turns it off and uses the arithmetic means. Unset = off.
+   */
+  approxGeometricMean?: boolean;
+  /**
+   * Volatility of inflation, % a year. Voyant only varies inflation in Monte Carlo "if the assumptions for
+   * inflation are added to the market assumptions" (help 360019522991). Unset = inflation is not varied.
+   */
+  inflationStdDevPct?: number;
   // Pension/retirement-account contribution tax-relief uplift (%).
   // UK: default 25 (basic rate at-source relief). US: typically 0 since pre-tax
   // 401(k) reduces taxable income directly via the gross-income flow.
@@ -1091,6 +1116,9 @@ export type CashflowPlanData = {
   /** People in the plan — 1 (single) or 2 (a couple). Each is taxed
    *  separately. Absent/empty on legacy plans → treated as a single person. */
   people?: Person[];
+  /** Tax owed for the year before the plan starts, e.g. a self-assessment bill, paid in year 1 (Voyant's Carryover
+   *  "Taxes Due", help 201166817). */
+  taxesDueAtStart?: number;
   /** Children, with a birth year (a future year for a child not yet born). Not taxpayers, so not in `people`. */
   children?: Array<{ id: string; name: string; birthYear: number }>;
   income: IncomeLine[];
@@ -1123,8 +1151,21 @@ export type CashflowPlanData = {
      *  residence nil-rate band. Defaults to false — assuming it applies would
      *  understate the tax, which is the wrong way to be wrong. */
     homeToDirectDescendants?: boolean;
-    /** Share of the estate left to charity (%). 10 or more cuts the rate to 36%. */
+    /** Share of the estate (less pensions) left to charity (%). Taken off the taxable estate; the rate drops
+     *  to 36% when it is 10% or more of the baseline amount (Voyant 49497773416987, gov.uk IHTM45009). */
     charityPct?: number;
+    /** NRB rise a year after the April 2031 freeze (Voyant "Nil Rate Band Escalation", 24001265878299). Unset = 4%. */
+    nrbEscalationPct?: number;
+    /** £2m RNRB taper threshold rise a year after the freeze (Voyant "IHT Property Exemption Escalation Rate",
+     *  24001757589659). Unset = 4%. */
+    taperEscalationPct?: number;
+    /** Carryover from a spouse who died before the plan, keyed by the person who inherits it: % of the nil-rate
+     *  band, residence band and Business/Agricultural Relief allowance carried over (Voyant 205961155). */
+    carriedOver?: Record<string, { nrbPct?: number; rnrbPct?: number; businessReliefPct?: number }>;
+    /** Lifetime gifts to people (PETs). year = plan year the gift is made (1 = this coming year; 0 or less =
+     *  before the plan). giverId unset = the first person. IHT only: the money must also leave the plan
+     *  through a "Lump sum out" event (Voyant 205062189). */
+    gifts?: Array<{ id: string; year: number; amount: number; label?: string; giverId?: string }>;
   };
   contextNote: string;
   coachPrepNotes: string;

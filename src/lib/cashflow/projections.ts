@@ -172,19 +172,37 @@ export function projectYears(
   };
   const taxReliefMultiplier = 1 + (assumptions.pensionTaxReliefPct || 0) / 100;
 
-  const classGrowth = (kind: AssetKind | undefined): number => {
+  // Spending inflation in year yr. Monte Carlo can set its own rate for a year (variable inflation); else as before.
+  const expInfl = (yr: number): number => {
+    const o = assumptions.growthByYear?.[yr]?.inflation;
+    if (o !== undefined) return o / 100;
+    return shock ? inflFor(yr) : expenseInflation;
+  };
+  /** Voyant's arithmetic-to-geometric mean (help 360021264731): "G = (approximately) R - V/2(1+R) ...
+   *  V = Variance. Variance is equivalent to SD^2." Only when the tick box is on. */
+  const geo = (meanPct: number, sdPct: number): number => {
+    const r = meanPct / 100;
+    if (!assumptions.approxGeometricMean) return r;
+    const sd = sdPct / 100;
+    return r - (sd * sd) / (2 * (1 + r));
+  };
+  const classGrowth = (kind: AssetKind | undefined, yr: number): number => {
     const k = kind ?? "cash";
-    if (k === "stocks") return (assumptions.stocksGrowthPct || 0) / 100;
-    if (k === "pension") return (assumptions.pensionGrowthPct || 0) / 100;
+    // Monte Carlo's per-year draw for this class, if it set one (Voyant redraws every year, help 360019522991).
+    const drawn = assumptions.growthByYear?.[yr]?.[k];
+    if (drawn !== undefined) return drawn / 100;
+    // Same default volatilities as monte-carlo.ts when a plan has none saved.
+    if (k === "stocks") return geo(assumptions.stocksGrowthPct || 0, assumptions.stocksStdDevPct ?? 18);
+    if (k === "pension") return geo(assumptions.pensionGrowthPct || 0, assumptions.pensionStdDevPct ?? 12);
     if (k === "property") return (assumptions.propertyGrowthPct || 0) / 100;
     // cash falls back to legacy savingsGrowthPct if cashGrowthPct missing
     return (
       ((assumptions.cashGrowthPct ?? assumptions.savingsGrowthPct) || 0) / 100
     );
   };
-  /** A pot's growth this year: its own rate if it has one, else its kind's, less its fees. */
-  const potGrowth = (b: { kind?: AssetKind; growthPct?: number; feesPct?: number }): number =>
-    (b.growthPct !== undefined ? b.growthPct / 100 : classGrowth(b.kind)) - (b.feesPct || 0) / 100;
+  /** A pot's growth in year yr: its own rate if it has one, else its kind's, less its fees. */
+  const potGrowth = (b: { kind?: AssetKind; growthPct?: number; feesPct?: number }, yr: number): number =>
+    (b.growthPct !== undefined ? b.growthPct / 100 : classGrowth(b.kind, yr)) - (b.feesPct || 0) / 100;
 
   // People (1 single, 2 a couple). Legacy plans synthesise a single person.
   const people = effectivePeople(plan);
@@ -317,7 +335,8 @@ export function projectYears(
     b: {
       kind: AssetKind;
       liquidation?: "when_needed" | "never";
-      withdrawalLimit?: { mode: "maximum" | "none" | "capped"; capPerYear?: number; allowFromYear?: number };
+      withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
+      balance?: number;
     },
     y: number
   ): number => {
@@ -327,6 +346,7 @@ export function projectYears(
     if (wl.mode === "none") return 0;
     if (wl.allowFromYear !== undefined && y < wl.allowFromYear) return 0;
     if (wl.mode === "capped") return Math.max(0, wl.capPerYear ?? 0);
+    if (wl.mode === "minimum") return Math.max(0, (b.balance ?? 0) - (wl.minBalance ?? 0));
     return Infinity;
   };
   // The order pots are sold down in (spec §2.5). Cash first — it is already
@@ -353,7 +373,8 @@ export function projectYears(
 
   const liquidationOrder = assumptions.liquidationOrder ?? DEFAULT_LIQUIDATION_ORDER;
   const liquidationTier = (b: { kind: AssetKind; wrapper?: TaxWrapper }): number => {
-    if (b.kind === "cash") return 0;
+    // A cash ISA sits in the Tax Free group, not with ordinary cash (Voyant help 360045752391).
+    if (b.kind === "cash" && b.wrapper !== "isa") return 0;
     if (b.kind === "property") return 99;
     const idx = liquidationOrder.indexOf(taxCategoryOf(b));
     return 1 + (idx < 0 ? liquidationOrder.length : idx);
@@ -427,6 +448,16 @@ export function projectYears(
     return false;
   };
 
+  // Has this person reached their retirement in year y? Unknown retirement = only the access age applies.
+  const retiredBy = (ownerId: string, y: number): boolean => {
+    const p = people.find((x) => x.id === ownerId);
+    if (!p || p.id === people[0]?.id) {
+      const r = plan.retirement?.yearsUntilRetirement;
+      return r === undefined ? true : y >= Math.round(r);
+    }
+    return p.retirementAge !== undefined && p.currentAge !== undefined ? p.currentAge + y >= p.retirementAge : true;
+  };
+
   const startingBuckets: BucketState[] = [
     ...plan.savings.map((s) => ({
       id: s.id,
@@ -444,7 +475,9 @@ export function projectYears(
       crystallised: s.crystallised,
       // No purchase value recorded → assume it cost what it is worth today, so
       // nothing is treated as an unrealised gain the client never made.
-      costBasis: s.purchaseValue ?? s.current ?? 0,
+      // A taxable investment with no purchase value is all gain: "If this box is left blank the software will
+      // assume that the whole amount is liable to CGT" (Voyant help 14842782360603; Joel 22 Oct: follow Voyant).
+      costBasis: s.purchaseValue ?? (s.wrapper === "gia" ? 0 : s.current ?? 0),
       drawdown: s.drawdown,
       withdrawalLimit: s.withdrawalLimit,
       paidFromPay: s.paidFromPay,
@@ -551,7 +584,7 @@ export function projectYears(
       : { ...d }
   );
   let interventionMonthlyDelta = 0; // accumulates income_change interventions (post-tax)
-  let arrearsFromLastYear = 0; // self-assessed tax carried into the next year
+  let arrearsFromLastYear = plan.taxesDueAtStart || 0; // self-assessed tax carried into the next year; year 1 pays the bill owed at the start
   // Protection: policies already paid out stop (and stop charging premiums).
   const paidPolicies = new Set<string>();
   const policyActive = (p: { id: string; termYears?: number | null }, y: number) =>
@@ -738,7 +771,10 @@ export function projectYears(
         // A pension can't pay for an event before its owner can legally reach it. Sam's house deposit
         // was taken from his pension at 41 (21 Oct 2026); the shortfall draw already had this rule.
         if (b.kind === "pension" && b.inherited === undefined && !canAccessPension(b.ownerId, y)) return;
-        const got = Math.min(b.balance, need);
+        if (b.kind === "pension" && b.inherited === undefined && !retiredBy(b.ownerId, y) && b.id !== opts.sourceBucketId) return;
+        // A pot the event didn't name can only give what its withdrawal limit allows (e.g. a minimum balance).
+        const got = Math.min(b.balance, need, b.id === opts.sourceBucketId ? Infinity : adHocAllowance(b, y));
+        if (got <= 0) return;
         takeFromPot(b, got);
         need -= got;
         eventPaidOut[b.id] = (eventPaidOut[b.id] || 0) + got;
@@ -790,9 +826,9 @@ export function projectYears(
     // now is used at the figure that was typed, not a year already inflated.
     // Income events grow too — an expense event inflating while a pay rise
     // stayed frozen quietly made every plan look worse each year.
-    expenseInterventionDelta = expenseInterventionDelta * (1 + (shock ? inflFor(y) : expenseInflation));
-    priceIndex *= 1 + (shock ? inflFor(y) : expenseInflation);
-    if (deltaAtRetirement !== null) deltaAtRetirement *= 1 + (shock ? inflFor(y) : expenseInflation);
+    expenseInterventionDelta = expenseInterventionDelta * (1 + expInfl(y));
+    priceIndex *= 1 + expInfl(y);
+    if (deltaAtRetirement !== null) deltaAtRetirement *= 1 + expInfl(y);
     const retiredSpending = !!retirementPlan?.spendInRetirement && y >= firstRetiredYear;
     if (retiredSpending && deltaAtRetirement === null) deltaAtRetirement = expenseInterventionDelta;
     interventionMonthlyDelta = interventionMonthlyDelta * (1 + incomeGrowth);
@@ -1126,7 +1162,7 @@ export function projectYears(
     }
     expenseLines = expenseLines.map((e) => {
       const stepped = e.steps?.some((st) => y >= st.fromYear) ? resolveSteppedAmount(e.base, e.steps, y) : null;
-      const infl = e.inflation ?? (shock ? inflFor(y) : expenseInflation);
+      const infl = e.inflation ?? expInfl(y);
       return { ...e, amount: stepped !== null ? stepped * priceIndex : e.amount * (1 + infl) };
     });
     monthlyExpenses = retiredSpending
@@ -1346,12 +1382,17 @@ export function projectYears(
       if (y < from) continue;
       if (dd.endYear !== undefined && y > dd.endYear) continue;
       if (b.kind === "pension" && !pensionAccessible(b)) continue;
-      const wanted =
+      // Withdrawal limits "also apply to any withdrawals scheduled from the new Planned Withdrawals screen"
+      // (Voyant help 360022500531; Joel 22 Oct: follow Voyant).
+      const limit = adHocAllowance(b, y);
+      if (limit <= 0) continue;
+      const wanted0 =
         dd.mode === "percent"
           ? b.balance * (dd.value / 100)
           : dd.indexed
             ? dd.value * (shock ? cumInfl(y) / cumInfl(from) : Math.pow(1 + expenseInflation, y - from))
             : dd.value;
+      const wanted = Math.min(wanted0, limit);
       const gross = Math.min(b.balance, Math.max(0, wanted));
       if (gross <= 0) continue;
       const tax = withdrawalTax(b, gross);
@@ -1425,7 +1466,12 @@ export function projectYears(
     // categories are funded in full before later ones get anything.
     const contributionScale =
       plannedContributions > 0 ? affordableContributions / plannedContributions : 0;
-    const savingsOrder = assumptions.savingsOrder;
+    // Unset = Voyant's UK default: "normally Tax Free first, then Tax Deferred and ending with Taxable assets"
+    // (help 360045793891). It used to cut every saving back by the same share.
+    const savingsOrder =
+      assumptions.savingsOrder && assumptions.savingsOrder.length
+        ? assumptions.savingsOrder
+        : (["tax_free", "tax_deferred", "taxable"] as const).slice();
     /** The fraction of THIS pot's intended contribution that actually lands. */
     const scaleFor = (b: BucketState): number => {
       if (fromPay(b)) return 1; // already paid, before take-home
@@ -1574,7 +1620,7 @@ export function projectYears(
         isaUsedByPerson[b.ownerId] = (isaUsedByPerson[b.ownerId] || 0) + yearContribution;
       }
       if (!fromPay(b)) actualContributions += cashContribution;
-      const grown = (b.balance + yearContribution) * (1 + potGrowth(b));
+      const grown = (b.balance + yearContribution) * (1 + potGrowth(b, y));
       // Growth is never base cost — only money actually paid in is.
       const nextCostBasis = b.costBasis + yearContribution;
       bucketDeltas.push({
@@ -1589,7 +1635,7 @@ export function projectYears(
         // Growth is whatever the closing balance cannot be explained by.
         growth: grown - opening + paidOut - paidIn + plannedOut - yearContribution,
         closingBalance: grown,
-        rate: b.growthPct !== undefined || b.feesPct ? potGrowth(b) : undefined,
+        rate: b.growthPct !== undefined || b.feesPct ? potGrowth(b, y) : undefined,
       });
       return { ...b, balance: grown, costBasis: nextCostBasis };
     });
@@ -1624,7 +1670,7 @@ export function projectYears(
         );
         const acc = byOwner[b.ownerId] || { dividends: 0, interest: 0 };
         if (b.wrapper === "gia") acc.dividends += invested * (ukAllow.giaDividendYieldPct / 100);
-        else acc.interest += Math.max(0, invested * potGrowth(b));
+        else acc.interest += Math.max(0, invested * potGrowth(b, y));
         byOwner[b.ownerId] = acc;
       }
       /** Take `amount` of tax from this owner's pots. Returns what it couldn't
@@ -1818,6 +1864,8 @@ export function projectYears(
           if (partNeed <= 0) break;
           if (b.balance <= 0) continue;
           if (b.kind === "pension" && !pensionAccessible(b)) continue;
+          // As needed, a pension is only drawn from its owner's retirement (Voyant help 360020531392).
+          if (b.kind === "pension" && b.inherited === undefined && !retiredBy(b.ownerId, y)) continue;
           // A withdrawal limit caps how much may come out of this pot this year,
           // net of anything its planned drawdown has already taken.
           const room = Math.max(
@@ -2224,6 +2272,8 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       if (want <= 0) return `${iv.label || "Debt payment"}: set an amount`;
       const paid = ctx.spend(want, {});
       debt.balance -= paid.funded;
+      // Can't pay it all: the rest shows as a shortfall (Voyant help 22153416232347).
+      if (paid.short > 0) ctx.reportUnfunded(paid.short);
       const from = paid.from.map((f) => `${f.label} ${money(f.amount)}`).join(", ");
       return `${iv.label || "Debt payment"}: ${money(paid.funded)} off ${debt.name}${from ? ` from ${from}` : ""}${
         paid.short > 0 ? `; ${money(paid.short)} couldn't be paid, ${money(debt.balance)} still owed` : debt.balance <= 0.005 ? ", cleared" : ""
