@@ -1115,6 +1115,9 @@ export type Goal = {
   priority?: number;
   /** Free-text note (why it matters / behavioural hook from W9). */
   note?: string;
+  /** Spend it: the goal is a one-off cost in its year (today's money, grown with inflation), paid from its pot first
+   *  if one is set. Voyant: "A goal is a trackable expense" (help 360040748312). Unset = a balance target, as before. */
+  spend?: boolean;
 };
 
 export const GOAL_TYPE_LABELS: Record<GoalType, string> = {
@@ -1187,6 +1190,9 @@ export type CashflowPlanData = {
   /** People in the plan — 1 (single) or 2 (a couple). Each is taxed
    *  separately. Absent/empty on legacy plans → treated as a single person. */
   people?: Person[];
+  /** The calendar year the plan starts (year 0). Stored so a plan doesn't slide forward every 1 January; moved on
+   *  by "Update to this year" (Voyant's Update and Promote, help 360047215852). Unset = this year. */
+  planStartYear?: number;
   /** Tax owed for the year before the plan starts, e.g. a self-assessment bill, paid in year 1 (Voyant's Carryover
    *  "Taxes Due", help 201166817). */
   taxesDueAtStart?: number;

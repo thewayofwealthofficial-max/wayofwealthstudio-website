@@ -293,7 +293,7 @@ export function projectYears(
   const pastSPA = (y: number) => (pid: string): boolean => {
     const age = people.find((p) => p.id === pid)?.currentAge ?? (pid === people[0]?.id ? plan.retirement?.currentAge : undefined);
     if (age === undefined) return false;
-    const spa = (pid === people[0]?.id ? plan.retirement?.statePensionAge : undefined) ?? statePensionAgeFor(age);
+    const spa = (pid === people[0]?.id ? plan.retirement?.statePensionAge : undefined) ?? statePensionAgeFor(age, plan.planStartYear);
     return age + y >= spa;
   };
   const startTax = netMonthlyIncomeFromLines(activeIncome(incomeLines, 0), assumptions, pastSPA(0));
@@ -606,7 +606,19 @@ export function projectYears(
     deductibleFromIncomeId?: string;
     linkedPropertyId?: string;
   };
-  let expenseLines: ExpenseState[] = (plan.expenses || []).map((e) => ({
+  // Goals marked "spend it" are one-off costs in their year (Voyant: goals are trackable expenses, help 360040748312).
+  const goalCosts: ExpenseLine[] = (plan.goals ?? [])
+    .filter((g) => g.spend && g.targetAmount > 0)
+    .map((g) => ({
+      id: `__goal_${g.id}`,
+      category: "discretionary" as const,
+      label: g.name || "Goal",
+      amount: g.targetAmount / 12,
+      startYear: g.targetYearOffset,
+      endYear: g.targetYearOffset,
+      paymentSourceBucketId: g.fundingBucketId,
+    }));
+  let expenseLines: ExpenseState[] = [...(plan.expenses || []), ...goalCosts].map((e) => ({
     personId: e.personId,
     everyYears: e.everyYears,
     deductibleFromIncomeId: e.deductibleFromIncomeId,
@@ -764,7 +776,8 @@ export function projectYears(
   };
 
   const projections: YearProjection[] = [today];
-  const startYear = new Date().getFullYear();
+  // The plan's stored start year (Voyant: plans keep their start date until updated; help 360047215852).
+  const startYear = plan.planStartYear ?? new Date().getFullYear();
 
   // Tax-free pension cash each person has taken so far, across the whole plan. The 25% is capped by
   // the Lump Sum Allowance in total, not per pot or per year (gov.uk, checked 20 Oct 2026). Before
@@ -2808,7 +2821,8 @@ export function findTimeToGoal(
 ): TimeToGoal | null {
   if (!projections.length || !(targetAmount > 0)) return null;
 
-  const startYear = new Date().getFullYear();
+  // The plan's own start year, from the first projected year's label (plans store a start year now).
+  const startYear = Number(projections[1]?.yearLabel) - 1 || new Date().getFullYear();
   const horizonNetWorth = projections[projections.length - 1].netWorth;
 
   // Already met at year 0 — celebrate; no time-to-goal beyond "today."

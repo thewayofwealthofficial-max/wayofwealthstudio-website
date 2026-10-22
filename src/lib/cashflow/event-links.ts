@@ -145,7 +145,7 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
       return {
         lastWorkYear: r ? Math.max(0, Math.round(r.yearsUntilRetirement) - 1) : undefined,
         age,
-        spa: age === undefined ? undefined : r?.statePensionAge ?? statePensionAgeFor(age),
+        spa: age === undefined ? undefined : r?.statePensionAge ?? statePensionAgeFor(age, plan.planStartYear),
         statePension: r?.statePensionAnnual ?? 0,
       };
     }
@@ -154,7 +154,7 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
       lastWorkYear:
         person.retirementAge !== undefined && age !== undefined ? Math.max(0, person.retirementAge - age - 1) : undefined,
       age,
-      spa: age === undefined ? undefined : statePensionAgeFor(age),
+      spa: age === undefined ? undefined : statePensionAgeFor(age, plan.planStartYear),
       statePension: person.statePensionAnnual ?? 0,
     };
   };
@@ -202,7 +202,7 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
     // Deferred past State Pension age: "For every 9 weeks you defer, you'll get 1% added ... just under 5.8% for
     // every 52 weeks" (gov.uk/deferring-state-pension, new State Pension; checked 22 Oct 2026). Voyant's help
     // doesn't describe deferral, so this is GOV.UK's rule.
-    const statutory = statePensionAgeFor(ret.age);
+    const statutory = statePensionAgeFor(ret.age, plan.planStartYear);
     const deferredYears = Math.max(0, ret.spa - statutory);
     const uplift = 1 + (deferredYears * 52) / 9 / 100;
     income.push({
@@ -241,7 +241,7 @@ export function mortalityYears(plan: CashflowPlanData): { byPerson: Record<strin
 }
 
 /** Costs tied to a child's ages get their years from the child's birth year (21 Oct 2026). Engine only. */
-export function applyChildren(plan: CashflowPlanData, thisYear = new Date().getFullYear()): CashflowPlanData {
+export function applyChildren(plan: CashflowPlanData, thisYear = plan.planStartYear ?? new Date().getFullYear()): CashflowPlanData {
   const kids = new Map((plan.children ?? []).map((c) => [c.id, c]));
   if (!kids.size || !plan.expenses.some((e) => e.childId)) return plan;
   const expenses = plan.expenses.map((e) => {
