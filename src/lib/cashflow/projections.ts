@@ -339,6 +339,8 @@ export function projectYears(
     drawdown?: SavingsAllocation["drawdown"];
     withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
     paidFromPay?: boolean;
+    ihtMainResidence?: boolean;
+    isaType?: SavingsAllocation["isaType"];
     indexed?: boolean;
     reinvestYield?: boolean;
     yieldPct?: number;
@@ -375,10 +377,19 @@ export function projectYears(
       liquidation?: "when_needed" | "never";
       withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
       balance?: number;
+      isaType?: SavingsAllocation["isaType"];
+      ownerId?: string;
     },
     y: number
   ): number => {
     if (!canLiquidate(b)) return 0;
+    // Junior ISAs belong to the child; Lifetime ISAs are locked until 60 (Voyant: "will not access until the owner
+    // is over the required age", help 360054174772).
+    if (b.isaType === "junior") return 0;
+    if (b.isaType === "lifetime") {
+      const age = people.find((p) => p.id === b.ownerId)?.currentAge;
+      if (age === undefined || age + y < 60) return 0;
+    }
     const wl = b.withdrawalLimit;
     if (!wl) return Infinity;
     if (wl.mode === "none") return 0;
@@ -521,6 +532,8 @@ export function projectYears(
       drawdown: s.drawdown,
       withdrawalLimit: s.withdrawalLimit,
       paidFromPay: s.paidFromPay,
+      ihtMainResidence: s.ihtMainResidence,
+      isaType: s.isaType,
       indexed: s.indexed,
       reinvestYield: s.reinvestYield,
       yieldPct: s.yieldPct,
@@ -591,11 +604,13 @@ export function projectYears(
     personId?: string;
     everyYears?: number;
     deductibleFromIncomeId?: string;
+    linkedPropertyId?: string;
   };
   let expenseLines: ExpenseState[] = (plan.expenses || []).map((e) => ({
     personId: e.personId,
     everyYears: e.everyYears,
     deductibleFromIncomeId: e.deductibleFromIncomeId,
+    linkedPropertyId: e.linkedPropertyId,
     inflation: e.inflationPct !== undefined ? e.inflationPct / 100 : undefined,
     label: e.label,
     base: e.amount || 0,
@@ -687,9 +702,11 @@ export function projectYears(
       let principalThisYear = 0;
       let paidThisYear = 0;
       const monthlyRate = (d.rate || 0) / 100 / 12;
+      // Offset: the linked savings come off the balance for interest (Voyant help 10495621234843).
+      const offset = d.offsetBucketId ? Math.max(0, buckets.find((b) => b.id === d.offsetBucketId)?.balance ?? 0) : 0;
       for (let m = 0; m < 12; m++) {
         if (bal <= 0) break;
-        const interest = bal * monthlyRate;
+        const interest = Math.max(0, bal - offset) * monthlyRate;
         // Never pay more than it takes to clear the debt outright. This is what
         // stops a full year of payments being charged in the month it clears.
         const payment = Math.min(d.actualPayment || 0, bal + interest);
@@ -752,7 +769,12 @@ export function projectYears(
   // Tax-free pension cash each person has taken so far, across the whole plan. The 25% is capped by
   // the Lump Sum Allowance in total, not per pot or per year (gov.uk, checked 20 Oct 2026). Before
   // this, Sam's £1.14m pot paid out £285k tax free, over the £268,275 limit.
-  const lsaUsedByPerson: Record<string, number> = {};
+  const carryForwardLeft: Record<string, number> = Object.fromEntries(
+    people.filter((p) => p.pensionCarryForward).map((p) => [p.id, p.pensionCarryForward as number])
+  );
+  const lsaUsedByPerson: Record<string, number> = Object.fromEntries(
+    people.filter((p) => p.lsaUsedBefore).map((p) => [p.id, p.lsaUsedBefore as number])
+  );
   const lsaLeft = (ownerId: string): number =>
     pensionRegionAllowances
       ? Math.max(
@@ -1014,7 +1036,24 @@ export function projectYears(
           (p) => p.kind === "term_life" && policyActive(p, y) && (!p.ownerId || p.ownerId === pid)
         );
         lifePolicies.forEach((p) => paidPolicies.add(p.id));
-        const payout = iv.lifeCoverPayout ?? lifePolicies.reduce((s, p) => s + (p.sumAssured || 0), 0);
+        // Cover this year: decreasing term falls straight to nil over the term (Voyant help 207194316); death in
+        // service is a multiple of salary, only while working (help 214692323). Family income benefit pays as income
+        // to the end of its term instead of a lump sum (help 201166887).
+        const salaryOf = (who: string) =>
+          incomeLines.filter((l) => l.personId === who && isJob(l) && incomeInWindow(l, y)).reduce((t, l) => t + l.amount + (l.extra || 0), 0) * 12;
+        const coverNow = (p: (typeof lifePolicies)[number]) => {
+          if (p.salaryMultiple) return p.salaryMultiple * salaryOf(pid); // nil once the job has ended
+          const sum = p.sumAssured || 0;
+          return p.decreasing && p.termYears ? sum * Math.max(0, 1 - (y - 1) / p.termYears) : sum;
+        };
+        for (const p of lifePolicies.filter((x) => x.payAsIncome)) {
+          incomeLines.push({
+            id: `__fib_${p.id}`, label: `${p.label || "Family income benefit"}`, kind: "other", amount: (p.sumAssured || 0) / 12,
+            base: (p.sumAssured || 0) / 12, extra: 0, growth: 0, isGross: false, startYear: y, endYear: p.termYears ?? undefined,
+            personId: survivorId,
+          });
+        }
+        const payout = iv.lifeCoverPayout ?? lifePolicies.filter((p) => !p.payAsIncome).reduce((s, p) => s + coverNow(p), 0);
         // A protection pay-out is a lump sum inflow — it lands in the
         // survivor's ready cash (spec §2.3).
         receiveFromEvent(payout, undefined, survivorId);
@@ -1029,6 +1068,16 @@ export function projectYears(
         continue;
       }
       const applied = applyIntervention(iv, {
+        endExpensesLinkedTo: (propertyId) => {
+          for (const e of expenseLines) if (e.linkedPropertyId === propertyId) e.endYear = y - 1;
+        },
+        propertyCgt: (propertyId, saleValue) => {
+          const pot = buckets.find((b) => b.id === propertyId);
+          if (!pot || pot.ihtMainResidence !== false || (assumptions.region ?? "UK") !== "UK") return 0;
+          const allow = assumptions.ukAllowances ?? DEFAULT_UK_ALLOWANCES;
+          const gain = Math.max(0, saleValue - (pot.costBasis ?? saleValue) - allow.cgtAnnualExempt);
+          return gain * (allow.cgtHigherPct / 100);
+        },
         endIncomeLinkedTo: (propertyId) => {
           const ended: string[] = [];
           for (const l of incomeLines) {
@@ -1671,7 +1720,9 @@ export function projectYears(
     // Capture per-bucket deltas for the year-detail breakdown.
     const pensionUsedByPerson: Record<string, number> = {};
     const pensionAAFor = (ownerId: string): number =>
-      ukAllow ? taperedPensionAllowance(grossByPerson[ownerId] || 0, ukAllow) : Infinity;
+      ukAllow
+        ? taperedPensionAllowance(grossByPerson[ownerId] || 0, ukAllow) + (y <= 3 ? carryForwardLeft[ownerId] || 0 : 0)
+        : Infinity;
     let pensionCapped = false;
     const employeeUsedByPerson: Record<string, number> = {};
     /** Most a person's own pension payments can be this year: their earnings, or £3,600 with none. */
@@ -1689,6 +1740,8 @@ export function projectYears(
     };
     const isaUsedByPerson: Record<string, number> = {};
     const cashIsaUsedByPerson: Record<string, number> = {};
+    const lisaUsedByPerson: Record<string, number> = {};
+    const jisaUsedByPot: Record<string, number> = {};
     const isaRoom = (ownerId: string): number =>
       ukAllow
         ? Math.max(0, (ukAllow.isaAllowance ?? DEFAULT_UK_ALLOWANCES.isaAllowance ?? 0) - (isaUsedByPerson[ownerId] || 0))
@@ -1780,7 +1833,19 @@ export function projectYears(
           b.kind === "cash" && startYear + y >= 2027 && (ownerAge === undefined || ownerAge + y < 65)
             ? Math.max(0, 12000 * tf - (cashIsaUsedByPerson[b.ownerId] || 0))
             : Infinity;
-        const room = Math.min(isaRoom(b.ownerId), cashCap);
+        // Lifetime ISA: £4,000 a year within the £20,000, payments only from 18 to 49 (gov.uk/lifetime-isa).
+        // Junior ISA: its own £9,000, not the adult's allowance.
+        const ownerAgeNow = ownerAge !== undefined ? ownerAge + y : undefined;
+        const lisaCap =
+          b.isaType === "lifetime"
+            ? ownerAgeNow !== undefined && (ownerAgeNow < 18 || ownerAgeNow >= 50)
+              ? 0
+              : Math.max(0, 4000 * tf - (lisaUsedByPerson[b.ownerId] || 0))
+            : Infinity;
+        const room =
+          b.isaType === "junior"
+            ? Math.max(0, 9000 * tf - (jisaUsedByPot[b.id] || 0))
+            : Math.min(isaRoom(b.ownerId), cashCap, lisaCap);
         if (yearContribution > room) {
           const cashNeeded = room / contributionMultiplier;
           if (!fromPay(b)) refusedByLimit += cashContribution - cashNeeded;
@@ -1788,7 +1853,13 @@ export function projectYears(
           cashContribution = cashNeeded;
           isaCapped = true;
         }
-        isaUsedByPerson[b.ownerId] = (isaUsedByPerson[b.ownerId] || 0) + yearContribution;
+        if (b.isaType === "junior") jisaUsedByPot[b.id] = (jisaUsedByPot[b.id] || 0) + yearContribution;
+        else isaUsedByPerson[b.ownerId] = (isaUsedByPerson[b.ownerId] || 0) + yearContribution;
+        if (b.isaType === "lifetime") {
+          lisaUsedByPerson[b.ownerId] = (lisaUsedByPerson[b.ownerId] || 0) + yearContribution;
+          // The 25% government bonus on what was paid in (gov.uk/lifetime-isa).
+          yearContribution += yearContribution * 0.25;
+        }
         if (b.kind === "cash") cashIsaUsedByPerson[b.ownerId] = (cashIsaUsedByPerson[b.ownerId] || 0) + yearContribution;
       }
       if (!fromPay(b)) actualContributions += cashContribution;
@@ -1811,6 +1882,13 @@ export function projectYears(
       });
       return { ...b, balance: grown, costBasis: nextCostBasis };
     });
+    if (y <= 3 && ukAllow) {
+      for (const pid of Object.keys(carryForwardLeft)) {
+        const normal = taperedPensionAllowance(grossByPerson[pid] || 0, ukAllow);
+        const over = Math.max(0, (pensionUsedByPerson[pid] || 0) - normal);
+        carryForwardLeft[pid] = Math.max(0, carryForwardLeft[pid] - over);
+      }
+    }
     // ---- Transfers between pots (Voyant help 360038680512) ---------------------
     let transferTaxPaid = 0;
     // After this year's growth, so recorded like the gap draws (surplus movements). Not limited by withdrawal
@@ -1832,13 +1910,32 @@ export function projectYears(
       const t = withdrawalTax(src, gross);
       commitAllowance(src, t);
       takeFromPot(src, gross);
-      putInPot(dst, gross - t.tax);
+      // Into a pension from outside one: basic-rate relief added, inside the allowance and the earnings cap (Voyant
+      // help 201166497). What doesn't fit stays in the source pot.
+      let landed = gross - t.tax;
+      if (dst.kind === "pension" && src.kind !== "pension" && ukAllow) {
+        const room = Math.max(
+          0,
+          Math.min(
+            pensionAAFor(dst.ownerId) - (pensionUsedByPerson[dst.ownerId] || 0),
+            earningsCapFor(dst.ownerId) - (employeeUsedByPerson[dst.ownerId] || 0)
+          )
+        );
+        const grossed = Math.min(landed * taxReliefMultiplier, room);
+        const usedNet = grossed / taxReliefMultiplier;
+        putInPot(src, landed - usedNet); // the part that couldn't go in goes back
+        gross -= landed - usedNet;
+        landed = grossed;
+        pensionUsedByPerson[dst.ownerId] = (pensionUsedByPerson[dst.ownerId] || 0) + grossed;
+        employeeUsedByPerson[dst.ownerId] = (employeeUsedByPerson[dst.ownerId] || 0) + grossed;
+      }
+      putInPot(dst, landed);
       if (dst.wrapper === "isa" && dst.kind !== "pension") isaUsedByPerson[dst.ownerId] = (isaUsedByPerson[dst.ownerId] || 0) + gross;
       transferTaxPaid += t.tax;
       const dFrom = bucketDeltas.find((x) => x.id === src.id);
       if (dFrom) { dFrom.surplusAdded = (dFrom.surplusAdded || 0) - gross; dFrom.closingBalance -= gross; }
       const dTo = bucketDeltas.find((x) => x.id === dst.id);
-      if (dTo) { dTo.surplusAdded = (dTo.surplusAdded || 0) + (gross - t.tax); dTo.closingBalance += gross - t.tax; }
+      if (dTo) { dTo.surplusAdded = (dTo.surplusAdded || 0) + landed; dTo.closingBalance += landed; }
       events.push(`${iv.label || "Transfer"}: ${money(gross)} from ${src.label} to ${dst.label}${t.tax > 0 ? ` (${money(t.tax)} tax)` : ""}`);
     }
     // ---- Yield paid out instead of reinvested (Voyant help 206344295) -----------
@@ -2294,6 +2391,10 @@ function sumByKind(
 }
 
 type InterventionContext = {
+  /** Stop every cost linked to this property (sold). */
+  endExpensesLinkedTo: (propertyId: string) => void;
+  /** Capital gains tax on selling this property for saleValue: none on the main home. */
+  propertyCgt: (propertyId: string, saleValue: number) => number;
   /** Stop every income linked to this property (sold). Returns their labels. */
   endIncomeLinkedTo: (propertyId: string) => string[];
   /** Add a pay rise to an income line (named, else the salary). Returns the line's label, or null if none. */
@@ -2503,16 +2604,25 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
         ctx.buckets.find((b) => b.kind === "property");
       if (!prop) return `${iv.label || "Downsize"}: no property to sell`;
       const saleValue = prop.balance;
+      // Debts secured on it are paid off from the sale (Voyant help 360024146012), as well as the named mortgage.
+      let linkedPaid = 0;
+      for (const d of ctx.debts.filter((x) => x.linkedPropertyId === prop.id && x.balance > 0 && x.id !== iv.mortgageDebtId)) {
+        const pay = Math.min(d.balance, saleValue - linkedPaid);
+        d.balance -= pay;
+        linkedPaid += pay;
+      }
       const mortgage =
         ctx.debts.find((d) => d.id === iv.mortgageDebtId && d.balance > 0) ??
-        ctx.debts.find((d) => /mortgage/i.test(d.name) && d.balance > 0);
+        ctx.debts.find((d) => (d.linkedPropertyId === prop.id || /mortgage/i.test(d.name)) && d.balance > 0);
       const mortgagePayoff = mortgage ? mortgage.balance : 0;
+      // CGT on anything but the main home: gain over what it cost (Voyant help 360047948732).
+      const cgt = ctx.propertyCgt(prop.id, saleValue);
       const wanted = iv.propertyValue ?? 0;
 
       // The sale can only clear as much mortgage as it raises. Negative equity
       // does NOT vanish on sale — the balance that survives is still owed.
       const payoff = Math.min(mortgagePayoff, saleValue);
-      const proceeds = saleValue - payoff;
+      const proceeds = Math.max(0, saleValue - linkedPaid - payoff - cgt);
       if (mortgage) mortgage.balance = mortgagePayoff - payoff;
 
       // Moving somewhere dearer than the sale releases has to be paid for.
@@ -2536,9 +2646,11 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
       }
       // Sold outright: rent linked to it stops.
       const stoppedRent = actualValue <= 0 ? ctx.endIncomeLinkedTo(prop.id) : [];
+      if (actualValue <= 0) ctx.endExpensesLinkedTo(prop.id);
 
       const parts = [`sold ${money(saleValue)}`];
       if (stoppedRent.length) parts.push(`${stoppedRent.join(", ")} stopped`);
+      if (cgt > 0) parts.push(`${money(cgt)} capital gains tax`);
       if (payoff > 0) parts.push(`cleared ${money(payoff)} mortgage`);
       if (mortgage && mortgage.balance > 0) {
         parts.push(`${money(mortgage.balance)} of mortgage still owed`);

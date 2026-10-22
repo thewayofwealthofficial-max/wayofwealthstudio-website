@@ -61,6 +61,11 @@ export type Person = {
   /** Where they pay income tax. Scotland uses the Scottish bands on earnings, pensions and rent (Voyant help
    *  360007479191; gov.uk/scottish-income-tax 2026/27). Unset = England, Wales and Northern Ireland. */
   taxCountry?: "scotland";
+  /** Tax-free pension cash taken before the plan started, which uses up their £268,275 Lump Sum Allowance
+   *  (Voyant help 31062277616667). And unused pension annual allowance carried forward from the last three years,
+   *  usable in the plan's first three years, still capped at earnings (help 10643294278043, 201166497). */
+  lsaUsedBefore?: number;
+  pensionCarryForward?: number;
   /** Age they're assumed to live to. Default 90: Voyant's Mortality event is "usually placed initially at age
    *  90" and the later of the two marks the plan's end (help 4405509976475). */
   mortalityAge?: number;
@@ -214,6 +219,9 @@ export type ExpenseLine = {
    *  then the whole cost each time, not a monthly figure. It falls first in the start year (year 1 if none) and
    *  every N years after, up to the end year, growing with inflation. */
   everyYears?: number;
+  /** A cost of this property pot (e.g. a rental's upkeep): it stops when the property is sold (Voyant help
+   *  360024146012). */
+  linkedPropertyId?: string;
   /** A tax-deductible cost, e.g. rental property costs: it's taken off this income line before income tax
    *  (Voyant help 115000087223). Still paid as a cost. */
   deductibleFromIncomeId?: string;
@@ -255,6 +263,10 @@ export type DebtLine = {
    *  repayment debt, the years remaining" (help 360022319672). With no payment typed, the engine does too. */
   termYears?: number;
   interestOnly?: boolean;
+  /** Offset mortgage: interest is charged only on the balance less this savings pot (Voyant help 10495621234843). */
+  offsetBucketId?: string;
+  /** Secured on this property pot: paid off from the sale when it's sold (Voyant help 360024146012). */
+  linkedPropertyId?: string;
 };
 
 export type AssetKind = "cash" | "stocks" | "pension" | "property";
@@ -376,6 +388,10 @@ export type SavingsAllocation = {
   /** Grow the regular payment in with inflation each year (Voyant's "amount with inflation", help
    *  13675953248411). */
   indexed?: boolean;
+  /** Lifetime ISA: £4,000 a year inside the £20,000, a 25% government bonus on payments, locked until 60. Junior
+   *  ISA: £9,000 a year, separate from the adult allowance, never drawn by the plan (Voyant help 360054174772,
+   *  14038141871131, 45658611793051). */
+  isaType?: "lifetime" | "junior";
   /** Reinvest this pot's dividend yield (default) or pay it out each year (Voyant help 206344295), and its own
    *  dividend yield %. Unwrapped (GIA) pots only. */
   reinvestYield?: boolean;
@@ -1134,6 +1150,13 @@ export type Policy = {
   inTrust?: boolean;
   /** Whose life or illness it covers. Unset = anyone's (as before). */
   ownerId?: string;
+  /** Decreasing term (e.g. mortgage protection): the cover falls in a straight line to nil over the term (Voyant
+   *  help 207194316). */
+  decreasing?: boolean;
+  /** Family income benefit: pays sumAssured a year as income until the term ends, not a lump sum (help 201166887). */
+  payAsIncome?: boolean;
+  /** Death in service: the cover is this many times their salary, and stops at retirement (help 214692323). */
+  salaryMultiple?: number;
   /**
    * Income protection (Voyant help 4403461998861): pays from a Disability event until Disability End, the
    * benefit years run out, or the policy stops, whichever is first. Pays coverPct % of their salary if set, else
