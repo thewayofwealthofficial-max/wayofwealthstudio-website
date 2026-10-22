@@ -73,7 +73,9 @@ export function calcUKTaxAndNI(
   assumptions: UKTaxAssumptions = DEFAULT_UK_TAX,
   /** Gross relief-at-source pension payments: the basic and higher bands widen by this, which is how
    *  higher-rate relief is given (Voyant help 51264574424475). */
-  bandExtension = 0
+  bandExtension = 0,
+  /** Total income for the personal allowance taper, when more than annualGross (e.g. dividends on top). */
+  taperIncome = annualGross
 ): { tax: number; ni: number; total: number; takeHome: number } {
   if (annualGross <= 0) return { tax: 0, ni: 0, total: 0, takeHome: 0 };
 
@@ -93,8 +95,8 @@ export function calcUKTaxAndNI(
   // PA tapered above £100k
   let effectivePA = pa0;
   const taper = assumptions.paTaperThreshold ?? 100000;
-  if (annualGross > taper) {
-    effectivePA = Math.max(0, pa0 - (annualGross - taper) / 2);
+  if (taperIncome > taper) {
+    effectivePA = Math.max(0, pa0 - (taperIncome - taper) / 2);
   }
 
   // The bands are fixed slices of TAXABLE income (gov.uk/income-tax-rates): basic is the first £37,700
@@ -145,3 +147,45 @@ export function calcUKNI(
 /** Self-employed Class 4 NI rates, verified on GOV.UK 2026-10-05 (gov.uk/self-employed-national-insurance-rates). */
 export const UK_CLASS4_MAIN_PCT = 6;
 export const UK_CLASS4_UPPER_PCT = 2;
+
+/**
+ * Tax on dividends sitting on top of other income (gov.uk/tax-on-dividends, 2026/27: 10.75% basic, 35.75% higher,
+ * 39.35% additional, £500 allowance). Dividends use any personal allowance left after other income; the allowance
+ * is taxed at 0% but still uses up the band; the rest is taxed at the rate of the band it falls in.
+ */
+export function ukDividendTax(
+  otherIncome: number,
+  dividends: number,
+  t: UKTaxAssumptions,
+  a: UKTaxAllowances,
+  bandExtension = 0
+): number {
+  if (dividends <= 0) return 0;
+  const total = otherIncome + dividends;
+  const taper = t.paTaperThreshold ?? 100000;
+  const pa = total > taper ? Math.max(0, t.personalAllowance - (total - taper) / 2) : t.personalAllowance;
+  const paLeft = Math.max(0, pa - otherIncome);
+  const otherTaxable = Math.max(0, otherIncome - pa);
+  const divTaxable = Math.max(0, dividends - paLeft);
+  const basicTop = Math.max(0, t.basicRateThreshold - t.personalAllowance) + bandExtension;
+  const higherTop = t.higherRateThreshold + bandExtension;
+  let tax = 0;
+  let pos = otherTaxable; // where the dividends start in taxable income
+  let left = divTaxable;
+  let allowance = Math.min(a.dividendAllowance, left);
+  // The allowance sits at the bottom of the dividends, using band space at 0%.
+  pos += allowance;
+  left -= allowance;
+  allowance = 0;
+  const slice = (upTo: number, ratePct: number) => {
+    const room = Math.max(0, upTo - pos);
+    const take = Math.min(room, left);
+    tax += take * (ratePct / 100);
+    pos += take;
+    left -= take;
+  };
+  slice(basicTop, a.dividendBasicPct);
+  slice(higherTop, a.dividendHigherPct);
+  slice(Infinity, a.dividendAdditionalPct);
+  return tax;
+}

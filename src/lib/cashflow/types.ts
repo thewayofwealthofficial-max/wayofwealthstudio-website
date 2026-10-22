@@ -74,11 +74,12 @@ export const DEFAULT_PERSON_ID = "person_you";
  * the person retires unless the line has its own end year. Undefined = "other": never stopped automatically,
  * which keeps every plan saved before this field existed exactly as it was.
  */
-export type IncomeKind = "employment" | "self_employment" | "state_pension" | "db_pension" | "rental" | "other";
+export type IncomeKind = "employment" | "self_employment" | "dividend" | "state_pension" | "db_pension" | "rental" | "other";
 
 export const INCOME_KIND_LABELS: Record<IncomeKind, string> = {
   employment: "Salary",
   self_employment: "Self-employed",
+  dividend: "Company dividends",
   state_pension: "State pension",
   db_pension: "Final salary pension",
   rental: "Rental",
@@ -200,6 +201,10 @@ export type ExpenseLine = {
   childId?: string;
   childFromAge?: number;
   childToAge?: number;
+  /** A lump sum every N years, e.g. a new car every 4 (Voyant's Expense Frequency, help 360054595811). `amount` is
+   *  then the whole cost each time, not a monthly figure. It falls first in the start year (year 1 if none) and
+   *  every N years after, up to the end year, growing with inflation. */
+  everyYears?: number;
   /** This cost's own yearly inflation %, instead of the plan's (Voyant help 360044947012). */
   inflationPct?: number;
   /** Years this cost runs (21 Oct 2026, Voyant has start and stop on every expense): childcare that ends,
@@ -336,8 +341,9 @@ export type SavingsAllocation = {
    * restricts what the engine may take when a year falls short.
    */
   drawdown?: {
-    /** A fixed annual sum, or a percentage of the pot's value each year. */
-    mode: "amount" | "percent";
+    /** A fixed annual sum, a percentage of the pot's value each year, or (pensions) the most that keeps their
+     *  taxable income inside the basic-rate band: Voyant's "Max within Basic Tax Band" (help 54310323873435). */
+    mode: "amount" | "percent" | "basic_band";
     /** £ per year when mode is "amount"; % of the balance when "percent". */
     value: number;
     /** Grow a fixed amount with inflation. Ignored for percentage drawdowns. */
@@ -345,7 +351,20 @@ export type SavingsAllocation = {
     /** 1-indexed projection year the drawdown starts. Default 1. */
     startYear?: number;
     endYear?: number;
+    /** Changes to the yearly amount from a year on (Voyant help 360041396251). With `indexed`, a step's amount is
+     *  the inflated figure in its year, and grows with inflation from there. */
+    steps?: AmountStep[];
+    /** Pensions: Voyant's "Flexi" (help 360026661932): `value` is the tax-free cash wanted; just enough is
+     *  crystallised to give it, and the other 75% moves to a linked drawdown pot. */
+    flexi?: boolean;
   };
+  /** Grow the regular payment in with inflation each year (Voyant's "amount with inflation", help
+   *  13675953248411). */
+  indexed?: boolean;
+  /** Reinvest this pot's dividend yield (default) or pay it out each year (Voyant help 206344295), and its own
+   *  dividend yield %. Unwrapped (GIA) pots only. */
+  reinvestYield?: boolean;
+  yieldPct?: number;
   /**
    * Withdrawal limit — Voyant's **Withdrawal Limits** (spec §2.7). Restricts
    * what the engine may take from this pot ad hoc to cover a shortfall.
@@ -434,7 +453,8 @@ export type InterventionType =
   | "debt_payment"
   | "critical_illness"
   | "disability"
-  | "disability_end";
+  | "disability_end"
+  | "transfer";
 
 /**
  * Region-aware annual contribution limits for tax-advantaged accounts.
@@ -542,6 +562,13 @@ export type Intervention = {
    *  "using any income and liquid assets available at that point" (Voyant help 360022319672). */
   debtId?: string;
   payOff?: boolean;
+  /** transfer: move `amount` a year from one pot to another, from `year` to `untilYear` (default: one-off),
+   *  optionally growing with inflation. Not limited by withdrawal limits (Voyant help 360038680512, 360054647151).
+   *  Taxed on the way out like any withdrawal (CGT on a GIA, income tax on a pension). */
+  fromBucketId?: string;
+  toBucketId?: string;
+  untilYear?: number;
+  transferIndexed?: boolean;
   /** remortgage: new annual interest rate % (undefined = unchanged). */
   newRate?: number;
   /** remortgage: new monthly payment (undefined = unchanged). */
@@ -823,6 +850,9 @@ export type ProjectionAssumptions = {
    * left after the destination list is banked as ready cash instead.
    */
   transferExcessToSavings?: boolean;
+  /** Voyant's "Save excess income after retirement" (help 360045875312): spare income with no job is saved as
+   *  ready cash, but only once they've retired. */
+  saveExcessAfterRetirement?: boolean;
   /**
    * Sweep spare ready cash into the surplus destination list at year end
    * (spec §2.2). ON by default: lump sums — an inheritance, house proceeds, a
