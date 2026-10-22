@@ -54,6 +54,9 @@ function netMonthlyIncomeFromLines(
   /** Tax and Class 4 NI on self-employed, rental and "other" income: worked out this year, paid next year
    *  (Voyant help 205259609). Included in taxAnnual/niAnnual and already taken off netMonthly. */
   arrearsAnnual: number;
+  /** The same tax split by person and type, for the Year View (22 Oct 2026, Voyant help 4405810496795: "tracked
+   *  by client (payee) and the type of tax"). Record only: sums to taxAnnual / niAnnual. */
+  taxByPerson: Record<string, { incomeTax: number; dividendTax: number; ni: number }>;
 } {
   let arrearsAnnual = 0;
   let netMonthly = 0;
@@ -61,6 +64,7 @@ function netMonthlyIncomeFromLines(
   let taxAnnual = 0;
   let niAnnual = 0;
   const grossByPerson: Record<string, number> = {};
+  const taxByPerson: Record<string, { incomeTax: number; dividendTax: number; ni: number }> = {};
   const region = assumptions.region ?? "UK";
 
   // Net (post-tax) lines pool together — no tax applied.
@@ -122,6 +126,7 @@ function netMonthlyIncomeFromLines(
         const allow = assumptions.ukAllowances ?? DEFAULT_UK_ALLOWANCES;
         const divTax = ukDividendTax(annualGross - preTax, dividends, cfg, allow, adj?.bandExt ?? 0);
         taxAnnual += divTax;
+        (taxByPerson[pid] ??= { incomeTax: 0, dividendTax: 0, ni: 0 }).dividendTax += divTax;
         arrearsAnnual += divTax;
         netMonthly += dividends / 12; // received in full now; the tax is paid next year
         grossAnnual += dividends;
@@ -142,19 +147,23 @@ function netMonthlyIncomeFromLines(
       }
       taxAnnual += t.tax;
       niAnnual += ni;
+      const tp = (taxByPerson[pid] ??= { incomeTax: 0, dividendTax: 0, ni: 0 });
+      tp.incomeTax += t.tax;
+      tp.ni += ni;
       // Pension paid before tax leaves take-home here; the pot is credited in the contribution step.
       netMonthly += (annualGross - preTax - t.tax - ni) / 12;
     } else if (region === "US") {
       const t = calcUSTaxAndFICA(annualGross, assumptions.usTax ?? DEFAULT_US_TAX_SINGLE);
       taxAnnual += t.tax;
       niAnnual += t.fica; // niAnnual field reused for US FICA — UI labels appropriately
+      taxByPerson[pid] = { incomeTax: t.tax, dividendTax: 0, ni: t.fica };
       netMonthly += t.takeHome / 12;
     } else {
       // OTHER region — no tax modelling. Treat gross amounts as if they were net.
       netMonthly += grossMonthly;
     }
   }
-  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson, arrearsAnnual };
+  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson, arrearsAnnual, taxByPerson };
 }
 
 /**
@@ -605,6 +614,7 @@ export function projectYears(
     everyYears?: number;
     deductibleFromIncomeId?: string;
     linkedPropertyId?: string;
+    category?: string; // record only, for the Year View's expense list (22 Oct 2026)
   };
   // Goals marked "spend it" are one-off costs in their year (Voyant: goals are trackable expenses, help 360040748312).
   const goalCosts: ExpenseLine[] = (plan.goals ?? [])
@@ -619,6 +629,7 @@ export function projectYears(
       paymentSourceBucketId: g.fundingBucketId,
     }));
   let expenseLines: ExpenseState[] = [...(plan.expenses || []), ...goalCosts].map((e) => ({
+    category: e.category,
     personId: e.personId,
     everyYears: e.everyYears,
     deductibleFromIncomeId: e.deductibleFromIncomeId,
@@ -1291,7 +1302,8 @@ export function projectYears(
         (expenseInterventionDelta - (deltaAtRetirement ?? 0))
       : expenseLines.reduce((s, e) => s + expenseNow(e, y), 0) * expenseSurvivorFactor + expenseInterventionDelta;
     // Insurance premiums are paid while the policy runs, until it pays out (Voyant case study p.58).
-    monthlyExpenses += (plan.policies || []).reduce((t, p) => t + (policyActive(p, y) ? p.monthlyPremium || 0 : 0), 0);
+    const premiumsMonthly = (plan.policies || []).reduce((t, p) => t + (policyActive(p, y) ? p.monthlyPremium || 0 : 0), 0);
+    monthlyExpenses += premiumsMonthly;
 
     // Recompute tax on this year's gross income — only streams active this
     // year count (a salary that ended, a pension not yet started, contribute 0).
@@ -1768,6 +1780,7 @@ export function projectYears(
     // cash returns to surplus, which then flows down surplusDestinations — the
     // same outcome by the same route.
     let actualContributions = 0;
+    let pensionPaidByClient = 0; // record only, for the itemised expenses report (22 Oct 2026)
     let refusedByLimit = 0;
     buckets = buckets.map((b) => {
       // Opening balance is what the pot held BEFORE this year's life events, so
@@ -1876,6 +1889,7 @@ export function projectYears(
         if (b.kind === "cash") cashIsaUsedByPerson[b.ownerId] = (cashIsaUsedByPerson[b.ownerId] || 0) + yearContribution;
       }
       if (!fromPay(b)) actualContributions += cashContribution;
+      if (b.kind === "pension") pensionPaidByClient += cashContribution; // record only (Voyant help 39299453959835)
       const grown = (b.balance + yearContribution) * (1 + potGrowth(b, y));
       // Growth is never base cost — only money actually paid in is.
       const nextCostBasis = b.costBasis + yearContribution;
@@ -1979,6 +1993,7 @@ export function projectYears(
     // dividend allowance + PSA). CGT on capital growth is deferred to disposal
     // — not charged here.
     let investmentTaxPaid = 0;
+    const investmentTaxByOwner: Record<string, number> = {}; // record only, for the Year View (22 Oct 2026)
     if (ukAllow) {
       const byOwner: Record<string, { dividends: number; interest: number }> = {};
       for (const d of bucketDeltas) {
@@ -2024,9 +2039,9 @@ export function projectYears(
         const t = calcUKInvestmentTax(inc.dividends, inc.interest, band, ukAllow, ukTaxCfg, startYear + y >= 2027 ? 2 : 0);
         // Only count what was actually taken, so the reported tax matches the
         // money that really moved.
-        investmentTaxPaid += t.total;
-        investmentTaxPaid -= deduct(ownerId, "gia", t.dividendTax);
-        investmentTaxPaid -= deduct(ownerId, "cash_taxed", t.interestTax);
+        const taken = t.total - deduct(ownerId, "gia", t.dividendTax) - deduct(ownerId, "cash_taxed", t.interestTax);
+        investmentTaxPaid += taken;
+        investmentTaxByOwner[ownerId] = (investmentTaxByOwner[ownerId] || 0) + taken;
       }
       investmentTaxPaid = Math.max(0, investmentTaxPaid);
       if (investmentTaxPaid > 0) {
@@ -2388,10 +2403,44 @@ export function projectYears(
       bucketDeltas,
       debtDeltas: debtStep.deltas,
       expensesByCategory,
+      // Year View and itemised-expense records (22 Oct 2026). Nothing above reads them.
+      taxByPerson: yearTaxByPerson(people, taxResult.taxByPerson, investmentTaxByOwner),
+      expenseByLine: retiredSpending
+        ? undefined
+        : expenseLines
+            .map((e) => ({
+              label: e.label,
+              category: e.category,
+              owner: e.personId === "joint" ? "Joint" : people.find((p) => p.id === e.personId)?.name,
+              annual: expenseNow(e, y) * 12 * expenseSurvivorFactor,
+            }))
+            .filter((l) => l.annual > 0),
+      premiumsPaid: premiumsMonthly * 12 || undefined,
+      pensionPaidByClient: pensionPaidByClient || undefined,
     });
   }
 
   return projections;
+}
+
+/** Per-person tax for the Year View (22 Oct 2026): names attached, zero rows left out. Record only. */
+function yearTaxByPerson(
+  people: Array<{ id: string; name: string }>,
+  income: Record<string, { incomeTax: number; dividendTax: number; ni: number }>,
+  investment: Record<string, number>
+): YearProjection["taxByPerson"] {
+  const ids = Array.from(new Set([...Object.keys(income), ...Object.keys(investment)]));
+  const rows = ids
+    .map((id) => ({
+      personId: id,
+      name: people.find((p) => p.id === id)?.name ?? "You",
+      incomeTax: income[id]?.incomeTax ?? 0,
+      dividendTax: income[id]?.dividendTax ?? 0,
+      ni: income[id]?.ni ?? 0,
+      investmentTax: investment[id] ?? 0,
+    }))
+    .filter((r) => r.incomeTax + r.dividendTax + r.ni + r.investmentTax > 0);
+  return rows.length > 0 ? rows : undefined;
 }
 
 function sumByKind(
@@ -2773,7 +2822,7 @@ function applyIntervention(iv: Intervention, ctx: InterventionContext): string |
           ctx.writeDown(b.id, b.balance * (1 - factor));
         }
       });
-      const targetLabel = target === "all" ? "All assets" : target === "stocks" ? "Stocks" : "Property";
+      const targetLabel = target === "all" ? "All assets" : target === "stocks" ? "Stocks" : target === "pension" ? "Pensions" : "Property";
       return `${iv.label || "Market crash"}: ${targetLabel} −${crashPct}%`;
     }
     default:

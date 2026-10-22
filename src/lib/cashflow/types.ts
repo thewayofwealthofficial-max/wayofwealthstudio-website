@@ -1048,6 +1048,18 @@ export type YearProjection = {
     discretionary: number;
     other: number;
   };
+  /** Year View by person (22 Oct 2026). Voyant help 4405810496795: taxes are "tracked by client (payee) and the
+   *  type of tax"; help 4406552940827/360022500511: "annual tax calculations for each person". Record only:
+   *  incomeTax + dividendTax sum to annualTaxPaid, ni to annualNIPaid, investmentTax to investmentTaxPaid. */
+  taxByPerson?: Array<{ personId: string; name: string; incomeTax: number; dividendTax: number; ni: number; investmentTax: number }>;
+  /** Each living-cost line this year, a year's worth, with its owner (Voyant help 360022500511: expenses "sorted
+   *  by Type, Owner, Name, Value"). Unset in years where retirement spending replaces the lines. */
+  expenseByLine?: Array<{ label: string; category?: string; owner?: string; annual: number }>;
+  /** Protection policy premiums paid this year (already inside annualExpenses). Voyant help 39299453959835. */
+  premiumsPaid?: number;
+  /** The client's own money paid into pensions this year (relief-at-source net, or from pay before tax), not
+   *  the employer's or the tax relief. Voyant help 39299453959835 "Pension Contributions". */
+  pensionPaidByClient?: number;
 };
 
 export type RetirementSettings = {
@@ -1266,6 +1278,10 @@ export type CashflowScenario = {
   followsBaseId?: string;
   /** The base's plan as it was when this what-if last caught up with it. */
   baseSnapshot?: CashflowPlanData;
+  /** The client can see this what-if on their plan page (22 Oct 2026, Voyant help 115001976846: what-ifs are
+   *  "hidden by default. Advisers choose which plans a client is able to view"). Unset = hidden. Set only by
+   *  /api/cashflow-plans/visibility; see src/lib/client-plan-access.ts. */
+  visibleToClient?: boolean;
 };
 
 export type CashflowPlanRow = {
