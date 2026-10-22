@@ -225,10 +225,15 @@ export function projectYears(
   // Gate contributed amounts by the active window without disturbing the
   // growing base — an out-of-window line still tracks its grown value so it
   // resumes at the right figure when it switches back on.
+  // Disabled (Voyant's Disability event): their job income stops until Disability End, and keeps growing meanwhile.
+  const disabledNow: Record<string, boolean> = {};
+  const dbAccrual: Record<string, { care: number; years: number; lastPay: number; leftAt?: number }> = {};
+  const isJob = (l: { kind?: string }) => l.kind === undefined || l.kind === "employment" || l.kind === "self_employment";
   const activeIncome = (lines: IncomeState[], y: number): IncomeState[] =>
     lines.map((l) => {
       const dead = deceasedFrom[l.personId] !== undefined && y >= deceasedFrom[l.personId];
-      return { ...l, amount: incomeInWindow(l, y) && !dead ? l.amount + (l.extra || 0) : 0 };
+      const off = disabledNow[l.personId] && isJob(l) && !l.id?.startsWith("__ip_");
+      return { ...l, amount: incomeInWindow(l, y) && !dead && !off ? l.amount + (l.extra || 0) : 0 };
     });
 
   // Past State Pension age in year y → no National Insurance. Unknown age → assume not.
@@ -281,6 +286,8 @@ export function projectYears(
     drawdown?: SavingsAllocation["drawdown"];
     withdrawalLimit?: SavingsAllocation["withdrawalLimit"];
     paidFromPay?: boolean;
+    /** Taken this year to cover the gap, across owner portions, so a withdrawal limit counts all of it. */
+    drawnThisYear?: number;
     growthPct?: number;
     feesPct?: number;
     pensionMethod?: SavingsAllocation["pensionMethod"];
@@ -796,6 +803,51 @@ export function projectYears(
       // Death is handled here (not in applyIntervention) because it touches
       // loop-level state: the deceased set, the survivor expense factor, and
       // pot ownership transfer.
+      if (iv.type === "disability" || iv.type === "disability_end") {
+        // Voyant help 4403461998861 / 201166427: Disability stops their job income and pays their income
+        // protection; Disability End restarts the job (with growth for the years between) and stops the pay-out.
+        const pid = resolvePersonId(iv.ownerId, people);
+        if (iv.type === "disability_end") {
+          disabledNow[pid] = false;
+          const stopped = incomeLines.filter((l) => l.id?.startsWith(`__ip_${pid}_`) && (l.endYear === undefined || l.endYear >= y));
+          stopped.forEach((l) => (l.endYear = y - 1));
+          events.push(`${iv.label || "Disability ends"}: back to work${stopped.length ? ", income protection stops" : ""}`);
+          continue;
+        }
+        disabledNow[pid] = true;
+        const salaryNow = incomeLines
+          .filter((l) => l.personId === pid && isJob(l) && incomeInWindow(l, y))
+          .reduce((t, l) => t + l.amount + (l.extra || 0), 0);
+        const paid: string[] = [];
+        for (const p of (plan.policies || []).filter(
+          (x) => x.kind === "income_protection" && policyActive(x, y) && (!x.ownerId || x.ownerId === pid)
+        )) {
+          const monthly = p.coverPct ? (salaryNow * p.coverPct) / 100 : p.sumAssured || 0;
+          if (monthly <= 0) continue;
+          const linked = p.linkedIncomeId ? incomeLines.find((l) => l.id === p.linkedIncomeId) : undefined;
+          const ends = [
+            p.benefitYears ? y + p.benefitYears - 1 : undefined,
+            p.termYears ?? undefined,
+            linked?.endYear,
+          ].filter((v): v is number => v !== undefined);
+          incomeLines.push({
+            id: `__ip_${pid}_${p.id}`,
+            label: `${p.label || "Income protection"} pay-out`,
+            kind: "other",
+            amount: monthly,
+            base: monthly,
+            extra: 0,
+            growth: 0,
+            isGross: false, // an individual policy's benefit is tax free
+            startYear: y,
+            endYear: ends.length ? Math.min(...ends) : undefined,
+            personId: pid,
+          });
+          paid.push(`${p.label || "Income protection"} ${money(monthly)}/mo`);
+        }
+        events.push(`${iv.label || "Disability"}: job income stops${paid.length ? `; ${paid.join(", ")}` : "; no income protection"}`);
+        continue;
+      }
       if (iv.type === "critical_illness") {
         // Pays out the owner's active critical illness cover. It doesn't end their job (Voyant help 4403468513165).
         const pid = resolvePersonId(iv.ownerId, people);
@@ -1013,6 +1065,41 @@ export function projectYears(
         extra: (l.extra || 0) * (1 + g),
       };
     });
+    // Final salary / CARE still building up (Voyant "Active"): accrue from the linked salary each working year,
+    // revalue after, and set the pension when it starts.
+    for (const l of incomeLines) {
+      const d = l.db;
+      if (!d?.dbActive || l.dbStarted) continue;
+      const sal =
+        (d.dbSalaryLineId ? incomeLines.find((x) => x.id === d.dbSalaryLineId) : undefined) ??
+        incomeLines.find((x) => x.personId === l.personId && (x.kind === "employment" || x.kind === "self_employment"));
+      const working = !!sal && incomeInWindow(sal, y) && !disabledNow[l.personId];
+      const pay = working && sal ? (sal.amount + (sal.extra || 0)) * 12 : 0;
+      const acc = (d.dbAccrualPct || 0) / 100;
+      const st = (dbAccrual[l.id ?? l.label] ??= {
+        care: d.dbAccruedToDate || 0,
+        years: d.dbYearsService || 0,
+        lastPay: 0,
+        leftAt: undefined as number | undefined,
+      });
+      if (d.dbScheme === "care") {
+        st.care = st.care * (1 + (d.dbRevaluationPct || 0) / 100) + (working ? acc * pay : 0);
+      } else if (working) {
+        st.years += 1;
+        st.lastPay = pay;
+      } else if (st.leftAt === undefined) {
+        st.leftAt = y;
+      }
+      if (incomeInWindow(l, y)) {
+        // Final salary left before it starts: revalued from leaving to starting by its deferment rate.
+        const deferRate = d.dbFutureValue ? 0 : l.growth ?? expenseInflation;
+        const deferYears = st.leftAt !== undefined ? y - st.leftAt : 0;
+        const annual =
+          d.dbScheme === "care" ? st.care : acc * st.years * st.lastPay * Math.pow(1 + deferRate, Math.max(0, deferYears));
+        l.amount = annual / 12;
+        events.push(`${l.label}: pension worked out at ${money(annual)}/yr`);
+      }
+    }
     // A final salary pension starting this year: the scheme's early-retirement cut, then tax-free cash by
     // commutation (Voyant help 201934153), paid into their ready cash and counted against the Lump Sum Allowance.
     for (const l of incomeLines) {
@@ -1697,46 +1784,74 @@ export function projectYears(
     let shortfall = 0;
     let decumulationTaxPaid = 0;
     if (annualSurplus < 0) {
-      let need = -annualSurplus; // NET cash still required
-
-      const drawOrder = buckets
-        .filter((b) => b.balance > 0 && adHocAllowance(b, y) > 0)
-        .sort((a, b) => liquidationTier(a) - liquidationTier(b));
-
-      for (const b of drawOrder) {
-        if (need <= 0) break;
-        if (b.balance <= 0) continue;
-        if (b.kind === "pension" && !pensionAccessible(b)) continue;
-        // A withdrawal limit caps how much may come out of this pot this year,
-        // net of anything its planned drawdown has already taken.
-        const room = Math.max(
-          0,
-          Math.min(b.balance, adHocAllowance(b, y) - (plannedWithdrawnByBucket[b.id] || 0))
-        );
-        if (room <= 0) continue;
-        // Most this pot could yield if emptied to its limit, after tax.
-        const maxNet = room - withdrawalTax(b, room).tax;
-        if (maxNet <= 0) continue;
-        const takeNet = Math.min(maxNet, need);
-        // Emptying it? take the lot. Otherwise solve for the gross that nets
-        // exactly what's still needed.
-        const gross = takeNet >= maxNet ? room : grossForNet(b, takeNet);
-        const t = withdrawalTax(b, gross);
-        commitAllowance(b, t);
-        const tax = t.tax;
-        takeFromPot(b, gross);
-        need -= gross - tax; // what actually reached the client's pocket
-        assetsDrawn += gross;
-        decumulationTaxPaid += tax;
-        // Record as a negative "surplus movement" so the delta still reconciles.
-        const d = bucketDeltas.find((x) => x.id === b.id);
-        if (d) {
-          d.surplusAdded = (d.surplusAdded || 0) - gross;
-          d.closingBalance -= gross;
-          // Record only: which pot covered the gap, for the chart's "Details" split (8 Oct 2026). No maths changes.
-          d.drawnToCover = (d.drawnToCover || 0) + gross;
+      // Owner-first (Voyant [CF] p.22, help 360031936332; 21 Oct 2026): the gap is split by whose costs make it
+      // up. Each person's share comes from their own pots first within each tax category, before anyone else's;
+      // shared costs (no owner) are drawn in the plain order. Before this the household gap was one number.
+      const totalCosts = expenseLines.reduce((t, e) => t + expenseNow(e, y), 0);
+      const shareOf = (pid: string) =>
+        totalCosts > 0
+          ? expenseLines.filter((e) => e.personId === pid).reduce((t, e) => t + expenseNow(e, y), 0) / totalCosts
+          : 0;
+      const gap = -annualSurplus; // NET cash still required
+      const portions: Array<{ owner?: string; need: number }> = [];
+      let ownedTotal = 0;
+      for (const p of people) {
+        const n = gap * Math.min(1, shareOf(p.id));
+        if (n > 0) {
+          portions.push({ owner: p.id, need: n });
+          ownedTotal += n;
         }
       }
+      portions.push({ need: Math.max(0, gap - ownedTotal) });
+
+      let need = 0;
+      for (const portion of portions) {
+        let partNeed = portion.need;
+        const drawOrder = buckets
+          .filter((b) => b.balance > 0 && adHocAllowance(b, y) > 0)
+          .sort(
+            (a, b) =>
+              liquidationTier(a) - liquidationTier(b) ||
+              (portion.owner ? (a.ownerId === portion.owner ? 0 : 1) - (b.ownerId === portion.owner ? 0 : 1) : 0)
+          );
+        for (const b of drawOrder) {
+          if (partNeed <= 0) break;
+          if (b.balance <= 0) continue;
+          if (b.kind === "pension" && !pensionAccessible(b)) continue;
+          // A withdrawal limit caps how much may come out of this pot this year,
+          // net of anything its planned drawdown has already taken.
+          const room = Math.max(
+            0,
+            Math.min(b.balance, adHocAllowance(b, y) - (plannedWithdrawnByBucket[b.id] || 0) - (b.drawnThisYear || 0))
+          );
+          if (room <= 0) continue;
+          // Most this pot could yield if emptied to its limit, after tax.
+          const maxNet = room - withdrawalTax(b, room).tax;
+          if (maxNet <= 0) continue;
+          const takeNet = Math.min(maxNet, partNeed);
+          // Emptying it? take the lot. Otherwise solve for the gross that nets
+          // exactly what's still needed.
+          const gross = takeNet >= maxNet ? room : grossForNet(b, takeNet);
+          const t = withdrawalTax(b, gross);
+          commitAllowance(b, t);
+          const tax = t.tax;
+          takeFromPot(b, gross);
+          b.drawnThisYear = (b.drawnThisYear || 0) + gross;
+          partNeed -= gross - tax; // what actually reached the client's pocket
+          assetsDrawn += gross;
+          decumulationTaxPaid += tax;
+          // Record as a negative "surplus movement" so the delta still reconciles.
+          const d = bucketDeltas.find((x) => x.id === b.id);
+          if (d) {
+            d.surplusAdded = (d.surplusAdded || 0) - gross;
+            d.closingBalance -= gross;
+            // Record only: which pot covered the gap, for the chart's "Details" split (8 Oct 2026). No maths changes.
+            d.drawnToCover = (d.drawnToCover || 0) + gross;
+          }
+        }
+        need += Math.max(0, partNeed);
+      }
+      for (const b of buckets) b.drawnThisYear = 0;
       // Still unmet after draining everything → RED year. Under a penny is rounding dust from the gross-up
       // maths, not a real gap; it was painting red years on a plan with nothing short (21 Oct 2026).
       shortfall = need < 0.01 ? 0 : need;

@@ -127,6 +127,19 @@ export type IncomeLine = {
   /** Rent from a property pot: it stops when that property is sold (Voyant help 14618432988059). */
   linkedPropertyId?: string;
   dbFutureValue?: boolean;
+  /**
+   * Still building up (Voyant "Active", help 360054426571, 24722437283739): the pension is worked out from the
+   * linked salary instead of `amount`. Final salary: accrual % x years of service (to date + years worked in the
+   * plan) x salary in the last working year. CARE: accrued to date, revalued each year by dbRevaluationPct, plus
+   * accrual % x that year's salary; revalued on until it starts. Salary = dbSalaryLineId, else their Salary line.
+   */
+  dbActive?: boolean;
+  dbScheme?: "final_salary" | "care";
+  dbAccrualPct?: number;
+  dbYearsService?: number;
+  dbAccruedToDate?: number;
+  dbRevaluationPct?: number;
+  dbSalaryLineId?: string;
   dbSurvivorPct?: number;
   dbCommutationFactor?: number;
   dbTaxFreeCash?: "max" | number;
@@ -411,7 +424,9 @@ export type InterventionType =
   | "buy_annuity"
   | "asset_crash"
   | "debt_payment"
-  | "critical_illness";
+  | "critical_illness"
+  | "disability"
+  | "disability_end";
 
 /**
  * Region-aware annual contribution limits for tax-advantaged accounts.
@@ -1046,6 +1061,15 @@ export type Policy = {
   inTrust?: boolean;
   /** Whose life or illness it covers. Unset = anyone's (as before). */
   ownerId?: string;
+  /**
+   * Income protection (Voyant help 4403461998861): pays from a Disability event until Disability End, the
+   * benefit years run out, or the policy stops, whichever is first. Pays coverPct % of their salary if set, else
+   * sumAssured a month. Tied to a salary line (linkedIncomeId), it ends when that job ends. Paid as tax-free
+   * income (an individual policy); unset benefitYears = for as long as the policy runs.
+   */
+  coverPct?: number;
+  benefitYears?: number;
+  linkedIncomeId?: string;
 };
 
 export const POLICY_KIND_LABELS: Record<PolicyKind, string> = {

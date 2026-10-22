@@ -163,7 +163,9 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
   });
 
   const savings = plan.savings.map((s) => {
-    if (s.kind === "pension" && s.monthlyAmount > 0 && s.endYear === undefined && !s.yearLinks?.end) {
+    // Any payment in, the client's or the employer's (the sweep found employer-only pots ran on past retirement).
+    const paying = s.monthlyAmount > 0 || (s.employerMonthly ?? 0) > 0 || (s.employeePctOfSalary ?? 0) > 0 || (s.employerPctOfSalary ?? 0) > 0;
+    if (s.kind === "pension" && paying && s.endYear === undefined && !s.yearLinks?.end) {
       const end = retFor(s.ownerId).lastWorkYear;
       if (end === undefined) return s;
       changed = true;
@@ -182,10 +184,16 @@ export function applyRetirement(plan: CashflowPlanData): CashflowPlanData {
       (l) => mine(l) && (l.kind === "state_pension" || /state pension|social security/i.test(l.label))
     );
     if (has) continue;
+    // Deferred past State Pension age: "For every 9 weeks you defer, you'll get 1% added ... just under 5.8% for
+    // every 52 weeks" (gov.uk/deferring-state-pension, new State Pension; checked 22 Oct 2026). Voyant's help
+    // doesn't describe deferral, so this is GOV.UK's rule.
+    const statutory = statePensionAgeFor(ret.age);
+    const deferredYears = Math.max(0, ret.spa - statutory);
+    const uplift = 1 + (deferredYears * 52) / 9 / 100;
     income.push({
       id: `__state_pension_${id ?? "you"}`,
-      label: "State pension",
-      amount: ret.statePension / 12,
+      label: deferredYears > 0 ? `State pension (deferred ${deferredYears} yr)` : "State pension",
+      amount: (ret.statePension / 12) * uplift,
       frequency: "monthly",
       kind: "state_pension",
       isGross: true, // taxable income
