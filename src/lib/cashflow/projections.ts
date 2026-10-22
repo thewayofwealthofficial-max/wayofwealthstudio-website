@@ -40,7 +40,11 @@ function netMonthlyIncomeFromLines(
   pastStatePensionAge: (personId: string) => boolean = () => false,
   /** Per person: pension paid before tax (net pay + salary sacrifice), the salary-sacrifice part (also before NI),
    *  and gross relief-at-source payments (they widen the bands). */
-  pensionAdj: Record<string, { preTax: number; niOff: number; bandExt: number }> = {}
+  pensionAdj: Record<string, { preTax: number; niOff: number; bandExt: number }> = {},
+  /** Person pays Scottish income tax. */
+  scottishFor: (personId: string) => boolean = () => false,
+  /** Points added to tax on rental income: +2 from April 2027 (Budget 2025; Voyant help 45658611793051). */
+  propertyBumpPct = 0
 ): {
   netMonthly: number;
   grossAnnual: number;
@@ -76,12 +80,14 @@ function netMonthlyIncomeFromLines(
   // as every gross line was before types existed.
   const grossMonthlyByPerson: Record<string, number> = {};
   const arrearsGrossByPerson: Record<string, number> = {};
+  const rentalGrossByPerson: Record<string, number> = {};
   const class1ByPerson: Record<string, number> = {};
   const class4ByPerson: Record<string, number> = {};
   for (const l of lines) {
     if (!l.isGross || l.kind === "dividend") continue;
     const pid = l.personId ?? "__default";
     grossMonthlyByPerson[pid] = (grossMonthlyByPerson[pid] || 0) + (l.amount || 0);
+    if (l.kind === "rental") rentalGrossByPerson[pid] = (rentalGrossByPerson[pid] || 0) + (l.amount || 0);
     if (l.kind === "self_employment" || l.kind === "rental" || l.kind === "other") {
       arrearsGrossByPerson[pid] = (arrearsGrossByPerson[pid] || 0) + (l.amount || 0);
     }
@@ -103,7 +109,15 @@ function netMonthlyIncomeFromLines(
       const cfg = assumptions.ukTax ?? DEFAULT_UK_TAX;
       const adj = pensionAdj[pid];
       const preTax = Math.min(annualGross, adj?.preTax ?? 0);
-      const t = calcUKTaxAndNI(annualGross - preTax, cfg, adj?.bandExt ?? 0, annualGross - preTax + dividends);
+      const t = calcUKTaxAndNI(annualGross - preTax, cfg, adj?.bandExt ?? 0, annualGross - preTax + dividends, scottishFor(pid));
+      // Property income rate rise: our approximation adds the extra points to the rental income that is taxable
+      // after any allowance the other income left (neither Voyant nor the Budget notes give the stacking).
+      if (propertyBumpPct > 0 && (rentalGrossByPerson[pid] || 0) > 0) {
+        const rent = (rentalGrossByPerson[pid] || 0) * 12;
+        const others = annualGross - preTax - rent;
+        const paLeft = Math.max(0, cfg.personalAllowance - Math.max(0, others));
+        t.tax += Math.max(0, rent - paLeft) * (propertyBumpPct / 100);
+      }
       if (dividends > 0) {
         const allow = assumptions.ukAllowances ?? DEFAULT_UK_ALLOWANCES;
         const divTax = ukDividendTax(annualGross - preTax, dividends, cfg, allow, adj?.bandExt ?? 0);
@@ -235,7 +249,7 @@ export function projectYears(
   // lines without steps grow `amount` by incomeGrowth each year. personId is
   // resolved to a concrete person up front so per-person tax lines up.
   // `extra` = pay rises attached to this line by income_change events; grows with the line, stops with it.
-  type IncomeState = { id?: string; kind?: string; extra?: number; growth?: number; db?: IncomeLine; dbStarted?: boolean; linkedPropertyId?: string; survivorPct?: number; guaranteeUntil?: number; amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
+  type IncomeState = { id?: string; kind?: string; extra?: number; growth?: number; db?: IncomeLine; dbStarted?: boolean; linkedPropertyId?: string; survivorPct?: number; guaranteeUntil?: number; jointlyOwned?: boolean; passesToSurvivor?: boolean; amount: number; base: number; isGross?: boolean; label: string; steps?: import("./types").AmountStep[]; startYear?: number; endYear?: number; personId: string };
   let incomeLines: IncomeState[] = plan.income.map((l) => ({
     id: l.id,
     kind: l.kind,
@@ -244,6 +258,8 @@ export function projectYears(
     db: l.kind === "db_pension" ? l : undefined,
     survivorPct: l.kind === "db_pension" ? l.dbSurvivorPct : undefined,
     linkedPropertyId: l.linkedPropertyId,
+    jointlyOwned: l.jointlyOwned,
+    passesToSurvivor: l.passesToSurvivor,
     amount: l.amount || 0,
     base: l.amount || 0,
     isGross: l.isGross,
@@ -574,10 +590,12 @@ export function projectYears(
     inflation?: number;
     personId?: string;
     everyYears?: number;
+    deductibleFromIncomeId?: string;
   };
   let expenseLines: ExpenseState[] = (plan.expenses || []).map((e) => ({
     personId: e.personId,
     everyYears: e.everyYears,
+    deductibleFromIncomeId: e.deductibleFromIncomeId,
     inflation: e.inflationPct !== undefined ? e.inflationPct / 100 : undefined,
     label: e.label,
     base: e.amount || 0,
@@ -954,6 +972,13 @@ export function projectYears(
               }
             : b
         );
+        // Other income (rent, other) passes to the surviving partner unless set not to (Voyant help 201166427).
+        if (survivorId !== pid) {
+          for (const l of incomeLines) {
+            if (l.personId !== pid || l.passesToSurvivor === false || l.id?.startsWith("__ip_")) continue;
+            if (l.kind === "rental" || l.kind === "other") l.personId = survivorId;
+          }
+        }
         // Income that carries on for the partner: a final salary survivor's %, a joint-life annuity's %, and an
         // annuity's guarantee, paid in full to its end (Voyant help 360054426571, 360054272232).
         if (survivorId !== pid) {
@@ -1230,12 +1255,74 @@ export function projectYears(
         a.bandExt += annual * taxReliefMultiplier;
       }
     }
-    const taxResult = netMonthlyIncomeFromLines(activeIncome(incomeLines, y), yearAssumptions, pastSPA(y), pensionAdj);
+    // Lines as taxed: tax-deductible costs come off their income line (Voyant help 115000087223) and jointly-owned
+    // income is split equally between a couple (help 360047948732). Cash received is unchanged: what the
+    // deductions took off is added back after tax.
+    const deductMonthly: Record<string, number> = {};
+    for (const e of expenseLines) {
+      if (!e.deductibleFromIncomeId) continue;
+      deductMonthly[e.deductibleFromIncomeId] = (deductMonthly[e.deductibleFromIncomeId] || 0) + expenseNow(e, y);
+    }
+    let deductedTotal = 0;
+    const taxLines = activeIncome(incomeLines, y).flatMap((l) => {
+      let amount = l.amount;
+      const d = l.id ? Math.min(amount, deductMonthly[l.id] || 0) : 0;
+      if (d > 0 && l.isGross) {
+        amount -= d;
+        deductedTotal += d;
+      }
+      const partner = people.find((p) => p.id !== l.personId);
+      if (l.jointlyOwned && partner && !(deceasedFrom[partner.id] !== undefined && y >= deceasedFrom[partner.id])) {
+        return [
+          { ...l, amount: amount / 2 },
+          { ...l, amount: amount / 2, personId: partner.id },
+        ];
+      }
+      return [{ ...l, amount }];
+    });
+    const calYear = startYear + y;
+    if (calYear >= 2029) {
+      // Salary sacrifice NI relief only on the first £2,000 a year from April 2029 (Budget 2025; Voyant help
+      // 45658611793051).
+      for (const a of Object.values(pensionAdj)) a.niOff = Math.min(a.niOff, 2000);
+    }
+    const taxResult = netMonthlyIncomeFromLines(
+      taxLines,
+      yearAssumptions,
+      pastSPA(y),
+      pensionAdj,
+      (pid) => people.find((p) => p.id === pid)?.taxCountry === "scotland",
+      calYear >= 2027 ? 2 : 0
+    );
+    taxResult.netMonthly += deductedTotal;
     // Arrears: this year's self-assessed tax isn't paid yet; last year's is paid now (Voyant help 205259609).
     const monthlyIncome =
       taxResult.netMonthly + interventionMonthlyDelta + (taxResult.arrearsAnnual - arrearsFromLastYear) / 12;
     if (arrearsFromLastYear > 0) events.push(`Tax for last year paid now: ${money(arrearsFromLastYear)}`);
     arrearsFromLastYear = taxResult.arrearsAnnual;
+    // Taxable windfalls this year: taxed as income, gains or dividends, paid next year (Voyant help 360046173552).
+    for (const iv of interventions) {
+      if (iv.type !== "lump_sum_in" || iv.year !== y || !iv.windfallTax || !(iv.amount && iv.amount > 0)) continue;
+      if ((assumptions.region ?? "UK") !== "UK") continue;
+      const pid = resolvePersonId(iv.ownerId, people);
+      const other = taxResult.grossByPerson[pid] || 0;
+      const cfg = yearUkTax;
+      const scot = people.find((p) => p.id === pid)?.taxCountry === "scotland";
+      let wTax = 0;
+      if (iv.windfallTax === "income") {
+        wTax = calcUKTaxAndNI(other + iv.amount, cfg, 0, other + iv.amount, scot).tax - calcUKTaxAndNI(other, cfg, 0, other, scot).tax;
+      } else if (iv.windfallTax === "dividend") {
+        wTax = ukDividendTax(other, iv.amount, cfg, yearUkAllow);
+      } else {
+        const gain = Math.max(0, iv.amount - yearUkAllow.cgtAnnualExempt);
+        const rate = ukMarginalBand(other + iv.amount, cfg) === "basic" ? yearUkAllow.cgtBasicPct : yearUkAllow.cgtHigherPct;
+        wTax = gain * (rate / 100);
+      }
+      if (wTax > 0) {
+        arrearsFromLastYear += wTax;
+        events.push(`${iv.label || "Windfall"}: ${money(wTax)} tax due next year`);
+      }
+    }
 
     // Step debts forward (with per-debt principal/interest deltas)
     const debtStep = stepDebtsOneYear(debtState);
@@ -1601,6 +1688,7 @@ export function projectYears(
       return earnings > 0 ? earnings : 3600 * tf;
     };
     const isaUsedByPerson: Record<string, number> = {};
+    const cashIsaUsedByPerson: Record<string, number> = {};
     const isaRoom = (ownerId: string): number =>
       ukAllow
         ? Math.max(0, (ukAllow.isaAllowance ?? DEFAULT_UK_ALLOWANCES.isaAllowance ?? 0) - (isaUsedByPerson[ownerId] || 0))
@@ -1685,7 +1773,14 @@ export function projectYears(
       // ISA allowance, per person per year, across all their ISAs. What doesn't fit stays as cash and flows
       // on down the surplus list, like a capped pension (21 Oct 2026: a test paid £36k into one ISA in a year).
       if (b.wrapper === "isa" && b.kind !== "pension" && ukAllow && yearContribution > 0) {
-        const room = isaRoom(b.ownerId);
+        // Cash ISAs for under-65s are limited to £12,000 within the £20,000 from April 2027 (Budget 2025; Voyant
+        // help 45658611793051).
+        const ownerAge = people.find((p) => p.id === b.ownerId)?.currentAge;
+        const cashCap =
+          b.kind === "cash" && startYear + y >= 2027 && (ownerAge === undefined || ownerAge + y < 65)
+            ? Math.max(0, 12000 * tf - (cashIsaUsedByPerson[b.ownerId] || 0))
+            : Infinity;
+        const room = Math.min(isaRoom(b.ownerId), cashCap);
         if (yearContribution > room) {
           const cashNeeded = room / contributionMultiplier;
           if (!fromPay(b)) refusedByLimit += cashContribution - cashNeeded;
@@ -1694,6 +1789,7 @@ export function projectYears(
           isaCapped = true;
         }
         isaUsedByPerson[b.ownerId] = (isaUsedByPerson[b.ownerId] || 0) + yearContribution;
+        if (b.kind === "cash") cashIsaUsedByPerson[b.ownerId] = (cashIsaUsedByPerson[b.ownerId] || 0) + yearContribution;
       }
       if (!fromPay(b)) actualContributions += cashContribution;
       const grown = (b.balance + yearContribution) * (1 + potGrowth(b, y));
@@ -1815,7 +1911,7 @@ export function projectYears(
       };
       for (const [ownerId, inc] of Object.entries(byOwner)) {
         const band = ukMarginalBand(grossByPerson[ownerId] || 0, ukTaxCfg);
-        const t = calcUKInvestmentTax(inc.dividends, inc.interest, band, ukAllow, ukTaxCfg);
+        const t = calcUKInvestmentTax(inc.dividends, inc.interest, band, ukAllow, ukTaxCfg, startYear + y >= 2027 ? 2 : 0);
         // Only count what was actually taken, so the reported tax matches the
         // money that really moved.
         investmentTaxPaid += t.total;

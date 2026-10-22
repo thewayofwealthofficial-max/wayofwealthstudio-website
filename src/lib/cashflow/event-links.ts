@@ -44,7 +44,7 @@ export function resolveLink(plan: CashflowPlanData, link: EventLink, kind: "star
  */
 export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
   const hasLinks =
-    plan.income.some((l) => l.yearLinks) || plan.savings.some((s) => s.yearLinks);
+    plan.income.some((l) => l.yearLinks) || plan.savings.some((s) => s.yearLinks) || plan.expenses.some((e) => e.yearLinks);
   if (!hasLinks) return plan;
   const events = new Map(timelineEvents(plan).map((iv) => [iv.id, iv]));
   let changed = false;
@@ -94,7 +94,22 @@ export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
     return next;
   });
 
-  return changed ? { ...plan, income, savings } : plan;
+  const expenses = plan.expenses.map((e) => {
+    const links = e.yearLinks;
+    if (!links) return e;
+    let next = e;
+    for (const k of ["start", "end"] as const) {
+      const link = links[k];
+      if (!link) continue;
+      const yy = linkedYear(events, link, k === "start" ? MIN_START : MIN_END);
+      const field = k === "start" ? "startYear" : "endYear";
+      if (yy !== null && next[field] !== yy) next = { ...next, [field]: yy };
+    }
+    if (next !== e) changed = true;
+    return next;
+  });
+
+  return changed ? { ...plan, income, savings, expenses } : plan;
 }
 
 /**

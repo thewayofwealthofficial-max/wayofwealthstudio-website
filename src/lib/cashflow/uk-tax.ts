@@ -45,7 +45,9 @@ export function calcUKInvestmentTax(
   interest: number,
   band: UKBand,
   a: UKTaxAllowances,
-  tax: UKTaxAssumptions = DEFAULT_UK_TAX
+  tax: UKTaxAssumptions = DEFAULT_UK_TAX,
+  /** Extra points on savings income: +2 from April 2027 (Budget 2025; Voyant help 45658611793051). */
+  savingsBumpPct = 0
 ): { dividendTax: number; interestTax: number; total: number } {
   const divRatePct =
     band === "basic" ? a.dividendBasicPct : band === "higher" ? a.dividendHigherPct : a.dividendAdditionalPct;
@@ -54,7 +56,7 @@ export function calcUKInvestmentTax(
   const psa = band === "basic" ? a.psaBasic : band === "higher" ? a.psaHigher : 0;
 
   const dividendTax = Math.max(0, dividends - a.dividendAllowance) * (divRatePct / 100);
-  const interestTax = Math.max(0, interest - psa) * (incomeRatePct / 100);
+  const interestTax = Math.max(0, interest - psa) * ((incomeRatePct + savingsBumpPct) / 100);
   return { dividendTax, interestTax, total: dividendTax + interestTax };
 }
 
@@ -75,7 +77,8 @@ export function calcUKTaxAndNI(
    *  higher-rate relief is given (Voyant help 51264574424475). */
   bandExtension = 0,
   /** Total income for the personal allowance taper, when more than annualGross (e.g. dividends on top). */
-  taperIncome = annualGross
+  taperIncome = annualGross,
+  scottish = false
 ): { tax: number; ni: number; total: number; takeHome: number } {
   if (annualGross <= 0) return { tax: 0, ni: 0, total: 0, takeHome: 0 };
 
@@ -105,6 +108,11 @@ export function calcUKTaxAndNI(
   const taxable = Math.max(0, annualGross - effectivePA);
   const basicCap = Math.max(0, basicRateThreshold - pa0) + bandExtension;
   const higherCap = Math.max(0, higherRateThreshold) + bandExtension;
+  if (scottish) {
+    const ni0 = calcUKNI(annualGross, niMainRatePct, niUpperRatePct, niPrimaryThreshold, niUpperEarningsLimit);
+    const sTax = scottishIncomeTax(taxable, pa0 / 12570, bandExtension);
+    return { tax: sTax, ni: ni0, total: sTax + ni0, takeHome: annualGross - sTax - ni0 };
+  }
 
   let tax = 0;
   if (taxable <= basicCap) {
@@ -187,5 +195,31 @@ export function ukDividendTax(
   slice(basicTop, a.dividendBasicPct);
   slice(higherTop, a.dividendHigherPct);
   slice(Infinity, a.dividendAdditionalPct);
+  return tax;
+}
+
+/**
+ * Scottish income tax on taxable income (after the personal allowance), 2026/27 (gov.uk/scottish-income-tax,
+ * checked 22 Oct 2026): starter 19% to £16,537, basic 20% to £29,526, intermediate 21% to £43,662, higher 42% to
+ * £75,000, advanced 45% to £125,140, top 48%. Thresholds are total income with the standard allowance, so as
+ * taxable slices they sit £12,570 lower (top starts where the allowance has gone). `scale` grows them with the tax
+ * table after the freeze; `bandExtension` widens them for relief-at-source pension payments.
+ */
+export function scottishIncomeTax(taxable: number, scale = 1, bandExtension = 0): number {
+  const tops: Array<[number, number]> = [
+    [(16537 - 12570) * scale + bandExtension, 19],
+    [(29526 - 12570) * scale + bandExtension, 20],
+    [(43662 - 12570) * scale + bandExtension, 21],
+    [(75000 - 12570) * scale + bandExtension, 42],
+    [125140 * scale + bandExtension, 45],
+    [Infinity, 48],
+  ];
+  let tax = 0;
+  let from = 0;
+  for (const [top, rate] of tops) {
+    if (taxable <= from) break;
+    tax += (Math.min(taxable, top) - from) * (rate / 100);
+    from = top;
+  }
   return tax;
 }

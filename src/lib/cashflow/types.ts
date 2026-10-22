@@ -58,6 +58,9 @@ export type Person = {
    *  retirement card instead, so there is one place to set each. Unset = this person never "retires". */
   retirementAge?: number;
   statePensionAnnual?: number;
+  /** Where they pay income tax. Scotland uses the Scottish bands on earnings, pensions and rent (Voyant help
+   *  360007479191; gov.uk/scottish-income-tax 2026/27). Unset = England, Wales and Northern Ireland. */
+  taxCountry?: "scotland";
   /** Age they're assumed to live to. Default 90: Voyant's Mortality event is "usually placed initially at age
    *  90" and the later of the two marks the plan's end (help 4405509976475). */
   mortalityAge?: number;
@@ -127,6 +130,12 @@ export type IncomeLine = {
    */
   /** Rent from a property pot: it stops when that property is sold (Voyant help 14618432988059). */
   linkedPropertyId?: string;
+  /** Owned jointly by a couple: split equally between them for tax ("If the BTL property has joint owners, the
+   *  income will be split equally", Voyant help 360047948732). */
+  jointlyOwned?: boolean;
+  /** Other income (rent, other) carries on to the surviving partner by default (Voyant help 201166427);
+   *  false = it stops when its owner dies. */
+  passesToSurvivor?: boolean;
   dbFutureValue?: boolean;
   /**
    * Still building up (Voyant "Active", help 360054426571, 24722437283739): the pension is worked out from the
@@ -205,12 +214,18 @@ export type ExpenseLine = {
    *  then the whole cost each time, not a monthly figure. It falls first in the start year (year 1 if none) and
    *  every N years after, up to the end year, growing with inflation. */
   everyYears?: number;
+  /** A tax-deductible cost, e.g. rental property costs: it's taken off this income line before income tax
+   *  (Voyant help 115000087223). Still paid as a cost. */
+  deductibleFromIncomeId?: string;
   /** This cost's own yearly inflation %, instead of the plan's (Voyant help 360044947012). */
   inflationPct?: number;
   /** Years this cost runs (21 Oct 2026, Voyant has start and stop on every expense): childcare that ends,
    *  school fees that start. Same rules as an income line's window; unset = from today, for ever. */
   startYear?: number;
   endYear?: number;
+  /** Start/end following a timeline event (Voyant: "Once linked to an expense, the event will schedule when the
+   *  expense is to occur", help 201067033). */
+  yearLinks?: { start?: EventLink; end?: EventLink };
 };
 
 /** Default funding priority for an expense — explicit override wins, else
@@ -562,6 +577,9 @@ export type Intervention = {
    *  "using any income and liquid assets available at that point" (Voyant help 360022319672). */
   debtId?: string;
   payOff?: boolean;
+  /** lump_sum_in: a taxable windfall, taxed as income, capital gains or dividends, the tax paid the next year
+   *  (Voyant help 360046173552). Unset = not taxable. */
+  windfallTax?: "income" | "cgt" | "dividend";
   /** transfer: move `amount` a year from one pot to another, from `year` to `untilYear` (default: one-off),
    *  optionally growing with inflation. Not limited by withdrawal limits (Voyant help 360038680512, 360054647151).
    *  Taxed on the way out like any withdrawal (CGT on a GIA, income tax on a pension). */
