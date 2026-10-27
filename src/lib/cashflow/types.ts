@@ -22,6 +22,8 @@ export type AmountStep = {
   fromYear: number;
   /** Monthly amount (same units as the line — gross if the line isGross). */
   amount: number;
+  /** Voyant's "Step Occurs" event (help 360047717051): fromYear follows this event and moves when it moves. */
+  link?: EventLink;
 };
 
 /**
@@ -485,7 +487,10 @@ export type InterventionType =
   | "critical_illness"
   | "disability"
   | "disability_end"
-  | "transfer";
+  | "transfer"
+  /** A plain life event with no money of its own, like Voyant's timeline events (help 201067033): it only times
+   *  the things linked to it (a start, an end, a step). */
+  | "milestone";
 
 /**
  * Region-aware annual contribution limits for tax-advantaged accounts.
@@ -955,6 +960,8 @@ export type YearProjection = {
    *  even. This is the "you tried to save more than this year could afford"
    *  signal that powers the per-year affordability note. */
   unaffordableContribution?: number;
+  /** unaffordableContribution split by pot: which pots' planned saving wasn't paid in, and how much. */
+  unaffordableByPot?: Array<{ id: string; label: string; planned: number; notPaid: number }>;
   /** Taken out this year by planned withdrawals (drawdown strategies), gross.
    *  These happen whether the year needs the money or not — unlike assetsDrawn,
    *  which is the engine plugging a gap. Voyant colours the two differently. */
@@ -1060,6 +1067,22 @@ export type YearProjection = {
   /** The client's own money paid into pensions this year (relief-at-source net, or from pay before tax), not
    *  the employer's or the tax relief. Voyant help 39299453959835 "Pension Contributions". */
   pensionPaidByClient?: number;
+  /** The cash flow statement (27 Oct 2026). Voyant shows income gross, then taxes, spending and saving against it
+   *  (help 205468129). Record only. With annualIncome, annualTaxPaid, annualNIPaid, annualExpenses and
+   *  actualContributions: income as entered − pensionFromPay − tax − NI + taxTiming + lifeEventIncome + withdrawals
+   *  − spending − debtPaid − saving = annualSurplus. */
+  statement?: {
+    /** Pension paid through payroll before tax (net pay, salary sacrifice) off a before-tax salary. */
+    pensionFromPay: number;
+    /** Tax worked out this year but paid next year, less last year's paid now (Voyant help 205259609). */
+    taxTiming: number;
+    /** Income changes from life events, after tax. */
+    lifeEventIncome: number;
+    /** Cash from planned withdrawals, after their tax. */
+    withdrawals: number;
+    /** Cash handed over on debts. */
+    debtPaid: number;
+  };
 };
 
 export type RetirementSettings = {
@@ -1312,6 +1335,25 @@ export function resolvePersonId(
   const first = people[0]?.id ?? DEFAULT_PERSON_ID;
   if (!id || id === "joint") return first;
   return people.some((p) => p.id === id) ? id : first;
+}
+
+/**
+ * How a pension is paid when the coach hasn't picked (27 Oct 2026). Voyant ties it to the type of scheme (help
+ * 51264574424475): personal pensions and SIPPs get relief at source, while the "net pay arrangement" is "the basis on
+ * which most occupational schemes are operated", paid through payroll before tax. So the pension of someone with a
+ * salary is a workplace pension; anyone else (self-employed, no earnings) can only have a personal one.
+ */
+export function pensionMethodOf(
+  s: { pensionMethod?: SavingsAllocation["pensionMethod"]; paidFromPay?: boolean; ownerId?: string },
+  income: Array<{ personId?: string; kind?: IncomeKind }>,
+  people: Person[]
+): NonNullable<SavingsAllocation["pensionMethod"]> {
+  if (s.pensionMethod) return s.pensionMethod;
+  if (s.paidFromPay) return "net_pay";
+  const owner = resolvePersonId(s.ownerId, people);
+  return income.some((l) => l.kind === "employment" && resolvePersonId(l.personId, people) === owner)
+    ? "net_pay"
+    : "relief_at_source";
 }
 
 export const EMPTY_PLAN: CashflowPlanData = {

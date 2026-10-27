@@ -4,7 +4,7 @@
  * Copied from the coaching portal by scripts/sync-cashflow-engine.mjs.
  * Change the portal, run `npm run sync:engine`, commit the result.
  */
-import { DEFAULT_MORTALITY_AGE, type CashflowPlanData, type EventLink, type IncomeLine, type Intervention } from "./types";
+import { DEFAULT_MORTALITY_AGE, type AmountStep, type CashflowPlanData, type EventLink, type IncomeLine, type Intervention } from "./types";
 
 /**
  * Events drive the plan (10 Oct 2026, Voyant's events as shared timing anchors).
@@ -13,7 +13,8 @@ import { DEFAULT_MORTALITY_AGE, type CashflowPlanData, type EventLink, type Inco
  * Stops working", "pension starts the year of Stops working". The linked year is always the event's year plus
  * the link's offset, so moving the event once moves everything linked to it.
  *
- * What can be linked: an income line's start / end, a pot's contribution start / end, a pot's drawdown start.
+ * What can be linked: an income line's start / end, a pot's contribution start / end, a pot's drawdown start, and
+ * any step on an income, cost or pot (Voyant's "Step Occurs", help 360047717051).
  * Anything not linked keeps its typed-in year exactly as before. A link to an event that has been deleted is
  * dropped and the year it last had is kept.
  *
@@ -43,13 +44,35 @@ export function resolveLink(plan: CashflowPlanData, link: EventLink, kind: "star
  * cheap to call on every edit and never causes a needless re-render.
  */
 export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
+  const stepLinked = (steps: AmountStep[] | undefined) => !!steps?.some((s) => s.link);
   const hasLinks =
-    plan.income.some((l) => l.yearLinks) || plan.savings.some((s) => s.yearLinks) || plan.expenses.some((e) => e.yearLinks);
+    plan.income.some((l) => l.yearLinks || stepLinked(l.steps)) ||
+    plan.savings.some((s) => s.yearLinks || stepLinked(s.steps)) ||
+    plan.expenses.some((e) => e.yearLinks || stepLinked(e.steps));
   if (!hasLinks) return plan;
   const events = new Map(timelineEvents(plan).map((iv) => [iv.id, iv]));
   let changed = false;
+  // A step follows its event. An event that's gone drops the link and keeps the step's last year.
+  const linkSteps = (steps: AmountStep[] | undefined): AmountStep[] | undefined => {
+    if (!stepLinked(steps)) return steps;
+    let moved = false;
+    const out = steps!.map((s) => {
+      if (!s.link) return s;
+      const y = linkedYear(events, s.link, MIN_START);
+      if (y === null) {
+        moved = true;
+        return { fromYear: s.fromYear, amount: s.amount };
+      }
+      if (y === s.fromYear) return s;
+      moved = true;
+      return { ...s, fromYear: y };
+    });
+    return moved ? out : steps;
+  };
 
   const income = plan.income.map((l) => {
+    const st = linkSteps(l.steps);
+    if (st !== l.steps) l = { ...l, steps: st };
     const links = l.yearLinks;
     if (!links) return l;
     let next = l;
@@ -65,11 +88,12 @@ export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
     if (Object.keys(keep).length !== Object.keys(links).length) {
       next = { ...next, yearLinks: Object.keys(keep).length ? keep : undefined };
     }
-    if (next !== l) changed = true;
     return next;
   });
 
   const savings = plan.savings.map((s) => {
+    const st = linkSteps(s.steps);
+    if (st !== s.steps) s = { ...s, steps: st };
     const links = s.yearLinks;
     if (!links) return s;
     let next = s;
@@ -90,11 +114,12 @@ export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
     if (Object.keys(keep).length !== Object.keys(links).length) {
       next = { ...next, yearLinks: Object.keys(keep).length ? keep : undefined };
     }
-    if (next !== s) changed = true;
     return next;
   });
 
   const expenses = plan.expenses.map((e) => {
+    const st = linkSteps(e.steps);
+    if (st !== e.steps) e = { ...e, steps: st };
     const links = e.yearLinks;
     if (!links) return e;
     let next = e;
@@ -105,10 +130,13 @@ export function applyEventLinks(plan: CashflowPlanData): CashflowPlanData {
       const field = k === "start" ? "startYear" : "endYear";
       if (yy !== null && next[field] !== yy) next = { ...next, [field]: yy };
     }
-    if (next !== e) changed = true;
     return next;
   });
 
+  changed =
+    income.some((l, i) => l !== plan.income[i]) ||
+    savings.some((s, i) => s !== plan.savings[i]) ||
+    expenses.some((e, i) => e !== plan.expenses[i]);
   return changed ? { ...plan, income, savings, expenses } : plan;
 }
 

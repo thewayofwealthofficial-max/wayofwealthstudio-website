@@ -15,7 +15,7 @@ import type {
   SavingsAllocation,
   YearProjection,
 } from "./types";
-import { DEFAULT_UK_TAX, DEFAULT_UK_ALLOWANCES, DEFAULT_US_TAX_SINGLE, DEFAULT_LIQUIDATION_ORDER, expensePriority, resolveSteppedAmount, effectivePeople, resolvePersonId, taxCategoryOf } from "./types";
+import { DEFAULT_UK_TAX, DEFAULT_UK_ALLOWANCES, DEFAULT_US_TAX_SINGLE, DEFAULT_LIQUIDATION_ORDER, expensePriority, resolveSteppedAmount, effectivePeople, resolvePersonId, taxCategoryOf, pensionMethodOf } from "./types";
 import type { TaxWrapper } from "./types";
 import { mortgageMonthlyPayment, totalDebtBalance } from "./cashflow-calc";
 import { calcUKTaxAndNI, calcUKNI, UK_CLASS4_MAIN_PCT, UK_CLASS4_UPPER_PCT, ukDividendTax, ukMarginalBand, taperedPensionAllowance, calcUKInvestmentTax } from "./uk-tax";
@@ -57,8 +57,11 @@ function netMonthlyIncomeFromLines(
   /** The same tax split by person and type, for the Year View (22 Oct 2026, Voyant help 4405810496795: "tracked
    *  by client (payee) and the type of tax"). Record only: sums to taxAnnual / niAnnual. */
   taxByPerson: Record<string, { incomeTax: number; dividendTax: number; ni: number }>;
+  /** Pension paid before tax that actually came off a before-tax salary (net pay, salary sacrifice). */
+  preTaxAnnual: number;
 } {
   let arrearsAnnual = 0;
+  let preTaxAnnual = 0;
   let netMonthly = 0;
   let grossAnnual = 0;
   let taxAnnual = 0;
@@ -113,6 +116,7 @@ function netMonthlyIncomeFromLines(
       const cfg = assumptions.ukTax ?? DEFAULT_UK_TAX;
       const adj = pensionAdj[pid];
       const preTax = Math.min(annualGross, adj?.preTax ?? 0);
+      preTaxAnnual += preTax;
       const t = calcUKTaxAndNI(annualGross - preTax, cfg, adj?.bandExt ?? 0, annualGross - preTax + dividends, scottishFor(pid));
       // Property income rate rise: our approximation adds the extra points to the rental income that is taxable
       // after any allowance the other income left (neither Voyant nor the Budget notes give the stacking).
@@ -128,7 +132,9 @@ function netMonthlyIncomeFromLines(
         taxAnnual += divTax;
         (taxByPerson[pid] ??= { incomeTax: 0, dividendTax: 0, ni: 0 }).dividendTax += divTax;
         arrearsAnnual += divTax;
-        netMonthly += dividends / 12; // received in full now; the tax is paid next year
+        // Received in full now: the tax comes off here and is put back by the arrears, so it is paid next year.
+        // It was never taken off at all, so dividend tax was never paid (27 Oct 2026).
+        netMonthly += (dividends - divTax) / 12;
         grossAnnual += dividends;
         grossByPerson[pid] = annualGross + dividends;
       }
@@ -163,7 +169,7 @@ function netMonthlyIncomeFromLines(
       netMonthly += grossMonthly;
     }
   }
-  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson, arrearsAnnual, taxByPerson };
+  return { netMonthly, grossAnnual, taxAnnual, niAnnual, grossByPerson, arrearsAnnual, taxByPerson, preTaxAnnual };
 }
 
 /**
@@ -548,7 +554,7 @@ export function projectYears(
       yieldPct: s.yieldPct,
       growthPct: s.growthPct,
       feesPct: s.feesPct,
-      pensionMethod: s.pensionMethod,
+      pensionMethod: s.kind === "pension" ? pensionMethodOf(s, plan.income, people) : s.pensionMethod,
       employerMonthly: s.employerMonthly,
       employeePctOfSalary: s.employeePctOfSalary,
       employerPctOfSalary: s.employerPctOfSalary,
@@ -1373,6 +1379,7 @@ export function projectYears(
     const monthlyIncome =
       taxResult.netMonthly + interventionMonthlyDelta + (taxResult.arrearsAnnual - arrearsFromLastYear) / 12;
     if (arrearsFromLastYear > 0) events.push(`Tax for last year paid now: ${money(arrearsFromLastYear)}`);
+    const taxTiming = taxResult.arrearsAnnual - arrearsFromLastYear; // for the statement
     arrearsFromLastYear = taxResult.arrearsAnnual;
     // Taxable windfalls this year: taxed as income, gains or dividends, paid next year (Voyant help 360046173552).
     for (const iv of interventions) {
@@ -1782,6 +1789,7 @@ export function projectYears(
     let actualContributions = 0;
     let pensionPaidByClient = 0; // record only, for the itemised expenses report (22 Oct 2026)
     let refusedByLimit = 0;
+    const unaffordableByPot: NonNullable<YearProjection["unaffordableByPot"]> = [];
     buckets = buckets.map((b) => {
       // Opening balance is what the pot held BEFORE this year's life events, so
       // a deposit or a lump sum shows up as a visible movement rather than a
@@ -1797,6 +1805,12 @@ export function projectYears(
       const monthlyThisYear = effectiveMonthly(b, y);
       // Cash the client actually hands over, after the affordability scale-back.
       let cashContribution = (inWindow ? monthlyThisYear * 12 : 0) * scaleFor(b);
+      // Which pot missed out, counted the same way as plannedContributions.
+      if (unaffordableContribution > 0 && inWindow && !fromPay(b) && !atTarget(b)) {
+        const planned = monthlyThisYear * 12;
+        const notPaid = planned - cashContribution;
+        if (notPaid > 0.005) unaffordableByPot.push({ id: b.id, label: b.label, planned, notPaid });
+      }
       // A cash pot with a target stops filling at it; the rest stays as this year's spare cash, which then
       // flows on down the surplus list. Sam's £7,500 emergency fund kept filling to £209k (21 Oct 2026).
       if (b.kind === "cash" && b.target && b.target > 0) {
@@ -2382,6 +2396,7 @@ export function projectYears(
       plannedContributions: plannedContributions || undefined,
       actualContributions: actualContributions || undefined,
       unaffordableContribution: unaffordableContribution || undefined,
+      unaffordableByPot: unaffordableByPot.length ? unaffordableByPot : undefined,
       plannedWithdrawals: plannedWithdrawalsGross || undefined,
       plannedWithdrawalTax: plannedWithdrawalTax || undefined,
       assetsDrawn: assetsDrawn || undefined,
@@ -2417,6 +2432,13 @@ export function projectYears(
             .filter((l) => l.annual > 0),
       premiumsPaid: premiumsMonthly * 12 || undefined,
       pensionPaidByClient: pensionPaidByClient || undefined,
+      statement: {
+        pensionFromPay: taxResult.preTaxAnnual,
+        taxTiming,
+        lifeEventIncome: interventionMonthlyDelta * 12,
+        withdrawals: plannedWithdrawalCash,
+        debtPaid: annualDebtPaid,
+      },
     });
   }
 
