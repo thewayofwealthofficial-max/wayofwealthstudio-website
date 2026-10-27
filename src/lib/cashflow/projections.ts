@@ -461,16 +461,23 @@ export function projectYears(
       ownerId?: string;
       salaryLineId?: string;
       indexed?: boolean;
+      kind?: AssetKind;
+      pensionMethod?: string;
     },
     y: number
-  ): number =>
-    Math.max(
+  ): number => {
+    const entered = Math.max(
       0,
       (b.employeePctOfSalary
         ? (salaryFor(b, y) * b.employeePctOfSalary) / 100
         : (resolveSteppedAmount(b.baseMonthly, b.steps, y) ?? b.baseMonthly) * (b.indexed ? cumInfl(y) : 1)) +
         b.deltaFromInterventions
     );
+    // Relief at source: what's entered is the total going in, relief included, so the client pays it less the
+    // relief (Voyant help 51264574424475: "gross annual contributions of £10,000 ... an individual contribution
+    // ... of £8,000, paid from post-tax income", 27 Oct 2026). Everything after this works in the client's cash.
+    return b.kind === "pension" && b.pensionMethod === "relief_at_source" ? entered / taxReliefMultiplier : entered;
+  };
   /** Paid through payroll: net pay, salary sacrifice, or the older paidFromPay box. Never from take-home. */
   const fromPay = (b: { paidFromPay?: boolean; pensionMethod?: string }) =>
     !!b.paidFromPay || b.pensionMethod === "net_pay" || b.pensionMethod === "salary_sacrifice";

@@ -423,8 +423,9 @@ export type SavingsAllocation = {
   paidFromPay?: boolean;
   /**
    * How a pension is paid, as Voyant splits it (help 51264574424475, 21 Oct 2026):
-   * - "relief_at_source" (default): the client pays monthlyAmount from take-home and basic-rate relief is added
-   *   on top; higher-rate relief comes through the tax bands, which widen by the gross payment.
+   * - "relief_at_source": monthlyAmount is the total going in, relief included (Voyant's gross figure, 27 Oct
+   *   2026); the client pays it less the basic-rate relief from take-home. Higher-rate relief comes through the
+   *   tax bands, which widen by the gross payment.
    * - "net_pay": through payroll before tax (most workplace schemes). Full relief at their top rate.
    * - "salary_sacrifice": given up from salary before tax and National Insurance.
    * For net pay and salary sacrifice, monthlyAmount is what goes into the pot. With a before-tax salary line it
