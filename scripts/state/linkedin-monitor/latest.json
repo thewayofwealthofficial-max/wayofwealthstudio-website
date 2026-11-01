@@ -1,44 +1,19 @@
 {
-  "date": "2026-10-01",
+  "date": "2026-11-01",
   "posts": [
     {
-      "url": "https://www.linkedin.com/posts/caroline-cookson_im-in-a-bit-of-an-inexplicable-grump-this-activity-7442846917119590400-bAmE",
-      "area": "bridge",
-      "author": "Caroline Cookson",
-      "followers": 2161,
-      "reactions": 21,
-      "comments": 7,
-      "per1k": 12.96,
-      "hook": "list",
-      "structure": "list",
-      "why": "Opens with a relatable admission of being in a grump, making the numbered pricing complaints feel personal rather than academic.",
-      "firstLine": "I'm in a bit of an inexplicable grump* this week. So I'm channelling that energy into today's post: my top 10 pricing pe"
-    },
-    {
-      "url": "https://www.linkedin.com/posts/hammaadsiddeeqee_i-spent-1500-on-iman-gadzhis-program-2-activity-7363149945907859458-roOa",
-      "area": "bridge",
-      "author": "Hammaad Siddeeqee",
-      "followers": 2831,
-      "reactions": 27,
-      "comments": 8,
-      "per1k": 12.36,
-      "hook": "confession",
-      "structure": "story with lesson",
-      "why": "Opens with a specific dollar amount spent on a named program, immediately signalling a personal financial risk and payoff story.",
-      "firstLine": "I spent $1,500 on Iman Gadzhi's program 2 years ago."
-    },
-    {
-      "url": "https://www.linkedin.com/posts/jamessmithlinkedin_heres-one-of-my-golden-rules-of-marketing-activity-7350553272795000832-AY_4",
-      "area": "bridge",
-      "author": "James Smith",
-      "followers": 51642,
-      "reactions": 90,
-      "comments": 15,
-      "per1k": 2.03,
-      "hook": "hot take",
+      "url": "https://www.linkedin.com/posts/crowe-uk_mtd-selfemployed-landlords-activity-7342895042124034049-93_k",
+      "area": "business",
+      "author": "Crowe UK",
+      "followers": 76289,
+      "reactions": 39,
+      "comments": 2,
+      "per1k": 0.54,
+      "hook": "news",
       "structure": "explainer",
-      "why": "Opens with a confident binary rule about pricing that makes readers immediately want to know which state they are in.",
-      "firstLine": "Here's one of my golden rules of marketing when it comes to pricing."
+      "topic": "tax bills and saving for tax",
+      "why": "The red alarm emoji and bold date anchor create urgency and signal a deadline that self-employed readers cannot ignore.",
+      "firstLine": "🚨 Starting from 6 April 2026, significant changes are coming to the way self-employed individuals and landlords manage "
     }
   ]
 }

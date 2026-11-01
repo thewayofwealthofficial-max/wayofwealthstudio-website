@@ -141,9 +141,38 @@
       ],
       "months": 1,
       "authors": 1
+    },
+    "news · explainer": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Crowe UK",
+          "per1k": 0.54,
+          "url": "https://www.linkedin.com/posts/crowe-uk_mtd-selfemployed-landlords-activity-7342895042124034049-93_k",
+          "firstLine": "🚨 Starting from 6 April 2026, significant changes are coming to the way self-employed individuals and landlords manage ",
+          "why": "The red alarm emoji and bold date anchor create urgency and signal a deadline that self-employed readers cannot ignore."
+        }
+      ],
+      "months": 1,
+      "authors": 1
     }
   },
-  "topics": {},
+  "topics": {
+    "tax bills and saving for tax": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Crowe UK",
+          "per1k": 0.54,
+          "url": "https://www.linkedin.com/posts/crowe-uk_mtd-selfemployed-landlords-activity-7342895042124034049-93_k",
+          "firstLine": "🚨 Starting from 6 April 2026, significant changes are coming to the way self-employed individuals and landlords manage ",
+          "why": "The red alarm emoji and bold date anchor create urgency and signal a deadline that self-employed readers cannot ignore."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    }
+  },
   "promoted": {
     "patterns": [],
     "topics": []
