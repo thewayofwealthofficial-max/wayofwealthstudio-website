@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // LinkedIn niche monitor (Joel, 28 Sep 2026): every Monday, find the best-performing PUBLIC LinkedIn posts from the
 // last 12 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
-//   1. Brave Search (past week) for public LinkedIn posts: money, small business money, and the bridge between them.
+//   1. Brave Search (past week) for public LinkedIn posts: money mindset, money habits and personal financial planning.
 //   2. Read each post's public page LOGGED OUT, the same method as research/2026-09-25-linkedin/v2 (JSON-LD counts).
 //      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 180 reads, monthly, 2.5-4 s apart).
 //   3. Rank by engagement per 1,000 followers (so small accounts that punch above their weight show up).
@@ -25,7 +25,7 @@ const { BRAVE_API_KEY, SERPER_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TE
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// The three areas from the LinkedIn research: A money, B the business, C the bridge.
+// The search areas. Originally (LinkedIn research): A money, B the business, C the bridge.
 // Widened 28 Sep after the first run found only 2 on-topic posts in 23: phrases this room actually uses.
 // 5 Oct 2026: B and C repointed from wellness practitioners to small business owners (BRAND.md §1, pains measured in
 // research/2026-10-05-small-business-pains/). Same number of searches as before.
@@ -33,10 +33,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // About 39 searches a week (~170 a month), well inside Brave's free $5 (1,000 searches) a month.
 const QUERIES = {
   money: ['money mindset coach', 'relationship with money', 'money story', 'money script', 'money blocks', 'money anxiety', 'emotional spending', 'money psychology', 'money and emotions', 'financial wellbeing', 'behavioural finance', 'scarcity mindset money'],
-  business: ['small business owner money stress', 'pay myself small business', 'tax bill self-employed', 'self assessment tax bill', 'saving for tax freelancer', 'feast or famine income', 'small business owner burnout', 'business owner take home pay', 'mixing business and personal money'],
-  bridge: ['undercharging', 'raise my prices coach', 'money guilt', 'money anxiety business owner', 'avoiding my business finances', 'always behind business money', 'business owner no profit', 'working hard nothing left business', 'profit first'],
-  // Wider room (Joel, 28 Sep: "go a bit broader"): money coaches and the money side of solo businesses.
-  wider: ['money coach', 'financial coach', 'freelancer pricing', 'self-employed income', 'irregular income budgeting', 'pay yourself a salary business owner', 'solopreneur money', 'small business cash flow owner', 'coaching business pricing'],
+  // 2 Nov 2026: business, tax and pricing terms swapped for broad personal finance (Joel: "refocus on money,
+  // personal finance, financial planning", per Dominik, Florian and Piper). Same number of searches as before.
+  habits: ['high earner no savings', 'lifestyle creep', 'living paycheck to paycheck high income', 'where does my money go', 'saving money habits', 'spending habits', 'looking rich vs being rich', 'keep more of what you earn', 'emergency fund'],
+  planning: ['financial planner', 'financial planning tips', 'personal finance', 'budgeting', 'money order of priorities', 'pension savings', 'start investing', 'net worth', 'financial independence'],
+  wider: ['money coach', 'financial coach', 'financial adviser', 'financial advisor', 'irregular income budgeting', 'variable income', 'big bonus what to do', 'money lessons', 'wealth building'],
 };
 
 // Google results via Serper.dev when SERPER_API_KEY is set (Google's own search API closed to new sign-ups in 2025);
@@ -155,7 +156,7 @@ async function main() {
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
-  const SCREEN = `You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about one of: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); charging, pricing or receiving money for your own work; or the money side of running a solo or small business, including coaching, therapy, consulting, freelance, creative and trades businesses (pricing, cash flow, irregular income, paying yourself, saving for the tax bill, burnout from the money side). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), topic (exactly one of: ${TOPICS.join(' | ')}), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","topic":"","why":""}]}`;
+  const SCREEN = `You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about personal money for individuals: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); spending and saving habits, lifestyle creep, looking rich vs becoming rich; personal financial planning (where money sits, emergency funds, the order to do money in, pensions and investing explained generally); or managing a high or irregular income. Business finance, pricing your services, invoicing and business tax are NOT relevant (2 Nov 2026). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), topic (exactly one of: ${TOPICS.join(' | ')}), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","topic":"","why":""}]}`;
   for (let start = 0; start < posts.length; start += 20) {
     const batch = posts.slice(start, start + 20);
     const tags = await claude(SCREEN, JSON.stringify(batch.map((p, i) => ({ i, text: p.body.slice(0, 1000) }))))

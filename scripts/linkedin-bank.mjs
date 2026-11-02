@@ -5,13 +5,14 @@
 
 // Fixed list so topics can be counted across months. Matches the monitor's relevance screen.
 export const TOPICS = [
-  'pricing and charging',
+  // 2 Nov 2026: broad personal finance (Joel). Pricing, paying yourself and tax removed; their old counts stay in bank.json, unused.
   'money mindset and beliefs',
   'money emotions and stress',
   'spending and saving habits',
+  'looking rich vs becoming rich',
+  'where the money sits: accounts and pots',
+  'the order to do money in',
   'irregular income and cash flow',
-  'paying yourself',
-  'tax bills and saving for tax', // added 5 Oct 2026: tax is pain 5 for small business owners
   'other money',
 ];
 

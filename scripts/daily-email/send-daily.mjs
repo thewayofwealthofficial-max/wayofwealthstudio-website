@@ -33,6 +33,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MODE = (process.env.DAILY_EMAIL_MODE || 'dry').toLowerCase().replace('test', 'review');
 const MODEL = process.env.DAILY_EMAIL_MODEL || 'claude-sonnet-4-6';
 const MAX_TRIES = 6; // 1 draft + 5 repairs
+const MIN_OWN = 0.35;
 const DENISE = 'denisedt@c.kajabimail.net';
 const MMB = 'lindsay@mindmoneybalance.com';
 
@@ -213,8 +214,11 @@ async function main() {
       type, phase, allowedLinks, sourceText, blockedNames: names,
       shapeText: shape?.body || '', shapeSubject: shape?.subject || '',
       passagesText: passages.map((p) => p.text).join('\n'),
-      requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
+      requireJoelWords: passages.length > 0,
     });
+    // At least 35% of the email from Joel's passages, every type and phase (Joel, 2 Nov 2026; same floor as LinkedIn).
+    const own = passages.length ? joelShare(candidate.body_plain, passages.map((p) => p.text).join(' ')) : 0;
+    if (passages.length && own < MIN_OWN) problems.push(`Too little of Joel's own words: ${Math.round(own * 100)}% of the email is from his passages (needs ${Math.round(MIN_OWN * 100)}%). Use his sentences, tidy only the filler.`);
     // Then the separate fact check (2 Nov 2026), only once the quick checks pass. A check that never finished counts as failed.
     let unbacked = 0;
     if (!problems.length && passages.length) {
@@ -224,7 +228,6 @@ async function main() {
     }
     // Quoted parts can hold client names or private words, so they're blanked in the public log.
     // Fact-check problems describe private passages, so only their count is logged.
-    const own = passages.length ? joelShare(candidate.body_plain, passages.map((p) => p.text).join(' ')) : 0;
     console.log(`Attempt ${attempt}: Joel's own words ${Math.round(own * 100)}%`);
     console.log(`Attempt ${attempt}: ${unbacked ? `fact check flagged ${unbacked} line(s)` : problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
