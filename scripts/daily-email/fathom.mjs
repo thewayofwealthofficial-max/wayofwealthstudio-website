@@ -13,12 +13,12 @@ async function get(key, path) {
   return res.json();
 }
 
-// Consecutive Joel segments joined into one passage.
-function joelPassages(transcript) {
+// Consecutive Joel segments joined into one passage. client=true gives the other side: consecutive client segments.
+function joelPassages(transcript, client = false) {
   const out = [];
   let cur = null;
   for (const seg of transcript || []) {
-    const isJoel = JOEL.test(seg?.speaker?.display_name || '');
+    const isJoel = JOEL.test(seg?.speaker?.display_name || '') !== client;
     if (isJoel) {
       if (!cur) cur = { start: seg.timestamp, text: '' };
       cur.text += (cur.text ? ' ' : '') + String(seg.text || '').trim();
@@ -45,6 +45,7 @@ export async function recentJoelWords({ key, days = 21, maxPassages = 12 }) {
   if (!key) return { passages: [], names: new Set() };
   const since = new Date(Date.now() - days * 86400e3).toISOString();
   const passages = [];
+  const clients = [];
   const names = new Set();
   let cursor = null;
   for (let page = 0; page < 5; page++) {
@@ -65,13 +66,22 @@ export async function recentJoelWords({ key, days = 21, maxPassages = 12 }) {
         if (words < 70 || words > 450) continue;
         passages.push({ date, text: p.text, score: storyScore(p.text) });
       }
+      // Clients' own small moments, in their words (Joel, 11 Oct 2026: "use as many client stories and my stories as
+      // possible, even the smallest moments"). Shorter than his: a moment, not a talk. Same privacy rules as above.
+      for (const p of joelPassages(m.transcript, true)) {
+        const words = p.text.split(/\s+/).length;
+        if (words < 30 || words > 300) continue;
+        clients.push({ date, text: p.text, score: storyScore(p.text) });
+      }
     }
     cursor = j.next_cursor;
     if (!cursor) break;
   }
   passages.sort((a, b) => b.score - a.score);
+  clients.sort((a, b) => b.score - a.score);
   return {
     passages: passages.filter((p) => p.score > 0).slice(0, maxPassages).map(({ date, text }) => ({ date, text })),
+    clients: clients.filter((p) => p.score > 0).slice(0, maxPassages).map(({ date, text }) => ({ date, text })),
     names: new Set([...names].filter((n) => n.length > 2)),
   };
 }

@@ -1,7 +1,8 @@
 // Starts the list emails on time. GitHub runs scheduled jobs 2 to 5.5 hours late (audit, 27 Sep), so the
 // "13:40 UK" email was landing around 18:00. Netlify's scheduler is punctual, so this runs at :40 every hour
 // and, at the right UK hour, tells GitHub to run the "List Emails" workflow now.
-//   Sun / Tue / Thu  13:40 UK   ·   Fri  07:40 UK   (UK time, so it follows the clock change by itself)
+//   Sun  13:40 UK   ·   Fri  07:40 UK   (UK time, so it follows the clock change by itself)
+//   2 Nov 2026: Tue and Thu are off (Joel: 2 emails a week).
 // The GitHub cron stays as a backup; send-daily.mjs refuses to send twice on the same day.
 //
 // Netlify env: GITHUB_DISPATCH_PAT, GITHUB_REPO (same as fred-approve.js).
@@ -12,7 +13,7 @@ exports.handler = async () => {
       .formatToParts(new Date()).map((p) => [p.type, p.value]),
   );
   const day = parts.weekday, hour = Number(parts.hour);
-  const due = (day === 'Fri' && hour === 7) || (['Sun', 'Tue', 'Thu'].includes(day) && hour === 13);
+  const due = (day === 'Fri' && hour === 7) || (day === 'Sun' && hour === 13);
   if (!due) return { statusCode: 200, body: `not due (${day} ${hour}:40 UK)` };
 
   const { GITHUB_DISPATCH_PAT, GITHUB_REPO } = process.env;

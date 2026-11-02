@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-// List emails, sent through Resend on the rhythm Joel approved (2026-09-24):
-//   Sun + Tue  letter   (shape: Denise Duffield-Thomas's Tue/Sun emails)
-//   Thu        post     (shape: Denise's Thursday episode email, pointing at this week's blog post)
-//   Fri        fridays  (Finance Fridays, shape: Mind Money Balance's weekly newsletter)
-// Monthly cycle (Denise): open the theme, teach, check in, then push the Cash Flow Session in the last 9 days (the call until 6 Oct 2026).
+// List emails, sent through Resend. From 2 Nov 2026 (Joel: 2 a week, value only, no ask):
+//   Sun  letter   (shape: Denise Duffield-Thomas's Tue/Sun emails)
+//   Fri  fridays  (Finance Fridays, shape: Mind Money Balance's weekly newsletter)
+// Monthly cycle (Denise): open the theme, teach, check in. The push in the last 9 days is off until the offer is set.
 //
 //   1. work out today's email type and month phase
 //   2. shape: the latest matching competitor email from Gmail (structure only)
 //   3. words: Joel's own passages from recent Fathom calls; facts only from voice.mjs + input
-//   4. draft, then automatic checks (up to 3 tries, problems fed back); skip the send if it still fails
+//   4. draft, then automatic checks and a separate fact check (up to 6 tries, problems fed back); skip the send if it still fails
 //   5. send: review = to Joel only; live = to the list. Joel gets the full text on Telegram.
 //
 // PRIVACY: this repo and its logs are public. Never print Fathom passages or draft bodies to the log.
@@ -22,7 +21,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getAccessToken, listMessages, getMessageFull } from '../gmail-client.mjs';
 import { systemPrompt, userPrompt, FROM_NAME, FROM_EMAIL, LINKS, THEMES, DEFAULT_THEME, JOEL_FACTS } from './voice.mjs';
-import { draftEmail } from './anthropic.mjs';
+import { draftEmail, factCheck } from './anthropic.mjs';
 import { checkDraft, clean } from './safety.mjs';
 import { recentJoelWords } from './fathom.mjs';
 import { pickTalk } from '../voice/talk.mjs';
@@ -68,12 +67,11 @@ function ukParts(d = new Date()) {
 
 function pickType(weekday) {
   if (process.env.EMAIL_TYPE) return process.env.EMAIL_TYPE;
-  return { Sun: 'letter', Tue: 'letter', Thu: 'post', Fri: 'fridays' }[weekday] || null;
+  return { Sun: 'letter', Fri: 'fridays' }[weekday] || null;
 }
 
-function pickPhase({ year, month, day, weekday }) {
-  const dim = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  if (day >= dim - 8) return weekday === 'Sun' ? 'push_pitch' : weekday === 'Tue' ? 'push_case' : 'push';
+function pickPhase({ day }) {
+  // 2 Nov 2026: no push phase (it sold the Cash Flow Session). The last days of the month are a check-in too.
   if (day >= 15) return 'checkin';
   if (day <= 4) return 'open';
   return 'teach';
@@ -183,11 +181,13 @@ async function main() {
   }
 
   const posts = await blogPosts();
-  const post = type === 'post' ? posts[0] : type === 'fridays' ? (posts[1] || posts[0]) : null;
+  // 2 Nov 2026: Fridays no longer links a blog post, so only the (switched-off) Thursday type would use one.
+  const post = type === 'post' ? posts[0] : null;
   const testimonials = phase === 'push_case' ? TESTIMONIALS : [];
   for (const t of testimonials) names.delete(t.who.split(/[ ,]/)[0]);
 
-  const allowedLinks = [LINKS.session, LINKS.reset, LINKS.site, ...(post ? [post.url] : [])];
+  // No links in any list email until the offer is set (Joel, 2 Nov 2026). Any link fails the safety check.
+  const allowedLinks = type === 'post' && post ? [post.url] : [];
   const sourceText = [JOEL_FACTS, ...passages.map((p) => p.text), post ? `${post.title} ${post.body}` : '', ...testimonials.map((t) => t.quote)].join('\n');
 
   // Draft + checks.
@@ -215,10 +215,18 @@ async function main() {
       passagesText: passages.map((p) => p.text).join('\n'),
       requireJoelWords: passages.length > 0 && (type === 'fridays' || phase === 'teach'),
     });
+    // Then the separate fact check (2 Nov 2026), only once the quick checks pass. A check that never finished counts as failed.
+    let unbacked = 0;
+    if (!problems.length && passages.length) {
+      try { problems = await factCheck({ apiKey: anthropicKey, model: MODEL, facts: JOEL_FACTS, passages: passages.map((p) => p.text).join('\n\n'), email: candidate }); }
+      catch (e) { if (/Anthropic API failed/.test(e.message)) throw e; problems = ['The fact check could not read its own reply. Try again.']; }
+      unbacked = problems.length;
+    }
     // Quoted parts can hold client names or private words, so they're blanked in the public log.
+    // Fact-check problems describe private passages, so only their count is logged.
     const own = passages.length ? joelShare(candidate.body_plain, passages.map((p) => p.text).join(' ')) : 0;
     console.log(`Attempt ${attempt}: Joel's own words ${Math.round(own * 100)}%`);
-    console.log(`Attempt ${attempt}: ${problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
+    console.log(`Attempt ${attempt}: ${unbacked ? `fact check flagged ${unbacked} line(s)` : problems.length ? problems.map((p) => p.replace(/"[^"]*"/g, '"…"').replace(/\(.*?\)/g, '(…)')).join(' | ') : 'passed all checks'}`);
     if (!problems.length) { draft = candidate; break; }
     if (!best || problems.length <= bestProblems.length) { best = candidate; bestProblems = problems; }
   }

@@ -1,0 +1,41 @@
+{
+ "note": "Joel's own best LinkedIn posts by impressions (his analytics screenshots, 11 Oct 2026). Public posts of his own, so stored in plain text. The writer copies their BUILD first for the jobs listed; never their story or wording.",
+ "posts": [
+  {
+   "id": "own-150k",
+   "own": true,
+   "urn": "urn:li:share:7510032626771009536",
+   "posted": "2026-09-27",
+   "impressions": 1184,
+   "reactions": 5,
+   "per1k": 1.76,
+   "words": 251,
+   "paragraphs": 11,
+   "story": true,
+   "jobs": [
+    "reach",
+    "nurture",
+    "convert"
+   ],
+   "why": "Long raw story: one moment first, Problem, Pursuit, short Payoff.",
+   "body": "I lost £150k and I remember thinking, I need to really sort myself out.\n\nNot like, I should probably look at my budget. Like genuinely, what the hell am I even doing in life.\n\nA bit before that, I'd been at this gathering where everyone around me was like, I'm a doctor, I studied law, I'm in real estate. And I'm just stood there. I felt very out of place, even though I was cool at my party, you know, in that world. I'm just like, I play music. That's it.\n\nSo I'd got into trading. Turned £3k into £150k with no background, just screens and this feeling that I'd finally figured something out.\n\nI hadn't.\n\nI remember having this conversation with someone close to me, right in the middle of that loss. Like, I need to go back to the drawing board. I need to go back to square one and figure out what I want to do in life. And that's how I ended up deciding to get a master's in behavioural economics, and then I trained as a qualified financial planner.\n\nNot another course. Not a hot tip.\n\nJust, okay. I need to actually understand what happened here, and I mean the behaviour, not just the trades.\n\nSo much can happen in five years. I've lived that in both directions.\n\nWhat shifted was deciding to go back to square one and look honestly at what was driving it all.\n\nThat's where the work I do now came from."
+  },
+  {
+   "id": "own-tkmaxx",
+   "own": true,
+   "urn": "urn:li:share:7511074277551529985",
+   "posted": "2026-09-30",
+   "impressions": 1108,
+   "reactions": 2,
+   "per1k": 0.7,
+   "words": 91,
+   "paragraphs": 5,
+   "story": false,
+   "jobs": [
+    "positioning"
+   ],
+   "why": "Short teaching story, a client's moment told by Joel: one vivid moment, 'There's a name for this', then the how.",
+   "body": "\"I went to TK Maxx every day one summer, and the security guard had a running joke with me: see you tomorrow, every time I walked out.\"\n\nThere's a name for this. Researchers call it earmarking: money labelled for something gets spent less than money that just sits there, feeling available.\n\nWhen income lands in one pot, it all feels yours. So it mostly goes.\n\nGive each pound a job before it reaches your account - Tax. Slow-month buffer. Steady weekly wage.\n\nOnly then does what's left actually feel guilt free."
+  }
+ ]
+}

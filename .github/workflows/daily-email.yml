@@ -1,15 +1,15 @@
 name: List Emails
 
-# The rhythm Joel approved (2026-09-24), sent through Resend:
-#   Sun / Tue / Thu 13:40 UK  (Denise Duffield-Thomas's slot)   letter · letter · post
-#   Fri 07:47 UK              Finance Fridays
+# The rhythm from 2 Nov 2026 (Joel: 2 a week, value only), sent through Resend:
+#   Sun 13:40 UK  (Denise Duffield-Thomas's slot)   letter
+#   Fri 07:47 UK                                    Finance Fridays
 # Scheduled runs happen only when the repo variable DAILY_EMAIL_ENABLED is 'true'.
 # Scheduled runs use the repo variable DAILY_EMAIL_MODE: 'review' (drafts to Joel only) or 'live' (the list).
 # Crons are UTC. 12:40 UTC = 13:40 UK in summer time, 12:40 in winter; 06:47 UTC = 07:47 / 06:47.
 
 on:
   schedule:
-    - cron: '40 12 * * 0,2,4'
+    - cron: '40 12 * * 0'
     - cron: '47 6 * * 5'
   # Netlify's email-dispatch function starts it on time (GitHub's cron above runs hours late; kept as a backup).
   repository_dispatch:
