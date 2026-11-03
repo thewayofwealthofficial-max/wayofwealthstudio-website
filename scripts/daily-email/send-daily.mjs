@@ -159,8 +159,10 @@ async function main() {
   const theme = THEMES[`${uk.year}-${String(uk.month).padStart(2, '0')}`] || DEFAULT_THEME;
   console.log(`[${new Date().toISOString()}] ${uk.weekday} ${uk.iso} · type ${type} · phase ${phase} · mode ${MODE}`);
 
-  if (MODE === 'live') {
-    const already = (await listBroadcasts(resendKey)).find((b) => (b.name || '') === `List ${uk.iso}` && b.status !== 'draft');
+  // Review runs are guarded too (3 Nov 2026): the Netlify timer and GitHub's backup both fire, which sent Joel 2 drafts.
+  if (MODE === 'live' || MODE === 'review') {
+    const name = MODE === 'live' ? `List ${uk.iso}` : `Review ${uk.iso}`;
+    const already = (await listBroadcasts(resendKey)).find((b) => (b.name || '') === name && b.status !== 'draft');
     if (already) { console.log('Already sent today. Nothing to do.'); return; }
   }
 
@@ -278,7 +280,7 @@ async function main() {
     previewText: draft.preview,
     html: toHtml(tagListLinks(draft.body_plain), footerAddress),
     text: toText(tagListLinks(draft.body_plain), footerAddress),
-    name: MODE === 'review' ? `Review ${new Date().toISOString()}` : `List ${uk.iso}`,
+    name: MODE === 'review' ? `Review ${uk.iso}` : `List ${uk.iso}`,
   });
   await sendBroadcast(resendKey, id);
   console.log(`Broadcast sent (${MODE}).`);
