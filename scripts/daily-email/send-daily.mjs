@@ -32,7 +32,7 @@ import { syncList } from './sync-list.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const MODE = (process.env.DAILY_EMAIL_MODE || 'dry').toLowerCase().replace('test', 'review');
 const MODEL = process.env.DAILY_EMAIL_MODEL || 'claude-sonnet-4-6';
-const MAX_TRIES = 6; // 1 draft + 5 repairs
+const MAX_TRIES = 10; // 1 draft + 9 repairs (3 Nov 2026: 6 ran out on letters once the 35% floor came in)
 const MIN_OWN = 0.35;
 const DENISE = 'denisedt@c.kajabimail.net';
 const MMB = 'lindsay@mindmoneybalance.com';
