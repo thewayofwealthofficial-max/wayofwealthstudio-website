@@ -1,0 +1,40 @@
+name: Agent Check-in
+
+# Joel's agents (Claude scheduled tasks) write their check-in to checkins/latest.md
+# on the `checkins` branch and push. This sends it to Joel on Telegram through Fred.
+# Lives only on the `checkins` branch, so it never touches the live site.
+
+on:
+  push:
+    branches: [checkins]
+    paths: ['checkins/latest.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-checkin
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Send check-in through Fred
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          TITLE=$(head -n 1 checkins/latest.md | sed 's/^# *//')
+          BODY=$(tail -n +2 checkins/latest.md | head -c 3500)
+          node scripts/telegram-notify.mjs --emoji "🤖" --title "$TITLE" --body "$BODY"
