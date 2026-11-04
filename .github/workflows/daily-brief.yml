@@ -5,9 +5,9 @@ name: Daily Morning Brief
 # around 06:00–07:30 UK even with 30–90 min platform delay.
 # Manual trigger via Actions tab also enabled for testing.
 
+# Switched off 4 Nov 2026 (Joel): the agent check-ins at 8:38am and 5:12pm replace it.
+# Still runnable by hand from the Actions tab.
 on:
-  schedule:
-    - cron: '23 2 * * *'  # was 05:23; GitHub runs ~4h late, so this lands ~06:00-08:00 UK
   workflow_dispatch:
 
 permissions:
