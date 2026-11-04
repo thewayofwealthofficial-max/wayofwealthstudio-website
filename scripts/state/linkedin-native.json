@@ -114,5 +114,13 @@
     "angle": 2,
     "passage": "8df1f61a3f3c294c,ff841a779ad8cd4a,a5d2f9afa76c5d68",
     "outlier": "li45407745"
+  },
+  {
+    "date": "2026-11-04",
+    "job": "positioning",
+    "angle": 6,
+    "passage": "6d832816e34c30ed,810b7a7e567cdb09,7d2664cf96be4563",
+    "outlier": "own-tkmaxx",
+    "told150": false
   }
 ]
