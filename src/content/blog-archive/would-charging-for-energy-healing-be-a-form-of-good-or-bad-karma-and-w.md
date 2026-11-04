@@ -110,7 +110,7 @@ You do not have to send it. You are just practising the act of naming it without
 
 Start free: [Join Finance Fridays](/#start), one email a week on money and how we behave with it.
 
-When you're ready for more: [book a free call](/coaching#apply) to find out about The Money Story Method, the 12-week 1:1 programme.
+When you're ready for more: [book a free call](/coaching/#apply) to find out about The Money Story Method, the 12-week 1:1 programme.
 
 *Joel*
 

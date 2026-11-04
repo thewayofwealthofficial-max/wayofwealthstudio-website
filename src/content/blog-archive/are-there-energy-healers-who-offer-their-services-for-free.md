@@ -109,7 +109,7 @@ Then sit with the gap between them and ask: what do I think will happen if I cha
 
 [Join Finance Fridays](/#start) for one short email a week on money and how we actually behave with it. Free, no strings.
 
-Or if you want to look at your own money story properly, [book a free call](/coaching#apply) to find out more about The Money Story Method, my 12-week 1:1 programme.
+Or if you want to look at your own money story properly, [book a free call](/coaching/#apply) to find out more about The Money Story Method, my 12-week 1:1 programme.
 
 *Joel*
 

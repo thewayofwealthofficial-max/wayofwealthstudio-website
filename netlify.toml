@@ -40,6 +40,59 @@
   status = 301
   force = true
 
+# 4 Nov 2026: off-topic posts (wellness pricing, burnout, ADHD jobs, workplace) taken off the site.
+# The files are kept in src/content/blog-archive/ (not built). Old URLs go to the blog.
+[[redirects]]
+  from = "/blog/are-there-energy-healers-who-offer-their-services-for-free/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/can-i-rebuild-my-career-after-burnout-at-40/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/can-someone-make-a-living-by-leading-spiritual-retreats-such-as-yoga-a/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/is-it-wrong-to-charge-for-reiki-since-the-energy-is-not-mine/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/why-do-some-meditation-teachers-charge-money-while-others-offer-it-for/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/why-do-you-charge-for-your-energy-healing-services-healing-sessions-in/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/would-charging-for-energy-healing-be-a-form-of-good-or-bad-karma-and-w/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/why-cant-i-keep-a-job-with-adhd/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/how-do-i-stop-spiralling-at-work-after-i-make-one-small-mistake/*"
+  to = "/blog/"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/blog/why-is-asking-for-a-pay-rise-so-terrifying-when-i-know-i-deserve-it/*"
+  to = "/blog/"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/api/fred/approve"
   to = "/.netlify/functions/fred-approve"

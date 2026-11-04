@@ -104,7 +104,7 @@ Those beliefs have names. They're measurable. And they're changeable.
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You're not too late. You're not broken. You're just running some very old, very understandable software on a situation that needs a different operating system.
 

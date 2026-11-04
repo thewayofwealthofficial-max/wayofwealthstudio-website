@@ -101,7 +101,7 @@ You don't have to do anything with those numbers today. Just look at the gap. Th
 
 Free first: [Join Finance Fridays](/#start), one email a week on money and how we actually behave with it.
 
-When you're ready for something more personal: [book a free call](/coaching#apply) to find out whether The Money Story Method, my 12-week 1:1 programme, is a fit for where you are now.
+When you're ready for something more personal: [book a free call](/coaching/#apply) to find out whether The Money Story Method, my 12-week 1:1 programme, is a fit for where you are now.
 
 *Joel*
 
