@@ -1,0 +1,47 @@
+name: IndexNow ping
+
+# After a push to main, waits for Netlify to finish deploying, reads the live sitemap and sends every
+# URL to IndexNow (Bing, Yandex and the others share pings). The key file is public/<key>.txt, the
+# same key netlify/functions/deploy-succeeded.js uses. Never fails the push: errors are logged only.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    if: ${{ !contains(github.event.head_commit.message, '[skip netlify]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - name: Wait for the Netlify deploy
+        run: sleep 240
+
+      - name: Send sitemap URLs to IndexNow
+        env:
+          SITE: https://wayofwealthcoaching.com
+          KEY: 18bce0f9c1c417174e3f3827bf0a7bdd
+        run: |
+          set +e
+          urls=$(curl -fsSL "$SITE/sitemap-index.xml" | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g' \
+            | while read -r sm; do curl -fsSL "$sm"; done \
+            | grep -o '<loc>[^<]*</loc>' | sed 's#</\?loc>##g')
+          count=$(printf '%s\n' "$urls" | grep -c '^https://' )
+          if [ "$count" -eq 0 ]; then echo "No URLs found in the sitemap. Skipping."; exit 0; fi
+          list=$(printf '%s\n' "$urls" | grep '^https://' | jq -R . | jq -s .)
+          body=$(jq -n --arg key "$KEY" --argjson urls "$list" \
+            '{host: "wayofwealthcoaching.com", key: $key, keyLocation: "https://wayofwealthcoaching.com/\($key).txt", urlList: $urls}')
+          status=$(curl -s -o /tmp/indexnow.out -w '%{http_code}' -X POST https://api.indexnow.org/indexnow \
+            -H 'content-type: application/json; charset=utf-8' -d "$body")
+          echo "IndexNow answered $status for $count URL(s)."
+          cat /tmp/indexnow.out 2>/dev/null
+          exit 0

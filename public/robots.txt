@@ -14,4 +14,17 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
+# AI search and user-triggered fetchers — explicitly allowed (so answers can cite and link us)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
 Sitemap: https://wayofwealthcoaching.com/sitemap-index.xml
