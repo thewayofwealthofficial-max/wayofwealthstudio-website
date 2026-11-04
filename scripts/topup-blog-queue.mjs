@@ -33,7 +33,7 @@ const SEEDS = [
   'why do i feel guilty spending', 'why do i feel guilty charging', 'why am i so bad with money', 'why do i avoid',
   'how to stop impulse spending', 'how to stop overspending', 'why is money so stressful', 'money anxiety',
   'why do i hate looking at my bank', 'scared to check bank account', 'why do i sabotage', 'money blocks',
-  'how to manifest money', 'why does money make me anxious', 'how to stop living paycheck to paycheck',
+  'why does money make me anxious', 'how to stop living paycheck to paycheck',
   'why do i spend all my money', 'how to feel safe with money', 'why do i undercharge', 'how to charge more for',
   'how much should i charge for', 'self employed money', 'irregular income', 'how to pay yourself self employed',
   // 5 Oct 2026: wellness seeds swapped for small business owners' measured pains (BRAND.md §1).
@@ -43,7 +43,9 @@ const SEEDS = [
   'small business money stress', 'feast or famine income', 'separate business and personal money',
   'why do i feel broke', 'lifestyle creep',
   'emotional spending', 'money shame', 'money mindset', 'why do i give money away', 'how to stop being bad with money',
-  'why do i buy things i don\'t need', 'money and adhd', 'why do i never have money',
+  'why do i buy things i don\'t need', 'why do i never have money',
+  // 4 Nov 2026: UK small business owners, self-employed and directors with irregular income.
+  'how to pay myself as a director', 'how much to save for self assessment', 'irregular income budget uk',
 ];
 const LOCALES = [['en-GB', 'uk'], ['en-US', 'us'], ['en-AU', 'au'], ['en-CA', 'ca']];
 
@@ -102,7 +104,7 @@ async function publishedTitles() {
 }
 
 async function askClaude(candidates, existing, need) {
-  const system = `You pick blog topics for Joel Ezekiel (Way of Wealth): MSc Behavioural Economics, Qualified Financial Planner, a behavioural money coach. The blog is global money psychology. Its readers are small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but whose money feels chaotic. Their pains, most common first: money stress, income that swings, not paying themselves, not knowing where the money goes, the tax bill shock, working hard with nothing left, burnout, home bills tangled up with the business. Prefer questions about those pains.
+  const system = `You pick blog topics for Joel Ezekiel (Way of Wealth): MSc Behavioural Economics, Qualified Financial Planner, a behavioural money coach. The blog is money psychology for UK small business owners, the self-employed and company directors with irregular income (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money but whose money feels chaotic. Their pains, most common first: money stress, income that swings, not paying themselves, not knowing where the money goes, the tax bill shock, working hard with nothing left, home bills tangled up with the business. Only pick questions about: paying yourself, setting money aside for tax, cash flow, money anxiety, money psychology.
 
 Choose questions a real person typed, that Joel can answer with money psychology plus one practical step.
 
@@ -110,7 +112,8 @@ REJECT anything that:
 - needs regulated advice: which investment, fund, pension, mortgage, ISA, debt to clear first, tax structure, or a specific product;
 - is a pure calculation or country-specific rules question (tax codes, benefits, US-only paperwork). Questions about the tax bill as a habit or a feeling (dreading it, not saving for it, how to set money aside for it) are welcome: Joel explains how it works and teaches a tax pot, never how to structure someone's tax;
 - is a near-duplicate of an existing topic (same underlying question in other words);
-- is hustle or get-rich content.
+- is hustle or get-rich content;
+- is not about money for someone who runs their own business: careers, jobs, pay rises, workplace stress, burnout, ADHD at work, relationships with no money angle, wellness or spiritual work (reiki, energy healing, meditation, retreats, yoga) and what to charge for it.
 
 For each pick:
 - "question": the person's wording exactly. You may only fix capitalisation, spelling of "i" to "I", apostrophes, and add a question mark. Do not rephrase.

@@ -52,8 +52,19 @@ function parseQueue(markdown) {
   return { lines, rows };
 }
 
+// Off-topic for the blog (4 Nov 2026): money for UK small business owners, the self-employed and directors only.
+// A queued row that matches is skipped (left in the queue), never written.
+const OFF_TOPIC_RE = /\b(reiki|energy heal\w*|healers?|karma|spiritual|retreats?|meditation|yoga|burn ?out|career|keep a job|pay rise|at work|manager|boss)\b/i;
+
 function pickNextQueued(rows) {
-  const queued = rows.filter((r) => r.status.includes('🔵')).sort((a, b) => a.num - b.num);
+  const queued = rows
+    .filter((r) => r.status.includes('🔵'))
+    .filter((r) => {
+      if (!OFF_TOPIC_RE.test(r.question)) return true;
+      console.log(`Skipping off-topic queue row #${r.num}: "${r.question}"`);
+      return false;
+    })
+    .sort((a, b) => a.num - b.num);
   if (queued.length === 0) throw new Error('No queued questions remain. Replenish src/content/reddit-queue.md.');
   return queued[0];
 }
@@ -91,10 +102,12 @@ function escapeYamlString(s) {
 // ───────────────────────────────────────────────────────────────
 // Claude prompt
 
-const SYSTEM_PROMPT = `You are Joel, MSc Behavioural Economics | Qualified Financial Planner, founder of Way of Wealth. You write blog posts that answer the questions your readers actually type into Google. The audience is GLOBAL, UK first in tone: small business owners with a service business (coaches, therapists, consultants, freelancers, creatives, trades) who earn decent money, but whose money still feels chaotic. Never assume the reader lives in one country.
+const SYSTEM_PROMPT = `You are Joel, MSc Behavioural Economics | Qualified Financial Planner, founder of Way of Wealth. You write blog posts that answer the questions your readers actually type into Google. The audience is UK small business owners, the self-employed and company directors with irregular income, mostly service businesses (coaches, therapists, consultants, freelancers, creatives, trades), who earn decent money but whose money still feels chaotic.
+
+TOPIC (hard rule): every post is about THEIR money: paying yourself, setting money aside for tax, cash flow, money anxiety, money psychology. If the question leans elsewhere (careers, burnout, workplace stress, wellness or spiritual pricing, ADHD and jobs), answer only the money side, for someone who runs their own business.
 
 WHO THEY ARE (from research on 350 small business owners' own comments):
-- Their pains, most common first: money stress (overwhelmed, scared, worried); income that swings, with slow months; not paying themselves; cash flow confusion, not knowing their numbers or where the money goes; the tax bill shock; working hard with nothing left; burnout; and household bills, because business and home money are often tangled together.
+- Their pains, most common first: money stress (overwhelmed, scared, worried); income that swings, with slow months; not paying themselves; cash flow confusion, not knowing their numbers or where the money goes; the tax bill shock; working hard with nothing left; and household bills, because business and home money are often tangled together.
 - What they want: calm first (clarity, not worrying), then a steady wage, then savings or a buffer, then tax sorted. Almost none of them ask to earn more.
 - Their own words: "pay myself", "struggle", "confused", "take home", "where my money is going", "always behind". Where it fits the question, show them what happens to the money once it lands, gently.
 - Some take mindset or manifesting seriously. Meet it with respect, then add the behaviour side and the HOW. Never mock their beliefs.
@@ -111,9 +124,9 @@ FACTS (hard rules):
 - Planner, not adviser: never recommend investments, products or tax structures, and never tell the reader what price to charge or what to do about their own tax. You may explain how tax works in general and teach a tax pot (money moved aside for tax when an invoice lands); never structure their tax and never name a product. Explain the behaviour, give one small action, point to a qualified professional for personal tax or investment decisions.
 
 THE SHAPE OF EVERY POST (in this order; ## for headings, headings in the reader's words or as questions, never academic labels like "What Klontz Found"):
-1. A "**What you need to know**" block at the very top: exactly 3 short bullet points.
-2. Opening, 3 to 5 short paragraphs: start with "If you..." speaking to one situation they are in, name what is going on in a plain line, say what this post gives them.
-3. The quick answer: 1 or 2 sentences that answer the title question straight away.
+1. The direct answer, as the very first lines of the post (no heading): 2 or 3 plain sentences that answer the title question straight away.
+2. A "**What you need to know**" block: exactly 3 short bullet points.
+3. Opening, 3 to 5 short paragraphs: start with "If you..." speaking to one situation they are in, name what is going on in a plain line, say what this post gives them.
 4. ## What you might be telling yourself: 4 to 6 things the reader says to themselves, each as a short line in the reader's voice followed by a 1 or 2 sentence reply. Build them from the REAL PHRASES in the user message. Reword them as the reader's own self-talk. Never present them as quotes from someone else and never credit anyone.
 5. A section on why this hits people who run their own business harder (money comes in lumps, nobody pays them a wage, business and home money get mixed, the tax bill comes later).
 6. One short everyday scene the reader will recognise.
@@ -121,7 +134,7 @@ THE SHAPE OF EVERY POST (in this order; ## for headings, headings in the reader'
 8. The behavioural ideas behind it, explained simply, with their proper names.
 9. One small step they can try today. Specific ("write the number down before you open the app"), never "create a budget".
 10. ONE link in the middle of the post to a related post from the RELATED POSTS list in the user message, as a normal markdown link, e.g. [title](/blog/slug/).
-11. ## Ready to go deeper? Two lines only: free first, "[Join Finance Fridays](/#start)" (one email a week on money and how we behave with it), then paid, "[book a free call](/coaching#apply)" about The Money Story Method, the 12-week 1:1 programme. Never claim "no upsell". Never mention a quiz.
+11. ## Ready to go deeper? Two lines only: free first, "[Join Finance Fridays](/#start)" (one email a week on money and how we behave with it), then paid, "[book a free call](/coaching/#apply)" about The Money Story Method, the 12-week 1:1 programme. Never claim "no upsell". Never mention a quiz.
 12. Sign off with just "*Joel*" on its own line.
 13. ## Questions people ask: 3 to 5 questions in the words people search, each as ### with a 2 or 3 sentence answer. Same fact rules apply.
 
@@ -133,7 +146,7 @@ OUTPUT FORMAT, exactly this shape, no preamble, no commentary:
 
 {"description": "<one sentence, max 165 characters, speaks to the reader's feeling>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
 <<<BODY>>>
-<markdown body, no frontmatter, no h1. Start with the "What you need to know" block.>
+<markdown body, no frontmatter, no h1. Start with the 2 or 3 sentence direct answer, then the "What you need to know" block.>
 <<<END>>>`;
 
 function buildUserPrompt(row, related, feedback = '') {
@@ -215,10 +228,11 @@ function checkShape(body, posts, description = '', tags = []) {
   const sweeping = all.match(SWEEPING_RE) || [];
   if (sweeping.length) p.push(`Makes a sweeping or body/brain claim with no source. Say it as the reader's experience instead. The lines: ${quoteHits(all, sweeping)}`);
   if (/\buniverse (?:is not|isn'?t|won'?t|doesn'?t) (?:pay|paying|going to pay)/i.test(all)) p.push('Pokes fun at the reader\'s beliefs about the universe. Meet the belief with respect, never mock it.');
-  if (!/what you need to know/i.test(body.slice(0, 400))) p.push('Must start with the "What you need to know" block of 3 bullets.');
+  if (/^\s*(?:#|[-*]\s|\*\*What you need to know)/i.test(body)) p.push('Must open with 2 or 3 plain sentences that answer the title question directly, before any heading or the "What you need to know" block.');
+  if (!/what you need to know/i.test(body.slice(0, 900))) p.push('The "What you need to know" block of 3 bullets must come right after the opening direct answer.');
   if (!/^##\s+What you might be telling yourself/im.test(body)) p.push('Missing the "## What you might be telling yourself" section.');
   if (!/^##\s+Ready to go deeper\?/im.test(body)) p.push('Missing the "## Ready to go deeper?" section.');
-  if (!body.includes('(/#start)') || !body.includes('(/coaching#apply)')) p.push('"Ready to go deeper?" must link [Join Finance Fridays](/#start) and [book a free call](/coaching#apply).');
+  if (!body.includes('(/#start)') || !body.includes('(/coaching/#apply)')) p.push('"Ready to go deeper?" must link [Join Finance Fridays](/#start) and [book a free call](/coaching/#apply).');
   if (!/^##\s+Questions people ask/im.test(body)) p.push('Missing the "## Questions people ask" FAQ section.');
   const links = [...body.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)].map((m) => m[1]);
   if (!links.some((l) => posts.some((x) => x.slug === l))) p.push('Needs one link to an existing post from the RELATED POSTS list.');
