@@ -1,0 +1,35 @@
+name: LinkedIn Login Check
+
+# Split out of daily-brief.yml on 4 Nov 2026 when the morning brief was switched off,
+# so Joel still gets warned before the LinkedIn login expires.
+
+on:
+  schedule:
+    - cron: '41 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Warn if the LinkedIn login is about to expire
+        env:
+          EXPIRES: ${{ secrets.LINKEDIN_TOKEN_EXPIRES }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DAYS=$(( ( $(date -d "$EXPIRES" +%s) - $(date +%s) ) / 86400 ))
+          echo "LinkedIn login expires in $DAYS days."
+          if [ "$DAYS" -le 14 ]; then
+            node scripts/telegram-notify.mjs --emoji "🔑" --title "LinkedIn login expires in $DAYS days" --body "All LinkedIn posting stops when it does. Open Claude and say: reconnect LinkedIn. It takes one click on Allow."
+          fi
