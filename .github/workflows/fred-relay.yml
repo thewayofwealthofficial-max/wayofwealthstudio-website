@@ -1,0 +1,44 @@
+name: Fred Relay
+
+# Agent check-ins arrive as emails from fred@wayofwealthcoaching.com ("[Fred] <title>").
+# netlify/functions/fred-relay.js gets Resend's webhook and starts this job, which
+# fetches the email from Resend and sends it to Joel on Telegram through Fred.
+
+on:
+  repository_dispatch:
+    types: [fred-relay]
+
+permissions:
+  contents: read
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch the email and send it to Fred
+        env:
+          EMAIL_ID: ${{ github.event.client_payload.email_id }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node --input-type=module -e '
+          import { execFileSync } from "node:child_process";
+          const id = process.env.EMAIL_ID;
+          if (!/^[0-9a-f-]{20,}$/i.test(id || "")) throw new Error("bad email id");
+          const r = await fetch(`https://api.resend.com/emails/${id}`, { headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` } });
+          if (!r.ok) throw new Error(`Resend ${r.status}`);
+          const e = await r.json();
+          if (!String(e.from || "").toLowerCase().includes("fred@wayofwealthcoaching.com")) throw new Error("not from fred");
+          const title = String(e.subject || "Check-in").replace(/^\[Fred\]\s*/, "");
+          let body = e.text || String(e.html || "").replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n\n").replace(/<[^>]+>/g, "");
+          body = body.trim().slice(0, 3500);
+          execFileSync("node", ["scripts/telegram-notify.mjs", "--emoji", "🤖", "--title", title, "--body", body], { stdio: "inherit" });
+          '
