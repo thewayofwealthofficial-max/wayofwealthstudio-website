@@ -100,7 +100,7 @@ That's where the real work lives.
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The numbers in your account are data. The story your brain tells about those numbers is something you can change.
 

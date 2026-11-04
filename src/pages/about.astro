@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { LINKS } from '../config/links';
+import { organization, person } from '../config/schema';
+
+const title = "About Joel Ezekiel | Behavioural Money Coach | Way of Wealth";
+const description = "Joel Ezekiel is a London-based behavioural money coach for small business owners. MSc Behavioural Economics, DipPFS, former financial planner at St James's Place.";
+const canonical = `${LINKS.siteUrl}/about/`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'ProfilePage', '@id': `${canonical}#page`, url: canonical, name: title, mainEntity: { '@id': person['@id'] } },
+    person,
+    organization,
+  ],
+};
+
+const FOR_YOU = [
+  "Your income swings from a fully booked month to weeks of almost nothing.",
+  "You don't pay yourself a set amount. You take what's there, when it's there.",
+  "The tax bill turns up and you're not sure the money is still there.",
+  "You earn well, and you still feel behind.",
+];
+---
+<Layout title={title} description={description} canonical={canonical} jsonLd={jsonLd}>
+
+<section class="ab-hero">
+  <div class="ab-hero-inner">
+    <div>
+      <span class="section-tag">About</span>
+      <h1>Hi, I'm <em>Joel Ezekiel.</em></h1>
+      <p class="ab-lead">I'm a behavioural money coach. I help small business owners get a steady wage, a tax pot that's never short, and calm about money.</p>
+      <p class="ab-creds">MSc Behavioural Economics &nbsp;|&nbsp; DipPFS &nbsp;|&nbsp; Former financial planner at St James's Place</p>
+    </div>
+    <!-- PHOTO SPOT: add Joel's photo here (e.g. <img src="/images/your-photo.jpg" alt="Joel Ezekiel" />) and remove the placeholder text. No stock photos. -->
+    <figure class="ab-photo" aria-label="Photo of Joel coming soon">
+      <span>Photo of Joel<br />coming soon</span>
+    </figure>
+  </div>
+</section>
+
+<section class="ab-section">
+  <div class="ab-narrow">
+    <h2>My story</h2>
+    <p>I grew up in South Africa. My family moved to England when I was 18. I stayed on, and later moved to the UK myself.</p>
+    <p>I studied sound engineering and DJ'd on the UK scene. Then I moved into high-ticket sales.</p>
+    <p>I turned £3,000 into £150,000 trading. I thought I was a genius. Then I lost all of it. That's what sent me off to study this properly.</p>
+    <p>I did an MSc in Behavioural Economics. I sat the exams, got my DipPFS and qualified as a financial planner at St James's Place.</p>
+    <p>And honestly, what I found is that the plan is almost never the problem. Smart people have a financial plan and still don't follow it. It's the beliefs and habits underneath, the stuff running on autopilot.</p>
+    <p>So in March 2026 I left financial services to build Way of Wealth full-time.</p>
+  </div>
+</section>
+
+<section class="ab-section ab-cream">
+  <div class="ab-narrow">
+    <h2>Who I help</h2>
+    <p>I work with small business owners, the self-employed and company directors whose income doesn't arrive the same way every month. People who earn well and still find money stressful.</p>
+    <p class="ab-lead-in">This is for you if:</p>
+    <ul class="ab-tick">
+      {FOR_YOU.map((t) => <li>{t}</li>)}
+    </ul>
+  </div>
+</section>
+
+<section class="ab-section">
+  <div class="ab-narrow">
+    <h2>The Money Story Method</h2>
+    <p>My 12-week programme, one to one. Twelve weeks, just you and me. We change the habits and we build the system, on the call.</p>
+    <p>We set up four accounts: Current, Emergency, Tax, and Savings and investments. You pay yourself from the business on the same day every month, like a wage. Tax gets put away when the money lands. And we look at the beliefs underneath, where your money habits come from and why they made sense at the time.</p>
+    <p>It costs £1,000. <a href={LINKS.coaching}>See the full programme</a>.</p>
+  </div>
+</section>
+
+<section class="ab-section ab-cream">
+  <div class="ab-narrow">
+    <h2>Coach, not adviser</h2>
+    <p class="ab-note">I'm a coach. I don't give regulated financial advice. I won't tell you which investment, pension, mortgage or tax set-up to choose. For those, please speak to a regulated financial adviser or an accountant.</p>
+    <h2>The details</h2>
+    <ul class="ab-facts">
+      <li>Way of Wealth Ltd, Companies House number 17214427</li>
+      <li>Based in London</li>
+      <li>Email: <a href={LINKS.contactEmail}>joel@wayofwealthcoaching.com</a></li>
+      <li>Instagram: <a href={LINKS.instagram} rel="noopener">@theway.ofwealth</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="ab-final">
+  <div class="ab-narrow">
+    <h2>Start with a free Cash Flow Session</h2>
+    <p>Not sure where to start? Book a free call with me.</p>
+    <a href={LINKS.cashFlowSession} class="btn-primary" rel="noopener">Book a free Cash Flow Session</a>
+  </div>
+</section>
+
+</Layout>
+
+<style>
+  .ab-hero { background: var(--color-cream); padding: 9rem 1.5rem 4.5rem; border-bottom: 1px solid var(--color-border-warm); }
+  .ab-hero-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: center; }
+  .ab-hero h1 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.3rem, 5vw, 3.4rem); line-height: 1.15; color: var(--color-navy); margin: 0 0 1.2rem; }
+  .ab-hero h1 em { font-style: italic; color: var(--color-gold); }
+  .ab-lead { font-size: 1.15rem; line-height: 1.7; color: var(--color-navy); margin: 0 0 1.2rem; }
+  .ab-creds { font-family: var(--font-heading-sc); font-size: 0.78rem; letter-spacing: 0.12em; color: var(--color-slate); margin: 0; }
+  .ab-photo { margin: 0; aspect-ratio: 4 / 5; border: 2px dashed var(--color-border-warm); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .ab-photo span { font-family: var(--font-ui); font-size: 0.9rem; color: var(--color-slate); line-height: 1.5; }
+
+  .ab-section { padding: 4.5rem 1.5rem; background: var(--color-bg-white); }
+  .ab-cream { background: var(--color-cream); }
+  .ab-narrow { max-width: 700px; margin: 0 auto; }
+  .ab-section h2, .ab-final h2 { font-family: var(--font-heading); font-weight: 400; font-size: clamp(1.7rem, 3.2vw, 2.2rem); color: var(--color-navy); margin: 0 0 1.2rem; }
+  .ab-section h2:not(:first-child) { margin-top: 2.5rem; }
+  .ab-section p, .ab-section li { font-size: 1.08rem; line-height: 1.75; color: var(--color-navy); }
+  .ab-section p { margin: 0 0 1.1rem; }
+  .ab-section a { color: var(--color-navy); text-decoration: underline; text-decoration-color: var(--color-gold); text-underline-offset: 3px; }
+  .ab-lead-in { font-weight: 700; }
+  .ab-tick { list-style: none; margin: 0; padding: 0; }
+  .ab-tick li { position: relative; padding: 0.6rem 0 0.6rem 2rem; border-bottom: 1px solid var(--color-border-warm); }
+  .ab-tick li:last-child { border-bottom: none; }
+  .ab-tick li::before { content: '✓'; position: absolute; left: 0; top: 0.6rem; color: var(--color-gold); font-weight: 700; }
+  .ab-note { background: #fff; border-left: 3px solid var(--color-gold); padding: 1.2rem 1.4rem; border-radius: 4px; }
+  .ab-facts { list-style: none; padding: 0; margin: 0; }
+  .ab-facts li { padding: 0.3rem 0; }
+
+  .ab-final { padding: 5rem 1.5rem; background: var(--color-bg-white); text-align: center; border-top: 1px solid var(--color-border-warm); }
+  .ab-final p { font-size: 1.08rem; line-height: 1.7; color: var(--color-navy); margin: 0 0 1.8rem; }
+
+  @media (max-width: 760px) {
+    .ab-hero { padding: 7.5rem 1rem 3.5rem; }
+    .ab-hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .ab-photo { max-width: 280px; }
+    .ab-section, .ab-final { padding: 3.5rem 1rem; }
+  }
+</style>

@@ -2,6 +2,31 @@
 import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 import { RESULT_CLIPS } from '../config/resultsClips';
+import { organization, ORG_ID } from '../config/schema';
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    organization,
+    {
+      '@type': 'Service',
+      '@id': `${LINKS.siteUrl}/coaching/#service`,
+      name: 'The Money Story Method',
+      serviceType: 'Behavioural money coaching',
+      description: '12-week 1:1 coaching for small business owners who make a good living and still find money stressful: a steady wage, a tax pot, the four accounts set up with you, and the money habits underneath. Coaching, not regulated financial advice.',
+      url: `${LINKS.siteUrl}/coaching/`,
+      provider: { '@id': ORG_ID },
+      areaServed: { '@type': 'Country', name: 'United Kingdom' },
+      offers: {
+        '@type': 'Offer',
+        price: '1000',
+        priceCurrency: 'GBP',
+        url: `${LINKS.siteUrl}/coaching/`,
+        availability: 'https://schema.org/InStock',
+      },
+    },
+  ],
+};
 
 const title = "The Money Story Method | 12-Week 1:1 Coaching | Way of Wealth";
 const description = "A 12-week 1:1 programme for small business owners who make a good living and still find money stressful. Behavioural coaching, plus the money system built with you. MSc Behavioural Economics | Qualified Financial Planner.";
@@ -127,7 +152,7 @@ const FAQS = [
   { q: "How do I pay?", a: "You can pay in full, in two monthly payments or in three. We agree the plan on the call." },
 ];
 ---
-<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/coaching`}>
+<Layout title={title} description={description} canonical={`${LINKS.siteUrl}/coaching/`} jsonLd={serviceSchema}>
 
 <!-- 1 · HERO -->
 <section class="sp-hero" id="top">

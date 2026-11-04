@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { LINKS } from '../../config/links';
+import { ORG_ID, PERSON_ID } from '../../config/schema';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -15,7 +17,15 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', {
 const title = "Blog — Way of Wealth";
 const description = "Honest, research-based notes on the behavioural side of money. By Joel — MSc Behavioural Economics, Qualified Financial Planner.";
 ---
-<Layout title={title} description={description}>
+<Layout title={title} description={description} jsonLd={{
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Way of Wealth Blog',
+  url: `${LINKS.siteUrl}/blog/`,
+  description,
+  author: { '@type': 'Person', '@id': PERSON_ID, name: 'Joel Ezekiel', url: `${LINKS.siteUrl}/about/` },
+  publisher: { '@type': 'ProfessionalService', '@id': ORG_ID, name: 'Way of Wealth' },
+}}>
 
 <header class="blog-hero">
   <div class="blog-hero-inner">
@@ -29,7 +39,7 @@ const description = "Honest, research-based notes on the behavioural side of mon
   <div class="posts-inner">
 
     {featured && (
-      <a href={`/blog/${featured.id}`} class="featured-card">
+      <a href={`/blog/${featured.id}/`} class="featured-card">
         <span class="featured-label">Latest</span>
         <span class="post-cat">{featured.data.category}</span>
         <h2>{featured.data.title}</h2>
@@ -45,7 +55,7 @@ const description = "Honest, research-based notes on the behavioural side of mon
       <ul class="post-list">
         {rest.map((post) => (
           <li>
-            <a href={`/blog/${post.id}`}>
+            <a href={`/blog/${post.id}/`}>
               <span class="post-cat">{post.data.category}</span>
               <h3>{post.data.title}</h3>
               <p>{post.data.description}</p>

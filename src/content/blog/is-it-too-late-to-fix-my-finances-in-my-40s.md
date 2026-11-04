@@ -84,7 +84,7 @@ You are not in the middle of a failure. You are at the start of a plan that begi
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 There is no version of this where you are too late. There is only the version where you keep looking backward, and the version where you do not.
 

@@ -105,7 +105,7 @@ Whatever is left is your starting point for your wage. You haven't done anything
 
 [Join Finance Fridays](/#start), one email a week on money and how we behave with it. Free.
 
-Or if you want to work through this properly, [book a free call](/coaching#apply) to find out about The Money Story Method, my 12-week 1:1 programme.
+Or if you want to work through this properly, [book a free call](/coaching/#apply) to find out about The Money Story Method, my 12-week 1:1 programme.
 
 *Joel*
 

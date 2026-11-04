@@ -35,14 +35,15 @@ const articleSchema = {
   dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
   author: {
     '@type': 'Person',
-    name: 'Joel',
+    name: 'Joel Ezekiel',
     jobTitle: 'Behavioural Economist & Qualified Financial Planner',
-    url: SITE,
+    url: `${SITE}/about/`,
+    sameAs: ['https://www.instagram.com/theway.ofwealth/'],
   },
   publisher: {
     '@type': 'Organization',
     name: 'Way of Wealth',
-    url: SITE,
+    url: `${SITE}/`,
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   // Every post has a title card (scripts/title-cards.mjs, made at build time) unless it sets its own image.

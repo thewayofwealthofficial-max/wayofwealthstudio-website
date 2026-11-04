@@ -76,7 +76,7 @@ If that's part of what's happening for you, the fund factsheet trick won't touch
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The investing question doesn't go away by ignoring it. But understanding *why* you're freezing is a more honest starting point than pretending the freeze isn't there.
 

@@ -92,6 +92,6 @@ The next layer underneath all of this is usually your money beliefs — the deep
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 *Joel*

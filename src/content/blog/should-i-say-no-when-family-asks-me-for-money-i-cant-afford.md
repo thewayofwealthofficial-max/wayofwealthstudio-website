@@ -116,7 +116,7 @@ Because the work looks different depending on what's underneath. Someone running
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You've already done the hard bit. You asked the question.
 

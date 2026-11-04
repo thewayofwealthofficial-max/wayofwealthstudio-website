@@ -7,11 +7,12 @@ interface Props {
   ogImage?: string;
   canonical?: string;
   articleSchema?: Record<string, unknown>;
+  jsonLd?: Record<string, unknown>;
   bodyClass?: string;
   noindex?: boolean;
 }
 
-const { title, description, ogImage, canonical, articleSchema, bodyClass, noindex } = Astro.props;
+const { title, description, ogImage, canonical, articleSchema, jsonLd, bodyClass, noindex } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +29,7 @@ const { title, description, ogImage, canonical, articleSchema, bodyClass, noinde
     ogImage={ogImage}
     canonical={canonical}
     articleSchema={articleSchema}
+    jsonLd={jsonLd}
     noindex={noindex}
   />
 </head>
@@ -36,11 +38,11 @@ const { title, description, ogImage, canonical, articleSchema, bodyClass, noinde
 <nav id="nav">
   <a href="/" class="nav-logo">Way of <em>Wealth</em></a>
   <div class="nav-links">
-    <a href="/coaching">Coaching</a>
-    <a href="/#about">About</a>
-    <a href="/blog">Blog</a>
+    <a href="/coaching/">Coaching</a>
+    <a href="/about/">About</a>
+    <a href="/blog/">Blog</a>
     <a href="/#start">Newsletter</a>
-    <a href="/coaching#apply" class="nav-cta">Apply</a>
+    <a href="/coaching/#apply" class="nav-cta">Apply</a>
   </div>
 </nav>
 
@@ -55,12 +57,12 @@ const { title, description, ogImage, canonical, articleSchema, bodyClass, noinde
       <div class="footer-credential">MSc Behavioural Economics &nbsp;|&nbsp; Qualified Financial Planner</div>
     </div>
     <div class="footer-links">
-      <a href="/blog">Blog</a>
-      <a href="/coaching">Coaching</a>
+      <a href="/blog/">Blog</a>
+      <a href="/coaching/">Coaching</a>
       <a href="/#start">Newsletter</a>
-      <a href="/#about">About</a>
+      <a href="/about/">About</a>
       <a href="mailto:joel@wayofwealthcoaching.com">Contact</a>
-      <a href="/privacy">Privacy</a>
+      <a href="/privacy/">Privacy</a>
     </div>
     <div class="footer-copy">© {new Date().getFullYear()} Way of Wealth &nbsp;·&nbsp; Built on research, not hype.</div>
   </div>

@@ -103,7 +103,7 @@ The windfall effect doesn't operate in isolation. It connects to deeper patterns
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You don't have to have it figured out before you start. That's rather the point.
 

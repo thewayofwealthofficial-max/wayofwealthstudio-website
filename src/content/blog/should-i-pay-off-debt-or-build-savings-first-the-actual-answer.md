@@ -91,7 +91,7 @@ Behavioural economics doesn't fix that by telling you to try harder. It fixes it
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Knowing the pattern is the beginning of working with it.
 

@@ -94,7 +94,7 @@ That's the sequence. Safety first, then data, then goals. Not the other way arou
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 You've tried forcing it. You've tried motivation. You've tried the spreadsheet.
 

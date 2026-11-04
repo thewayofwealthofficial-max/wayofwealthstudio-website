@@ -13,7 +13,7 @@ const { posts } = Astro.props;
     <ul class="related-list">
       {posts.map((post) => (
         <li>
-          <a href={`/blog/${post.id}`}>
+          <a href={`/blog/${post.id}/`}>
             <span class="related-cat">{post.data.category}</span>
             <span class="related-headline">{post.data.title}</span>
           </a>

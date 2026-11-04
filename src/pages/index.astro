@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { LINKS } from '../config/links';
 import { getCollection } from 'astro:content';
 import NewsletterForm from '../components/NewsletterForm.astro';
+import { orgAndPerson } from '../config/schema';
 
 const title = "Way of Wealth | A steady wage and calm about money, for small business owners";
 const description = "Behavioural money coaching for small business owners who make a good living and still find money stressful. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
@@ -43,7 +44,7 @@ const VIDEOS = [
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
-<Layout title={title} description={description} canonical={canonical}>
+<Layout title={title} description={description} canonical={canonical} jsonLd={orgAndPerson}>
 
 <!-- 1 · HERO: photo + overlay card -->
 <section class="hm-hero">
@@ -74,7 +75,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       <ul class="hm-tick">
         {FOR_YOU.map((t) => <li>{t}</li>)}
       </ul>
-      <a href="/coaching#apply" class="btn-primary">Book your free call</a>
+      <a href="/coaching/#apply" class="btn-primary">Book your free call</a>
     </div>
     <div class="hm-video reveal">
       <video controls playsinline preload="none" poster={VSL_POSTER} src={VSL_SRC}></video>
@@ -193,7 +194,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       </a>
     ))}
   </div>
-  <p class="hm-read-more"><a href="/blog">Read the blog →</a></p>
+  <p class="hm-read-more"><a href="/blog/">Read the blog →</a></p>
 </section>
 
 <!-- 8 · NEWSLETTER BAND -->

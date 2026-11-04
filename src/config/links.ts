@@ -10,14 +10,17 @@ export const LINKS = {
   // Finance Fridays newsletter form (separate MailerLite group, ID 185123527460914938)
   newsletter: 'https://preview.mailerlite.io/forms/1977493/185123534091060787/share',
   contactEmail: 'mailto:joel@wayofwealthcoaching.com',
-  coaching: '/coaching',
+  coaching: '/coaching/',
+  // Free Cash Flow Session booking (the /about/ page button). Swap for a site page later if one is built.
+  cashFlowSession: 'https://calendly.com/thewayofwealth-official/coaching-call',
+  instagram: 'https://www.instagram.com/theway.ofwealth/',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
   // Lead-magnet funnel pages
   budgetTracker: '/budget-tracker',
   budgetTrackerThanks: '/thanks/budget-tracker',
   // The Cashflow Shield / 10-Minute Cash Reset. Free. Email gate sits after the
   // three numbers; the pots, the three months and the leak audit are behind it.
-  reset: '/reset',
+  reset: '/reset/',
   // The VSL funnel. This is the one backend funnel: VSL page -> Calendly discovery call
   // -> calendly-webhook -> MailerLite booked state -> prep sequence. Lives on the
   // diagnostic site (discover.thewayofwealth.shop), NOT this one.
@@ -29,7 +32,7 @@ export const LINKS = {
   // opens an empty thread. That is why /reset copies to the clipboard instead.
   instagramDm: 'https://ig.me/m/theway.ofwealth',
   // DM Sorcery post-booking confirmation (Calendly redirect target)
-  booked: '/booked',
+  booked: '/booked/',
   // Lead-magnet form endpoint (Netlify function — see netlify/functions/lead-magnet-subscribe.js)
   leadMagnetApi: '/api/lead-magnet/subscribe',
   // Google Drive direct-download URL for the Budget Tracker PDF.

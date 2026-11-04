@@ -7,6 +7,7 @@ interface Props {
   ogImage?: string;
   canonical?: string;
   articleSchema?: Record<string, unknown>;
+  jsonLd?: Record<string, unknown>;
   noindex?: boolean;
 }
 
@@ -20,6 +21,7 @@ const {
   ogImage = DEFAULT_OG,
   canonical,
   articleSchema,
+  jsonLd,
   noindex = false,
 } = Astro.props;
 
@@ -53,7 +55,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE}${ogImage}`;
 <meta name="twitter:image" content={ogImageUrl} />
 
 <!-- Author / publisher -->
-<meta name="author" content="Joel — Way of Wealth" />
+<meta name="author" content="Joel Ezekiel — Way of Wealth" />
 <meta name="theme-color" content="#1C2A3A" />
 
 <!-- RSS discovery -->
@@ -61,4 +63,7 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE}${ogImage}`;
 
 {articleSchema && (
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+)}
+{jsonLd && (
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 )}

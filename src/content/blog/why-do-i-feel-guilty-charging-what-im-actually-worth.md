@@ -80,7 +80,7 @@ Those beliefs have origins. They are not character flaws.
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 The guilt you feel when you charge properly is not a signal that you are doing something wrong. It is a signal that two things in your brain are stuck together that need to come apart.
 

@@ -105,7 +105,7 @@ That takes time. It takes some structure. And for most people, it takes understa
 
 [Join Finance Fridays](/#start): one email a week on money and how we behave with it.
 
-Or [book a free call](/coaching#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 
 Because understanding your own financial wiring isn't a luxury. When you're trying to build a life with another person, it might be the most practical thing you do all year.
 
