@@ -5,7 +5,7 @@ import { LINKS } from '../config/links';
   <div class="nl-row">
     <label class="nl-sr" for="nl-email">Your email</label>
     <input id="nl-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
-    <button type="submit" class="btn-primary btn-primary-lg nl-btn">Join Finance Fridays</button>
+    <button type="submit" class="btn-primary btn-primary-lg nl-btn">Join the Thursday Money Note</button>
   </div>
   <div class="nl-hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
   <p class="nl-msg" role="status" aria-live="polite"></p>
@@ -33,7 +33,7 @@ import { LINKS } from '../config/links';
         if (res.ok) {
           form.querySelector('.nl-row').style.display = 'none';
           msg.className = 'nl-msg nl-ok';
-          msg.textContent = "You're on the list. The next Finance Fridays email will land in your inbox.";
+          msg.textContent = "You're on the list. The next Thursday Money Note will land in your inbox.";
         } else {
           msg.className = 'nl-msg nl-err';
           msg.textContent = data.error || 'Something went wrong. Please try again, or email joel@wayofwealthcoaching.com.';

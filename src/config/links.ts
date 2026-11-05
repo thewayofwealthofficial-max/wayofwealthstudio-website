@@ -7,7 +7,7 @@ export const LINKS = {
   etsy: 'https://www.etsy.com/shop/WayofWealthStudio',
   // Cheat sheet form (MailerLite embedded) — routes subscribers to main list + triggers Cheat Sheet Delivery automation
   cheatSheet: 'https://preview.mailerlite.io/forms/1977493/184455001091867806/share',
-  // Finance Fridays newsletter form (separate MailerLite group, ID 185123527460914938)
+  // The Thursday Money Note newsletter form (separate MailerLite group, ID 185123527460914938)
   newsletter: 'https://preview.mailerlite.io/forms/1977493/185123534091060787/share',
   contactEmail: 'mailto:joel@wayofwealthcoaching.com',
   coaching: '/coaching/',

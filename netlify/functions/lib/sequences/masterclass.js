@@ -3,7 +3,7 @@
 // harvested); words from Joel's masterclass transcript, voice samples and checked client quotes only.
 // Drafted, then audited line by line in a separate pass: research/2026-10-09-masterclass-emails/
 // (SEQUENCE_MAP.md, DRAFTS.md, AUDIT_REPORT.md, DRAFTS_AUDITED.md). Joel approved the story, links and
-// Alon line on 9 Oct. Ask = the £99.97 Cash Flow Session (/your-number), real scarcity only (Calendly capped
+// Alon line on 9 Oct. Ask = the Cash Flow Session (/your-number; free from 5 Nov 2026, Joel), real scarcity only (Calendly capped
 // at 5 a week, Joel 9 Oct).
 //
 // CONNECTED 9 Oct 2026 (Joel: "go"): masterclass -> 'masterclass' in MAGNET_TO_SEQUENCE (sequence-core.js).
@@ -71,7 +71,7 @@ And if you haven't watched it yet, that's completely fine. Start with one chapte
 
 **[Start the masterclass here](https://youtu.be/N3yv8SdsS4I)**
 
-Now, if you want to go further, I also do a paid Cash Flow Session. It's 75 minutes, live on screen. We put your real numbers in, and you leave knowing your number: how much you actually need to earn, and what that means for your prices and your week.
+Now, if you want to go further, I also do a free Cash Flow Session. It's 75 minutes, live on screen. We put your real numbers in, and you leave knowing your number: how much you actually need to earn, and what that means for your prices and your week.
 
 If you want it, **[see how the session works here](https://wayofwealthcoaching.com/your-number/)**. Any questions, hit reply. Your replies come straight to me.
 
@@ -288,7 +288,7 @@ So start with your numbers. Find out your number, then see what it means for you
 - **Two futures,** side by side, five years out.
 - **Your report,** 9 pages, within 48 hours, with your first three steps in your words.
 
-It's £99.97, and I only do 5 a week.
+It's free, and I only do 5 a week.
 
 Now, if you've been telling yourself "I just need one more good month, and then I'll be okay," just notice that, and name it.
 
@@ -297,8 +297,6 @@ Nothing bad is going to happen today. There's no deadline. But you're probably g
 You don't need perfect numbers. Rough numbers are fine.
 
 If you're done having that conversation, **[book your Cash Flow Session here](https://wayofwealthcoaching.com/your-number/)**.
-
-My promise: if you don't leave knowing your number, I'll refund you.
 
 Joel
 
@@ -398,7 +396,7 @@ You don't have to keep guessing. Rough numbers are fine to start.
 
 Joel
 
-P.S. It's £99.97 for 75 minutes, live, and your 9-page report within 48 hours. 5 places a week. If you don't leave knowing your number, I'll refund you.
+P.S. It's free: 75 minutes, live, and your 9-page report within 48 hours. 5 places a week.
 `,
     },
     {
@@ -426,11 +424,11 @@ If this week's are gone, you'll see the next free time.
 
 **[Book your Cash Flow Session here](https://wayofwealthcoaching.com/your-number/)**
 
-It's £99.97. If you don't leave knowing your number, I'll refund you.
+It's free.
 
 Joel
 
-P.S. And if now's not the time, that's completely fine. From here you'll get Finance Fridays, one email a week.
+P.S. And if now's not the time, that's completely fine. From here you'll get The Thursday Money Note, one email a week.
 `,
     },
   ],

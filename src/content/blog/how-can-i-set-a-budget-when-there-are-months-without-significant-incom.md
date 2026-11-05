@@ -116,7 +116,7 @@ Write that number on paper before you open any app. Then ask: is my current wage
 
 ## Ready to go deeper?
 
-[Join Finance Fridays](/#start) for one email a week on money and how we behave with it.
+[Join the Thursday Money Note](/#start) for one email a week on money and how we behave with it.
 
 Or if you want to work through the whole picture, [book a free call](/coaching/#apply) to find out about The Money Story Method, the 12-week 1:1 programme.
 

@@ -65,7 +65,7 @@ The gap between the impulse and the action is where everything happens. And you 
 
 If the guilt-then-spend loop sounds familiar in your business finances, not just your dinner, that's exactly what I work through in The Money Story Method, my 12-week one-to-one programme. We look at what's driving the pattern, then we build something steadier underneath it.
 
-Or if you want to start smaller, join Finance Fridays, my free weekly newsletter. Behavioural money ideas, short and plain, every Friday.
+Or if you want to start smaller, join The Thursday Money Note, my free weekly newsletter. Behavioural money ideas, short and plain, every Thursday.
 
 Either way, the food order is not the problem. The story underneath it is. And that one is worth looking at.
 

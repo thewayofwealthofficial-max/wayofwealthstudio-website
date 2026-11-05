@@ -83,9 +83,9 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   const fillers = (body_plain.match(/\b(genuinely|actually|really|literally)\b/gi) || []).length;
   if (fillers > 2) problems.push(`Uses "genuinely", "actually", "really" or "literally" ${fillers} times. Two at most.`);
 
-  // "push_pitch" is the PHASE (the Sunday invitation in a month's last 9 days), not the type. Checking
+  // "push_pitch" is the PHASE (the Tuesday invitation in a month's last 9 days), not the type. Checking
   // type here blocked the one email the price belongs in (bug found 27 Sep).
-  if (phase !== 'push_pitch' && /£\s?(1,?000|500|334)\b/.test(body_plain)) problems.push('Mentions the coaching price. The price only goes in the Sunday push email (Joel, 2026-09-25).');
+  if (phase !== 'push_pitch' && /£\s?(1,?000|500|334)\b/.test(body_plain)) problems.push('Mentions the coaching price. The price only goes in the push invitation email (Joel, 2026-09-25).');
   if (RESEARCH_WORDS.test(body_plain)) problems.push('Makes a research or study claim, which is not allowed unless it came from the input.');
   const figures = body_plain.match(/(?:£|\$|€)\s?\d[\d,.]*k?|\d[\d,.]*\s?(?:%|per ?cent)/gi) || [];
   const src = norm(sourceText).replace(/,/g, '');
@@ -110,7 +110,7 @@ export function checkDraft({ subject, preview, body_plain }, { type, phase, allo
   if (/\b(suicid\w*|self[- ]harm|overdos\w*|rehab)\b/i.test(all)) problems.push('Touches suicide, self-harm, overdose or rehab. Never in a list email.');
   // Capitalised names that appear in Joel's call passages (partners, exes, friends, firms) must not reach the email.
   if (passagesText) {
-    const ALLOW = new Set(['Joel', 'I', 'Money', 'Story', 'Method', 'Reset', 'Tool', 'Finance', 'Fridays', 'Way', 'Wealth', 'Friday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday', 'Deliveroo', 'Uber', 'Instagram', 'Christmas', 'MSc', 'Behavioural', 'Economics', 'Qualified', 'Financial', 'Planner', 'Book', 'Know', 'Try', 'One', 'Read', 'Hey', 'P', 'S']);
+    const ALLOW = new Set(['Joel', 'I', 'Money', 'Story', 'Method', 'Reset', 'Tool', 'Finance', 'Fridays', 'Note', 'Way', 'Wealth', 'Friday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday', 'Deliveroo', 'Uber', 'Instagram', 'Christmas', 'MSc', 'Behavioural', 'Economics', 'Qualified', 'Financial', 'Planner', 'Book', 'Know', 'Try', 'One', 'Read', 'Hey', 'P', 'S']);
     const COMMON = /^(The|And|But|So|When|There|Not|Yeah|Right|Tell|Week|God|Jesus|Okay|Yes|No|This|That|What|Why|How|Now|Then|Just|Like|January|February|March|April|May|June|July|August|September|October|November|December|Saturdays|Sundays|North|Star|Hebrew|South|Africa|Israel|Italy|America|England|London)$/;
     const midSentence = (s) => new Set((s.match(/(?<=[a-z,] )[A-Z][a-z]{2,}\b/g) || []).filter((w) => !ALLOW.has(w) && !COMMON.test(w)));
     const inCalls = midSentence(passagesText);

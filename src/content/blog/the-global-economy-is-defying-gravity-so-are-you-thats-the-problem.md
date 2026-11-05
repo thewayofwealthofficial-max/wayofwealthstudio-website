@@ -77,7 +77,7 @@ For anything structural, anything about tax, savings or how to actually build th
 
 That's exactly what we work through in The Money Story Method, my 12-week one-to-one programme for self-employed people whose money feels chaotic. If that sounds like the right next step, you can find out more at Way of Wealth.
 
-Or if you'd rather start smaller, Finance Fridays is my free newsletter where I do exactly this every week: take something in the world and connect it to what's happening in your head. Link in the bio.
+Or if you'd rather start smaller, The Thursday Money Note is my free newsletter where I do exactly this every week: take something in the world and connect it to what's happening in your head. Link in the bio.
 
 The global economy is apparently defying gravity. So are a lot of self-employed finances. Neither can do it forever.
 

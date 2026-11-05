@@ -53,7 +53,7 @@ You're not solving anything in one sitting. You're training yourself to look ins
 
 If what you see makes you want to think harder about how your income is structured going forward, that's a conversation for a qualified financial planner in your country. They can help you think through buffers, income diversification strategy and what resilience actually looks like for a business like yours. I'm a planner myself, not an adviser, so I'll always point you toward someone who can look at your full picture.
 
-And if you want to keep getting pieces like this one, the Finance Fridays newsletter goes out weekly. Short, plain, one idea at a time, just like this. You can join free at the link below.
+And if you want to keep getting pieces like this one, The Thursday Money Note goes out weekly. Short, plain, one idea at a time, just like this. You can join free at the link below.
 
 The tsunami is slow. That's exactly when you look.
 

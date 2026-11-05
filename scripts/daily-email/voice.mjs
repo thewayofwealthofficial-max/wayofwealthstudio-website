@@ -1,8 +1,9 @@
 // Prompts for the list emails. Shapes approved by Joel 2026-09-24. Rhythm from 2 Nov 2026 (Joel: 2 a week, value
 // only, no ask; Florian, 21 Oct 2026: "a weekly or twice-weekly value email"):
-//   Sun  "letter"   shape of Denise Duffield-Thomas's Tue/Sun emails
-//   Fri  "fridays"  Finance Fridays, shape of Mind Money Balance's weekly newsletter
-// The Tue letter and the Thu "post" email (blog link) are off, and so is the monthly push: the offer isn't set yet.
+//   Tue  "letter"   shape of Denise Duffield-Thomas's Tue/Sun emails
+//   Thu  "fridays"  The Thursday Money Note, shape of Mind Money Balance's weekly newsletter (type id kept)
+// 5 Nov 2026: Tue and Thu ~8:00 UK (Joel), was Sun and Fri.
+// The "post" email (blog link) is off, and so is the monthly push: the offer isn't set yet.
 // Competitor emails are CONTEXT (Joel, 2026-09-27: "we are copying what they are doing since it is what is working"):
 // copy their shape AND their topic when it fits Joel's readers. Words come from Joel (Fathom passages), facts only
 // from the input. Their sentences, facts, stories, testimonials and offer are never copied.
@@ -83,8 +84,8 @@ OUTPUT: only valid JSON, no fences:
 {"his_lines": ["...", "..."], "subject": "...", "preview": "one line under 90 characters", "body_plain": "plain text, paragraphs separated by \\n\\n, links written as full URLs"}`;
 
 const TYPE_RULES = {
-  letter: `THIS EMAIL: a Sunday letter in the shape of the reference. About 180 to 320 words. Looks like a plain personal letter. No links. Sign off "Joel" on its own line. A P.S. is fine when it adds one small extra thought or a reply invite, never an ask.`,
-  post: `THIS EMAIL: the Thursday "this week on the blog" email, in the shape of the reference's weekly episode email:
+  letter: `THIS EMAIL: a Tuesday letter in the shape of the reference. About 180 to 320 words. Looks like a plain personal letter. No links. Sign off "Joel" on its own line. A P.S. is fine when it adds one small extra thought or a reply invite, never an ask.`,
+  post: `THIS EMAIL: the "this week on the blog" email, in the shape of the reference's weekly episode email:
 1. A hook that is the post's point (a question, an admission or a quoted thought), not "new post".
 2. A line tying it to this month's theme.
 3. "This week on the blog I..." then "Inside the post:" with 3 to 5 short bullets taken from the post. Bullets only summarise what the post itself says: never attribute a finding to a researcher unless the post does, and never widen it (e.g. to a group the research didn't study).
@@ -92,7 +93,7 @@ const TYPE_RULES = {
 5. The link to the post.
 6. "Joel" on its own line, then a P.S. (see MONTH PHASE for what it points to).
 About 180 to 320 words.`,
-  fridays: `THIS EMAIL: Finance Fridays, in the shape of the reference weekly newsletter:
+  fridays: `THIS EMAIL: The Thursday Money Note, in the shape of the reference weekly newsletter:
 1. Subject: lower case, playful, 30 to 50 characters, may end with one emoji. Preview: a plain teaser of the topic.
 2. Open mid-scene on one small true moment from JOEL'S OWN WORDS. No throat-clearing. Keep at least one of his sentences exactly as he said it (you may put it in quotes).
 3. One bold-feeling line that ties the story to money (write it as its own short paragraph).
@@ -109,8 +110,8 @@ const PHASE_RULES = {
   teach: 'MONTH PHASE: teaching week. A story or a lesson on the theme.',
   checkin: 'MONTH PHASE: halfway check-in. Ask how they are getting on with the theme and invite a reply.',
   push: 'MONTH PHASE: the last days of the month. The ask is the Cash Flow Session. The only real scarcity is that Joel takes 5 sessions a week. Name the objection as part of the pattern, never pressure. No invented deadlines, bonuses or discounts.',
-  push_pitch: 'MONTH PHASE: the push, Sunday. This is the full invitation to the Cash Flow Session: who it is for, what happens (fact find, 75 minutes live building their cash flow model, their number and what it means for their prices and their week, a 9-page report within 48 hours), the 5 places a week, the promise, and the Cash Flow Session link. Put the price (£99.97, against £500 to £1,500 for a cash flow model from a UK planner) in the P.S. Warm and honest, never pushy. Never mention the 12-week programme price.',
-  push_case: 'MONTH PHASE: the push, Tuesday. A client story built ONLY from the PUBLIC TESTIMONIALS in the input (name and their exact words). They are 12-week coaching clients: never say or suggest they had the Cash Flow Session. Then one line of lesson from Joel, then the Cash Flow Session link.',
+  push_pitch: 'MONTH PHASE: the push, first Tuesday letter. This is the full invitation to the Cash Flow Session: who it is for, what happens (fact find, 75 minutes live building their cash flow model, their number and what it means for their prices and their week, a 9-page report within 48 hours), the 5 places a week, and the Cash Flow Session link. In the P.S., say it is free (a cash flow model from a UK planner costs £500 to £1,500). Warm and honest, never pushy. Never mention the 12-week programme price.',
+  push_case: 'MONTH PHASE: the push, next Tuesday letter. A client story built ONLY from the PUBLIC TESTIMONIALS in the input (name and their exact words). They are 12-week coaching clients: never say or suggest they had the Cash Flow Session. Then one line of lesson from Joel, then the Cash Flow Session link.',
 };
 
 export function systemPrompt(type) {

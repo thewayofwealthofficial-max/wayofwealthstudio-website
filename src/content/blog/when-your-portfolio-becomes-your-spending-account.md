@@ -51,7 +51,7 @@ That one pause is not a budget. It is just a moment where the future you gets a 
 
 ## Want to go deeper?
 
-If the feast-or-famine loop feels familiar, the Money Story Method is a 12-week 1:1 programme that helps you see the patterns underneath the behaviour, not just the behaviour itself. Or if you want a gentler starting point, the Finance Fridays newsletter lands in your inbox each week with ideas like this one.
+If the feast-or-famine loop feels familiar, the Money Story Method is a 12-week 1:1 programme that helps you see the patterns underneath the behaviour, not just the behaviour itself. Or if you want a gentler starting point, The Thursday Money Note lands in your inbox each week with ideas like this one.
 
 For decisions about your own investments or savings structures, please work with a qualified financial planner or adviser in your country. The patterns above are human. The solutions need to be personal.
 

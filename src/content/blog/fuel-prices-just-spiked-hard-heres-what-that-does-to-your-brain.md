@@ -67,7 +67,7 @@ A cost spike tells you something useful: your business has a cost structure, and
 
 What you do with that information is the interesting bit.
 
-If you want to understand more about the stories your brain tells when money gets tight, the free Finance Fridays newsletter is a good place to start. Each week I take one idea like this and make it practical. You can find it at wayofwealth.co.uk.
+If you want to understand more about the stories your brain tells when money gets tight, The Thursday Money Note, my free newsletter, is a good place to start. Each week I take one idea like this and make it practical. You can find it at wayofwealth.co.uk.
 
 Or if you're ready to go deeper, The Money Story Method is my 12-week one-to-one programme for self-employed people who want to understand their relationship with money, not just manage a spreadsheet.
 

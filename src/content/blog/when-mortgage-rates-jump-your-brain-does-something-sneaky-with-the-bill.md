@@ -59,7 +59,7 @@ If your money already feels chaotic, rate shocks like this one do not just creat
 
 That is the work I do with people in The Money Story Method, my 12-week one-to-one programme. We look at the beliefs and the behaviours underneath the chaos, not just the numbers. If that sounds like where you are, you can find out more at [Way of Wealth](https://wayofwealth.co.uk).
 
-Or if you just want a steady, grounding read every Friday, my Finance Fridays newsletter is a good place to start.
+Or if you just want a steady, grounding read every Thursday, The Thursday Money Note is a good place to start.
 
 The rate is what it is. What you do with the information is still yours to choose.
 

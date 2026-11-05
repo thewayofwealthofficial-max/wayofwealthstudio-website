@@ -11,7 +11,7 @@ const MAGNET_LABELS = {
   'cashflow-model': 'Cash Flow Model',
   'budget-tracker': 'Budget Tracker',
   'cash-reset': 'Money Reset Tool',
-  'finance-fridays': 'Finance Fridays',
+  'finance-fridays': 'The Thursday Money Note',
   sequences: 'Welcome emails',
 };
 

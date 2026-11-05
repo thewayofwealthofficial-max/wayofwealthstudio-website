@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// List emails, sent through Resend. From 2 Nov 2026 (Joel: 2 a week, value only, no ask):
-//   Sun  letter   (shape: Denise Duffield-Thomas's Tue/Sun emails)
-//   Fri  fridays  (Finance Fridays, shape: Mind Money Balance's weekly newsletter)
+// List emails, sent through Resend. From 2 Nov 2026 (Joel: 2 a week, value only, no ask);
+// 5 Nov 2026: Tue and Thu ~8:00 UK (Joel), was Sun and Fri:
+//   Tue  letter   (shape: Denise Duffield-Thomas's Tue/Sun emails)
+//   Thu  fridays  (The Thursday Money Note, shape: Mind Money Balance's weekly newsletter; type id kept)
 // Monthly cycle (Denise): open the theme, teach, check in. The push in the last 9 days is off until the offer is set.
 //
 //   1. work out today's email type and month phase
@@ -68,7 +69,7 @@ function ukParts(d = new Date()) {
 
 function pickType(weekday) {
   if (process.env.EMAIL_TYPE) return process.env.EMAIL_TYPE;
-  return { Sun: 'letter', Fri: 'fridays' }[weekday] || null;
+  return { Tue: 'letter', Thu: 'fridays' }[weekday] || null;
 }
 
 function pickPhase({ day }) {
@@ -184,7 +185,7 @@ async function main() {
   }
 
   const posts = await blogPosts();
-  // 2 Nov 2026: Fridays no longer links a blog post, so only the (switched-off) Thursday type would use one.
+  // 2 Nov 2026: the weekly note no longer links a blog post, so only the (switched-off) 'post' type would use one.
   const post = type === 'post' ? posts[0] : null;
   const testimonials = phase === 'push_case' ? TESTIMONIALS : [];
   for (const t of testimonials) names.delete(t.who.split(/[ ,]/)[0]);

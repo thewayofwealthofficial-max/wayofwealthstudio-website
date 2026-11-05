@@ -53,7 +53,7 @@ I am a planner, not a financial adviser, so I am not going to tell you what to d
 
 What I can help with is the part that happens before those conversations: understanding why you have been avoiding looking, what money beliefs are making it harder to act, and how to build habits that mean you see these things coming rather than absorbing them after the fact.
 
-That is exactly what we work through in The Money Story Method, my 12-week one-to-one programme. If you want to start with something lighter, the Finance Fridays newsletter covers ideas like this every week, for free. You can find both at Way of Wealth.
+That is exactly what we work through in The Money Story Method, my 12-week one-to-one programme. If you want to start with something lighter, The Thursday Money Note covers ideas like this every week, for free. You can find both at Way of Wealth.
 
 The shock is not fully here yet. That is actually the good moment to look.
 

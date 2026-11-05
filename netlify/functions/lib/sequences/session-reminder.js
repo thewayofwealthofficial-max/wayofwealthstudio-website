@@ -54,9 +54,10 @@ No. I'm a planner, not an adviser. I'm qualified but not FCA authorised. This se
 Good. An accountant looks backwards to keep you legal. They don't tell you how much of today's invoice you can actually move to your own account. That's the gap we work on.
 
 **I'm not in the UK.**
-Yes, you can still book. Bring your own tax figures from your accountant. I don't give tax advice. The price is £99.97, and your bank converts it to your currency.
+Yes, you can still book. Bring your own tax figures from your accountant. I don't give tax advice.
 
-My promise: if you don't leave knowing your number, I'll refund you.
+**Does it cost anything?**
+No. The session is free.
 
 **[Pick a time for your session](${BOOK})**
 

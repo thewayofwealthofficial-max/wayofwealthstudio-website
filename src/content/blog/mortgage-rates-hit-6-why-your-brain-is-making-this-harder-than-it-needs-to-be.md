@@ -57,7 +57,7 @@ For anything specific about your mortgage options or how to restructure your fin
 
 If reading this and you thought, yeah, this is basically every month for me, then that's worth paying attention to. The money chaos that a lot of self-employed people feel isn't usually about the amount they earn. It's about the mental accounting system running quietly in the background, keeping everything feeling unstable.
 
-That's exactly what we work through in The Money Story Method, my 12-week one-to-one programme. Or if you want to start smaller, my Finance Fridays newsletter goes into this kind of thing every week, no cost.
+That's exactly what we work through in The Money Story Method, my 12-week one-to-one programme. Or if you want to start smaller, my newsletter, The Thursday Money Note, goes into this kind of thing every week, no cost.
 
 Either way, the first step is the same. Get it out of your head and onto paper. Right?
 

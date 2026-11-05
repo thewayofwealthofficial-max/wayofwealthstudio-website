@@ -102,7 +102,7 @@ None of those outcomes means you failed. It means you did the slower, less drama
 
 ---
 
-If you want to go deeper on the behavioural side of building income you can actually keep, my **Finance Fridays** newsletter covers exactly this: the psychology behind how self-employed people earn, spend, and (eventually) build something solid. It's free, it comes out weekly, and it won't tell you to "manifest" your way to a full retreat calendar.
+If you want to go deeper on the behavioural side of building income you can actually keep, my **The Thursday Money Note** newsletter covers exactly this: the psychology behind how self-employed people earn, spend, and (eventually) build something solid. It's free, it comes out weekly, and it won't tell you to "manifest" your way to a full retreat calendar.
 
 Or if you're ready to work through the whole picture, income structure, money patterns, and what's actually blocking the numbers, **The Money Story Method** is my 12-week 1:1 programme. You can find out more on the site.
 

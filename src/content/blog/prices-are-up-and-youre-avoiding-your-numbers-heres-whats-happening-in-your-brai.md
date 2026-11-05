@@ -57,7 +57,7 @@ Then, if you want to think about what that means for your pricing or your costs,
 
 If you're self-employed and your money still feels chaotic even in good months, this is exactly the kind of thing we work through in The Money Story Method, my 12-week one-to-one programme. It's not just about the numbers. It's about why you're avoiding them, and how to build a setup that makes looking feel less awful.
 
-Or if you're not ready for that yet, the Finance Fridays newsletter goes into this stuff every week: the behavioural side of money, written for people who earn well and still feel behind. You can find the link in my bio.
+Or if you're not ready for that yet, The Thursday Money Note goes into this stuff every week: the behavioural side of money, written for people who earn well and still feel behind. You can find the link in my bio.
 
 ---
 

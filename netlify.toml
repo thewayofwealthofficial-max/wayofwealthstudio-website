@@ -141,7 +141,7 @@
 
 # Starts the list emails on time (GitHub's own scheduler runs hours late). See the function for the times.
 [functions."email-dispatch"]
-  schedule = "40 * * * *"
+  schedule = "55 * * * *"
 
 # Booking on /your-number stops the booking reminders (5 Oct 2026).
 [[redirects]]

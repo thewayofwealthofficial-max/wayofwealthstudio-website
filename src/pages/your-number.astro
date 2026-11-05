@@ -1,9 +1,9 @@
 ---
-// "Your Cash Flow Session" booking page: the paid 75-minute session (Your Number), £99.97.
+// "Your Cash Flow Session" booking page: the free 75-minute session (Your Number). Free from 5 Nov 2026 (Joel), no price or refund promise any more.
 // Rebuilt 5 Oct 2026 in the structure of Financially Savvy's /emm page
 // (research/2026-10-05-competitor-ads/financiallysavvy/ANALYSIS.md): who it's for above the headline,
 // a 2-step booking box in the hero (name + email first, then Calendly), a short founder letter, one numbered
-// "what you get" list, proof, one objection, the promise, FAQs, and a "that's everything" close with the box again.
+// "what you get" list, proof, one objection, privacy, FAQs, and a "that's everything" close with the box again.
 // NOT copied: their "was" price and their member numbers.
 // Words: Joel's approved Calendly description, /coaching, his live pitch, BRAND.md. Clips are verbatim.
 // Step 1 saves name + email (magnet "session-booking": list + booking reminders). Booking on this page stops
@@ -13,7 +13,7 @@ import { LINKS } from '../config/links';
 import { RESULT_CLIPS } from '../config/resultsClips';
 
 const title = "Your Cash Flow Session | Find Out Your Number | Way of Wealth";
-const description = "75 minutes, live on screen. I build your cash flow model with you, so you leave knowing how much you actually need to earn, and what that means for your prices and your week. £99.97.";
+const description = "75 minutes, live on screen. I build your cash flow model with you, so you leave knowing how much you actually need to earn, and what that means for your prices and your week. Free.";
 
 const CALENDLY_URL = 'https://calendly.com/thewayofwealth-official/your-cash-flow-session';
 
@@ -26,7 +26,6 @@ const GET = [
   { t: "Your report and spreadsheet", d: "Within 48 hours you get your report and a spreadsheet of your model, both yours to keep: your first three steps in your words, a 30-minute setup checklist for your accounts, and what to expect from your January tax bill." },
   // Bonuses, 12 Oct 2026 (Joel picked these two from the offer deep dive, research/2026-10-12-session-offer/).
   { t: "One free re-run within 3 months", d: "Your income changes. Send me new rough numbers and I'll update your report." },
-  { t: "Your £99.97 back off the 12 weeks", d: "Join the Money Story Method within 14 days and the £99.97 comes off." },
 ];
 
 // Pages from the sample report (invented client "Maya", scripts/_render-your-number-sample-pdf.tsx in the portal).
@@ -44,11 +43,11 @@ const HERO_QUOTE = CLIPS[0];
 
 const FAQS = [
   { q: "Is this financial advice?", a: "No. I'm a planner, not an adviser. I'm qualified but not FCA authorised. This session does not recommend any product, pension, investment, insurance or debt arrangement. Every figure is an illustration, not a forecast." },
-  { q: "I'm not in the UK. Can I still book?", a: "Yes. Bring the tax figures your accountant uses for you and we work with those. I don't give tax advice. The price is £99.97, and your bank converts it to your currency." },
+  { q: "I'm not in the UK. Can I still book?", a: "Yes. Bring the tax figures your accountant uses for you and we work with those. I don't give tax advice." },
   { q: "What do I need to bring?", a: "Just the fact find, filled in before the call. Rough numbers are fine." },
   { q: "What if my numbers are a mess?", a: "Rough or messy numbers are exactly what this is for. Nothing you tell me shocks me." },
   { q: "Is this a sales call?", a: "At the end, if it's a fit, I'll tell you about the 12 weeks. If not, you leave with your report. No pressure either way." },
-  { q: "What if I need to move my session?", a: "Reschedule free up to 24 hours before your session. No refunds after that, apart from my promise." },
+  { q: "What if I need to move my session?", a: "Reschedule free up to 24 hours before your session." },
 ];
 ---
 <Layout title={title} description={description} canonical={`${LINKS.siteUrl}/your-number`}>
@@ -69,7 +68,7 @@ const FAQS = [
     <aside class="yn-box" aria-label="Book your session">
       <div class="yn-box-head">
         <span>Your Cash Flow Session</span>
-        <b>£99.97</b>
+        <b>Free</b>
       </div>
       <p class="yn-box-sub">75 minutes, live · report within 48 hours</p>
       <form class="yn-start" novalidate>
@@ -80,8 +79,7 @@ const FAQS = [
         <button type="submit">Continue to pick a time →</button>
         <p class="yn-status" aria-live="polite"></p>
       </form>
-      <p class="yn-box-fine">Step 2 is picking your time. You pay when you book.</p>
-      <p class="yn-box-promise">If you don't leave knowing your number, I'll refund you.</p>
+      <p class="yn-box-fine">Step 2 is picking your time.</p>
     </aside>
   </div>
 
@@ -138,7 +136,7 @@ const FAQS = [
         <li><span class="yn-get-n">{String(i + 1).padStart(2, '0')}</span><b>{g.t}</b><p>{g.d}</p></li>
       ))}
     </ol>
-    <p class="yn-anchor">In the UK, financial planners charge £500 to £1,500 to build a one-off cash flow model (checked on their own fee pages, October 2026). This session is £99.97.</p>
+    <p class="yn-anchor">In the UK, financial planners charge £500 to £1,500 to build a one-off cash flow model (checked on their own fee pages, October 2026). This session is free.</p>
   </div>
 </section>
 
@@ -189,24 +187,13 @@ const FAQS = [
   </div>
 </section>
 
-<!-- 6 · PROMISE -->
+<!-- 6 · PRIVACY (Joel, 11 Oct 2026: never ask for bank information; delete answers after the session).
+     The promise section above it went on 5 Nov 2026: the session is free, so there's nothing to refund. -->
 <section class="sp-section sp-cream">
-  <div class="sp-narrow yn-promise">
-    <div class="sp-seal" aria-hidden="true">✓</div>
-    <div>
-      <h2 class="sp-h2">My <em>promise</em></h2>
-      <p class="sp-strong">If you don't leave knowing your number, I'll refund you.</p>
-      <p>Reschedule free up to 24 hours before your session. No refunds after that, apart from my promise.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 6b · PRIVACY (Joel, 11 Oct 2026: never ask for bank information; delete answers after the session) -->
-<section class="sp-section sp-white">
   <div class="sp-narrow">
     <h2 class="sp-h2">Your <em>privacy</em></h2>
     <p class="sp-strong">What I'll never ask you for: bank statements, account numbers, card details, logins or passwords.</p>
-    <p>Rough numbers are fine, and best guesses beat blanks. Payment goes through Calendly's secure checkout, so I never see your card details.</p>
+    <p>Rough numbers are fine, and best guesses beat blanks.</p>
     <p>Only I see your answers. I use them to build your model, then I delete them once your session is done and your report is sent.</p>
   </div>
 </section>
@@ -228,12 +215,11 @@ const FAQS = [
   <div class="g-apply-inner yn-close">
     <div class="yn-close-copy">
       <h2 class="g-apply-h2">Right, <em>that's everything.</em></h2>
-      <p class="g-apply-sub">It's £99.97 for 75 minutes, live, and your report within 48 hours. 5 places a week.</p>
-      <p class="g-apply-sub">If you don't leave knowing your number, I'll refund you.</p>
+      <p class="g-apply-sub">It's free: 75 minutes, live, and your report within 48 hours. 5 places a week.</p>
       <p class="yn-sign yn-sign-dark">Joel</p>
     </div>
     <div class="yn-box yn-box-close">
-      <div class="yn-box-head"><span>Your Cash Flow Session</span><b>£99.97</b></div>
+      <div class="yn-box-head"><span>Your Cash Flow Session</span><b>Free</b></div>
       <form class="yn-start" novalidate>
         <p class="yn-step">Step 1 of 2. Your details</p>
         <label><span>First name</span><input type="text" name="name" autocomplete="given-name" required /></label>
@@ -242,7 +228,7 @@ const FAQS = [
         <button type="submit">Continue to pick a time →</button>
         <p class="yn-status" aria-live="polite"></p>
       </form>
-      <p class="yn-box-fine">Step 2 is picking your time. You pay when you book.</p>
+      <p class="yn-box-fine">Step 2 is picking your time.</p>
     </div>
   </div>
 

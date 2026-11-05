@@ -1,16 +1,17 @@
 name: List Emails
 
-# The rhythm from 2 Nov 2026 (Joel: 2 a week, value only), sent through Resend:
-#   Sun 13:40 UK  (Denise Duffield-Thomas's slot)   letter
-#   Fri 07:47 UK                                    Finance Fridays
+# The rhythm from 5 Nov 2026 (Joel: 2 a week, value only, Tue and Thu ~8:00 UK), sent through Resend:
+#   Tue ~08:00 UK   letter
+#   Thu ~08:00 UK   The Thursday Money Note
+# (2 Nov to 5 Nov 2026 it was Sun 13:40 letter and Fri 07:47 Finance Fridays.)
 # Scheduled runs happen only when the repo variable DAILY_EMAIL_ENABLED is 'true'.
-# Scheduled runs use the repo variable DAILY_EMAIL_MODE: 'review' (drafts to Joel only) or 'live' (the list).
-# Crons are UTC. 12:40 UTC = 13:40 UK in summer time, 12:40 in winter; 06:47 UTC = 07:47 / 06:47.
+# Scheduled runs send live to the list (Joel, 5 Nov 2026). Manual runs pick a mode: dry, review or live.
+# Crons are UTC. 08:10 UTC = 08:10 UK in winter, 09:10 in summer time. GitHub runs them late anyway.
 
 on:
   schedule:
-    - cron: '40 12 * * 0'
-    - cron: '47 6 * * 5'
+    - cron: '10 8 * * 2'
+    - cron: '10 8 * * 4'
   # Netlify's email-dispatch function starts it on time (GitHub's cron above runs hours late; kept as a backup).
   repository_dispatch:
     types: [daily-email]
@@ -53,7 +54,8 @@ jobs:
 
       - name: Draft, check and send
         env:
-          DAILY_EMAIL_MODE: ${{ github.event_name != 'workflow_dispatch' && (vars.DAILY_EMAIL_MODE || 'review') || inputs.mode }}
+          # 5 Nov 2026 (Joel): scheduled emails send to the list automatically after the checks.
+          DAILY_EMAIL_MODE: ${{ github.event_name != 'workflow_dispatch' && 'live' || inputs.mode }}
           EMAIL_TYPE: ${{ (github.event_name == 'workflow_dispatch' && inputs.type != 'auto') && inputs.type || '' }}
           TEST_EMAIL: joeleezekiel@gmail.com
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

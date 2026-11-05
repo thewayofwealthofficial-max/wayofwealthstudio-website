@@ -51,7 +51,7 @@ What you do with the information is up to you. If you want proper guidance on ho
 
 ## If this rang a bell
 
-The way we mentally organise money, or fail to, shapes almost every financial habit we have. If you'd like to understand more of that stuff in plain terms, the Finance Fridays newsletter is where I break it down each week, free, no jargon. You can sign up at Way of Wealth.
+The way we mentally organise money, or fail to, shapes almost every financial habit we have. If you'd like to understand more of that stuff in plain terms, The Thursday Money Note is where I break it down each week, free, no jargon. You can sign up at Way of Wealth.
 
 Or if you want to go deeper and actually work through your own patterns with support, The Money Story Method is a 12-week one-to-one programme designed for self-employed people exactly like you. Get in touch and we can talk about whether it's the right fit.
 

@@ -46,7 +46,7 @@ Two small asks.
 
 **Want your exact number?**
 
-These numbers are a rough guide. On a Cash Flow Session I build your cash flow model with you, live on screen, from rough numbers you give me. No bank statements, no bank details. 75 minutes. You leave knowing your exact number. **[Book a Cash Flow Session (£99.97)](https://calendly.com/thewayofwealth-official/your-cash-flow-session)**
+These numbers are a rough guide. On a free Cash Flow Session I build your cash flow model with you, live on screen, from rough numbers you give me. No bank statements, no bank details. 75 minutes. You leave knowing your exact number. **[Book your free Cash Flow Session](https://calendly.com/thewayofwealth-official/your-cash-flow-session)**
 
 Joel Ezekiel
 MSc Behavioural Economics | Qualified Financial Planner
@@ -240,7 +240,7 @@ So you don't need to wait for a calm month to start.
 
 If you want to do this properly, with me, **[find out your number here](${SESSION})**. 75 minutes, live on screen. 5 places a week.
 
-And if now's not the time, that's completely fine. From here you'll get Finance Fridays every Friday, and a few shorter emails in between. I'm really glad you're here.
+And if now's not the time, that's completely fine. From here you'll get a short letter from me every Tuesday, and The Thursday Money Note every Thursday. I'm really glad you're here.
 
 Joel
 

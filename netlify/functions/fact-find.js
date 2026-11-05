@@ -1,4 +1,4 @@
-// Fact find for the paid "Your Cash Flow Session" (2026-10-05). Form at /your-number/fact-find.
+// Fact find for the free "Your Cash Flow Session" (2026-10-05). Form at /your-number/fact-find.
 //   POST /api/fact-find   body: JSON of the answers (see FIELDS)
 // Emails the answers to Joel and pings him on Telegram. Nothing is kept on the website (11 Oct 2026, Joel:
 // delete everything once the session is done). A failed email is reported back, plainly, so they can resend.

@@ -1,4 +1,4 @@
-// Welcome sequence for new Finance Fridays sign-ups.
+// Welcome sequence for new sign-ups to The Thursday Money Note (form key finance-fridays).
 // Shape copied from Ramit Sethi's 7-email welcome (18-23 Apr 2026), letter style like Denise
 // Duffield-Thomas and Mind Money Balance (bold text links, no buttons). Content is Joel's own:
 // the £150k story from his dictated voice memo, the gym story from his memo, Josh's quote from his
@@ -12,7 +12,7 @@ const SESSION = 'https://wayofwealthcoaching.com/your-number/';
 const RESET = 'https://wayofwealthcoaching.com/reset';
 
 module.exports = {
-  footerReason: 'you signed up for Finance Fridays at wayofwealthcoaching.com',
+  footerReason: 'you signed up for The Thursday Money Note at wayofwealthcoaching.com',
   emails: [
     {
       id: '01-welcome',
@@ -22,14 +22,14 @@ module.exports = {
       body: `
 Hey {{name}},
 
-Welcome to Finance Fridays. I'm really glad you're here.
+Welcome to The Thursday Money Note. I'm really glad you're here.
 
 Quick hello first. I'm Joel. I've got an MSc in Behavioural Economics and I'm a Qualified Financial Planner. But honestly, I didn't get into this because I was good with money. I got into it because I wasn't. More on that later this week.
 
 Now, here's what lands in your inbox:
 
-- **Every Friday:** Finance Fridays. One real story, one money lesson, one small thing to try.
-- **Now and then in between:** shorter emails on why your brain does what it does with money, and what actually helps.
+- **Every Tuesday:** a short letter from me on why your brain does what it does with money, and what actually helps.
+- **Every Thursday:** The Thursday Money Note. One real story, one money lesson, one small thing to try.
 
 No spreadsheets. No "just stop buying coffee". I'm not going to tell you to budget harder, because you've probably tried that already, right?
 
@@ -226,7 +226,7 @@ So you don't need to wait for a calm month to start.
 
 If you want to do this properly, with me, **[find out your number here](${SESSION})**. 75 minutes, live on screen. 5 places a week.
 
-And if now's not the time, that's completely fine. From here you'll get Finance Fridays every Friday, and a few shorter emails in between. I'm really glad you're here.
+And if now's not the time, that's completely fine. From here you'll get a short letter from me every Tuesday, and The Thursday Money Note every Thursday. I'm really glad you're here.
 
 Joel
 

@@ -98,7 +98,7 @@ The step is smaller: write the belief down, locate its origin, and sit with the 
 
 If you want to go further, my 12-week 1:1 programme The Money Story Method works through exactly this kind of financial psychology with self-employed practitioners. Not to make you more "business-minded" in some hollow corporate sense, but to help you build a practice that can actually last.
 
-And if you're not ready for that yet, my Finance Fridays newsletter is where I write about money psychology for self-employed people every week. No agenda, just the stuff that's useful.
+And if you're not ready for that yet, my The Thursday Money Note newsletter is where I write about money psychology for self-employed people every week. No agenda, just the stuff that's useful.
 
 You asked a genuine question. The answer is no: it's not wrong to charge. But the *feeling* that it's wrong is real, it has a name, and it's workable.
 
