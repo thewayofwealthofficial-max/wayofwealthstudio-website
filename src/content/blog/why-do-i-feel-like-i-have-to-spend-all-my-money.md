@@ -99,7 +99,7 @@ That one move, done consistently, starts to break the pattern.
 
 ## Ready to go deeper?
 
-[Join the Thursday Money Note](/#start) for one short email a week on money and how we behave with it.
+[Join the Thursday Money Note](/#start) for two short emails a week on money and how we behave with it.
 
 Or if you want to work through your money patterns properly, [book a free call](/coaching/#apply) to find out about The Money Story Method, my 12-week 1:1 programme.
 

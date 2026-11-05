@@ -99,7 +99,7 @@ You're not performing confidence. You're just letting your own number stop being
 
 ## Ready to go deeper?
 
-[Join the Thursday Money Note](/#start), one email a week on money and how we actually behave with it. Free.
+[Join the Thursday Money Note](/#start), two short emails a week on money and how we actually behave with it. Free.
 
 If you want to work through the deeper pattern, [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 

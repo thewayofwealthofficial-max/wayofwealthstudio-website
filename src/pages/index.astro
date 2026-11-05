@@ -6,7 +6,7 @@ import NewsletterForm from '../components/NewsletterForm.astro';
 import { orgAndPerson } from '../config/schema';
 
 const title = "Way of Wealth | A steady wage and calm about money, for small business owners";
-const description = "Behavioural money coaching for small business owners who make a good living and still find money stressful. A 12-week 1:1 programme and a free weekly newsletter. MSc Behavioural Economics | Qualified Financial Planner.";
+const description = "Behavioural money coaching for small business owners who make a good living and still find money stressful. A 12-week 1:1 programme and two free short emails a week. MSc Behavioural Economics | Qualified Financial Planner.";
 const canonical = LINKS.siteUrl;
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -103,9 +103,9 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       <a href={LINKS.coaching} class="hm-card-btn">See the programme</a>
     </article>
     <article class="hm-help-card reveal">
-      <div class="hm-help-top"><span>Free · weekly</span></div>
+      <div class="hm-help-top"><span>Free · twice a week</span></div>
       <h3>The Thursday Money Note</h3>
-      <p><b>READ</b> honest, research-based notes on money and behaviour. One email a week, one-click unsubscribe any time.</p>
+      <p><b>READ</b> honest, research-based notes on money and behaviour. Two short emails a week, a Tuesday letter and The Thursday Money Note. One-click unsubscribe any time.</p>
       <a href="#start" class="hm-card-btn">Join for free</a>
     </article>
   </div>
@@ -201,9 +201,9 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
 <section class="cta-section" id="start">
   <div class="cta-inner reveal">
     <h2>Not ready for coaching yet?<br />Start where it's <em>quiet.</em></h2>
-    <p>The Thursday Money Note is one email a week on money and how we behave with it. Honest, and based on the research. There's no upsell in every issue.</p>
+    <p>Two short emails a week on money and how we behave with it: a Tuesday letter and The Thursday Money Note. Honest, and based on the research. There's no upsell in every issue.</p>
     <NewsletterForm />
-    <div class="cta-reassure">One email a week. Unsubscribe any time. No webinar, no catch.</div>
+    <div class="cta-reassure">Two short emails a week. Unsubscribe any time. No webinar, no catch.</div>
     <div class="cta-video">
       <p class="cta-video-label">Prefer to watch? My full masterclass on money scripts, biases and how to change them.</p>
       <div class="cta-video-frame">

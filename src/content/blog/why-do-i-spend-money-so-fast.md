@@ -93,7 +93,7 @@ If you're unsure of the percentage, a qualified accountant or tax professional i
 
 ## Ready to go deeper?
 
-[Join the Thursday Money Note](/#start): one email a week on money and how we behave with it, free.
+[Join the Thursday Money Note](/#start): two short emails a week on money and how we behave with it, free.
 
 If you want to go further, [book a free call](/coaching/#apply) to talk about The Money Story Method, my 12-week 1:1 programme.
 

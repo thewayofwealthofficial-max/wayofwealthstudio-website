@@ -11,8 +11,8 @@ export const LINKS = {
   newsletter: 'https://preview.mailerlite.io/forms/1977493/185123534091060787/share',
   contactEmail: 'mailto:joel@wayofwealthcoaching.com',
   coaching: '/coaching/',
-  // Free Cash Flow Session booking (the /about/ page button). Swap for a site page later if one is built.
-  cashFlowSession: 'https://calendly.com/thewayofwealth-official/coaching-call',
+  // Free Cash Flow Session booking (the /about/ page button). 5 Nov 2026: was the old coaching-call link.
+  cashFlowSession: 'https://calendly.com/thewayofwealth-official/your-cash-flow-session',
   instagram: 'https://www.instagram.com/theway.ofwealth/',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
   // Lead-magnet funnel pages

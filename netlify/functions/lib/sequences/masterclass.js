@@ -428,7 +428,7 @@ It's free.
 
 Joel
 
-P.S. And if now's not the time, that's completely fine. From here you'll get The Thursday Money Note, one email a week.
+P.S. And if now's not the time, that's completely fine. From here you'll get two short emails a week: a short letter from me every Tuesday, and The Thursday Money Note every Thursday.
 `,
     },
   ],

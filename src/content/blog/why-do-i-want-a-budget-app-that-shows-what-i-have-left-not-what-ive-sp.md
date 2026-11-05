@@ -88,7 +88,7 @@ Sometimes it points to something a layer deeper: a belief that checking in on yo
 
 ## Ready to go deeper?
 
-[Join the Thursday Money Note](/#start): one email a week on money and how we behave with it.
+[Join the Thursday Money Note](/#start): two short emails a week on money and how we behave with it.
 
 Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
 

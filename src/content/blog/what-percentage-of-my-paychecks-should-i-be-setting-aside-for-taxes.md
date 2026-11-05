@@ -105,7 +105,7 @@ Leave X blank for now if you do not know the number. Talk to your accountant. Bu
 
 ## Ready to go deeper?
 
-Free first: [Join the Thursday Money Note](/#start) -- one email a week on money and how we behave with it.
+Free first: [Join the Thursday Money Note](/#start) -- two short emails a week on money and how we behave with it.
 
 If you want to work through this properly, [book a free call](/coaching/#apply) to find out about The Money Story Method, the 12-week 1:1 programme.
 
