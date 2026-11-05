@@ -33,9 +33,8 @@ const FOR_YOU = [
       <p class="ab-lead">I'm a behavioural money coach. I help small business owners get a steady wage, a tax pot that's never short, and calm about money.</p>
       <p class="ab-creds">MSc Behavioural Economics &nbsp;|&nbsp; DipPFS &nbsp;|&nbsp; Former financial planner at St James's Place</p>
     </div>
-    <!-- PHOTO SPOT: add Joel's photo here (e.g. <img src="/images/your-photo.jpg" alt="Joel Ezekiel" />) and remove the placeholder text. No stock photos. -->
-    <figure class="ab-photo" aria-label="Photo of Joel coming soon">
-      <span>Photo of Joel<br />coming soon</span>
+    <figure class="ab-photo">
+      <img src="/images/joel-headshot-web.jpg" alt="Joel Ezekiel, founder of Way of Wealth" width="560" height="700" loading="eager" />
     </figure>
   </div>
 </section>
@@ -103,7 +102,8 @@ const FOR_YOU = [
   .ab-hero h1 em { font-style: italic; color: var(--color-gold); }
   .ab-lead { font-size: 1.15rem; line-height: 1.7; color: var(--color-navy); margin: 0 0 1.2rem; }
   .ab-creds { font-family: var(--font-heading-sc); font-size: 0.78rem; letter-spacing: 0.12em; color: var(--color-slate); margin: 0; }
-  .ab-photo { margin: 0; aspect-ratio: 4 / 5; border: 2px dashed var(--color-border-warm); border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .ab-photo { margin: 0; aspect-ratio: 4 / 5; border-radius: 8px; overflow: hidden; background: #fff; }
+  .ab-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .ab-photo span { font-family: var(--font-ui); font-size: 0.9rem; color: var(--color-slate); line-height: 1.5; }
 
   .ab-section { padding: 4.5rem 1.5rem; background: var(--color-bg-white); }
