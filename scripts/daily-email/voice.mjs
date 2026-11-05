@@ -10,7 +10,7 @@
 import { BRAND_VOICE_BLOCK } from '../voice/joel-voice.mjs';
 
 export const FROM_NAME = 'Joel from Way of Wealth';
-export const FROM_EMAIL = 'joel@thewayofwealth.shop';
+export const FROM_EMAIL = 'joel@wayofwealthcoaching.com'; // moved off .shop 5 Nov 2026: .shop becomes the cold outbound domain
 
 export const LINKS = {
   call: 'https://calendly.com/thewayofwealth-official/20min',
