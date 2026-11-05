@@ -186,7 +186,7 @@ async function main() {
   }
   if (thisWeek.total < 10) msg += `• Quiz traffic low — prioritise driving IG/FB traffic to the quiz URL\n`;
   if (queue.queued !== null && queue.queued < 10) msg += `• Reddit queue running low — topup fires Sunday, but may need top\\-up\n`;
-  msg += `• Newsletter launch in _check calendar_ \\(Finance Friday first send: 2026\\-05\\-01\\)\n\n`;
+  msg += `• Newsletter launch in _check calendar_ \\(Thursday Money Note first send: 2026\\-05\\-01\\)\n\n`;
 
   msg += `_Open Claude Code to dig into any of these. Reply here with priorities if anything jumps out._\n— Fred`;
 

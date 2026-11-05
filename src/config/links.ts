@@ -3,7 +3,6 @@
 export const LINKS = {
   siteUrl: 'https://wayofwealthcoaching.com',
   siteName: 'Way of Wealth',
-  quiz: 'https://money-beliefs-quiz.netlify.app',
   etsy: 'https://www.etsy.com/shop/WayofWealthStudio',
   // Cheat sheet form (MailerLite embedded) — routes subscribers to main list + triggers Cheat Sheet Delivery automation
   cheatSheet: 'https://preview.mailerlite.io/forms/1977493/184455001091867806/share',
@@ -11,8 +10,9 @@ export const LINKS = {
   newsletter: 'https://preview.mailerlite.io/forms/1977493/185123534091060787/share',
   contactEmail: 'mailto:joel@wayofwealthcoaching.com',
   coaching: '/coaching/',
-  // Free Cash Flow Session booking (the /about/ page button). 5 Nov 2026: was the old coaching-call link.
-  cashFlowSession: 'https://calendly.com/thewayofwealth-official/your-cash-flow-session',
+  // Free Cash Flow Session (the /about/ page button). 5 Nov 2026: the /your-number/ page, so it saves name + email
+  // and starts the booking reminders. Was the old coaching-call Calendly link.
+  cashFlowSession: '/your-number/',
   instagram: 'https://www.instagram.com/theway.ofwealth/',
   portalApplyApi: 'https://portal.thewayofwealth.shop/api/leads/submit',
   // Lead-magnet funnel pages
