@@ -8,6 +8,7 @@ import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { READER_PHRASES } from './voice/reader-phrases.mjs';
 import { joelVoice, leaksName } from './voice/joel-voice.mjs';
 import { existsSync } from 'node:fs';
+import { slugify as wordSafeSlug, trimAtWord, needsSeoTitle, SEO_TITLE_MAX, DESCRIPTION_MAX, LINK_RULE, checkSiteLinks, stripBadLinks, sitePaths } from './lib/blog-rules.mjs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -78,14 +79,9 @@ function markRowPublished(lines, row) {
 // ───────────────────────────────────────────────────────────────
 // Slug + word count
 
+// Max 70 characters, trimmed at a word boundary (scripts/lib/blog-rules.mjs). Never cut mid-word.
 function slugify(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 70);
+  return wordSafeSlug(text.replace(/[^a-zA-Z0-9\s-]/g, ''), 70);
 }
 
 function estimateReadingTime(body) {
@@ -144,18 +140,19 @@ Before returning, re-read once: fix any invented fact, any wrong research credit
 
 OUTPUT FORMAT, exactly this shape, no preamble, no commentary:
 
-{"description": "<one sentence, max 165 characters, speaks to the reader's feeling>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
+{"description": "<one sentence, max ${DESCRIPTION_MAX} characters, speaks to the reader's feeling>", "title": "<only when the user message asks for a shortened title; otherwise omit>", "seoTitle": "<only when the user message asks for one; otherwise omit>", "tags": ["3-5","lowercase","tags"]}
 <<<BODY>>>
 <markdown body, no frontmatter, no h1. Start with the 2 or 3 sentence direct answer, then the "What you need to know" block.>
-<<<END>>>`;
+<<<END>>>` + LINK_RULE;
 
 function buildUserPrompt(row, related, feedback = '') {
   const longTitle = row.question.length > TITLE_MAX
     ? `\nTITLE: This question is too long for a page title. Put a shortened version in the "title" JSON field (max ${TITLE_MAX} characters, keep the same meaning and wording as far as possible, end with a question mark).\n`
     : '';
+  const seo = needsSeoTitle(pickTitleSafe(row)) ? `\nSEO TITLE: The title is too long for the browser tab and Google. Put a short version in the "seoTitle" JSON field: max ${SEO_TITLE_MAX} characters, same meaning, plain words, whole words only.\n` : '';
   return `Today's blog post.
 
-READER QUESTION (use as the title): ${row.question}${longTitle}
+READER QUESTION (use as the title): ${row.question}${longTitle}${seo}
 BEHAVIOURAL IDEA TO FEATURE (add others that genuinely help): ${row.concept}
 CATEGORY: ${row.category}
 PRIMARY ICP SEGMENT: ${row.icp}
@@ -171,7 +168,7 @@ Write the post now.${feedback}`;
 
 // Repair: hand back the draft and change only what the checks flagged, so fixes don't create new problems.
 function buildRepairPrompt(draft, problems) {
-  const header = JSON.stringify({ description: draft.description, tags: draft.tags, ...(draft.title ? { title: draft.title } : {}) });
+  const header = JSON.stringify({ description: draft.description, tags: draft.tags, ...(draft.title ? { title: draft.title } : {}), ...(draft.seoTitle ? { seoTitle: draft.seoTitle } : {}) });
   return `Below is your draft blog post. It failed these automatic checks:
 - ${problems.join('\n- ')}
 
@@ -219,6 +216,8 @@ function quoteHits(text, hits) {
   return [...out].join(' ');
 }
 
+const SITE_PATHS = sitePaths();
+
 function checkShape(body, posts, description = '', tags = []) {
   const p = [];
   const all = `${description}\n${body}`;
@@ -240,6 +239,8 @@ function checkShape(body, posts, description = '', tags = []) {
   const vague = body.match(VAGUE_RE) || [];
   if (vague.length) p.push(`Says "research shows" or similar without naming the source. Name the researcher from the list you were given, or say it as the reader's experience. The lines: ${quoteHits(body, vague)}`);
   if (/\bLevel 4\b/i.test(body)) p.push('Writes "Level 4".');
+  if (description.length > DESCRIPTION_MAX) p.push(`Description is ${description.length} characters. Max ${DESCRIPTION_MAX}.`);
+  p.push(...checkSiteLinks(all, SITE_PATHS));
   if (/\b(thousands of (?:women|clients|people)|hundreds of (?:clients|women)|most of my clients)\b/i.test(body)) p.push('Makes an unverifiable claim about Joel\'s clients.');
   const words = body.split(/\s+/).filter(Boolean).length;
   if (words < 1000 || words > 1800) p.push(`Body is ${words} words. Aim for 1,100 to 1,500.`);
@@ -311,7 +312,7 @@ function parseClaudeResponse(text) {
     throw err;
   }
   const clean = (s) => (typeof s === 'string' ? s.replace(/\s*\u2014\s*/g, ', ') : s);
-  const result = { description: clean(meta.description), tags: meta.tags, title: clean(meta.title), body: clean(body) };
+  const result = { description: clean(meta.description), tags: meta.tags, title: clean(meta.title), seoTitle: clean(meta.seoTitle), body: clean(body) };
   if (/\bJess\b/.test(`${result.description} ${result.body}`)) {
     throw new Error('Generated post contains the internal persona name "Jess". Not publishing.');
   }
@@ -350,15 +351,31 @@ function pickTitle(row, modelTitle) {
   return t;
 }
 
-function buildMarkdown({ row, description, tags, title, body }) {
+// The title without throwing, for the prompt (pickTitle throws when the model's short title is missing).
+function pickTitleSafe(row, modelTitle) {
+  try { return pickTitle(row, modelTitle); } catch { return row.question; }
+}
+
+// The <title> tag: page title + " — Way of Wealth" when that fits in 60 characters, else a short seoTitle.
+// The full title stays as the on-page H1.
+function pickSeoTitle(fullTitle, modelSeoTitle) {
+  if (!needsSeoTitle(fullTitle)) return '';
+  const t = (modelSeoTitle ?? '').trim();
+  if (t && t.length <= SEO_TITLE_MAX) return t;
+  return trimAtWord(fullTitle, SEO_TITLE_MAX);
+}
+
+function buildMarkdown({ row, description, tags, title, seoTitle, body }) {
   const today = new Date().toISOString().slice(0, 10);
   const readingTime = estimateReadingTime(body);
   const tagList = (tags ?? []).map((t) => `"${t}"`).join(', ');
-  const desc = description.length > 165 ? description.slice(0, 162).trim() + '...' : description;
+  const desc = trimAtWord(description, DESCRIPTION_MAX);
+  const fullTitle = pickTitle(row, title);
+  const seo = pickSeoTitle(fullTitle, seoTitle);
 
   return `---
-title: ${escapeYamlString(pickTitle(row, title))}
-description: ${escapeYamlString(desc)}
+title: ${escapeYamlString(fullTitle)}
+${seo ? `seoTitle: ${escapeYamlString(seo)}\n` : ''}description: ${escapeYamlString(desc)}
 pubDate: ${today}
 category: ${escapeYamlString(normaliseCategory(row.category))}
 tags: [${tagList}]
@@ -366,7 +383,7 @@ redditQuestion: ${escapeYamlString(row.question)}
 readingTime: ${escapeYamlString(readingTime)}
 ---
 
-${body.trim()}
+${stripBadLinks(body.trim(), SITE_PATHS)}
 `;
 }
 
@@ -414,19 +431,20 @@ async function main() {
     problems = checkShape(cand.body, posts, cand.description, cand.tags);
     // Never name anyone from his private calls. The name itself is not logged: the logs are public.
     if (leaksName(`${cand.title || ''} ${cand.description} ${cand.body}`, voice.names)) problems.push('Contains a first name of someone from Joel\'s private calls. Remove every person\'s name except Joel\'s.');
+    if (needsSeoTitle(pickTitleSafe(next, cand.title)) && (!cand.seoTitle || cand.seoTitle.length > SEO_TITLE_MAX)) problems.push(`Needs a "seoTitle" in the JSON header: a short version of the title, max ${SEO_TITLE_MAX} characters, whole words only.`);
     console.log(problems.length ? `Problems: ${problems.join(' | ')}` : 'Passed all shape checks.');
     if (!problems.length) { parsed = cand; break; }
     if (!best || problems.length <= bestProblems.length) { best = cand; bestProblems = problems; }
   }
   if (!parsed) throw new Error('Post failed the automatic checks after 1 draft and 5 repairs: ' + (bestProblems || problems).join(' | '));
-  const { description, tags, title, body } = parsed;
+  const { description, tags, title, seoTitle, body } = parsed;
 
   if (process.env.DRY_RUN === '1') {
-    console.log('\n----- DRY RUN: would publish -----\n' + buildMarkdown({ row: next, description, tags, title, body }));
+    console.log('\n----- DRY RUN: would publish -----\n' + buildMarkdown({ row: next, description, tags, title, seoTitle, body }));
     return;
   }
 
-  const markdown = buildMarkdown({ row: next, description, tags, title, body });
+  const markdown = buildMarkdown({ row: next, description, tags, title, seoTitle, body });
 
   await mkdir(BLOG_DIR, { recursive: true });
   await writeFile(targetPath, markdown, 'utf8');

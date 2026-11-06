@@ -59,7 +59,7 @@ const related = all
   .slice(0, 3);
 ---
 <Layout
-  title={`${post.data.title} — Way of Wealth`}
+  title={post.data.seoTitle ?? `${post.data.title} — Way of Wealth`}
   description={post.data.description}
   ogImage={ogImage}
   canonical={canonical}

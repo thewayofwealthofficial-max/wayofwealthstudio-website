@@ -57,7 +57,7 @@ Once you have the date, you will know whether you have time to breathe or whethe
 
 If your money already feels chaotic, rate shocks like this one do not just create a financial problem. They create a psychological one too. The stress of not knowing is often heavier than the stress of knowing a hard truth.
 
-That is the work I do with people in The Money Story Method, my 12-week one-to-one programme. We look at the beliefs and the behaviours underneath the chaos, not just the numbers. If that sounds like where you are, you can find out more at [Way of Wealth](https://wayofwealth.co.uk).
+That is the work I do with people in The Money Story Method, my 12-week one-to-one programme. We look at the beliefs and the behaviours underneath the chaos, not just the numbers. If that sounds like where you are, you can find out more at [Way of Wealth](/coaching/).
 
 Or if you just want a steady, grounding read every Thursday, The Thursday Money Note is a good place to start.
 

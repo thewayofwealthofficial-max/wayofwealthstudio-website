@@ -5,8 +5,8 @@ import { getCollection } from 'astro:content';
 import NewsletterForm from '../components/NewsletterForm.astro';
 import { orgAndPerson } from '../config/schema';
 
-const title = "Way of Wealth | A steady wage and calm about money, for small business owners";
-const description = "Behavioural money coaching for small business owners who make a good living and still find money stressful. A 12-week 1:1 programme and two free short emails a week. MSc Behavioural Economics | Qualified Financial Planner.";
+const title = "Way of Wealth | Calm about money for small business owners";
+const description = "Money coaching for small business owners who earn well but still find money stressful. A steady wage, a tax pot and calm. Qualified Financial Planner.";
 const canonical = LINKS.siteUrl;
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -48,7 +48,9 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
 
 <!-- 1 · HERO: photo + overlay card -->
 <section class="hm-hero">
-  <div class="hm-hero-photo" aria-hidden="true"></div>
+  <div class="hm-hero-photo" aria-hidden="true">
+    <img src="/images/joel-headshot-1000.webp" srcset="/images/joel-headshot-600.webp 600w, /images/joel-headshot-1000.webp 1000w" sizes="(max-width: 1024px) 100vw, 58vw" width="1000" height="1472" alt="" fetchpriority="high" />
+  </div>
   <div class="hm-hero-inner">
     <div class="hm-card reveal">
       <p class="hm-script">Joel Ezekiel</p>
@@ -75,7 +77,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
       <ul class="hm-tick">
         {FOR_YOU.map((t) => <li>{t}</li>)}
       </ul>
-      <a href="/coaching/#apply" class="btn-primary">Book your free call</a>
+      <a href={LINKS.cashFlowSession} class="btn-primary">Book your free Cash Flow Session</a>
     </div>
     <div class="hm-video reveal">
       <video controls playsinline preload="none" poster={VSL_POSTER} src={VSL_SRC}></video>
@@ -99,7 +101,7 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
     <article class="hm-help-card reveal">
       <div class="hm-help-top"><span>1:1 · 12 weeks</span></div>
       <h3>The Money Story Method</h3>
-      <p><b>WORK WITH ME</b> to build your money system, one to one, and change the habits underneath it. Free 20-minute call to start.</p>
+      <p><b>WORK WITH ME</b> to build your money system, one to one, and change the habits underneath it. Start with a free Cash Flow Session.</p>
       <a href={LINKS.coaching} class="hm-card-btn">See the programme</a>
     </article>
     <article class="hm-help-card reveal">
@@ -172,7 +174,12 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
     <div class="hm-vgrid">
       {VIDEOS.map((v) => (
         <figure class="hm-vcard reveal">
-          <video controls playsinline preload="none" poster={`/testimonials/${v.slug}.jpg`} src={`/testimonials/${v.slug}.mp4`}></video>
+          <div class="hm-vplay">
+            <video controls playsinline preload="none" src={`/testimonials/${v.slug}.mp4`}></video>
+            <button type="button" class="hm-vposter" aria-label={`Play video: ${v.who}`}>
+              <img src={`/testimonials/${v.slug}-640.webp`} width="640" height="360" alt="" loading="lazy" decoding="async" />
+            </button>
+          </div>
           <figcaption><p>{v.cap}</p><small>{v.who}</small></figcaption>
         </figure>
       ))}
@@ -213,14 +220,25 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   </div>
 </section>
 
-<!-- 9 · FINAL ASK: book a call -->
+<!-- 9 · FINAL ASK: the free Cash Flow Session -->
 <section class="hm-final">
   <div class="hm-final-inner reveal">
-    <h2>Book your free <em>20-minute call</em></h2>
-    <p>Twelve weeks, one to one, just you and me. I take on 5 people a month.</p>
-    <a href={`${LINKS.coaching}#apply`} class="btn-primary">Book your free 20-minute call</a>
+    <h2>Book your free <em>Cash Flow Session</em></h2>
+    <p>75 minutes with me, live on screen. We work out how much you actually need to earn. You get a written report within 48 hours. It's free.</p>
+    <a href={LINKS.cashFlowSession} class="btn-primary">Book your free Cash Flow Session</a>
   </div>
 </section>
+
+<script>
+  // Testimonial clips: show a lazy-loaded image first, swap to the video on click.
+  document.querySelectorAll('.hm-vposter').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const video = btn.parentElement?.querySelector('video');
+      btn.remove();
+      video?.play();
+    });
+  });
+</script>
 
 </Layout>
 
@@ -234,7 +252,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   /* ---------- HERO (photo + overlay card) ---------- */
   .hm-hero { position: relative; min-height: 92vh; background: var(--color-navy-deep); display: flex; align-items: center; overflow: hidden; padding: 9rem 2rem 5rem; }
   .hm-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--color-gold); z-index: 3; }
-  .hm-hero-photo { position: absolute; top: 0; right: 0; bottom: 0; width: 58%; background: url('/images/joel-headshot-web.jpg') center 18% / cover no-repeat; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 38%); mask-image: linear-gradient(to right, transparent 0%, #000 38%); }
+  .hm-hero-photo { position: absolute; top: 0; right: 0; bottom: 0; width: 58%; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 38%); mask-image: linear-gradient(to right, transparent 0%, #000 38%); }
+  .hm-hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; display: block; }
   .hm-hero-inner { position: relative; z-index: 2; max-width: 1180px; width: 100%; margin: 0 auto; }
   .hm-card { max-width: 560px; background: rgba(20,31,43,0.94); border: 1px solid rgba(196,162,101,0.4); border-radius: 8px; padding: 2.6rem 2.4rem; box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
   .hm-script { font-family: var(--font-heading); font-style: italic; font-size: 2.1rem; color: var(--color-gold); margin: 0 0 1rem; line-height: 1.1; }
@@ -316,6 +335,11 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   .hm-vmore { text-align: center; margin: 2rem 0 0; }
   .hm-vmore a { color: var(--color-navy); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
   .hm-vcard video { width: 100%; border-radius: 6px; background: #000; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .hm-vplay { position: relative; }
+  .hm-vposter { position: absolute; inset: 0; padding: 0; border: 0; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer; }
+  .hm-vposter img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hm-vposter::after { content: ''; position: absolute; top: 50%; left: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: rgba(20,31,43,0.75) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%23F5F0E8'/%3E%3C/svg%3E") center / 28px no-repeat; transition: background-color .2s; }
+  .hm-vposter:hover::after, .hm-vposter:focus-visible::after { background-color: rgba(196,162,101,0.9); }
   .hm-vcard figcaption { padding: 1rem 0.3rem 0.3rem; }
   .hm-vcard figcaption p { font-size: 0.95rem; line-height: 1.5; color: var(--color-cream); margin: 0 0 0.5rem; }
   .hm-vcard figcaption small { color: var(--color-gold-subtle); font-size: 0.82rem; }
@@ -350,7 +374,8 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 1024px) {
     .hm-hero { min-height: auto; padding: 8rem 1.5rem 4rem; align-items: flex-end; }
-    .hm-hero-photo { width: 100%; height: 55%; bottom: auto; -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); background-position: center 12%; }
+    .hm-hero-photo { width: 100%; height: 55%; bottom: auto; -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); }
+    .hm-hero-photo img { object-position: center 12%; }
     .hm-hero-inner { margin-top: 26rem; }
     .hm-intro-inner { grid-template-columns: 1fr; gap: 3rem; }
     .hm-video { position: static; }

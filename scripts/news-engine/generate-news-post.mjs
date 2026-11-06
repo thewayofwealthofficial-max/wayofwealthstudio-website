@@ -15,6 +15,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gatherItems, fetchArticleText } from './sources.mjs';
 import { joelVoice, leaksName } from '../voice/joel-voice.mjs';
+import { slugify as wordSafeSlug, trimAtWord, needsSeoTitle, SEO_TITLE_MAX, DESCRIPTION_MAX, LINK_RULE, checkSiteLinks, stripBadLinks, sitePaths } from '../lib/blog-rules.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = join(__dirname, '..', '..', 'src', 'content', 'blog');
@@ -39,7 +40,9 @@ async function claude(system, user, maxTokens = 6000) {
   return text;
 }
 
-const slugify = (t) => t.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+// Max 80 characters, trimmed at a word boundary (scripts/lib/blog-rules.mjs). Never cut mid-word.
+const slugify = (t) => wordSafeSlug(t, 80);
+const SITE_PATHS = sitePaths();
 const yamlStr = (s) => JSON.stringify(String(s));
 const clean = (s) => String(s || '').replace(/\s*—\s*/g, ', ').replace(/\s*–\s*/g, ', ');
 
@@ -82,20 +85,20 @@ SCOPE: you are a planner, not an adviser. Never recommend investments, products,
 
 VOICE (this is how Joel really talks): short plain sentences, contractions, grade 5 reading level, the odd "you know", "like", "honestly" or "right?". Give ideas a physical picture, not an abstract noun. Never reassure ("don't be so hard on yourself"). Turn shame into information. No em dashes. British spelling. No "It's not X, it's Y" pairs. You may use their words (pay myself, take home, where my money is going, always behind, struggle, confused). If the story touches mindset or manifesting, take the belief seriously, then add the behaviour side. Banned: ${BANNED.join(', ')}.
 
-STRUCTURE (700 to 1000 words, ## headings, short paragraphs): open (no heading) with 2 or 3 plain sentences that directly answer the question in the title, i.e. what this means for your money; then the news in one plain sentence from the source; why it lands on you; the behavioural idea by its proper name; one small action for this week; a soft pointer to The Money Story Method (12-week 1:1 programme) OR The Thursday Money Note, my free newsletter,; then a line "*Source: [Publication](URL)*"; then sign off with just *Joel*.
+STRUCTURE (700 to 1000 words, ## headings, short paragraphs): open (no heading) with 2 or 3 plain sentences that directly answer the question in the title, i.e. what this means for your money; then the news in one plain sentence from the source; why it lands on you; the behavioural idea by its proper name; one small action for this week; a soft pointer to The Money Story Method (12-week 1:1 programme), linked as [The Money Story Method](/coaching/), OR The Thursday Money Note, my free newsletter, linked as [The Thursday Money Note](/#start); then a line "*Source: [Publication](URL)*"; then sign off with just *Joel*.
 
 OUTPUT, exactly this shape, no preamble:
-{"title": "<max ${TITLE_MAX} characters, plain, speaks to the reader's feeling, no clickbait>", "description": "<one sentence, max 160 characters>", "tags": ["3-5","lowercase","tags"]}
+{"title": "<max ${TITLE_MAX} characters, plain, speaks to the reader's feeling, no clickbait>", "seoTitle": "<only if the title is over ${SEO_TITLE_MAX - 16} characters: a short version for the browser tab and Google, max ${SEO_TITLE_MAX} characters, whole words; otherwise omit>", "description": "<one sentence, max ${DESCRIPTION_MAX} characters>", "tags": ["3-5","lowercase","tags"]}
 <<<BODY>>>
 <markdown body, no frontmatter, no h1>
-<<<END>>>`;
+<<<END>>>` + LINK_RULE;
 
 function parse(text) {
   const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
   const s = cleaned.indexOf('<<<BODY>>>'), e = cleaned.lastIndexOf('<<<END>>>');
   if (s < 0 || e <= s) throw new Error('Writer response missing body sentinels');
   const meta = JSON.parse(cleaned.slice(0, s).trim().match(/\{[\s\S]*\}/)[0]);
-  return { title: clean(meta.title).trim(), description: clean(meta.description).trim(), tags: meta.tags || [], body: clean(cleaned.slice(s + 10, e)).trim() };
+  return { title: clean(meta.title).trim(), seoTitle: clean(meta.seoTitle).trim(), description: clean(meta.description).trim(), tags: meta.tags || [], body: clean(cleaned.slice(s + 10, e)).trim() };
 }
 
 const norm = (s) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -135,7 +138,9 @@ function check(post, source, url) {
   for (const u of unclosed) p.push(`Unclosed quotation mark near "${u.slice(0, 60)}". Close it, or remove it if these are your own words.`);
   if (!post.body.includes(url)) p.push('Must link to the source article URL.');
   if (post.title.length > TITLE_MAX || post.title.length < 15) p.push(`Title must be 15 to ${TITLE_MAX} characters.`);
-  if (post.description.length > 165) p.push('Description over 165 characters.');
+  if (post.description.length > DESCRIPTION_MAX) p.push(`Description is ${post.description.length} characters. Max ${DESCRIPTION_MAX}.`);
+  if (needsSeoTitle(post.title) && (!post.seoTitle || post.seoTitle.length > SEO_TITLE_MAX)) p.push(`The title is long, so add a "seoTitle" to the JSON header: a short version, max ${SEO_TITLE_MAX} characters, whole words only.`);
+  p.push(...checkSiteLinks(all, SITE_PATHS));
   const words = post.body.split(/\s+/).length;
   if (words < 600 || words > 1200) p.push(`Body is ${words} words, need 600 to 1200.`);
   if (/\b(you should (?:buy|invest|sell|switch|move your)|invest in|put your money in|pay less tax|avoid tax|tax loophole)\b/i.test(all)) p.push('Reads like regulated financial or tax advice.');
@@ -183,7 +188,7 @@ async function main() {
   let post = null, problems = [], best = null, bestProblems = null;
   for (let attempt = 1; attempt <= 6; attempt++) {
     const user = best
-      ? `${brief}\n\nBelow is your draft. It failed these automatic checks:\n- ${bestProblems.join('\n- ')}\n\nFix ONLY those problems. Keep every other sentence, heading and link exactly as it is. Return the whole post in the same output shape.\n\n${JSON.stringify({ title: best.title, description: best.description, tags: best.tags })}\n<<<BODY>>>\n${best.body}\n<<<END>>>`
+      ? `${brief}\n\nBelow is your draft. It failed these automatic checks:\n- ${bestProblems.join('\n- ')}\n\nFix ONLY those problems. Keep every other sentence, heading and link exactly as it is. Return the whole post in the same output shape.\n\n${JSON.stringify({ title: best.title, ...(best.seoTitle ? { seoTitle: best.seoTitle } : {}), description: best.description, tags: best.tags })}\n<<<BODY>>>\n${best.body}\n<<<END>>>`
       : `${brief}\n\nWrite the post now.`;
     const reply = await claude(WRITER_SYSTEM + voice.block, user);
     let cand;
@@ -201,7 +206,10 @@ async function main() {
   const target = join(BLOG_DIR, `${slug}.md`);
   if (existsSync(target)) throw new Error('A post with this slug already exists: ' + slug);
   const words = post.body.split(/\s+/).length;
-  const md = `---\ntitle: ${yamlStr(post.title)}\ndescription: ${yamlStr(post.description)}\npubDate: ${new Date().toISOString().slice(0, 10)}\ncategory: ${yamlStr(pick.category)}\ntags: [${post.tags.map((t) => yamlStr(String(t).toLowerCase())).join(', ')}]\nreadingTime: ${yamlStr(Math.max(3, Math.round(words / 230)) + ' min read')}\n---\n\n${post.body}\n`;
+  // <title> tag max 60 characters: a short seoTitle when "title — Way of Wealth" is longer. The full title stays as the H1.
+  const seoTitle = needsSeoTitle(post.title) ? (post.seoTitle && post.seoTitle.length <= SEO_TITLE_MAX ? post.seoTitle : trimAtWord(post.title, SEO_TITLE_MAX)) : '';
+  const body = stripBadLinks(post.body, SITE_PATHS);
+  const md = `---\ntitle: ${yamlStr(post.title)}\n${seoTitle ? `seoTitle: ${yamlStr(seoTitle)}\n` : ''}description: ${yamlStr(trimAtWord(post.description, DESCRIPTION_MAX))}\npubDate: ${new Date().toISOString().slice(0, 10)}\ncategory: ${yamlStr(pick.category)}\ntags: [${post.tags.map((t) => yamlStr(String(t).toLowerCase())).join(', ')}]\nreadingTime: ${yamlStr(Math.max(3, Math.round(words / 230)) + ' min read')}\n---\n\n${body}\n`;
 
   if (DRY) { console.log('\n----- DRY RUN: would publish -----\n' + md); return; }
   await mkdir(BLOG_DIR, { recursive: true });

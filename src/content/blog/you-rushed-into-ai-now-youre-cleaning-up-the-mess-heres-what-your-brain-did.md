@@ -75,7 +75,7 @@ Writing them down makes the future feel more real to your brain. It's a simple w
 
 If you want to understand the patterns driving your money decisions, not just in tools but across your whole business, The Money Story Method is my 12-week one-to-one programme. We work through what's actually going on underneath the decisions, then build something steady on top of it.
 
-Or if you want a lighter touch first, The Thursday Money Note is my free newsletter. Short, plain, one idea a week. You can join at [wealthofway.com](https://wealthofway.com).
+Or if you want a lighter touch first, The Thursday Money Note is my free newsletter. Short, plain, one idea a week. You can [join it here](/#start).
 
 And for anything personal, tax, products, investments, please do talk to a qualified adviser in your country. That's not my lane and it shouldn't be anyone's blog post.
 
