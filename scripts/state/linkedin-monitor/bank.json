@@ -17,10 +17,18 @@
           "url": "https://www.linkedin.com/posts/hammaadsiddeeqee_i-spent-1500-on-iman-gadzhis-program-2-activity-7363149945907859458-roOa",
           "firstLine": "I spent $1,500 on Iman Gadzhi's program 2 years ago.",
           "why": "Opens with a specific dollar amount spent on a named program, immediately signalling a personal financial risk and payoff story."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.23,
+          "url": "https://www.linkedin.com/posts/ramitsethi_my-wife-and-i-found-it-really-hard-to-find-activity-7142559153817845760-aWS6",
+          "firstLine": "My Wife and I found it really hard to find specific advice on how to talk to your partner about money.",
+          "why": "Opening with a personal admission of struggle ('we looked everywhere') makes the reader feel their own difficulty is normal and shared."
         }
       ],
-      "months": 2,
-      "authors": 2
+      "months": 3,
+      "authors": 3
     },
     "list · list": {
       "wins": [
@@ -39,10 +47,26 @@
           "url": "https://www.linkedin.com/posts/caroline-cookson_im-in-a-bit-of-an-inexplicable-grump-this-activity-7442846917119590400-bAmE",
           "firstLine": "I'm in a bit of an inexplicable grump* this week. So I'm channelling that energy into today's post: my top 10 pricing pe",
           "why": "Opens with a relatable admission of being in a grump, making the numbered pricing complaints feel personal rather than academic."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.97,
+          "url": "https://www.linkedin.com/posts/ramitsethi_your-rich-life-is-yours-it-does-not-have-activity-7122975103876743169-l6io",
+          "firstLine": "Your Rich Life is YOURS. It does not have to make sense to anyone else. In fact, the more dialed in you get on your Rich",
+          "why": "'Your Rich Life is YOURS' followed immediately by a permission-giving statement challenges the reader's assumptions about what wealth looks like."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.98,
+          "url": "https://www.linkedin.com/posts/ramitsethi_a-rich-life-can-be-picking-up-your-kids-activity-7070428878464262144-kbeV",
+          "firstLine": "A Rich Life can be",
+          "why": "The short punchy checklist of unexpected 'rich life' examples immediately signals this won't be a conventional money post."
         }
       ],
-      "months": 2,
-      "authors": 2
+      "months": 3,
+      "authors": 3
     },
     "question · story with lesson": {
       "wins": [
@@ -95,10 +119,18 @@
           "url": "https://www.linkedin.com/posts/rickkahler_moneymindset-financialwellbeing-personalfinance-activity-7432500159084756992-5YK-",
           "firstLine": "We’re told to live within our means.",
           "why": "Challenges a widely accepted financial virtue by reframing frugality as potential fear, which creates immediate tension."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 5.58,
+          "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6986330504019017728--fLp",
+          "firstLine": "There has been a list floating around with the top 200 LinkedIn influencers that everyone has been going insane about.",
+          "why": "The sharp contrast between obsessing over rankings and obsessing over finances creates instant tension and curiosity."
         }
       ],
-      "months": 1,
-      "authors": 1
+      "months": 2,
+      "authors": 2
     },
     "question · explainer": {
       "wins": [
@@ -123,10 +155,50 @@
           "url": "https://www.linkedin.com/posts/alexanderberman_youre-undercharging-lets-fix-that-i-activity-7290745617364963328-bHAe",
           "firstLine": "You're undercharging. Let's fix that:",
           "why": "The concrete coffee-shop anecdote with specific numbers pulls the reader in and grounds an abstract pricing lesson in a relatable, real-world scenario."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.05,
+          "url": "https://www.linkedin.com/posts/ramitsethi_l-podcast-newsletter-activity-7072920326333964288-8QiI",
+          "firstLine": "I grew up the son of immigrant parents in a middle-class family",
+          "why": "The specific childhood detail about not being able to afford appetisers creates instant emotional relatability."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.34,
+          "url": "https://www.linkedin.com/posts/ramitsethi_last-year-i-was-at-an-event-for-entrepreneurs-activity-7100899642476748800-Ozee",
+          "firstLine": "Last year I was at an event for entrepreneurs & when we were going around introducing ourselves, I noticed that a LOT of",
+          "why": "The vivid scene-setting and the blunt internal reaction ('GET A LIFE') create immediate tension that makes readers want to see where this goes."
+        },
+        {
+          "month": "2026-11",
+          "author": "Vivian Tu",
+          "per1k": 16.97,
+          "url": "https://www.linkedin.com/posts/viviantu-yourrichbff_book-finance-money-activity-7069463176358060032-yPWn",
+          "firstLine": "SECRET IS OUT!! Rich AF is officially available for pre-order at www.richaf.me!! I am so proud to share my debut book wi",
+          "why": "The honest admission that 'most rich people were old, white, and men' and 'I wasn't any of those things' creates immediate intrigue and emotional stakes."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 4.97,
+          "url": "https://www.linkedin.com/posts/maxpashman_my-client-asked-for-a-quick-zoom-with-me-activity-7021247871484129280-iedg",
+          "firstLine": "My client asked for a quick zoom with me this week.",
+          "why": "The suspense of 'she wanted to share her screen' makes you lean in to find out what's about to be revealed."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 2.75,
+          "url": "https://www.linkedin.com/posts/maxpashman_for-the-past-year-i-worked-back-at-an-office-activity-6993668084112793600-z9H6",
+          "firstLine": "For the past year I worked back at an office.",
+          "why": "The concrete dollar savings figure ($150-$200/month) in the second line makes the financial impact feel immediately real and relatable."
         }
       ],
-      "months": 1,
-      "authors": 1
+      "months": 2,
+      "authors": 4
     },
     "hot take · explainer": {
       "wins": [
@@ -137,10 +209,18 @@
           "url": "https://www.linkedin.com/posts/jamessmithlinkedin_heres-one-of-my-golden-rules-of-marketing-activity-7350553272795000832-AY_4",
           "firstLine": "Here's one of my golden rules of marketing when it comes to pricing.",
           "why": "Opens with a confident binary rule about pricing that makes readers immediately want to know which state they are in."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 2.9,
+          "url": "https://www.linkedin.com/posts/ramitsethi_why-i-dont-like-budgets-they-look-activity-7107030028533526528-YYa2",
+          "firstLine": "❌ WHY I DON’T LIKE BUDGETS:",
+          "why": "Leading with a bold rejection of a universally recommended tool (budgets) immediately challenges conventional wisdom and demands attention."
         }
       ],
-      "months": 1,
-      "authors": 1
+      "months": 2,
+      "authors": 2
     },
     "news · explainer": {
       "wins": [
@@ -151,6 +231,48 @@
           "url": "https://www.linkedin.com/posts/crowe-uk_mtd-selfemployed-landlords-activity-7342895042124034049-93_k",
           "firstLine": "🚨 Starting from 6 April 2026, significant changes are coming to the way self-employed individuals and landlords manage ",
           "why": "The red alarm emoji and bold date anchor create urgency and signal a deadline that self-employed readers cannot ignore."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "hot take · call-out": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.3,
+          "url": "https://www.linkedin.com/posts/ramitsethi_i-feel-so-sorry-for-people-who-hear-stuff-activity-7065355426862632960-qxWU",
+          "firstLine": "I feel so sorry for people who hear stuff like “don’t buy lattes” or “get lentils instead of meat” and believe money is ",
+          "why": "Opening with a dismissive 'I feel so sorry' triggers curiosity and mild controversy, pulling readers in to see who's being criticised."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "list · explainer": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.31,
+          "url": "https://www.linkedin.com/posts/maxpashman_the-idea-of-being-100-risk-free-is-impossible-activity-7069760742522028032-AfyB",
+          "firstLine": "The idea of being 100% risk free is impossible.",
+          "why": "Opening with a bold universal claim ('100% risk free is impossible') immediately challenges assumptions and pulls readers in."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "myth · explainer": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.83,
+          "url": "https://www.linkedin.com/posts/maxpashman_when-markets-fall-people-always-say-buy-activity-6978445271282163712-uUke",
+          "firstLine": "When markets fall, people always say “buy the dip”.",
+          "why": "Reframing 'buying the dip' as something you do passively by doing nothing is a clever contrarian hook that makes readers curious about the method."
         }
       ],
       "months": 1,
@@ -171,10 +293,164 @@
       ],
       "months": 1,
       "authors": 1
+    },
+    "money mindset and beliefs": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.3,
+          "url": "https://www.linkedin.com/posts/ramitsethi_i-feel-so-sorry-for-people-who-hear-stuff-activity-7065355426862632960-qxWU",
+          "firstLine": "I feel so sorry for people who hear stuff like “don’t buy lattes” or “get lentils instead of meat” and believe money is ",
+          "why": "Opening with a dismissive 'I feel so sorry' triggers curiosity and mild controversy, pulling readers in to see who's being criticised."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.97,
+          "url": "https://www.linkedin.com/posts/ramitsethi_your-rich-life-is-yours-it-does-not-have-activity-7122975103876743169-l6io",
+          "firstLine": "Your Rich Life is YOURS. It does not have to make sense to anyone else. In fact, the more dialed in you get on your Rich",
+          "why": "'Your Rich Life is YOURS' followed immediately by a permission-giving statement challenges the reader's assumptions about what wealth looks like."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.98,
+          "url": "https://www.linkedin.com/posts/ramitsethi_a-rich-life-can-be-picking-up-your-kids-activity-7070428878464262144-kbeV",
+          "firstLine": "A Rich Life can be",
+          "why": "The short punchy checklist of unexpected 'rich life' examples immediately signals this won't be a conventional money post."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.34,
+          "url": "https://www.linkedin.com/posts/ramitsethi_last-year-i-was-at-an-event-for-entrepreneurs-activity-7100899642476748800-Ozee",
+          "firstLine": "Last year I was at an event for entrepreneurs & when we were going around introducing ourselves, I noticed that a LOT of",
+          "why": "The vivid scene-setting and the blunt internal reaction ('GET A LIFE') create immediate tension that makes readers want to see where this goes."
+        },
+        {
+          "month": "2026-11",
+          "author": "Vivian Tu",
+          "per1k": 16.97,
+          "url": "https://www.linkedin.com/posts/viviantu-yourrichbff_book-finance-money-activity-7069463176358060032-yPWn",
+          "firstLine": "SECRET IS OUT!! Rich AF is officially available for pre-order at www.richaf.me!! I am so proud to share my debut book wi",
+          "why": "The honest admission that 'most rich people were old, white, and men' and 'I wasn't any of those things' creates immediate intrigue and emotional stakes."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 5.58,
+          "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6986330504019017728--fLp",
+          "firstLine": "There has been a list floating around with the top 200 LinkedIn influencers that everyone has been going insane about.",
+          "why": "The sharp contrast between obsessing over rankings and obsessing over finances creates instant tension and curiosity."
+        }
+      ],
+      "months": 1,
+      "authors": 3
+    },
+    "spending and saving habits": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.05,
+          "url": "https://www.linkedin.com/posts/ramitsethi_l-podcast-newsletter-activity-7072920326333964288-8QiI",
+          "firstLine": "I grew up the son of immigrant parents in a middle-class family",
+          "why": "The specific childhood detail about not being able to afford appetisers creates instant emotional relatability."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 2.61,
+          "url": "https://www.linkedin.com/posts/maxpashman_inflation-will-remain-sticky-for-a-decade-activity-7032374361189744641-1GTO",
+          "firstLine": "\"Inflation will remain 'sticky' for a decade because Gen Z and millennials are in their prime spending years\" - Investme",
+          "why": "The sarcastic first line about inflation and eggs immediately signals relatable financial frustration with a comedic twist."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 2.75,
+          "url": "https://www.linkedin.com/posts/maxpashman_for-the-past-year-i-worked-back-at-an-office-activity-6993668084112793600-z9H6",
+          "firstLine": "For the past year I worked back at an office.",
+          "why": "The concrete dollar savings figure ($150-$200/month) in the second line makes the financial impact feel immediately real and relatable."
+        }
+      ],
+      "months": 1,
+      "authors": 2
+    },
+    "money emotions and stress": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.23,
+          "url": "https://www.linkedin.com/posts/ramitsethi_my-wife-and-i-found-it-really-hard-to-find-activity-7142559153817845760-aWS6",
+          "firstLine": "My Wife and I found it really hard to find specific advice on how to talk to your partner about money.",
+          "why": "Opening with a personal admission of struggle ('we looked everywhere') makes the reader feel their own difficulty is normal and shared."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 4.97,
+          "url": "https://www.linkedin.com/posts/maxpashman_my-client-asked-for-a-quick-zoom-with-me-activity-7021247871484129280-iedg",
+          "firstLine": "My client asked for a quick zoom with me this week.",
+          "why": "The suspense of 'she wanted to share her screen' makes you lean in to find out what's about to be revealed."
+        }
+      ],
+      "months": 1,
+      "authors": 2
+    },
+    "the order to do money in": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 2.9,
+          "url": "https://www.linkedin.com/posts/ramitsethi_why-i-dont-like-budgets-they-look-activity-7107030028533526528-YYa2",
+          "firstLine": "❌ WHY I DON’T LIKE BUDGETS:",
+          "why": "Leading with a bold rejection of a universally recommended tool (budgets) immediately challenges conventional wisdom and demands attention."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.31,
+          "url": "https://www.linkedin.com/posts/maxpashman_the-idea-of-being-100-risk-free-is-impossible-activity-7069760742522028032-AfyB",
+          "firstLine": "The idea of being 100% risk free is impossible.",
+          "why": "Opening with a bold universal claim ('100% risk free is impossible') immediately challenges assumptions and pulls readers in."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.83,
+          "url": "https://www.linkedin.com/posts/maxpashman_when-markets-fall-people-always-say-buy-activity-6978445271282163712-uUke",
+          "firstLine": "When markets fall, people always say “buy the dip”.",
+          "why": "Reframing 'buying the dip' as something you do passively by doing nothing is a clever contrarian hook that makes readers curious about the method."
+        }
+      ],
+      "months": 1,
+      "authors": 2
+    },
+    "where the money sits: accounts and pots": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 3.38,
+          "url": "https://www.linkedin.com/posts/maxpashman_reason-to-have-a-sinking-fund-moving-expenses-activity-6982712172640440320-qwde",
+          "firstLine": "Reason to have a sinking fund: moving expenses suck 🤮",
+          "why": "Leading with a relatable pain point ('moving expenses suck') anchors the concept in real life before explaining the financial tool."
+        }
+      ],
+      "months": 1,
+      "authors": 1
     }
   },
   "promoted": {
-    "patterns": [],
+    "patterns": [
+      "confession · story with lesson",
+      "list · list",
+      "story · story with lesson"
+    ],
     "topics": []
   },
   "blocked": []
