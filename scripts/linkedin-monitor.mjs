@@ -127,7 +127,7 @@ async function searchWithClaude(terms, { full = false } = {}) {
 const median = (xs) => { const a = [...xs].sort((x, y) => x - y); const n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : null; };
 const MIN_FOR_MEDIAN = 3;
 export function creatorMedian(history, name, now = Date.now()) {
-  const xs = Object.values(history[name] || {}).filter((h) => !h.date || now - Date.parse(h.date) < 365 * 864e5).map((h) => h.eng);
+  const xs = Object.values(history[name] || {}).filter((h) => !h.date || now - Date.parse(h.date) < 1826 * 864e5).map((h) => h.eng);
   return xs.length >= MIN_FOR_MEDIAN ? median(xs) : null;
 }
 
