@@ -6,6 +6,9 @@
   command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
+  # 6 Nov 2026: each production deploy costs 15 Netlify credits. Skip the build when a push only
+  # changes bot/agent state files (LinkedIn, Fred, Reddit queue, scripts, workflows) and nothing the site serves.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- src public netlify astro.config.mjs package.json package-lock.json netlify.toml ':!src/content/reddit-queue.md'"
 
 # Route Fred's approve link to the function. Keeps the site pure-SSG
 # (Astro output stays in dist/) while giving us one dynamic endpoint.
