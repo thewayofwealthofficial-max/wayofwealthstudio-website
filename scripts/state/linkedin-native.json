@@ -130,5 +130,23 @@
     "passage": "ee68e7d972519eaa,c588b6ca89159137,5eb6ac6a207e0553",
     "outlier": "own-150k",
     "told150": false
+  },
+  {
+    "date": "2026-11-06",
+    "sentAt": "2026-11-06T15:03:07.927Z",
+    "id": "71eed151c0358a8a",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "3d265a1891ecd063",
+    "outlier": "https://www.linkedin.com/posts/viviantu-yourrichbff_book-finance-money-activity-7069463176358060032-yPWn",
+    "shape": {
+      "source": "watchlist",
+      "hook": "story",
+      "structure": "story with lesson",
+      "words": 167,
+      "paragraphs": 5
+    },
+    "told150": false,
+    "outcome": "pending"
   }
 ]
