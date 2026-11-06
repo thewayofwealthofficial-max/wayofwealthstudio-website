@@ -89,7 +89,7 @@ That moment of naming them is the start of the structure. It trains your brain t
 
 [Join the Thursday Money Note](/#start), two short emails a week on money and how we behave with it, free.
 
-Or if you want to work through this properly, [book a free call](/coaching/#apply) about The Money Story Method, the 12-week 1:1 programme.
+Or if you want to work through this properly, [book a free Cash Flow Session](/your-number/) about The Money Story Method, the 12-week 1:1 programme.
 
 *Joel*
 

@@ -101,7 +101,7 @@ That one move, done consistently, starts to break the pattern.
 
 [Join the Thursday Money Note](/#start) for two short emails a week on money and how we behave with it.
 
-Or if you want to work through your money patterns properly, [book a free call](/coaching/#apply) to find out about The Money Story Method, my 12-week 1:1 programme.
+Or if you want to work through your money patterns properly, [book a free Cash Flow Session](/your-number/) to find out about The Money Story Method, my 12-week 1:1 programme.
 
 *Joel*
 

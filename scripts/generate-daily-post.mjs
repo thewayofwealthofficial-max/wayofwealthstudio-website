@@ -130,7 +130,7 @@ THE SHAPE OF EVERY POST (in this order; ## for headings, headings in the reader'
 8. The behavioural ideas behind it, explained simply, with their proper names.
 9. One small step they can try today. Specific ("write the number down before you open the app"), never "create a budget".
 10. ONE link in the middle of the post to a related post from the RELATED POSTS list in the user message, as a normal markdown link, e.g. [title](/blog/slug/).
-11. ## Ready to go deeper? Two lines only: free first, "[Join the Thursday Money Note](/#start)" (two short emails a week on money and how we behave with it), then paid, "[book a free call](/coaching/#apply)" about The Money Story Method, the 12-week 1:1 programme. Never claim "no upsell". Never mention a quiz.
+11. ## Ready to go deeper? Two lines only: free first, "[Join the Thursday Money Note](/#start)" (two short emails a week on money and how we behave with it), then "[book a free Cash Flow Session](/your-number/)" (75 minutes with Joel plus a written report, free). Never claim "no upsell". Never mention a quiz.
 12. Sign off with just "*Joel*" on its own line.
 13. ## Questions people ask: 3 to 5 questions in the words people search, each as ### with a 2 or 3 sentence answer. Same fact rules apply.
 
@@ -231,7 +231,7 @@ function checkShape(body, posts, description = '', tags = []) {
   if (!/what you need to know/i.test(body.slice(0, 900))) p.push('The "What you need to know" block of 3 bullets must come right after the opening direct answer.');
   if (!/^##\s+What you might be telling yourself/im.test(body)) p.push('Missing the "## What you might be telling yourself" section.');
   if (!/^##\s+Ready to go deeper\?/im.test(body)) p.push('Missing the "## Ready to go deeper?" section.');
-  if (!body.includes('(/#start)') || !body.includes('(/coaching/#apply)')) p.push('"Ready to go deeper?" must link [Join the Thursday Money Note](/#start) and [book a free call](/coaching/#apply).');
+  if (!body.includes('(/#start)') || !body.includes('(/your-number/)')) p.push('"Ready to go deeper?" must link [Join the Thursday Money Note](/#start) and [book a free Cash Flow Session](/your-number/).');
   if (!/^##\s+Questions people ask/im.test(body)) p.push('Missing the "## Questions people ask" FAQ section.');
   const links = [...body.matchAll(/\]\(\/blog\/([^/)]+)\/?\)/g)].map((m) => m[1]);
   if (!links.some((l) => posts.some((x) => x.slug === l))) p.push('Needs one link to an existing post from the RELATED POSTS list.');

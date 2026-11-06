@@ -105,7 +105,7 @@ Because Klontz's research shows that money scripts vary. Some people over-spend 
 
 [Join the Thursday Money Note](/#start): two short emails a week on money and how we behave with it.
 
-Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free Cash Flow Session](/your-number/) about The Money Story Method, my 12-week 1:1 programme.
 
 Because knowing your pattern is the first step toward changing it — not by trying harder, but by understanding *why* the loop formed in the first place.
 

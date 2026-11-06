@@ -101,7 +101,7 @@ For the tax side specifically: talk to a qualified accountant in your country ab
 
 [Join the Thursday Money Note](/#start), two short emails a week on money and how we behave with it, free.
 
-Or if you want to work through this properly, [book a free call](/coaching/#apply) to find out about The Money Story Method, my 12-week 1:1 programme.
+Or if you want to work through this properly, [book a free Cash Flow Session](/your-number/) to find out about The Money Story Method, my 12-week 1:1 programme.
 
 *Joel*
 

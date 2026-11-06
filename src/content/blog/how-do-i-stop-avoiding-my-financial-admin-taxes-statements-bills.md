@@ -93,7 +93,7 @@ Klontz's research is clear that money behaviours don't change durably until the 
 
 [Join the Thursday Money Note](/#start): two short emails a week on money and how we behave with it.
 
-Or [book a free call](/coaching/#apply) about The Money Story Method, my 12-week 1:1 programme.
+Or [book a free Cash Flow Session](/your-number/) about The Money Story Method, my 12-week 1:1 programme.
 
 You've been doing the best you can with the wiring you have. That's not a small thing.
 
