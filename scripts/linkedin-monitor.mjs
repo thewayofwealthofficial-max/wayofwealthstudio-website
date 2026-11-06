@@ -171,7 +171,9 @@ async function main() {
   const perCreator = {};
   const queue = [];
   for (const [url, area] of found) {
-    if (seen.includes(url) || known(url)) continue;
+    // 6 Nov 2026: watchlist posts are re-read each week even if known (the first run stored them but kept none,
+    // so skipping known ones would never surface them). seen.json still stops a post being used twice.
+    if (seen.includes(url)) continue;
     const c = creatorOf(url);
     if (c) { if ((perCreator[c.name] = (perCreator[c.name] || 0) + 1) <= 8) queue.push([url, 'watchlist']); }
   }
@@ -192,10 +194,12 @@ async function main() {
       }
       if (!r.ok) why.blocked++;
       else if (!p) why.unreadable++;
-      else if (p.date && Date.parse(p.date) < since) why.tooOld++;
+      // Watchlist posts: a proven shape stays useful for longer (5 years), and they're ranked against the creator's
+      // own median, so follower counts aren't needed (6 Nov 2026: the first run kept 0 because most were 2022-23).
+      else if (p.date && Date.parse(p.date) < (c ? Date.now() - 1826 * 864e5 : since)) why.tooOld++;
       else if (!Number.isInteger(p.reactions) || p.reactions < 5) why.under5Reactions++;
-      else if (!Number.isInteger(p.followers) || p.followers <= 0) why.noFollowers++;
-      else { why.kept++; posts.push({ url, area: c ? 'watchlist' : area, creator: c?.name || null, ...p, per1k: Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 }); }
+      else if (!c && (!Number.isInteger(p.followers) || p.followers <= 0)) why.noFollowers++;
+      else { why.kept++; posts.push({ url, area: c ? 'watchlist' : area, creator: c?.name || null, ...p, per1k: Number.isInteger(p.followers) && p.followers > 0 ? Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 : 0 }); }
     } catch { why.blocked++; /* one unreadable page never stops the run */ }
     await sleep(2500 + Math.random() * 1500);
   }
@@ -233,7 +237,7 @@ async function main() {
 
   const firstLine = (b) => shapeOf(b).firstLine.slice(0, 120);
   const score = (p) => (p.x_median ? `${p.x_median}x their usual` : `${p.per1k} per 1k`);
-  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${score(p)} · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.topic ? p.topic + ' · ' : ''}${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
+  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${(p.followers || 0).toLocaleString('en-GB')} followers) · ${p.area}\n   ${score(p)} · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.topic ? p.topic + ' · ' : ''}${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
   await telegram(`📊 LinkedIn: what's working in your space (this week) (${relevant.length} on-topic of ${posts.length} read, ${outliers.length} from your watchlist beating their usual)\n\n${lines.join('\n\n')}`);
 
   // Saved for the LinkedIn writer. Links, numbers, pattern and SHAPE (first line only); never the whole post.
