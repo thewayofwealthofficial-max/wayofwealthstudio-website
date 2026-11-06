@@ -18,6 +18,23 @@ export const TOPICS = [
 
 export const PROMOTE = { months: 2, authors: 3 };
 
+// The SHAPE of a post, as numbers plus its first line: what the writer copies (6 Nov 2026). Never the rest of the text.
+export function shapeOf(body) {
+  const text = String(body || '').replace(/\r/g, '').trim();
+  const paras = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const words = text ? text.split(/\s+/).length : 0;
+  return {
+    firstLine: (lines[0] || '').slice(0, 160),
+    words,
+    paragraphs: paras.length,
+    lines: lines.length,
+    oneLineParas: paras.length ? Math.round((paras.filter((p) => !p.includes('\n') && p.split(/\s+/).length <= 20).length / paras.length) * 100) / 100 : 0,
+    wordsPerLine: lines.length ? Math.round(words / lines.length) : 0,
+    endsOnQuestion: /\?\s*$/.test(lines[lines.length - 1] || ''),
+  };
+}
+
 export const emptyBank = () => ({ patterns: {}, topics: {}, promoted: { patterns: [], topics: [] }, blocked: [] });
 
 // Adds one monthly run. posts: [{url, author, per1k, hook, structure, topic, why, firstLine}]. month: 'YYYY-MM'.

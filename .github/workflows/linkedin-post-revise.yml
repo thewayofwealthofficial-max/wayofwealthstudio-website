@@ -8,7 +8,7 @@ on:
     types: [linkedin-post-revise]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: linkedin-post-revise-${{ github.event.client_payload.id }}
@@ -31,11 +31,24 @@ jobs:
         env:
           REVISE_ID: ${{ github.event.client_payload.id }}
           FATHOM_API_KEY: ${{ secrets.FATHOM_API_KEY }}
+          VOICE_KEY: ${{ secrets.VOICE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FRED_SECRET: ${{ secrets.FRED_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/linkedin-post.mjs
+
+      # Logs the rewrite (revisedFrom = the first draft's id, shape and labels only) so the writer can tell which
+      # drafts Joel posted as sent and which he asked to change (scripts/linkedin-outcomes.mjs).
+      - name: Save that this draft was rewritten
+        run: |
+          git config user.name "Way of Wealth Bot"
+          git config user.email "bot@thewayofwealth.shop"
+          git add scripts/state/linkedin-native.json 2>/dev/null || true
+          if git diff --staged --quiet; then echo "Nothing to save."; exit 0; fi
+          git commit -m "linkedin: rewrite sent for approval"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push && exit 0; sleep 5; done
+          exit 1
 
       - name: Tell Joel it failed
         if: failure()

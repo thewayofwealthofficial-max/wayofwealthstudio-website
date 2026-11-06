@@ -1,22 +1,27 @@
 #!/usr/bin/env node
-// LinkedIn niche monitor (Joel, 28 Sep 2026): every Monday, find the best-performing PUBLIC LinkedIn posts from the
-// last 12 months in Joel's space (never repeating one already sent), so his own posts can copy what's working.
-//   1. Brave Search (past week) for public LinkedIn posts: money mindset, money habits and personal financial planning.
-//   2. Read each post's public page LOGGED OUT, the same method as research/2026-09-25-linkedin/v2 (JSON-LD counts).
-//      Never logs in, never uses Joel's account or cookies. Small and slow on purpose (max 180 reads, monthly, 2.5-4 s apart).
-//   3. Rank by engagement per 1,000 followers (so small accounts that punch above their weight show up).
-//   4. Claude tags each top post's pattern from its text (hook type, structure). Top 10 go to Fred.
-//   5. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, patterns, first line only) for the
-//      LinkedIn writer to use as "what's working this week" context.
-//   6. Adds the month to scripts/state/linkedin-monitor/bank.json (linkedin-bank.mjs), the running memory of shapes
+// LinkedIn niche monitor (Joel, 28 Sep 2026; weekly with a creator watchlist since 6 Nov 2026): every Monday, find
+// the best-performing PUBLIC LinkedIn posts in Joel's space (never repeating one already sent), so his own posts can
+// copy the SHAPE of what's working.
+//   1. Search (Serper/Google, else Claude web search, else Brave) for public LinkedIn posts on broad personal money.
+//   2. PLUS the creator watchlist (scripts/linkedin-creators.mjs): each creator's recent public posts.
+//   3. Read each post's public page LOGGED OUT (JSON-LD counts). Never logs in, never uses Joel's account or cookies.
+//      Small and slow on purpose (max 8 new reads per creator + 100 others, 2.5-4 s apart).
+//   4. Rank watchlist posts by how far they beat THAT creator's own median (state/linkedin-monitor/creators.json keeps
+//      each creator's counts week to week, so the median gets better every run); other posts by engagement per 1k
+//      followers, after the watchlist outliers.
+//   5. Claude tags each post's pattern from its text (hook type, structure). Top 10 go to Fred.
+//   6. Saves scripts/state/linkedin-monitor/latest.json (links, numbers, pattern, SHAPE: length, paragraphs, line
+//      breaks, first line only) for the LinkedIn writer.
+//   7. Adds the run to scripts/state/linkedin-monitor/bank.json (linkedin-bank.mjs), the running memory of shapes
 //      and topics. Anything that wins across months from different people is promoted, and Joel gets a note.
 //
 // ENV: SERPER_API_KEY (preferred) or BRAVE_API_KEY, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. DRY_RUN=1 prints instead of sending.
 
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { TOPICS, PROMOTE, emptyBank, addRun } from './linkedin-bank.mjs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { TOPICS, PROMOTE, emptyBank, addRun, shapeOf } from './linkedin-bank.mjs';
+import { CREATORS, slugOf, creatorOf } from './linkedin-creators.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'scripts', 'state', 'linkedin-monitor');
@@ -42,17 +47,18 @@ const QUERIES = {
 
 // Google results via Serper.dev when SERPER_API_KEY is set (Google's own search API closed to new sign-ups in 2025);
 // otherwise Brave. Brave's LinkedIn coverage proved thin for this niche (28 Sep: 7 on-topic of 69).
-async function search(q) {
+async function search(q, { full = false } = {}) {
+  const query = full ? q : `site:linkedin.com/posts ${q}`;
   if (SERPER_API_KEY) {
     const r = await fetch('https://google.serper.dev/search', {
       method: 'POST',
       headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q: `site:linkedin.com/posts ${q}`, num: 20, tbs: 'qdr:y', gl: 'gb', hl: 'en' }),
+      body: JSON.stringify({ q: query, num: 20, tbs: 'qdr:y', gl: 'gb', hl: 'en' }),
     });
     if (!r.ok) throw new Error(`Serper ${r.status}`);
     return ((await r.json()).organic || []).map((x) => x.link).filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
   }
-  const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(`site:linkedin.com/posts ${q}`)}&count=20&freshness=py`; // Brave indexes LinkedIn posts late: past week/month return nothing, past year works (28 Sep)
+  const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=20&freshness=py`; // Brave indexes LinkedIn posts late: past week/month return nothing, past year works (28 Sep)
   const r = await fetch(url, { headers: { 'X-Subscription-Token': BRAVE_API_KEY, Accept: 'application/json' } });
   if (!r.ok) throw new Error(`Brave ${r.status}`);
   return ((await r.json()).web?.results || []).map((x) => x.url).filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
@@ -99,14 +105,16 @@ async function telegram(text) {
 // Claude's own web search (the Anthropic key Joel already has). Tested 28 Sep: 12 searches found 101 LinkedIn posts,
 // where Brave's index gave 1-2 on-topic in 64. Each call runs up to 12 searches for one area's terms; only URLs
 // from the actual search results are used, never URLs the model writes itself.
-async function searchWithClaude(terms) {
+async function searchWithClaude(terms, { full = false } = {}) {
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'x-api-key': ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-6', max_tokens: 2000,
       tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: Math.min(12, terms.length) }],
-      messages: [{ role: 'user', content: `Run one web search per term below, each of the form: site:linkedin.com/posts <term>. Do not judge the results. Then reply "done".\n\n${terms.map((t) => '- ' + t).join('\n')}` }],
+      messages: [{ role: 'user', content: full
+        ? `Run one web search per line below, exactly as written. Do not judge the results. Then reply "done".\n\n${terms.map((t) => '- ' + t).join('\n')}`
+        : `Run one web search per term below, each of the form: site:linkedin.com/posts <term>. Do not judge the results. Then reply "done".\n\n${terms.map((t) => '- ' + t).join('\n')}` }],
     }),
   });
   if (!r.ok) throw new Error(`Anthropic search ${r.status}`);
@@ -115,12 +123,33 @@ async function searchWithClaude(terms) {
     .filter((u) => /linkedin\.com\/posts\/.+activity-\d+/.test(u));
 }
 
+// Each creator's counts, kept week to week so their median is real. Public post links and numbers only, never text.
+const median = (xs) => { const a = [...xs].sort((x, y) => x - y); const n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : null; };
+const MIN_FOR_MEDIAN = 3;
+export function creatorMedian(history, name, now = Date.now()) {
+  const xs = Object.values(history[name] || {}).filter((h) => !h.date || now - Date.parse(h.date) < 365 * 864e5).map((h) => h.eng);
+  return xs.length >= MIN_FOR_MEDIAN ? median(xs) : null;
+}
+
 async function main() {
   const via = SERPER_API_KEY ? 'Google (Serper)' : ANTHROPIC_API_KEY ? 'Claude web search' : BRAVE_API_KEY ? 'Brave' : null;
   if (!via) { console.log('No search available; skipping.'); return; }
   console.log(`Searching with ${via}.`);
   const found = new Map();
-  const add = (u, area) => { const url = u.split('?')[0].replace(/https?:\/\/[a-z]{2,3}\.linkedin/, 'https://www.linkedin'); if (!found.has(url)) found.set(url, area); };
+  const clean = (u) => u.split('?')[0].replace(/https?:\/\/[a-z]{2,3}\.linkedin/, 'https://www.linkedin');
+  const add = (u, area) => { const url = clean(u); if (!found.has(url) || area === 'watchlist') found.set(url, area); };
+  // The watchlist first: two searches per creator (their post-URL slug, and their name).
+  const creatorQs = CREATORS.flatMap((c) => [`site:linkedin.com/posts/${slugOf(c.url)}`, `site:linkedin.com/posts "${c.name}"`]);
+  if (via === 'Claude web search') {
+    for (let i = 0; i < creatorQs.length; i += 10) {
+      try { for (const u of await searchWithClaude(creatorQs.slice(i, i + 10), { full: true })) add(u, 'watchlist'); } catch (e) { console.log(`watchlist search failed: ${e.message}`); }
+    }
+  } else {
+    for (const q of creatorQs) {
+      try { for (const u of await search(q, { full: true })) add(u, 'watchlist'); } catch (e) { console.log(`watchlist search failed: ${e.message}`); }
+      await sleep(1100);
+    }
+  }
   for (const [area, qs] of Object.entries(QUERIES)) {
     if (via === 'Claude web search') {
       try { for (const u of await searchWithClaude(qs)) add(u, area); } catch (e) { console.log(`search failed (${area}): ${e.message}`); }
@@ -133,30 +162,57 @@ async function main() {
   }
   console.log(`${found.size} candidate posts found.`);
 
-  // Posts from the last 2 years that haven't been reported before, so each week only shows new winners.
   let seen = [];
   try { seen = JSON.parse(await readFile(join(OUT, 'seen.json'), 'utf8')); } catch { /* first run */ }
+  let history = {};
+  try { history = JSON.parse(await readFile(join(OUT, 'creators.json'), 'utf8')); } catch { /* first run */ }
+  const known = (url) => Object.values(history).some((h) => h[url]);
+  // Up to 8 new posts per creator (a post already in their history is not read again), then up to 100 others.
+  const perCreator = {};
+  const queue = [];
+  for (const [url, area] of found) {
+    if (seen.includes(url) || known(url)) continue;
+    const c = creatorOf(url);
+    if (c) { if ((perCreator[c.name] = (perCreator[c.name] || 0) + 1) <= 8) queue.push([url, 'watchlist']); }
+  }
+  const others = [...found].filter(([u]) => !seen.includes(u) && !known(u) && !creatorOf(u)).slice(0, 100);
+  queue.push(...others);
+
   const since = Date.now() - 730 * 864e5; // 2 years: web search favours older posts (28 Sep: 71 of 90 were over a year old)
   const posts = [];
   const why = { blocked: 0, unreadable: 0, tooOld: 0, under5Reactions: 0, noFollowers: 0, kept: 0 };
-  for (const [url, area] of [...found].filter(([u]) => !seen.includes(u)).slice(0, 180)) {
+  for (const [url, area] of queue) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'en-GB,en;q=0.9' }, redirect: 'follow' });
       const p = r.ok ? parse(await r.text()) : null;
+      const c = p ? creatorOf(url, p.author) : null;
+      // A watchlist creator's post counts towards their median whatever it got, so their "usual" is honest.
+      if (c && p && Number.isInteger(p.reactions)) {
+        (history[c.name] ??= {})[url] = { eng: p.reactions + (p.comments || 0), date: String(p.date).slice(0, 10) };
+      }
       if (!r.ok) why.blocked++;
       else if (!p) why.unreadable++;
       else if (p.date && Date.parse(p.date) < since) why.tooOld++;
       else if (!Number.isInteger(p.reactions) || p.reactions < 5) why.under5Reactions++;
       else if (!Number.isInteger(p.followers) || p.followers <= 0) why.noFollowers++;
-      else { why.kept++; posts.push({ url, area, ...p, per1k: Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 }); }
+      else { why.kept++; posts.push({ url, area: c ? 'watchlist' : area, creator: c?.name || null, ...p, per1k: Math.round(((p.reactions + (p.comments || 0)) / p.followers) * 1000 * 100) / 100 }); }
     } catch { why.blocked++; /* one unreadable page never stops the run */ }
     await sleep(2500 + Math.random() * 1500);
   }
   console.log('Why posts dropped out:', JSON.stringify(why));
+  // Keep each creator's last 40 posts.
+  for (const name of Object.keys(history)) history[name] = Object.fromEntries(Object.entries(history[name]).sort((a, b) => String(b[1].date).localeCompare(String(a[1].date))).slice(0, 40));
+  for (const p of posts) {
+    if (!p.creator) continue;
+    p.median = creatorMedian(history, p.creator);
+    if (p.median) p.x_median = Math.round(((p.reactions + (p.comments || 0)) / Math.max(1, p.median)) * 10) / 10;
+  }
+  console.log(`Watchlist: ${posts.filter((p) => p.creator).length} new posts read; medians known for ${CREATORS.filter((c) => creatorMedian(history, c.name)).length} of ${CREATORS.length} creators.`);
+
   // Relevance first (first report, 28 Sep: half the top 10 were off-topic, e.g. awards, recruiting, LinkedIn tips).
   // Claude reads every readable post, keeps only ones genuinely in Joel's space, and tags their pattern.
   // Screened in batches of 20: one call for 64 posts ran out of room and broke (28 Sep).
-  const SCREEN = `You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about personal money for individuals: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); spending and saving habits, lifestyle creep, looking rich vs becoming rich; personal financial planning (where money sits, emergency funds, the order to do money in, pensions and investing explained generally); or managing a high or irregular income. Business finance, pricing your services, invoicing and business tax are NOT relevant (2 Nov 2026). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | other), structure (story with lesson | story no lesson | explainer | list | call-out | promo | other), topic (exactly one of: ${TOPICS.join(' | ')}), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","topic":"","why":""}]}`;
+  const SCREEN = `You screen and tag LinkedIn posts, judging only from the text. relevant = true if the post is genuinely about personal money for individuals: money mindset, money beliefs or money psychology; money behaviour or emotions (spending, saving, avoiding money, money stress, financial wellbeing); spending and saving habits, lifestyle creep, looking rich vs becoming rich; personal financial planning (where money sits, emergency funds, the order to do money in, pensions and investing explained generally); or managing a high or irregular income. Business finance, pricing your services, invoicing and business tax are NOT relevant (2 Nov 2026). Awards, job hunting, recruiting, LinkedIn growth tips, corporate company news or offsites, medical or wound care, investing product promos and tech are NOT relevant. For every post also give: hook (confession | question | story | myth | hot take | list | news | timeline | other), structure (story with lesson | story no lesson | timeline with numbers | explainer | list | call-out | promo | other), topic (exactly one of: ${TOPICS.join(' | ')}), and why (one plain sentence on what makes the first lines work). Output only JSON {"items":[{"i":0,"relevant":true,"hook":"","structure":"","topic":"","why":""}]}`;
   for (let start = 0; start < posts.length; start += 20) {
     const batch = posts.slice(start, start + 20);
     const tags = await claude(SCREEN, JSON.stringify(batch.map((p, i) => ({ i, text: p.body.slice(0, 1000) }))))
@@ -164,24 +220,33 @@ async function main() {
     batch.forEach((p, i) => Object.assign(p, (tags.items || []).find((t) => t.i === i) || {}));
   }
   if (process.env.DEBUG_SCREEN) posts.forEach((p) => console.log(`[${p.relevant ? 'KEEP' : 'drop'}] ${p.area} | ${(p.body.split('\n').find((l) => l.trim()) || '').slice(0, 90)}`));
-  const relevant = posts.filter((p) => p.relevant === true).sort((a, b) => b.per1k - a.per1k);
-  const top = relevant.slice(0, 10);
-  console.log(`${posts.length} readable new posts from the last 2 years; ${relevant.length} on-topic; top ${top.length} kept.`);
-  if (!top.length) { await telegram('📊 LinkedIn niche monitor: no on-topic posts found this month. Nothing to report.'); return; }
+  const relevant = posts.filter((p) => p.relevant === true);
+  // Watchlist posts that beat their author's own median come first, biggest beat first; then everything else by per-1k.
+  const outliers = relevant.filter((p) => p.x_median >= 1.5).sort((a, b) => b.x_median - a.x_median);
+  const rest = relevant.filter((p) => !outliers.includes(p)).sort((a, b) => b.per1k - a.per1k);
+  const top = [...outliers, ...rest].slice(0, 10);
+  console.log(`${posts.length} readable new posts; ${relevant.length} on-topic; ${outliers.length} watchlist outliers; top ${top.length} kept.`);
 
-  const firstLine = (b) => (b.split('\n').find((l) => l.trim()) || '').trim().slice(0, 120);
-  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${p.per1k} per 1k · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.topic ? p.topic + ' · ' : ''}${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
-  await telegram(`📊 LinkedIn: what's working in your space (this month) (${relevant.length} on-topic of ${posts.length} read)\n\n${lines.join('\n\n')}`);
-
-  // Saved for the LinkedIn writer. Links, numbers, patterns and the first line only; never the whole post.
   await mkdir(OUT, { recursive: true });
+  await writeFile(join(OUT, 'creators.json'), JSON.stringify(history, null, 1) + '\n');
+  if (!top.length) { await telegram('📊 LinkedIn monitor: no on-topic posts found this week. Nothing to report.'); return; }
+
+  const firstLine = (b) => shapeOf(b).firstLine.slice(0, 120);
+  const score = (p) => (p.x_median ? `${p.x_median}x their usual` : `${p.per1k} per 1k`);
+  const lines = top.map((p, i) => `${i + 1}. ${p.author} (${p.followers.toLocaleString('en-GB')} followers) · ${p.area}\n   ${score(p)} · ${p.reactions} reactions, ${p.comments ?? 0} comments\n   "${firstLine(p.body)}"\n   ${p.topic ? p.topic + ' · ' : ''}${p.hook || '?'} · ${p.structure || '?'}${p.why ? `: ${p.why}` : ''}\n   ${p.url}`);
+  await telegram(`📊 LinkedIn: what's working in your space (this week) (${relevant.length} on-topic of ${posts.length} read, ${outliers.length} from your watchlist beating their usual)\n\n${lines.join('\n\n')}`);
+
+  // Saved for the LinkedIn writer. Links, numbers, pattern and SHAPE (first line only); never the whole post.
   await writeFile(join(OUT, 'seen.json'), JSON.stringify([...seen, ...top.map((p) => p.url)].slice(-2000)) + '\n');
   await writeFile(join(OUT, 'latest.json'), JSON.stringify({
     date: new Date().toISOString().slice(0, 10),
-    posts: top.map(({ url, area, author, followers, reactions, comments, per1k, hook, structure, topic, why, body }) => ({ url, area, author, followers, reactions, comments, per1k, hook, structure, topic: TOPICS.includes(topic) ? topic : null, why, firstLine: firstLine(body) })),
+    posts: top.map(({ url, area, author, followers, reactions, comments, per1k, median: med, x_median, hook, structure, topic, why, body }) => {
+      const { firstLine: fl, ...shape } = shapeOf(body);
+      return { url, area, author, followers, reactions, comments, per1k, median: med ?? null, x_median: x_median ?? null, hook, structure, topic: TOPICS.includes(topic) ? topic : null, why, firstLine: fl.slice(0, 120), ...shape, story: /^(story|timeline)/.test(structure || '') };
+    }),
   }, null, 2) + '\n');
 
-  // The running memory. Every on-topic winner this month counts, not just the top 10.
+  // The running memory. Every on-topic winner this run counts, not just the top 10.
   let bank = emptyBank();
   try { bank = JSON.parse(await readFile(join(OUT, 'bank.json'), 'utf8')); } catch { /* first run */ }
   const fresh = addRun(bank, new Date().toISOString().slice(0, 7), relevant.map((p) => ({ ...p, topic: TOPICS.includes(p.topic) ? p.topic : null, firstLine: firstLine(p.body) })));
@@ -192,4 +257,6 @@ async function main() {
   }
 }
 
-main().catch(async (e) => { console.error('FATAL:', e.message); process.exit(1); });
+if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
+  main().catch(async (e) => { console.error('FATAL:', e.message); process.exit(1); });
+}
