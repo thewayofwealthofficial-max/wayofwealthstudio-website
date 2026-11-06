@@ -35,6 +35,7 @@ const articleSchema = {
   dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
   author: {
     '@type': 'Person',
+    '@id': `${SITE}/about/#joel`,
     name: 'Joel Ezekiel',
     jobTitle: 'Behavioural Economist & Qualified Financial Planner',
     url: `${SITE}/about/`,
