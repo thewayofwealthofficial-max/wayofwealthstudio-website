@@ -147,6 +147,24 @@
       "paragraphs": 5
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-08",
+    "sentAt": "2026-11-08T10:35:02.220Z",
+    "id": "3e17ff391f005e95",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "1bb6a6653bcef245",
+    "outlier": "https://www.linkedin.com/posts/maxpashman_my-client-asked-for-a-quick-zoom-with-me-activity-7021247871484129280-iedg",
+    "shape": {
+      "source": "watchlist",
+      "hook": "story",
+      "structure": "story with lesson",
+      "words": 59,
+      "paragraphs": 6
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
