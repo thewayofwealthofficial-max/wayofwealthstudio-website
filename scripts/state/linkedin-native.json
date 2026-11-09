@@ -165,6 +165,24 @@
       "paragraphs": 6
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-09",
+    "sentAt": "2026-11-09T11:49:14.473Z",
+    "id": "9e427445a9a9ba6a",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "87951f2b0f3af3c1",
+    "outlier": "https://www.linkedin.com/posts/maxpashman_rantover-activity-7001277385664839681-sUpJ",
+    "shape": {
+      "source": "watchlist",
+      "hook": "story",
+      "structure": "story with lesson",
+      "words": 115,
+      "paragraphs": 12
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
