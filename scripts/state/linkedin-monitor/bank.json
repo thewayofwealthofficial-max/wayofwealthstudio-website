@@ -63,10 +63,34 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_a-rich-life-can-be-picking-up-your-kids-activity-7070428878464262144-kbeV",
           "firstLine": "A Rich Life can be",
           "why": "The short punchy checklist of unexpected 'rich life' examples immediately signals this won't be a conventional money post."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 3.61,
+          "url": "https://www.linkedin.com/posts/ramitsethi_the-conscious-spending-plan-can-be-challenging-activity-7086011542927732736-RcAS",
+          "firstLine": "The Conscious Spending Plan can be challenging for people because they get hung up on what category goes where. But I be",
+          "why": "Promising to resolve a common frustration ('hung up on what category goes where') before delivering a clear numbered framework gives instant practical value."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 3.16,
+          "url": "https://www.linkedin.com/posts/ramitsethi_these-are-my-travel-rules-for-myself-4-activity-7113195850717163520-PIUa",
+          "firstLine": "These are my travel rules for myself:",
+          "why": "Presenting personal travel rules as a concrete numbered list signals insider knowledge and invites readers to benchmark their own habits."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.27,
+          "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6983149353590812672-L0td",
+          "firstLine": "You need to know 10 numbers to 10x your finances:",
+          "why": "'10 numbers to 10x' creates a punchy numerical promise that makes the list feel immediately actionable."
         }
       ],
       "months": 3,
-      "authors": 3
+      "authors": 4
     },
     "question · story with lesson": {
       "wins": [
@@ -195,6 +219,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_for-the-past-year-i-worked-back-at-an-office-activity-6993668084112793600-z9H6",
           "firstLine": "For the past year I worked back at an office.",
           "why": "The concrete dollar savings figure ($150-$200/month) in the second line makes the financial impact feel immediately real and relatable."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 2.97,
+          "url": "https://www.linkedin.com/posts/maxpashman_rantover-activity-7001277385664839681-sUpJ",
+          "firstLine": "\"Call me insane, but I’m selling my car, taking equity out of my house, investing all my savings, strictly budgeting for",
+          "why": "Quoting a genuinely shocking real tweet as the opening hook makes readers immediately curious and slightly alarmed."
         }
       ],
       "months": 2,
@@ -277,6 +309,20 @@
       ],
       "months": 1,
       "authors": 1
+    },
+    "story · promo": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.79,
+          "url": "https://www.linkedin.com/posts/ramitsethi_how-my-life-has-changed-after-my-netflix-activity-7057049988450643969-c8mD",
+          "firstLine": "How my life has changed after my Netflix show…",
+          "why": "The self-deprecating 'not by much' subverts the expected humble-brag and quickly reframes around the audience's benefit."
+        }
+      ],
+      "months": 1,
+      "authors": 1
     }
   },
   "topics": {
@@ -343,6 +389,22 @@
           "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6986330504019017728--fLp",
           "firstLine": "There has been a list floating around with the top 200 LinkedIn influencers that everyone has been going insane about.",
           "why": "The sharp contrast between obsessing over rankings and obsessing over finances creates instant tension and curiosity."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 1.79,
+          "url": "https://www.linkedin.com/posts/ramitsethi_how-my-life-has-changed-after-my-netflix-activity-7057049988450643969-c8mD",
+          "firstLine": "How my life has changed after my Netflix show…",
+          "why": "The self-deprecating 'not by much' subverts the expected humble-brag and quickly reframes around the audience's benefit."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 2.97,
+          "url": "https://www.linkedin.com/posts/maxpashman_rantover-activity-7001277385664839681-sUpJ",
+          "firstLine": "\"Call me insane, but I’m selling my car, taking equity out of my house, investing all my savings, strictly budgeting for",
+          "why": "Quoting a genuinely shocking real tweet as the opening hook makes readers immediately curious and slightly alarmed."
         }
       ],
       "months": 1,
@@ -373,6 +435,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_for-the-past-year-i-worked-back-at-an-office-activity-6993668084112793600-z9H6",
           "firstLine": "For the past year I worked back at an office.",
           "why": "The concrete dollar savings figure ($150-$200/month) in the second line makes the financial impact feel immediately real and relatable."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 3.16,
+          "url": "https://www.linkedin.com/posts/ramitsethi_these-are-my-travel-rules-for-myself-4-activity-7113195850717163520-PIUa",
+          "firstLine": "These are my travel rules for myself:",
+          "why": "Presenting personal travel rules as a concrete numbered list signals insider knowledge and invites readers to benchmark their own habits."
         }
       ],
       "months": 1,
@@ -439,10 +509,26 @@
           "url": "https://www.linkedin.com/posts/maxpashman_reason-to-have-a-sinking-fund-moving-expenses-activity-6982712172640440320-qwde",
           "firstLine": "Reason to have a sinking fund: moving expenses suck 🤮",
           "why": "Leading with a relatable pain point ('moving expenses suck') anchors the concept in real life before explaining the financial tool."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 3.61,
+          "url": "https://www.linkedin.com/posts/ramitsethi_the-conscious-spending-plan-can-be-challenging-activity-7086011542927732736-RcAS",
+          "firstLine": "The Conscious Spending Plan can be challenging for people because they get hung up on what category goes where. But I be",
+          "why": "Promising to resolve a common frustration ('hung up on what category goes where') before delivering a clear numbered framework gives instant practical value."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 1.27,
+          "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6983149353590812672-L0td",
+          "firstLine": "You need to know 10 numbers to 10x your finances:",
+          "why": "'10 numbers to 10x' creates a punchy numerical promise that makes the list feel immediately actionable."
         }
       ],
       "months": 1,
-      "authors": 1
+      "authors": 2
     }
   },
   "promoted": {
