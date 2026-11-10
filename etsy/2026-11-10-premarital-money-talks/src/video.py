@@ -24,7 +24,7 @@ def place(im, page, t, y0=180, zoom=(1.0, 1.0), focus=(0.5, 0.0)):
     pw = int(win_w * z); ph = int(page.height * pw / page.width)
     p = page.resize((pw, ph), Image.LANCZOS)
     ox = int((pw - win_w) * focus[0]); oy = int(max(0, min(ph - win_h, (ph - win_h) * focus[1] * t)))
-    crop = p.crop((ox, oy, ox + win_w, oy + win_h))
+    crop = p.crop((ox, oy, ox + win_w, oy + min(win_h, ph)))
     d = ImageDraw.Draw(im)
     d.rounded_rectangle([46, y0 - 4, 54 + win_w, y0 + crop.height + 4], radius=14, fill=(225, 216, 200))
     im.paste(crop, (50, y0))
@@ -38,10 +38,10 @@ def wipe(empty, full, t):
 
 
 scenes = [
-    (2.0, lambda t: (lambda im_d: (place(im_d[0], S(1), t, zoom=(1.0, 1.06), focus=(0.5, 0.0)), im_d[0])[1])(base('6 money talks before you marry'))),
+    (2.0, lambda t: (lambda im_d: (place(im_d[0], S(1).crop((0, 0, 1406, 1200)), t, zoom=(1.0, 1.06), focus=(0.5, 0.0)), im_d[0])[1])(base('6 money talks before you marry'))),
     (3.0, lambda t: (lambda im_d: (place(im_d[0], wipe(E(9), S(9), min(1, t * 1.3)), t, zoom=(1.0, 1.0)), im_d[0])[1])(base('Type in your numbers...'))),
-    (2.0, lambda t: (lambda im_d: (place(im_d[0], S(9), t, zoom=(1.0, 1.35), focus=(0.6, 0.0)), im_d[0])[1])(base('Work out a fair split'))),
-    (3.0, lambda t: (lambda im_d: (place(im_d[0], wipe(E(13), S(13), min(1, t * 1.3)), t), im_d[0])[1])(base('Write your Money Agreement'))),
+    (2.0, lambda t: (lambda im_d: (place(im_d[0], S(9), t, zoom=(1.0, 1.12), focus=(0.5, 0.0)), im_d[0])[1])(base('Work out a fair split'))),
+    (3.0, lambda t: (lambda im_d: (place(im_d[0], wipe(E(13).crop((0, 0, 1406, 1500)), S(13).crop((0, 0, 1406, 1500)), min(1, t * 1.3)), t), im_d[0])[1])(base('Write your Money Agreement'))),
     (2.0, lambda t: (lambda im_d: (place(im_d[0], S(16), t, zoom=(1.0, 1.08)), im_d[0])[1])(base('Plus 20 quick questions'))),
 ]
 

@@ -76,7 +76,7 @@ def framed(im, base, x, y, border=6):
 
 # 1 hero: printed pages on a linen table
 im = Image.open('dl/bg.png').convert('RGB').resize((S, S), Image.LANCZOS).convert('RGBA')
-im.alpha_composite(paper(P(9), 640, 1.5), (1060, 330))
+im.alpha_composite(paper(P(9), 640, 0), (1060, 330))
 im.alpha_composite(paper(P(1), 720, -2.5), (200, 300))
 im = im.convert('RGB'); d = ImageDraw.Draw(im)
 d.rectangle([0, 1540, S, S], fill=CREAM)
@@ -112,14 +112,14 @@ def zoom_slide(fn, n, box, title, sub, badge=None):
 
 
 zoom_slide('03', 9, (0, 0.04, 1, 0.66), 'Split bills fairly', '50/50 or by income, with the sums shown step by step')
-zoom_slide('04', 6, (0, 0.04, 1, 0.70), 'No hidden debt', 'Income, savings and everything you each owe, in one place')
+zoom_slide('04', 6, (0, 0.04, 1, 0.652), 'No hidden debt', 'Income, savings and everything you each owe, in one place')
 zoom_slide('05', 13, (0, 0.04, 1, 0.83), 'Finish with a Money Agreement', 'One page you both sign, plus monthly money dates')
 
 # 6 tablet: type on any device
 im = linen((228, 233, 224)); d = ImageDraw.Draw(im)
 y = head(d, 'Type on any device or print it', 70, 100)
 tx, ty, tw = 150, 330, 1700
-page = P(4); page = page.crop((0, 0, page.width, int(page.height * 0.52))); th = int(page.height * (tw - 80) / page.width)
+page = P(4); page = page.crop((0, 0, page.width, int(page.height * 0.60))); th = int(page.height * (tw - 80) / page.width)
 d.rounded_rectangle([tx, ty, tx + tw, ty + th + 80], radius=70, fill=(40, 40, 42))
 im.paste(page.resize((tw - 80, th), Image.LANCZOS), (tx + 40, ty + 40))
 pill(d, 'Works in Adobe Reader, Preview, Chrome and the iPhone Files app', S / 2, 1840, 40, CHAR)
@@ -148,10 +148,10 @@ infographic('07', '5 highlights of this workbook', [
     ('Ends in a plan', 'A signed Money Agreement + money dates')])
 infographic('08', '5 reasons to buy from us', [
     ('Made by a money expert', 'Joel, MSc Behavioural Economics'),
-    ('Couples are our speciality', 'Our couples money guide is our No. 1 seller'),
+    ('Couples are our specialty', 'A whole range of tools made for two'),
     ('Instant download', 'Fillable and print files, start tonight'),
     ('Real help if you need it', 'Email Joel with any question'),
     ('What you see is what you get', 'Real previews of the actual pages')], SAGE, CREAM)
 
-zoom_slide('09', 16, (0, 0.04, 1, 0.74), 'Also inside: 20 quick questions', 'For a car journey, a walk or a dinner out')
+zoom_slide('09', 16, (0.045, 0.126, 0.505, 0.436), 'Also inside: 20 quick questions', '5 of the 20. For a road trip, a walk or a dinner out')
 print(sorted(os.listdir('photos')))

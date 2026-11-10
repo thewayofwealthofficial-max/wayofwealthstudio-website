@@ -24,15 +24,15 @@ BOOK = 'https://calendly.com/thewayofwealth-official/your-cash-flow-session'
 
 # ---------- sample answers (used only for preview images and the video) ----------
 SAMPLE = {
- 't1_grew_A': 'Money was tight but never talked about. Mum hid bills in a drawer.',
+ 't1_grew_A': 'Money was tight but never talked about. My parents hid bills in a drawer.',
  't1_grew_B': 'Dad ran a small business. Good months, scary months, lots of arguing.',
  't1_rule_A': '"Never borrow, never owe anyone."',
  't1_rule_B': '"Spend it while you have it."',
  't1_fear_A': 'Not having a safety net if one of us loses work.',
- 't1_fear_B': 'Being told off for spending my own money.',
+ 't1_fear_B': 'Being judged for spending my own money.',
  't2_inc_A': '2,450 / month', 't2_inc_B': '2,100 / month',
  't2_sav_A': '6,200', 't2_sav_B': '850',
- 'd_type_0': 'Student loan', 'd_who_0': 'B', 'd_owed_0': '18,400', 'd_rate_0': '6.3%', 'd_pay_0': '95',
+ 'd_type_0': 'Student loan', 'd_who_0': 'B', 'd_owed_0': '18,400', 'd_rate_0': '6.3%', 'd_pay_0': '130',
  'd_type_1': 'Credit card', 'd_who_1': 'B', 'd_owed_1': '1,250', 'd_rate_1': '24.9%', 'd_pay_1': '60',
  'd_type_2': 'Car finance', 'd_who_2': 'A', 'd_owed_2': '4,800', 'd_rate_2': '7.9%', 'd_pay_2': '180',
  't3_incA': '2,450', 't3_incB': '2,100', 't3_tot': '4,550', 't3_pctA': '54%', 't3_pctB': '46%',
@@ -242,7 +242,7 @@ class Book:
         self.h2('How to use it')
         steps = [
             ('1', 'Pick a time', 'Book your six talks on the plan page. One a week works well. Phones away.'),
-            ('2', 'Type or print', ('Write in the boxes by hand. This is the print version; use the fillable file in your download if you want to type. ' if self.mode == 'print' else
+            ('2', 'Write or type' if self.mode != 'print' else 'Write it in', ('Write in the boxes by hand. This is the print version; use the fillable file in your download if you want to type. ' if self.mode == 'print' else
              'Type straight into the boxes on a laptop or tablet (Adobe Acrobat Reader, Preview on a Mac, the iPhone or iPad Files app, or Chrome). '
              'Or print the pages you need: there is a print version in your download.')),
             ('3', 'Answer apart, then together', 'Each talk starts with questions you answer on your own (Partner A, Partner B). '
@@ -269,7 +269,7 @@ class Book:
 
     def plan(self):
         self.new_page(title='Our money talk plan')
-        self.text('Put a date next to each talk and tick it off when it\'s done. Short and regular beats one long, tiring night.', 10)
+        self.text('Put a date next to each talk and check it off when it\'s done. Short and regular beats one long, tiring night.', 10)
         talks = [('1', 'Our money stories', 'How we each grew up with money'),
                  ('2', 'Where we each stand', 'Income, savings, debts and credit'),
                  ('3', 'How we\'ll bank together', 'Joint, separate or hybrid, and a fair split'),
@@ -288,7 +288,7 @@ class Book:
             self.check(f'plan_done_{n}', self.W - self.M - 66, self.y - 34, 'Done')
             self.y -= h + 9
         self.y -= 4
-        self.note('Short on time?', 'Use the 20 quick questions near the back for a car journey or a dinner out, '
+        self.note('Short on time?', 'Use the 20 quick questions near the back for a road trip or a dinner out, '
                   'then come back to the full talks.')
 
     def talk1(self):
@@ -303,7 +303,7 @@ class Book:
                   'Naming them makes the other person\'s habits make sense, so "you\'re so tight" becomes "you grew up without a safety net".')
 
         self.new_page('Talk 1', 'What money means to us')
-        self.text('Tick the three that matter most to you. Then compare.', 10)
+        self.text('Check the three that matter most to you. Then compare.', 10)
         opts = ['Security', 'Freedom', 'Time with family', 'Giving to others', 'Status and nice things', 'Experiences and travel',
                 'Never owing anyone', 'Retiring early', 'Helping our parents', 'Our own home']
         c = self.c
@@ -335,7 +335,7 @@ class Book:
             self.field(key + '_A', self.M, self.y - 24, w, 24); self.field(key + '_B', self.M + w + 14, self.y - 24, w, 24)
             self.y -= 34
         self.h2('Everything we owe')
-        self.text('Loans, credit cards, overdraft, car finance, buy now pay later, money owed to family.', 9, color=MUTED, gap=4)
+        self.text('Loans, credit cards, overdrawn accounts, car finance, buy now pay later, money owed to family.', 9, color=MUTED, gap=4)
         self.table(['Type of debt', 'Whose (A / B)', 'Amount owed', 'Interest rate', 'Monthly payment'],
                    [0.30, 0.15, 0.19, 0.17, 0.19], 9, 'd', 24)
 
@@ -353,9 +353,9 @@ class Book:
 
     def talk3(self):
         self.new_page('Talk 3', 'How we\'ll bank together')
-        self.text('There is no right answer here, only the one that fits you both. Read the three options, then tick yours.', 10)
+        self.text('There is no right answer here, only the one that fits you both. Read the three options, then check yours.', 10)
         opts = [('Joint', 'Everything goes into one pot.', 'Simple, feels like a team.', 'Less privacy. Hard if spending styles differ.'),
-                ('Separate', 'Each keeps their own money and pays agreed bills.', 'Independence. No spending rows.', 'Can feel like flatmates. Unfair if incomes differ.'),
+                ('Separate', 'Each keeps their own money and pays agreed bills.', 'Independence. No fights over spending.', 'Can feel like roommates. Unfair if incomes differ.'),
                 ('Hybrid', 'A joint account for shared bills, own accounts for the rest.', 'Teamwork plus freedom.', 'Needs a fair-split rule (next page).')]
         c = self.c
         cw = (self.W - 2 * self.M - 20) / 3
@@ -397,7 +397,7 @@ class Book:
         self.y -= 28
         self.labeled('Fun money each, after bills and savings:', 't3_fun', 26, False)
         self.note('Worked example', 'A earns 2,450 and B earns 2,100, so 4,550 in total. A\'s share is 54%, B\'s is 46%. '
-                  'Shared bills of 1,900 mean A pays 1,026 and B pays 874. Both keep the same share of their pay.')
+                  'Shared bills of 1,900 mean A pays 1,026 and B pays 874. Each pays about 42% of what they earn.')
 
     def talk4(self):
         self.new_page('Talk 4', 'The wedding')
@@ -445,7 +445,7 @@ class Book:
         self.h2('Together')
         self.labeled('Our 3 biggest goals for the next 5 years (with a rough cost):', 't5_goals', 80)
         self.labeled('Our emergency fund target (3 to 6 months of costs is a common rule):', 't5_emerg', 26, False)
-        self.labeled('Wills, life cover, a prenup: anything we want advice on before the wedding?', 't5_legal', 50)
+        self.labeled('Wills, life insurance, a prenup: anything we want advice on before the wedding?', 't5_legal', 50)
 
     def talk6(self):
         self.new_page('Talk 6', 'Our money agreement')
@@ -471,7 +471,7 @@ class Book:
                   'The agreement turns good intentions into shared rules.')
 
         self.new_page('Talk 6', 'Our money dates')
-        self.text('Once a month, 30 to 45 minutes. Check the agreement, the bills, the savings and how you both feel. Tick each one off.', 10)
+        self.text('Once a month, 30 to 45 minutes. Check the agreement, the bills, the savings and how you both feel. Check each one off.', 10)
         cols = ['Month', 'Done', 'Saved this month', 'One win', 'One thing to change']
         self.table(cols, [0.14, 0.09, 0.2, 0.27, 0.30], 12, 'md', 34)
         self.text('Money date agenda: 1. Wins first.  2. Bills and spending.  3. Savings and debt.  4. Anything coming up.  5. One thing to change.',
@@ -485,7 +485,7 @@ class Book:
                  'Find the value under the position. Often one of you wants security and the other wants freedom. Both are good.',
                  'Try a test: agree a rule for 3 months, then review it at a money date.',
                  'Use the pause word if it heats up, and come back within 24 hours.',
-                 'Still stuck on something big? A couples counsellor or a financial planner can help you both feel heard.']
+                 'Still stuck on something big? A couples counselor or a financial planner can help you both feel heard.']
         for i, s in enumerate(steps, 1):
             c = self.c
             c.setFillColor(SAGE); c.circle(self.M + 10, self.y - 10, 10, fill=1, stroke=0)
@@ -494,7 +494,7 @@ class Book:
         self.labeled('Our own rules for money arguments:', 'dis_rules', 150)
 
         self.new_page(title='20 quick questions')
-        self.text('For a car journey, a walk or a dinner out. Take turns. No writing needed.', 10)
+        self.text('For a road trip, a walk or a dinner out. Take turns. No writing needed.', 10)
         qs = ['What did your parents argue about when it came to money?', 'What\'s the most you\'ve ever spent on one thing? Any regrets?',
               'Saver or spender? Be honest.', 'How much debt do you have right now?', 'What would you do with 10,000 tomorrow?',
               'Do you check your bank balance? How often?', 'What purchase would you want to talk about first?',
@@ -521,8 +521,8 @@ class Book:
 
         self.new_page(title='Thank you')
         self.text('Thank you for choosing Way of Wealth Studio. I hope these talks bring you closer and save you a few arguments.', 10.5)
-        self.text('Way of Wealth Studio is run by Joel, who holds an MSc in Behavioural Economics and works as a qualified '
-                  'financial planner. The talks in this workbook follow the questions couples most often skip before marriage.', 10)
+        self.text('Way of Wealth Studio is run by Joel, who holds an MSc in Behavioural Economics and qualified as a '
+                  'financial planner. The talks in this workbook follow the money questions couples often skip before marriage.', 10)
         self.h2('Need a hand?')
         self.text('Questions about your download: ' + EMAIL, 10)
         self.text('Want help with your own numbers? Book a free Cash Flow Session: ' + BOOK, 10)

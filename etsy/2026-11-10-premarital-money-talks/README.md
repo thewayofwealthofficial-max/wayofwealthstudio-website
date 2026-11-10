@@ -1,8 +1,8 @@
 # Premarital Money Talks Workbook (Etsy build, 10 Nov 2026)
 
-Built by Fred (Etsy Operations) on 10 Nov 2026. Not yet a draft listing: the third review round failed only on photo 1
-(tilted page made the answer boxes look out of line). Photo 1 was fixed the same day; the next run re-runs the review
-loop and, if every gate passes, creates the draft (GBP 8.49, Couples Finance) from src/copy.json and these photos.
+Built by Fred (Etsy Operations) on 10 Nov 2026. Not yet a draft listing. Second review loop (10 Nov, afternoon run) failed round 3 on price (GBP 8.49 gave GBP 5.94 after
+WOW20, under the GBP 6 competitor middle) and a credential line. Both fixed, plus the nits: price now GBP 8.59 (in
+src/copy.json). The next run starts a fresh review loop and, if every gate passes, creates the draft (Couples Finance).
 
 - `Premarital Money Talks Workbook.zip`: the product file (A4 + US Letter, fillable + print, README)
 - `Premarital Money Talks Workbook - video.mp4`: listing video
