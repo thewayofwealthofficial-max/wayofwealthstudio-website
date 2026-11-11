@@ -183,6 +183,24 @@
       "paragraphs": 12
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-11",
+    "sentAt": "2026-11-11T11:12:35.263Z",
+    "id": "3b054a6534e8a401",
+    "angle": 17,
+    "topic": "Looking rich vs becoming rich",
+    "passage": "514526189b0e6f57",
+    "outlier": "https://www.linkedin.com/posts/ramitsethi_last-year-i-was-at-an-event-for-entrepreneurs-activity-7100899642476748800-Ozee",
+    "shape": {
+      "source": "watchlist",
+      "hook": "story",
+      "structure": "story with lesson",
+      "words": 142,
+      "paragraphs": 9
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
