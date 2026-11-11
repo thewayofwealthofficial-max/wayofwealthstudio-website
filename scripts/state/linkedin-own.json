@@ -158,7 +158,15 @@
       "id": "8f2f8bfcc429cdf2",
       "urn": "urn:li:share:7523709276759105538",
       "angle": 6,
-      "postedAt": "2026-11-04T11:34:35.786Z"
+      "postedAt": "2026-11-04T11:34:35.786Z",
+      "scored": {
+        "at": "2026-11-11T12:50:33.090Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2865,
+        "per1k": 0
+      },
+      "topic": "where the money sits: accounts and pots"
     },
     {
       "id": "7a0659fb29450af0",
