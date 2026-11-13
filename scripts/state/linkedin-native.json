@@ -201,6 +201,24 @@
       "paragraphs": 9
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-13",
+    "sentAt": "2026-11-13T11:14:55.487Z",
+    "id": "7094a2acadccbbef",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "df12f27b917b51e3",
+    "outlier": "https://www.linkedin.com/posts/ramitsethi_the-conscious-spending-plan-can-be-challenging-activity-7086011542927732736-RcAS",
+    "shape": {
+      "source": "watchlist",
+      "hook": "list",
+      "structure": "list",
+      "words": 159,
+      "paragraphs": 8
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
