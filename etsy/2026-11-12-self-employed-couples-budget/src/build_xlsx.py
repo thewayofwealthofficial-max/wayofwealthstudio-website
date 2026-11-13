@@ -55,6 +55,7 @@ for r, f in [(8, '=IF(TRIM(C7)="","Partner A",TRIM(C7))'), (9, '=IF(TRIM(C8)="",
              (16, "=SUMPRODUCT(MAX(('Monthly Split'!J8:J19<>\"\")*ROW('Monthly Split'!J8:J19)))"),
              (17, "=SUMPRODUCT(MAX(('Buffer'!F11:F22<>\"\")*ROW('Buffer'!F11:F22)))")]:
     B.text(ws, r, 7, f, 8, False, 'A79F92')
+ws.column_dimensions['G'].hidden = True
 B.protect(ws)
 
 month = lambda i: f'=EDATE(IF(Settings!$C$11="",DATE(YEAR(TODAY()),1,1),DATE(YEAR(Settings!$C$11),MONTH(Settings!$C$11),1)),{i})'
@@ -146,7 +147,10 @@ bills = [('Rent or mortgage', 0, 2100, 'Monthly', 'Our split'), ('Electricity, g
          ('Internet', 2, 60, 'Monthly', '50-50'), ('Home and car insurance', 3, 1440, 'Yearly', 'Our split'),
          ('Groceries', 4, 700, 'Monthly', 'Our split'), ('Fuel and transit', 5, 160, 'Monthly', 'Our split'),
          ('Streaming', 6, 30, 'Monthly', '50-50'), ('Dog food and vet plan', 7, 75, 'Monthly', 'Our split'),
-         ('Cleaning and household', 8, 45, 'Monthly', '50-50')]
+         ('Cleaning and household', 8, 45, 'Monthly', '50-50'), ('Mobile phones', 2, 70, 'Monthly', 'Our split'),
+         ('Gym memberships', 6, 50, 'Monthly', '50-50'), ('Pet insurance', 7, 90, 'Quarterly', 'Our split'),
+         ('Car service and repairs', 5, 360, 'Yearly', 'Our split'), ('Holiday fund', 9, 1200, 'Yearly', 'Our split'),
+         ('Gifts and birthdays', 9, 600, 'Yearly', '50-50')]
 for r in range(8, 33):
     b = bills[r - 8] if r - 8 < len(bills) else None
     B.inp(ws, r, 2, b[0] if b else None); B.inp(ws, r, 3, BCATS[b[1]] if b else None)
@@ -271,7 +275,7 @@ B.protect(ws)
 # ------------------------------------------------------------------ Dashboard
 ws = S['Dashboard']
 B.page(ws, 'Self-Employed Couples Budget', '', ncols=16, nrows=110)
-ws['B3'] = '=' + NA + '&" (self-employed) and "&' + NB + '&"  ·  tax pot "&TEXT(' + TAX + ',"0%")&"  ·  split "&IF(Settings!C12="","By income",Settings!C12)'
+ws['B3'] = '=' + NA + '&" (self-employed) and "&' + NB + '&"  ·  tax pot "&TEXT(' + TAX + ',"0%")&"  ·  split "&LOWER(IF(Settings!C12="","By income",Settings!C12))'
 ws['B3'].font = F(10, color=MUTED)
 for r, h in [(7, 22), (8, 30), (9, 18), (10, 8), (11, 22), (12, 30), (13, 18)]:
     ws.row_dimensions[r].height = h

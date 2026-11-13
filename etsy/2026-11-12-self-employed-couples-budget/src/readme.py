@@ -20,7 +20,8 @@ for t in ['Go to drive.google.com, click New > File upload, and upload the blank
 b.y -= 6; b.h2('Open it in Excel')
 b.text('Double-click the blank .xlsx file. Works in Excel for Windows, Mac, Excel online and the Excel phone app.', 9.8)
 b.h2('How it works (9 tabs)')
-for t in ['Settings: your names, currency, tax pot %, first month of your year, how you split shared costs, your buffer goal and the steady amount the self-employed partner pays themself (leave it blank to use the average).',
+for t in ['Start Here: the setup steps in order, and how to open the file in Google Sheets.',
+          'Settings: your names, currency, tax pot %, first month of your year, how you split shared costs, your buffer goal and the steady amount the self-employed partner pays themself (leave it blank to use the average).',
           'Income Log, once a month: money in and business costs for the self-employed partner, take-home pay for the employed partner. The tax pot share is worked out.',
           'Tax Pot: type in your own tax due dates (US quarterly estimated tax, UK 31 January and 31 July, or your country). It shows the pot balance and whether it covers the next bill.',
           'Buffer: good months add to it, low months draw on it, so pay stays steady.',
