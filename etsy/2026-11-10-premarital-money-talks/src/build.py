@@ -54,8 +54,17 @@ SAMPLE = {
  'w_family': 'They can suggest. We decide, and we tell them together.',
  'plan_date_1': 'Sun 3 Jan', 'plan_date_2': 'Sun 10 Jan', 'plan_date_3': 'Sun 17 Jan',
  'plan_date_4': 'Sun 24 Jan', 'plan_date_5': 'Sun 31 Jan', 'plan_date_6': 'Sun 7 Feb',
+ 't1_mem_A': 'Best: my first pay cheque. Worst: a bounced rent payment at 22.',
+ 't1_mem_B': 'Best: saving for a car at 17. Worst: losing a deposit on a flat.',
+ 't5_kids_A': 'Yes, two, in about three years.', 't5_kids_B': 'Yes, one or two. Not before we own a home.',
+ 't5_break_A': 'I would take 9 months. We save a buffer first.', 't5_break_B': 'Happy to go part-time for a year.',
+ 't5_family_A': 'My mum may need help in 10 years. Up to 100 a month is fine.', 't5_family_B': 'None expected. Gifts at birthdays only.',
+ 't5_home_A': 'Renting, saving for a deposit near work.', 't5_home_B': 'Buying a small house, outside the city.',
+ 'md_0_0': 'Jan', 'md_2_0': '250', 'md_3_0': 'Card paid down', 'md_4_0': 'Cook in more',
+ 'md_0_1': 'Feb', 'md_2_1': '300', 'md_3_1': 'Wedding fund 2k', 'md_4_1': 'Cancel 2 apps',
+ 'md_0_2': 'Mar', 'md_2_2': '320', 'md_3_2': 'Card cleared', 'md_4_2': 'Raise savings',
 }
-SAMPLE_CHECKS = {'plan_done_1', 'plan_done_2', 'plan_done_3', 't3_choice_2', 't3_income'}
+SAMPLE_CHECKS = {'plan_done_1', 'plan_done_2', 'plan_done_3', 't3_choice_2', 't3_income', 'md_done_0', 'md_done_1', 'md_done_2'}
 
 
 class Book:
