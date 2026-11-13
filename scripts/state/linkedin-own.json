@@ -172,7 +172,15 @@
       "id": "7a0659fb29450af0",
       "urn": "urn:li:share:7524428246063464449",
       "angle": 17,
-      "postedAt": "2026-11-06T11:11:31.444Z"
+      "postedAt": "2026-11-06T11:11:31.444Z",
+      "scored": {
+        "at": "2026-11-13T13:16:34.545Z",
+        "reactions": 1,
+        "comments": 0,
+        "followers": 2866,
+        "per1k": 0.35
+      },
+      "topic": "money emotions and stress"
     },
     {
       "id": "71eed151c0358a8a",
