@@ -46,7 +46,7 @@ def build(raw,out,assign,targets=None,fix_bezel=False,line_w=5,dot_r=13):
             a=np.array(img); lum=a.astype(int).sum(-1)/3; a[ring&(lum<125)]=(18,18,20); img=Image.fromarray(a)
         e=2; X0,Y0,X1,Y1=x0-e,y0-e,x1+e,y1+e; w,h=X1-X0,Y1-Y0
         if mode=='phone':
-            pad=int(h*.07); shot,(r,ox,oy)=viewer(w,h-pad,parts,'fit'); s2=Image.new('RGB',(w,h),shot.getpixel((2,2))); s2.paste(shot,(0,pad)); shot=s2; oy+=pad
+            pad=int(h*.07); shot,(r,ox,oy)=viewer(w,h-pad,parts,'stack'); s2=Image.new('RGB',(w,h),shot.getpixel((2,2))); s2.paste(shot,(0,pad)); shot=s2; oy+=pad
         else:
             shot,(r,ox,oy)=viewer(w,h,parts,mode)
         mk=Image.new('L',(w,h),0); ImageDraw.Draw(mk).rounded_rectangle((0,0,w-1,h-1),max(rad,4),fill=255)
@@ -73,7 +73,7 @@ def build(raw,out,assign,targets=None,fix_bezel=False,line_w=5,dot_r=13):
                 d.ellipse([px-dot_r,py-dot_r,px+dot_r,py+dot_r],fill=GOLD,outline=(255,250,240),width=3)
     img=img.resize((2000,2000),Image.LANCZOS); img.save(out,quality=90); print(out,'screens',len(cs))
 JOBS={
- '01':dict(assign=[([(1,None)],'stack'),([(9,540)],'phone')]),
+ '01':dict(assign=[([(1,None)],'stack'),([(9,540),(10,None)],'phone')]),
  '03':dict(assign=[([(8,600),(9,None)],'stack')],targets=[('L',30,245,20),('R',558,405,575)]),
  '04':dict(assign=[([(9,540),(10,None)],'stack')],targets=[('L',30,272,20),('R',558,456,575)]),
  '05':dict(assign=[([(10,650),(11,None)],'stack')],targets=[('L',30,168,20),('R',558,322,575)]),

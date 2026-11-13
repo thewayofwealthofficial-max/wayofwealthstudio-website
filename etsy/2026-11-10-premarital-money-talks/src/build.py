@@ -151,7 +151,7 @@ class Book:
             if group:
                 c.acroForm.radio(name=f'{group}_p{self.page}', value=name, x=x, y=y, size=10, buttonStyle='check',
                                  borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
-                                 tooltip=tip or label, selected=False)
+                                 tooltip=tip or label, selected=False, shape='square')
             else:
                 c.acroForm.checkbox(name=f'{name}_p{self.page}', x=x, y=y, size=10, buttonStyle='check',
                                     borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
