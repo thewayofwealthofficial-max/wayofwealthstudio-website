@@ -45,7 +45,17 @@ SAMPLE = {
  'ag_limit': '200', 'ag_save': '500 a month, wedding first then house deposit',
  'ag_debt': 'Clear the credit card by March, then extra on the car',
  'ag_date': 'First Sunday of the month, 45 minutes, coffee out',
+ 't3_why_A': 'I like seeing everything in one place, but I want some money of my own too.',
+ 't3_why_B': 'Bills from one pot stops the who-paid-what chats. Own accounts for the fun stuff.',
+ 't3_admin': 'A sets up the joint account and direct debits. We check it together on money-date Sunday.',
+ 't3_free': '200 each a month, no questions asked',
+ 'w_less': 'Flowers, favours and the cake. A smaller guest list.',
+ 'w_borrow': 'No loans or credit cards for the wedding. If it does not fit, we cut it.',
+ 'w_family': 'They can suggest. We decide, and we tell them together.',
+ 'plan_date_1': 'Sun 3 Jan', 'plan_date_2': 'Sun 10 Jan', 'plan_date_3': 'Sun 17 Jan',
+ 'plan_date_4': 'Sun 24 Jan', 'plan_date_5': 'Sun 31 Jan', 'plan_date_6': 'Sun 7 Feb',
 }
+SAMPLE_CHECKS = {'plan_done_1', 'plan_done_2', 'plan_done_3', 't3_choice_2', 't3_income'}
 
 
 class Book:
@@ -122,15 +132,24 @@ class Book:
             for ln in lines[: max(1, int((h - 4) // (size * 1.3)))]:
                 c.drawString(x + 5, ty, ln); ty -= size * 1.3
 
-    def check(self, name, x, y, label, size=9, tip=None):
+    def check(self, name, x, y, label, size=9, tip=None, group=None):
+        """group: tick boxes sharing a group are a radio set in the fillable PDF (only one can be ticked)."""
         c = self.c
         c.setFillColor(INPUT); c.setStrokeColor(DSAGE); c.setLineWidth(0.8)
         c.rect(x, y, 10, 10, fill=1, stroke=1)
         if self.mode == 'form':
             self.fields += 1
-            c.acroForm.checkbox(name=f'{name}_p{self.page}', x=x, y=y, size=10, buttonStyle='check',
-                                borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
-                                tooltip=tip or label)
+            if group:
+                c.acroForm.radio(name=f'{group}_p{self.page}', value=name, x=x, y=y, size=10, buttonStyle='check',
+                                 borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
+                                 tooltip=tip or label, selected=False)
+            else:
+                c.acroForm.checkbox(name=f'{name}_p{self.page}', x=x, y=y, size=10, buttonStyle='check',
+                                    borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
+                                    tooltip=tip or label)
+        elif self.mode == 'sample' and name in SAMPLE_CHECKS:
+            c.setStrokeColor(HexColor('#2F4A8A')); c.setLineWidth(1.6)
+            c.line(x + 2, y + 5, x + 4.3, y + 2.3); c.line(x + 4.3, y + 2.3, x + 8.5, y + 8.2)
         c.setFillColor(CHAR); c.setFont('Sans', size)
         c.drawString(x + 15, y + 1.5, label)
 
@@ -371,7 +390,7 @@ class Book:
             self.text(d, 9, 'SansM', x=x + 8, width=cw - 16, gap=6)
             self.text('Good: ' + pro, 8.6, x=x + 8, width=cw - 16, gap=6)
             self.text('Watch: ' + con, 8.6, x=x + 8, width=cw - 16, gap=4)
-            self.check(f't3_choice_{i}', x + 8, top - h + 12, 'This is us', 8.6)
+            self.check(f't3_choice_{i}', x + 8, top - h + 12, 'This is us', 8.6, group='t3_choice')
         self.y = top - 190 - 18
         self.two_col('Which option feels right to you, and why?', 't3_why', 60)
         self.labeled('Who will manage the bills and paperwork? How do we keep the other one in the loop?', 't3_admin', 56)
@@ -392,8 +411,8 @@ class Book:
             self.field(key, self.W - self.M - 150, self.y - 23, 150, 22)
             self.y -= 30
         self.y -= 4
-        self.check('t3_5050', self.M, self.y - 10, 'We prefer 50/50 instead', 9.5)
-        self.check('t3_income', self.M + 190, self.y - 10, 'We\'ll split by income', 9.5)
+        self.check('t3_5050', self.M, self.y - 10, 'We prefer 50/50 instead', 9.5, group='t3_method')
+        self.check('t3_income', self.M + 190, self.y - 10, 'We\'ll split by income', 9.5, group='t3_method')
         self.y -= 28
         self.labeled('Fun money each, after bills and savings:', 't3_fun', 26, False)
         self.note('Worked example', 'A earns 2,450 and B earns 2,100, so 4,550 in total. A\'s share is 54%, B\'s is 46%. '

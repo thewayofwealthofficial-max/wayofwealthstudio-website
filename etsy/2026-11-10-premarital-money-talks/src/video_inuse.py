@@ -39,20 +39,20 @@ def zoom(img,sec,z0,z1):
 def pan(src,w0,w1,sec,t,s,hl=None):
     n=int(sec*FPS)
     for k in range(n): frames.append(frame(src,lerp(w0,w1,k/(n-1)),t,s,hl))
-PDF='/home/claude/work/premarital/out/A4-form.pdf'
+PDF='/home/claude/work/premarital/out2/A4-form.pdf'
 def render(pn,vals):
     d=fitz.open(PDF); p=d[pn-1]
     for wd in p.widgets():
         k=wd.field_name.rsplit('_p',1)[0]
-        if k in vals:
-            wd.field_value=vals[k]; wd.text_fontsize=15; wd.text_color=(0.12,0.2,0.45); wd.update()
+        if k in vals and wd.field_type_string=='Text':
+            wd.field_value=vals[k]; wd.text_fontsize=17; wd.text_color=(0.12,0.2,0.45); wd.update()
     pm=p.get_pixmap(matrix=fitz.Matrix(Z,Z),annots=True)
     return Image.frombytes('RGB',(pm.width,pm.height),pm.samples)
 cover=Image.open('/home/claude/work/premarital/photos/01.jpg').convert('RGB').resize((OUT,OUT),Image.LANCZOS)
 FULL=(0,0,595)
 # ---- scene A: fair split ----
-T1,S1='Answer on your own','Talk 3: our fair split'
-W1=(66,132,494)
+T1,S1='Talk 3: your fair split','Type your answers in the boxes'
+W1=(30,108,530)
 zoom(cover,1.3,1.0,1.04)
 v={}; img=render(9,v); fade(frame(img,FULL,T1,S1),0.3); add(frames[-1],0.4)
 pan(img,FULL,W1,0.8,T1,S1)
@@ -68,7 +68,7 @@ v['t3_payA']='1,026'; v['t3_payB']='874'
 fr=frame(render(9,v),W1,T2,S2,hl=(60,337,556,387)); fade(fr,0.2); add(fr,1.4)
 # ---- scene B: agreement ----
 T3,S3='Agree it together','One page you both sign'
-W2=(35,140,330)
+W2=(28,112,544)
 v2={}; img=render(13,v2); fade(frame(img,FULL,T3,S3),0.35); add(frames[-1],0.3)
 pan(img,FULL,W2,0.7,T3,S3)
 for k,val in [('ag_acc','Hybrid: joint for bills, own for the rest'),('ag_split','By income, 54 / 46')]:
@@ -76,7 +76,7 @@ for k,val in [('ag_acc','Hybrid: joint for bills, own for the rest'),('ag_split'
     for i in range(1,len(words)+1):
         v2[k]=' '.join(words[:i]); add(frame(render(13,v2),W2,T3,S3),0.17)
     add(frames[-1],0.2)
-fr=frame(render(13,v2),W2,T3,'Your rules, in writing',hl=(41,172,360,255)); fade(fr,0.2); add(fr,1.3)
+fr=frame(render(13,v2),W2,T3,'Your rules, in writing',hl=(41,172,554,255)); fade(fr,0.2); add(fr,1.3)
 fade(cover,0.4); zoom(cover,1.2,1.04,1.0)
 print('seconds',len(frames)/FPS)
 w='/home/claude/work/premarital/vid/fr'; shutil.rmtree(w,ignore_errors=True); os.makedirs(w)
