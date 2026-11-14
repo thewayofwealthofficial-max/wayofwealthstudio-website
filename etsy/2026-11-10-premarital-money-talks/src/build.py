@@ -130,7 +130,7 @@ class Book:
         if self.mode == 'form':
             self.fields += 1
             c.acroForm.textfield(name=f'{name}_p{self.page}', x=x + 1, y=y + 1, width=w - 2, height=h - 2,
-                                 borderWidth=0, fillColor=INPUT, textColor=CHAR, fontName='Helvetica',
+                                 borderWidth=0, fillColor=INPUT, textColor=HexColor('#2F4A8A'), fontName='Helvetica',
                                  fontSize=0 if multiline else size,
                                  fieldFlags='multiline' if multiline else '', forceBorder=False,
                                  tooltip=name.replace('_', ' '))
@@ -150,11 +150,11 @@ class Book:
             self.fields += 1
             if group:
                 c.acroForm.radio(name=f'{group}_p{self.page}', value=name, x=x, y=y, size=10, buttonStyle='check',
-                                 borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
+                                 borderWidth=0, fillColor=INPUT, textColor=HexColor('#2F4A8A'), forceBorder=False,
                                  tooltip=tip or label, selected=False, shape='square')
             else:
                 c.acroForm.checkbox(name=f'{name}_p{self.page}', x=x, y=y, size=10, buttonStyle='check',
-                                    borderWidth=0, fillColor=INPUT, textColor=CHAR, forceBorder=False,
+                                    borderWidth=0, fillColor=INPUT, textColor=HexColor('#2F4A8A'), forceBorder=False,
                                     tooltip=tip or label)
         elif self.mode == 'sample' and name in SAMPLE_CHECKS:
             c.setStrokeColor(HexColor('#2F4A8A')); c.setLineWidth(1.6)
@@ -407,7 +407,7 @@ class Book:
 
         self.new_page('Talk 3', 'Our fair split')
         self.text('50/50 sounds fair but can leave the lower earner with nothing left. Splitting by income means you each pay the same share of '
-                  'what you earn. Fill in the boxes, the steps show the sums.', 10)
+                  'what you earn. Fill in the boxes; the steps show the sums.', 10)
         rows = [('1', 'Partner A take-home income', 't3_incA', ''), ('2', 'Partner B take-home income', 't3_incB', ''),
                 ('3', 'Total (1 + 2)', 't3_tot', ''), ('4', 'Partner A share (1 ÷ 3 × 100)', 't3_pctA', '%'),
                 ('5', 'Partner B share (2 ÷ 3 × 100)', 't3_pctB', '%'), ('6', 'Shared bills each month', 't3_bills', ''),
