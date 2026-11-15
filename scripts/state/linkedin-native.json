@@ -219,6 +219,24 @@
       "paragraphs": 8
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-15",
+    "sentAt": "2026-11-15T11:13:40.750Z",
+    "id": "eaa29e03285e2743",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "a5d2f9afa76c5d68",
+    "outlier": "https://www.linkedin.com/posts/ramitsethi_these-are-my-travel-rules-for-myself-4-activity-7113195850717163520-PIUa",
+    "shape": {
+      "source": "watchlist",
+      "hook": "list",
+      "structure": "list",
+      "words": 92,
+      "paragraphs": 5
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
