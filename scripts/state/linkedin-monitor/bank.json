@@ -87,6 +87,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6983149353590812672-L0td",
           "firstLine": "You need to know 10 numbers to 10x your finances:",
           "why": "'10 numbers to 10x' creates a punchy numerical promise that makes the list feel immediately actionable."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 6.23,
+          "url": "https://www.linkedin.com/posts/maxpashman_the-worst-financial-advice-ive-seen-online-activity-7366118704125792257-vW4z",
+          "firstLine": "The worst financial advice I've seen online:",
+          "why": "Calling out 'worst financial advice' triggers curiosity and recognition, pulling readers in to check if they've heard or believed any of them."
         }
       ],
       "months": 3,
@@ -227,10 +235,18 @@
           "url": "https://www.linkedin.com/posts/maxpashman_rantover-activity-7001277385664839681-sUpJ",
           "firstLine": "\"Call me insane, but I’m selling my car, taking equity out of my house, investing all my savings, strictly budgeting for",
           "why": "Quoting a genuinely shocking real tweet as the opening hook makes readers immediately curious and slightly alarmed."
+        },
+        {
+          "month": "2026-11",
+          "author": "Tori Dunlap",
+          "per1k": 0.44,
+          "url": "https://www.linkedin.com/posts/toridunlap_bill-negotiation-scripts-her-first-100k-activity-7067164600965730304-lZr6",
+          "firstLine": "I made almost $1000 in less than 10 minutes -- and you can do it too.",
+          "why": "The bold dollar claim in the first line creates immediate curiosity and scepticism that pulls readers in."
         }
       ],
       "months": 2,
-      "authors": 4
+      "authors": 5
     },
     "hot take · explainer": {
       "wins": [
@@ -277,10 +293,18 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_i-feel-so-sorry-for-people-who-hear-stuff-activity-7065355426862632960-qxWU",
           "firstLine": "I feel so sorry for people who hear stuff like “don’t buy lattes” or “get lentils instead of meat” and believe money is ",
           "why": "Opening with a dismissive 'I feel so sorry' triggers curiosity and mild controversy, pulling readers in to see who's being criticised."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 3.77,
+          "url": "https://www.linkedin.com/posts/maxpashman_your-employer-did-not-hire-you-so-you-can-activity-7185996629429137408-RHN6",
+          "firstLine": "Your employer did not hire you so you can build wealth.",
+          "why": "The blunt opener challenges the reader's assumptions about their employer's role in their financial life, creating immediate tension."
         }
       ],
       "months": 1,
-      "authors": 1
+      "authors": 2
     },
     "list · explainer": {
       "wins": [
@@ -305,10 +329,18 @@
           "url": "https://www.linkedin.com/posts/maxpashman_when-markets-fall-people-always-say-buy-activity-6978445271282163712-uUke",
           "firstLine": "When markets fall, people always say “buy the dip”.",
           "why": "Reframing 'buying the dip' as something you do passively by doing nothing is a clever contrarian hook that makes readers curious about the method."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.61,
+          "url": "https://www.linkedin.com/posts/ramitsethi_personalfinance-investingtips-investingforbeginners-activity-7064684977212248064-2TDy",
+          "firstLine": "Many people believe that “investing = picking stocks,” which stops them because it's intimidating.",
+          "why": "Opening by naming a common misconception directly addresses a fear that stops many people from starting to invest at all."
         }
       ],
       "months": 1,
-      "authors": 1
+      "authors": 2
     },
     "story · promo": {
       "wins": [
@@ -319,6 +351,20 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_how-my-life-has-changed-after-my-netflix-activity-7057049988450643969-c8mD",
           "firstLine": "How my life has changed after my Netflix show…",
           "why": "The self-deprecating 'not by much' subverts the expected humble-brag and quickly reframes around the audience's benefit."
+        }
+      ],
+      "months": 1,
+      "authors": 1
+    },
+    "question · promo": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.15,
+          "url": "https://www.linkedin.com/posts/ramitsethi_wondering-where-you-can-get-a-copy-of-the-activity-7087098703886360576-2l6z",
+          "firstLine": "Wondering where you can get a copy of the SAME Conscious Spending Plan I used on Netflix?",
+          "why": "The reference to Netflix creates instant credibility and curiosity about what a 'Conscious Spending Plan' actually is."
         }
       ],
       "months": 1,
@@ -405,6 +451,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_rantover-activity-7001277385664839681-sUpJ",
           "firstLine": "\"Call me insane, but I’m selling my car, taking equity out of my house, investing all my savings, strictly budgeting for",
           "why": "Quoting a genuinely shocking real tweet as the opening hook makes readers immediately curious and slightly alarmed."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 3.77,
+          "url": "https://www.linkedin.com/posts/maxpashman_your-employer-did-not-hire-you-so-you-can-activity-7185996629429137408-RHN6",
+          "firstLine": "Your employer did not hire you so you can build wealth.",
+          "why": "The blunt opener challenges the reader's assumptions about their employer's role in their financial life, creating immediate tension."
         }
       ],
       "months": 1,
@@ -443,10 +497,26 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_these-are-my-travel-rules-for-myself-4-activity-7113195850717163520-PIUa",
           "firstLine": "These are my travel rules for myself:",
           "why": "Presenting personal travel rules as a concrete numbered list signals insider knowledge and invites readers to benchmark their own habits."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.96,
+          "url": "https://www.linkedin.com/posts/ramitsethi_get-your-conscious-spending-plan-activity-7137123323196387328-zbAr",
+          "firstLine": "In my experience, when people cross $150,000 of income, they stop carefully tracking expenses. (This is fine! At $150K, ",
+          "why": "Opening with a specific income threshold and a counterintuitive claim about stress hooks readers immediately."
+        },
+        {
+          "month": "2026-11",
+          "author": "Tori Dunlap",
+          "per1k": 0.44,
+          "url": "https://www.linkedin.com/posts/toridunlap_bill-negotiation-scripts-her-first-100k-activity-7067164600965730304-lZr6",
+          "firstLine": "I made almost $1000 in less than 10 minutes -- and you can do it too.",
+          "why": "The bold dollar claim in the first line creates immediate curiosity and scepticism that pulls readers in."
         }
       ],
       "months": 1,
-      "authors": 2
+      "authors": 3
     },
     "money emotions and stress": {
       "wins": [
@@ -495,6 +565,22 @@
           "url": "https://www.linkedin.com/posts/maxpashman_when-markets-fall-people-always-say-buy-activity-6978445271282163712-uUke",
           "firstLine": "When markets fall, people always say “buy the dip”.",
           "why": "Reframing 'buying the dip' as something you do passively by doing nothing is a clever contrarian hook that makes readers curious about the method."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 6.23,
+          "url": "https://www.linkedin.com/posts/maxpashman_the-worst-financial-advice-ive-seen-online-activity-7366118704125792257-vW4z",
+          "firstLine": "The worst financial advice I've seen online:",
+          "why": "Calling out 'worst financial advice' triggers curiosity and recognition, pulling readers in to check if they've heard or believed any of them."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.61,
+          "url": "https://www.linkedin.com/posts/ramitsethi_personalfinance-investingtips-investingforbeginners-activity-7064684977212248064-2TDy",
+          "firstLine": "Many people believe that “investing = picking stocks,” which stops them because it's intimidating.",
+          "why": "Opening by naming a common misconception directly addresses a fear that stops many people from starting to invest at all."
         }
       ],
       "months": 1,
@@ -525,6 +611,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6983149353590812672-L0td",
           "firstLine": "You need to know 10 numbers to 10x your finances:",
           "why": "'10 numbers to 10x' creates a punchy numerical promise that makes the list feel immediately actionable."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.15,
+          "url": "https://www.linkedin.com/posts/ramitsethi_wondering-where-you-can-get-a-copy-of-the-activity-7087098703886360576-2l6z",
+          "firstLine": "Wondering where you can get a copy of the SAME Conscious Spending Plan I used on Netflix?",
+          "why": "The reference to Netflix creates instant credibility and curiosity about what a 'Conscious Spending Plan' actually is."
         }
       ],
       "months": 1,
