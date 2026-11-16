@@ -214,7 +214,15 @@
       "id": "9e427445a9a9ba6a",
       "urn": "urn:li:share:7525525208313790464",
       "angle": 6,
-      "postedAt": "2026-11-09T11:50:27.553Z"
+      "postedAt": "2026-11-09T11:50:27.553Z",
+      "scored": {
+        "at": "2026-11-16T13:51:12.644Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2866,
+        "per1k": 0
+      },
+      "topic": "other money"
     },
     {
       "id": "3b054a6534e8a401",
