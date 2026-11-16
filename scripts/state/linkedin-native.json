@@ -238,5 +238,23 @@
     },
     "told150": false,
     "outcome": "pending"
+  },
+  {
+    "date": "2026-11-16",
+    "sentAt": "2026-11-16T11:43:40.705Z",
+    "id": "7117596fb84063ae",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "4b1dcd9c4e6cd60e",
+    "outlier": "https://www.linkedin.com/posts/maxpashman_the-worst-financial-advice-ive-seen-online-activity-7366118704125792257-vW4z",
+    "shape": {
+      "source": "watchlist",
+      "hook": "list",
+      "structure": "list",
+      "words": 110,
+      "paragraphs": 5
+    },
+    "told150": false,
+    "outcome": "pending"
   }
 ]
