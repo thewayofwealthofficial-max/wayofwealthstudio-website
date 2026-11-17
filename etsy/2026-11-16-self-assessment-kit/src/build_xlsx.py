@@ -535,8 +535,8 @@ B.fx(ws, 17, 9, 'Pot top-up at your set-aside % (full year, not a bill)', None, 
 B.fx(ws, 17, 10, '=G29*J9', GBP, False, None, color=MUTED, size=9)
 B.th(ws, 18, 9, 'WHERE YOU STAND'); B.th(ws, 18, 10, '', align='right')
 B.fx(ws, 19, 9, 'Pot balance now', None, True, TINT, 'left'); B.fx(ws, 19, 10, '=G21', GBP, True, TINT)
-B.fx(ws, 20, 9, '=IF(J19>=J14,"Covers 31 Jan 2027 with spare","Short for 31 Jan 2027 by")', None, True, WHITE, 'left')
-B.fx(ws, 20, 10, '=IF(J19>=J14,J19-J14,J14-J19)', GBP, True, WHITE)
+B.fx(ws, 20, 9, '=IF(J14=0,"Fill in the Income Log first",IF(J19>=J14,"Covers 31 Jan 2027 with spare","Short for 31 Jan 2027 by"))', None, True, WHITE, 'left')
+B.fx(ws, 20, 10, '=IF(J14=0,"",IF(J19>=J14,J19-J14,J14-J19))', GBP, True, WHITE)
 ML_ = 'MAX(1,(2027-YEAR(TODAY()))*12+1-MONTH(TODAY())+1)'
 B.fx(ws, 21, 9, '=IF(TODAY()>DATE(2027,1,31),"31 Jan 2027 has passed","Save each month until 31 Jan 2027")', None, True, WHITE, 'left')
 B.fx(ws, 21, 10, f'=IF(TODAY()>DATE(2027,1,31),0,MAX(0,J14-J19)/{ML_})', GBP, True, WHITE)
@@ -765,6 +765,9 @@ for t in ('Income Log', 'Expenses Log', 'Mileage'):
 for w_ in B.wb.worksheets:
     w_.oddFooter.center.text = 'Way of Wealth Studio  ·  UK Self Assessment 2025/26 Deadline Kit  ·  not tax advice'
     w_.oddFooter.center.size = 8
-B.wb.active = 0
+B.wb.active = 1 if BLANK else 0
+if BLANK:
+    for _w in B.wb.worksheets: _w.sheet_view.tabSelected = False
+    B.wb.worksheets[1].sheet_view.tabSelected = True
 orig_save(OUT)
 print('saved', OUT)

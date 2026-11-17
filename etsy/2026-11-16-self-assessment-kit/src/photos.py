@@ -142,10 +142,12 @@ def p05():
     for (x, y, r) in [(92, 300, 42), (140, 395, 18), (1958, 290, 40), (1905, 380, 18), (92, 1760, 34), (150, 1840, 16)]:
         sparkle(im, x, y, r)
     title(im, 'SA103 Boxes, Mapped', 'Each figure sits next to its box number', y=60, hs=112, ss=60)
-    page('ex6', SA103)
+    render_pages(EXAMPLE, 'ex6', dpi=600)
     t = page('ex6', SA103)                      # 600 dpi render: 4 px per 150-dpi unit
     Y0, Y1, X0, X1 = 640, 919, 44, 476
-    shot = t.crop((4 * X0, 4 * Y0, 4 * X1, 4 * Y1))
+    PADX = 12                                   # ~45 px breathing room each side inside the card
+    shot = t.crop((4 * (X0 - PADX), 4 * Y0, 4 * (X1 + PADX), 4 * Y1))
+    X0, X1 = X0 - PADX, X1 + PADX
     L, T, W = 60, 330, 1880
     sc = W / (X1 - X0); H = round((Y1 - Y0) * sc)
     shot_card(im, shot, (L, T, L + W, T + H))
@@ -179,12 +181,9 @@ def p06():
         for ln in lines:
             center(d, yy, ln, inter(38, 'Medium'), (92, 78, 62), x + 407); yy += 54
     tbl = crop150(EX(TAXEST), (40, 674, 540, 832))
-    w = 1040; h = int(w * tbl.height / tbl.width)
-    chart = crop150(page('noapr', 1), (424, 741, 764, 954))
-    cw = 600; ch = int(cw * chart.height / chart.width)
-    top = 900; rowh = max(h, ch)
-    shot_card(im, tbl, (170, top + (rowh - h) // 2, 170 + w, top + (rowh - h) // 2 + h))
-    shot_card(im, chart, (1270, top, 1270 + cw, top + ch))
+    w = 1708; h = int(w * tbl.height / tbl.width)
+    top = 880; rowh = h
+    shot_card(im, tbl, (170, top, 170 + w, top + h))
     y2 = top + rowh + 70
     card(im, (170, y2, 1878, y2 + 300), r=36)
     d = ImageDraw.Draw(im)
@@ -225,13 +224,12 @@ def p08():
     cw = round(tpc.width / 0.87); tp = Image.new('RGB', (cw, round(cw / 1.57)), SHEETBG); tp.paste(tpc, (0, 0))
     im, _ = comp(im, [(tp, 'tab')])                 # tax pot fills the left 90% of the screen: the phone covers no text
     ph = scene('phone_large')
-    bd = crop150(page('bl', DASH), (40, 128, 760, 1206))   # the whole real BLANK Dashboard
-    ph, _ = comp(ph, [(pad(bd, 0.498), 'phone')])
+    ph, _ = comp(ph, [(phone_dash(0.498), 'phone')])        # real EXAMPLE dashboard cards, one readable column
     phone = cut_device(ph, (720, 590, 1330, 1860))
     phone = phone.resize((int(phone.width * .56), int(phone.height * .56)), Image.LANCZOS)
     paste_shadow(im, phone, (1462, 1672 - phone.height))
     y = title(im, 'Works in Excel and Google Sheets', 'Plus a 2026/27 tax pot, month by month', y=160, hs=104)
-    spaced(ImageDraw.Draw(im), S / 2, y + 30, 'LAPTOP: EXAMPLE FILE  ·  PHONE: BLANK FILE', inter(34, 'SemiBold'), GOLD_D, 5)
+    spaced(ImageDraw.Draw(im), S / 2, y + 30, 'LAPTOP: 2026/27 TAX POT  ·  PHONE: DASHBOARD', inter(34, 'SemiBold'), GOLD_D, 5)
     card(im, (300, 1708, 1748, 1800), r=46)
     tick(im, 370, 1754, 30)
     d = ImageDraw.Draw(im)
