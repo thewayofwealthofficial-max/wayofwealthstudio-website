@@ -228,7 +228,15 @@
       "id": "3b054a6534e8a401",
       "urn": "urn:li:share:7526242888326758400",
       "angle": 17,
-      "postedAt": "2026-11-11T11:22:15.759Z"
+      "postedAt": "2026-11-11T11:22:15.759Z",
+      "scored": {
+        "at": "2026-11-18T14:22:00.243Z",
+        "reactions": 1,
+        "comments": 0,
+        "followers": 2866,
+        "per1k": 0.35
+      },
+      "topic": "looking rich vs becoming rich"
     },
     {
       "id": "7094a2acadccbbef",
