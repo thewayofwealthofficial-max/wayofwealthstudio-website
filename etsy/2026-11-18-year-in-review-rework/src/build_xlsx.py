@@ -271,7 +271,7 @@ for k in range(5):
     B.fx(ws, r, 7, f'=IF(N(E{g})=0,"",MIN(1,F{r}/E{g}))', PCT, True)
     B.fx(ws, r, 8, f'=IF(N(E{g})=0,"",MIN(E{g},N(F{g})+N(H{g})*{LM}))', MONEY)
     B.fx(ws, r, 9, f'=IF(N(E{g})=0,"",IF(F{r}>=E{g},"✓ Done",IF(N(G{g})=0,"Add a month",IF(F{r}>=H{r}-0.5,"On track","Behind"))))', None, True, None, 'left')
-    B.fx(ws, r, 10, f'=IF(N(E{g})=0,"",{bar_f(f"F{r}/E{g}", DSAGE, 14)}&"  "&TEXT(G{r},"0%"))', None, False, None, 'left', color=DSAGE, size=9)
+    B.fx(ws, r, 10, f'=IF(N(E{g})=0,"",{bar_f(f"F{r}/E{g}", DSAGE, 14)})', None, False, None, 'left', color=DSAGE, size=9)
     ws.row_dimensions[r].height = 22
 ws.conditional_formatting.add('I18:I22', FormulaRule(formula=['I18="Behind"'], font=Font(name=FONT, color=CORAL, bold=True)))
 ws.conditional_formatting.add('I18:I22', FormulaRule(formula=['OR(I18="On track",I18="✓ Done")'], font=Font(name=FONT, color=DSAGE, bold=True)))

@@ -36,3 +36,20 @@ scripts/gmail-auth-setup.mjs
 
 # title cards, made at build time by scripts/title-cards.mjs
 public/cards/
+
+# Etsy builds: never publish paid product files or competitor images (18 Nov 2026)
+etsy/**/*.zip
+etsy/**/*.xlsx
+etsy/**/*.pdf
+etsy/**/out/
+etsy/**/renders/
+etsy/**/renders-blank/
+etsy/**/work/
+etsy/**/src_couples/
+etsy/**/src_ther/
+etsy/**/benchmark/
+etsy/**/compare/
+etsy/**/original_unzipped/
+etsy/**/side_benchmark.jpg
+etsy/**/side_mit.jpg
+etsy/**/__pycache__/
