@@ -237,7 +237,7 @@
       "paragraphs": 5
     },
     "told150": false,
-    "outcome": "pending"
+    "outcome": "rejected"
   },
   {
     "date": "2026-11-16",
@@ -253,6 +253,24 @@
       "structure": "list",
       "words": 110,
       "paragraphs": 5
+    },
+    "told150": false,
+    "outcome": "rejected"
+  },
+  {
+    "date": "2026-11-18",
+    "sentAt": "2026-11-18T11:56:22.705Z",
+    "id": "adff1b685ce131fe",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "deab715e29393391",
+    "outlier": "https://www.linkedin.com/posts/toridunlap_bill-negotiation-scripts-her-first-100k-activity-7067164600965730304-lZr6",
+    "shape": {
+      "source": "watchlist",
+      "hook": "story",
+      "structure": "story with lesson",
+      "words": 173,
+      "paragraphs": 14
     },
     "told150": false,
     "outcome": "pending"
