@@ -1,0 +1,28 @@
+shapes 0 | pictures 0 | charts 5 | data bars 0 | icon sets 0 | macros 0 | hyperlinks 0
+functions used: AND, AVERAGEIF, COUNT, COUNTA, COUNTIF, COUNTIFS, DATE, EDATE, EOMONTH, IF, IFERROR, INDEX, LARGE, LEFT, MATCH, MAX, MIN, MONTH, OR, REPT, ROUND, ROUNDUP, ROW, SMALL, SPARKLINE, SUBSTITUTE, SUM, SUMIFS, SUMPRODUCT, TEXT, UPPER, YEAR
+functions not on the Sheets-safe list: none
+round-trip recalc: {   "status": "success",   "total_errors": 0,   "error_summary": {},   "total_formulas": 1670 } 
+  Monthly Summary!F21: same  24571
+  Monthly Summary!G21: same  8263.34
+  Monthly Summary!H21: same  16307.66
+  Dashboard!B8: same  £16,308
+  Dashboard!J8: same  £24,571
+  Dashboard!B16: same  ●  Reorder 6 supplies before they run out, starting with Bui
+  Dashboard!J22: same  Gel manicure
+  Pricing Check!I14: same  19.6993055555556
+  Tax Set-Aside!G20: same  -156.915
+  Monthly Money Check-in!B11: same  In October 2026 I did 68 appointments and took £2,301, inclu
+10/10 key cells identical after round-trip; charts after round-trip: 5
+
+19 Nov fix after the real Drive test (18 #VALUE! cells): every SPARKLINE is now the whole cell formula =IFERROR(SPARKLINE(...),REPT(...)).
+- Dashboard N23: bar only; the month moved into the card label ("GOAL · OCT 2026").
+- Monthly Money Check-in C16:E16: bar only; "99% of £1,500 monthly profit goal" moved to F16:H16.
+- Monthly Money Check-in H27:H42: bar only; the % moved to new column I27:I42.
+
+May still render differently in real Google Sheets:
+- Progress bars: real sparkline in Sheets, text bar in Excel/LibreOffice.
+- Chart series colours may reset to Sheets defaults; doughnut % labels may move.
+- Row/column headers always show in Sheets. No internal tab links are used (buyers use the tab bar).
+- Sheet protection imports as protected-range warnings.
+Nail Tech Income Expense Tracker - BLANK (start here).xlsx sparkline cells 18 not whole-cell 0
+Nail Tech Income Expense Tracker - EXAMPLE (filled in).xlsx sparkline cells 18 not whole-cell 0
