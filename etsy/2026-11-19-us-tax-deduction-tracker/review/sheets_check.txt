@@ -1,0 +1,32 @@
+shapes/text boxes: 0 | data bars: 0 | icon sets: 0 | macros: False | charts: 5
+functions used: ABS, AND, CEILING, COUNT, COUNTIF, COUNTIFS, DATE, DATEVALUE, IF, IFERROR, INDEX, ISNUMBER, LARGE, LEFT, LOWER, MATCH, MAX, MIN, MONTH, NOT, OR, REPT, ROUND, ROW, SMALL, SPARKLINE, SUBSTITUTE, SUM, SUMIFS, SUMPRODUCT, TEXT, TODAY, TRIM, UPPER, VALUE, YEAR
+functions not in Excel 2016 / risky in Sheets: none
+SPARKLINE is used only inside IFERROR(...) with a REPT text-bar fallback (Excel/LibreOffice show the text bar, Sheets shows a real bar)
+round-trip recalc: status success, formulas 4806, errors 0
+  Schedule C!D9: 78400                                                                    same
+  Schedule C!D41: 12359.12                                                                 same
+  Schedule C!D44: 65290.88                                                                 same
+  Tax Estimate!C16: 10016.56                                                                 same
+  Tax Estimate!C29: 3835.13                                                                  same
+  Tax Estimate!C39: 16783.32                                                                 same
+  Quarterly Tax!K22: 12000                                                                    same
+  Quarterly Tax!G41: 2800                                                                     same
+  Monthly Money Check-in!B10: In October 2026 you earned $7,350 from 3 payments and spent $973 on th   same
+  Income Log!J9: 2026-11-14 00:00:00                                                      same
+  Income Log!N9: Northwind Health                                                         same
+key figures that changed after the round trip: 0
+conditional formatting ranges kept after round trip: 9; tabs: 12; data validations kept: 10
+hand check SE tax               hand    10,016.56  sheet    10,016.56  OK
+hand check taxable income       hand    34,026.08  sheet    34,026.08  OK
+hand check income tax           hand     3,835.13  sheet     3,835.13  OK
+hand check safe-harbor target   hand    12,000.00  sheet    12,000.00  OK
+
+Google Sheets proxy (LibreOffice round trip, 19 Nov). Not a real Drive import: the orchestrator should do that.
+Things Sheets may show differently:
+- Progress bar on Accountant Checklist: Sheets draws a real SPARKLINE bar; Excel/LibreOffice show the REPT text bar (by design).
+- Row/column headers always show in Sheets; hidden helper columns/rows stay hidden.
+- Sheet protection: Sheets turns locked sheets into protected ranges (owner can still edit); no password is used.
+- Chart series colours may reset to Sheets defaults; 5 charts are standard bar/doughnut types.
+- Pasted text dates (Income Log/Deductions) are read with DATEVALUE: ISO (2026-03-14) works everywhere; m/d/yyyy needs a US locale (File > Settings).
+- Fonts: Inter is a Google Font, so Sheets shows it; Excel substitutes its own font.
+- No internal tab hyperlinks are used (buyers use the tab bar).
