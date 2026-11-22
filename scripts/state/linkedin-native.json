@@ -291,6 +291,24 @@
       "paragraphs": 4
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-22",
+    "sentAt": "2026-11-22T11:40:23.383Z",
+    "id": "d731820e76229f15",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "f37055d5d70ab744",
+    "outlier": "https://www.linkedin.com/posts/ramitsethi_get-your-conscious-spending-plan-activity-7137123323196387328-zbAr",
+    "shape": {
+      "source": "watchlist",
+      "hook": "other",
+      "structure": "list",
+      "words": 176,
+      "paragraphs": 11
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
