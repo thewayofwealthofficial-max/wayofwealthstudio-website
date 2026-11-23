@@ -309,6 +309,24 @@
       "paragraphs": 11
     },
     "told150": false,
+    "outcome": "unchanged"
+  },
+  {
+    "date": "2026-11-23",
+    "sentAt": "2026-11-23T13:12:51.399Z",
+    "id": "9d788b5fea6b1c21",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "e36ccd586758fb25",
+    "outlier": "https://www.linkedin.com/posts/brianferoldi_financial-order-of-operations-activity-7047983249154813953-t4ol",
+    "shape": {
+      "source": "watchlist",
+      "hook": "list",
+      "structure": "list",
+      "words": 154,
+      "paragraphs": 30
+    },
+    "told150": false,
     "outcome": "pending"
   }
 ]
