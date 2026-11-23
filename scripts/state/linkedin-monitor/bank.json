@@ -95,10 +95,18 @@
           "url": "https://www.linkedin.com/posts/maxpashman_the-worst-financial-advice-ive-seen-online-activity-7366118704125792257-vW4z",
           "firstLine": "The worst financial advice I've seen online:",
           "why": "Calling out 'worst financial advice' triggers curiosity and recognition, pulling readers in to check if they've heard or believed any of them."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 1.33,
+          "url": "https://www.linkedin.com/posts/brianferoldi_financial-order-of-operations-activity-7047983249154813953-t4ol",
+          "firstLine": "I love stocks, but personal finance is 10X more important than stock picking.",
+          "why": "The bold claim that personal finance beats stock picking grabs attention before delivering a clear numbered framework."
         }
       ],
       "months": 3,
-      "authors": 4
+      "authors": 5
     },
     "question · story with lesson": {
       "wins": [
@@ -123,10 +131,18 @@
           "url": "https://www.linkedin.com/posts/sayanta-goswami_the-common-notion-around-undercharging-activity-7280908287959556096-HDQT",
           "firstLine": "The common notion around undercharging,",
           "why": "Opening by challenging a widely held belief about undercharging immediately creates tension and signals a counterintuitive perspective on pricing strategy."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.34,
+          "url": "https://www.linkedin.com/posts/ramitsethi_you-dont-have-to-be-a-millionaire-to-live-activity-7106305255499255808-fNZg",
+          "firstLine": "You don’t have to be a millionaire to live a Rich Life.",
+          "why": "Opening by challenging the millionaire prerequisite immediately reframes who personal finance is for, pulling in readers who feel excluded."
         }
       ],
-      "months": 1,
-      "authors": 1
+      "months": 2,
+      "authors": 2
     },
     "question · call-out": {
       "wins": [
@@ -159,6 +175,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_pashmoney-activity-6986330504019017728--fLp",
           "firstLine": "There has been a list floating around with the top 200 LinkedIn influencers that everyone has been going insane about.",
           "why": "The sharp contrast between obsessing over rankings and obsessing over finances creates instant tension and curiosity."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 4.21,
+          "url": "https://www.linkedin.com/posts/maxpashman_stock-market-price-drops-too-risky-to-invest-activity-6988872858462543872-3ZDf",
+          "firstLine": "Stock market price drops: Too risky to invest my money!",
+          "why": "The sharp contrast between two identical situations (price drops) exposes an irrational money behaviour, making readers immediately recognise themselves."
         }
       ],
       "months": 2,
@@ -265,10 +289,18 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_why-i-dont-like-budgets-they-look-activity-7107030028533526528-YYa2",
           "firstLine": "❌ WHY I DON’T LIKE BUDGETS:",
           "why": "Leading with a bold rejection of a universally recommended tool (budgets) immediately challenges conventional wisdom and demands attention."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 0.17,
+          "url": "https://www.linkedin.com/posts/brianferoldi_you-were-born-to-be-a-bad-investor-your-activity-6993603143255138304-m6nZ",
+          "firstLine": "You were born to be a bad investor.",
+          "why": "Telling readers they were 'born to be a bad investor' is a provocative opener that reframes investing failure as biology rather than personal fault."
         }
       ],
       "months": 2,
-      "authors": 2
+      "authors": 3
     },
     "news · explainer": {
       "wins": [
@@ -369,6 +401,20 @@
       ],
       "months": 1,
       "authors": 1
+    },
+    "hot take · list": {
+      "wins": [
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 0.58,
+          "url": "https://www.linkedin.com/posts/brianferoldi_10-images-that-will-make-you-a-better-investor-activity-7065291223187480576-BaAB",
+          "firstLine": "Checking stock prices daily is like putting a webcam in a forest to see if the trees are growing.",
+          "why": "The absurd webcam-in-forest metaphor immediately makes an abstract idea vivid and shareable, drawing readers into the list."
+        }
+      ],
+      "months": 1,
+      "authors": 1
     }
   },
   "topics": {
@@ -459,6 +505,14 @@
           "url": "https://www.linkedin.com/posts/maxpashman_your-employer-did-not-hire-you-so-you-can-activity-7185996629429137408-RHN6",
           "firstLine": "Your employer did not hire you so you can build wealth.",
           "why": "The blunt opener challenges the reader's assumptions about their employer's role in their financial life, creating immediate tension."
+        },
+        {
+          "month": "2026-11",
+          "author": "Max Pashman, CFP®",
+          "per1k": 4.21,
+          "url": "https://www.linkedin.com/posts/maxpashman_stock-market-price-drops-too-risky-to-invest-activity-6988872858462543872-3ZDf",
+          "firstLine": "Stock market price drops: Too risky to invest my money!",
+          "why": "The sharp contrast between two identical situations (price drops) exposes an irrational money behaviour, making readers immediately recognise themselves."
         }
       ],
       "months": 1,
@@ -513,10 +567,18 @@
           "url": "https://www.linkedin.com/posts/toridunlap_bill-negotiation-scripts-her-first-100k-activity-7067164600965730304-lZr6",
           "firstLine": "I made almost $1000 in less than 10 minutes -- and you can do it too.",
           "why": "The bold dollar claim in the first line creates immediate curiosity and scepticism that pulls readers in."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 0.58,
+          "url": "https://www.linkedin.com/posts/brianferoldi_10-images-that-will-make-you-a-better-investor-activity-7065291223187480576-BaAB",
+          "firstLine": "Checking stock prices daily is like putting a webcam in a forest to see if the trees are growing.",
+          "why": "The absurd webcam-in-forest metaphor immediately makes an abstract idea vivid and shareable, drawing readers into the list."
         }
       ],
       "months": 1,
-      "authors": 3
+      "authors": 4
     },
     "money emotions and stress": {
       "wins": [
@@ -535,10 +597,26 @@
           "url": "https://www.linkedin.com/posts/maxpashman_my-client-asked-for-a-quick-zoom-with-me-activity-7021247871484129280-iedg",
           "firstLine": "My client asked for a quick zoom with me this week.",
           "why": "The suspense of 'she wanted to share her screen' makes you lean in to find out what's about to be revealed."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 0.17,
+          "url": "https://www.linkedin.com/posts/brianferoldi_you-were-born-to-be-a-bad-investor-your-activity-6993603143255138304-m6nZ",
+          "firstLine": "You were born to be a bad investor.",
+          "why": "Telling readers they were 'born to be a bad investor' is a provocative opener that reframes investing failure as biology rather than personal fault."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 0.21,
+          "url": "https://www.linkedin.com/posts/brianferoldi_nothing-plays-tricks-on-your-mind-like-putting-activity-6973982855001468928-QjS2",
+          "firstLine": "Nothing plays tricks on your mind like putting your capital at risk:",
+          "why": "The opening line taps directly into the psychological experience of investing risk, promising a visual insight into how the mind works with money."
         }
       ],
       "months": 1,
-      "authors": 2
+      "authors": 3
     },
     "the order to do money in": {
       "wins": [
@@ -581,10 +659,26 @@
           "url": "https://www.linkedin.com/posts/ramitsethi_personalfinance-investingtips-investingforbeginners-activity-7064684977212248064-2TDy",
           "firstLine": "Many people believe that “investing = picking stocks,” which stops them because it's intimidating.",
           "why": "Opening by naming a common misconception directly addresses a fear that stops many people from starting to invest at all."
+        },
+        {
+          "month": "2026-11",
+          "author": "Ramit Sethi",
+          "per1k": 0.34,
+          "url": "https://www.linkedin.com/posts/ramitsethi_you-dont-have-to-be-a-millionaire-to-live-activity-7106305255499255808-fNZg",
+          "firstLine": "You don’t have to be a millionaire to live a Rich Life.",
+          "why": "Opening by challenging the millionaire prerequisite immediately reframes who personal finance is for, pulling in readers who feel excluded."
+        },
+        {
+          "month": "2026-11",
+          "author": "Brian Feroldi",
+          "per1k": 1.33,
+          "url": "https://www.linkedin.com/posts/brianferoldi_financial-order-of-operations-activity-7047983249154813953-t4ol",
+          "firstLine": "I love stocks, but personal finance is 10X more important than stock picking.",
+          "why": "The bold claim that personal finance beats stock picking grabs attention before delivering a clear numbered framework."
         }
       ],
       "months": 1,
-      "authors": 2
+      "authors": 3
     },
     "where the money sits: accounts and pots": {
       "wins": [
@@ -629,7 +723,8 @@
     "patterns": [
       "confession · story with lesson",
       "list · list",
-      "story · story with lesson"
+      "story · story with lesson",
+      "hot take · explainer"
     ],
     "topics": []
   },
