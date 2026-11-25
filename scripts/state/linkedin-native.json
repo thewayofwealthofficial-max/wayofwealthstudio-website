@@ -328,5 +328,23 @@
     },
     "told150": false,
     "outcome": "pending"
+  },
+  {
+    "date": "2026-11-25",
+    "sentAt": "2026-11-25T13:11:45.152Z",
+    "id": "2f9e4f30454e7a1e",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "098b3767b60e6e0e",
+    "outlier": "https://www.linkedin.com/posts/maxpashman_stock-market-price-drops-too-risky-to-invest-activity-6988872858462543872-3ZDf",
+    "shape": {
+      "source": "watchlist",
+      "hook": "hot take",
+      "structure": "story with lesson",
+      "words": 62,
+      "paragraphs": 7
+    },
+    "told150": false,
+    "outcome": "pending"
   }
 ]
