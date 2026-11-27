@@ -270,7 +270,15 @@
       "id": "02e0b26def5fee60",
       "urn": "urn:li:share:7529513645458972672",
       "angle": 15,
-      "postedAt": "2026-11-20T11:59:05.011Z"
+      "postedAt": "2026-11-20T11:59:05.011Z",
+      "scored": {
+        "at": "2026-11-27T15:23:30.787Z",
+        "reactions": 0,
+        "comments": 0,
+        "followers": 2871,
+        "per1k": 0
+      },
+      "topic": "spending and saving habits"
     },
     {
       "id": "d731820e76229f15",
