@@ -327,7 +327,7 @@
       "paragraphs": 30
     },
     "told150": false,
-    "outcome": "pending"
+    "outcome": "rejected"
   },
   {
     "date": "2026-11-25",
@@ -343,6 +343,24 @@
       "structure": "story with lesson",
       "words": 62,
       "paragraphs": 7
+    },
+    "told150": false,
+    "outcome": "pending"
+  },
+  {
+    "date": "2026-11-27",
+    "sentAt": "2026-11-27T12:44:45.302Z",
+    "id": "f47178e15774f5af",
+    "angle": 6,
+    "topic": "Mindset and behaviour",
+    "passage": "c792d51a6aa9d5cb",
+    "outlier": "https://www.linkedin.com/posts/brianferoldi_10-images-that-will-make-you-a-better-investor-activity-7065291223187480576-BaAB",
+    "shape": {
+      "source": "watchlist",
+      "hook": "hot take",
+      "structure": "list",
+      "words": 141,
+      "paragraphs": 16
     },
     "told150": false,
     "outcome": "pending"
